@@ -313,6 +313,27 @@
     </p>
 
     <div class="process-timeline">
+
+      <!-- Wavy connecting line -->
+      <svg class="process-wave-svg" viewBox="0 0 1000 56" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="waveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#f4926a"/>
+            <stop offset="100%" stop-color="#c8f542"/>
+          </linearGradient>
+          <filter id="waveGlow">
+            <feGaussianBlur stdDeviation="2.5" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <!-- Glow layer -->
+        <path d="M 125,28 C 188,6 295,52 375,28 C 452,4 548,52 625,28 C 702,7 812,49 875,28"
+              fill="none" stroke="url(#waveGrad)" stroke-width="4" stroke-linecap="round" opacity="0.25" filter="url(#waveGlow)"/>
+        <!-- Main wave -->
+        <path d="M 125,28 C 188,6 295,52 375,28 C 452,4 548,52 625,28 C 702,7 812,49 875,28"
+              fill="none" stroke="url(#waveGrad)" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+
       <!-- Step 01 -->
       <div class="process-step-new scroll-anim d1">
         <div class="process-badge">01</div>

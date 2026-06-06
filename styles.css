@@ -1014,16 +1014,18 @@ section { padding: 100px 0; }
   position: relative;
   margin-top: 60px;
 }
-/* Connecting line between circles */
-.process-timeline::before {
-  content: '';
+/* Connecting line — replaced by SVG wave */
+.process-timeline::before { display: none; }
+
+.process-wave-svg {
   position: absolute;
-  top: 27px;
-  left: calc(12.5% + 4px);
-  right: calc(12.5% + 4px);
-  height: 2px;
-  background: linear-gradient(to right, var(--orange) 0%, var(--lime) 100%);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 56px;
   z-index: 0;
+  pointer-events: none;
+  overflow: visible;
 }
 .process-step-new {
   display: flex;
@@ -1034,6 +1036,8 @@ section { padding: 100px 0; }
   position: relative;
 }
 .process-badge {
+  position: relative;
+  z-index: 1;
   width: 56px;
   height: 56px;
   border-radius: 50%;
@@ -1824,6 +1828,7 @@ button { touch-action: manipulation; }
   .process-grid { grid-template-columns: 1fr; }
   .process-timeline { grid-template-columns: 1fr 1fr; }
   .process-timeline::before { display: none; }
+  .process-wave-svg { display: none; }
   .pricing-option-grid { grid-template-columns: 1fr; }
   .avis-masonry { columns: 1; }
   .wa-card { min-width: 300px; }
