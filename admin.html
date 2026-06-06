@@ -385,6 +385,44 @@
     .empty { padding: 40px; text-align: center; color: var(--muted); font-size: 13px; }
     .empty .ei { font-size: 32px; margin-bottom: 10px; }
 
+    /* ── Clients ── */
+    .cl-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px; cursor:pointer; transition:border-color .15s, transform .1s; }
+    .cl-card:hover { border-color:rgba(244,146,106,.4); transform:translateY(-1px); }
+    .cl-card-top { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+    .cl-avatar { width:38px; height:38px; border-radius:10px; background:rgba(244,146,106,.2); display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:800; color:var(--accent); flex-shrink:0; }
+    .cl-card-name { font-size:14px; font-weight:700; line-height:1.3; }
+    .cl-card-secteur { font-size:11px; color:var(--muted); }
+    .cl-card-rows { display:flex; flex-direction:column; gap:5px; }
+    .cl-card-row { display:flex; align-items:center; justify-content:space-between; font-size:12px; }
+    .cl-card-row-label { color:var(--muted); }
+    .cl-card-row-val { font-weight:600; }
+    .cl-card-foot { margin-top:14px; padding-top:12px; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+
+    .cl-tab { background:none; border:none; border-bottom:2px solid transparent; color:var(--muted); font-size:13px; font-weight:500; padding:10px 16px; cursor:pointer; white-space:nowrap; transition:color .13s, border-color .13s; font-family:inherit; }
+    .cl-tab:hover { color:var(--text); }
+    .cl-tab.active { color:var(--accent); border-bottom-color:var(--accent); font-weight:700; }
+    .cl-tab-pane { display:none; }
+    .cl-tab-pane.active { display:block; }
+
+    .cl-info-row { display:flex; align-items:flex-start; justify-content:space-between; padding:9px 0; border-bottom:1px solid rgba(255,255,255,.04); font-size:13px; }
+    .cl-info-row:last-child { border-bottom:none; }
+    .cl-info-label { color:var(--muted); font-size:12px; min-width:110px; }
+    .cl-info-val { font-weight:500; text-align:right; word-break:break-all; }
+
+    .cl-doc-row { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,.04); }
+    .cl-doc-row:last-child { border-bottom:none; }
+    .cl-doc-icon { font-size:18px; }
+    .cl-doc-name { flex:1; font-size:13px; }
+    .cl-doc-date { font-size:11px; color:var(--muted); }
+
+    .cl-msg { padding:10px 0; border-bottom:1px solid rgba(255,255,255,.03); }
+    .cl-msg:last-child { border-bottom:none; }
+    .cl-msg-head { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
+    .cl-msg-av { width:22px; height:22px; border-radius:50%; font-size:9px; font-weight:800; display:flex; align-items:center; justify-content:center; background:rgba(244,146,106,.25); color:var(--accent); }
+    .cl-msg-who { font-size:11px; font-weight:700; }
+    .cl-msg-time { font-size:10px; color:var(--muted2); }
+    .cl-msg-text { font-size:13px; color:var(--text); padding-left:30px; line-height:1.5; }
+
     /* Scrollbar */
     ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -757,18 +795,195 @@
 
         <!-- ── CLIENTS ── -->
         <div id="page-clients" class="page">
-          <div style="margin-bottom:18px"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">BUSINESS</div><div style="font-size:22px;font-weight:800;margin-top:2px">Clients</div></div>
-          <div class="panel">
-            <div class="panel-head"><h3>Tous les clients</h3></div>
-            <table>
-              <thead><tr><th>Nom</th><th>Secteur</th><th>Statut</th><th>MRR</th><th>Setup</th><th>Depuis</th></tr></thead>
-              <tbody>
-                <tr><td><strong>Kebab Le Sultan</strong></td><td style="color:var(--muted)">Restauration</td><td><span class="badge badge-green">● Actif</span></td><td style="color:var(--accent);font-weight:700">29€</td><td>990€</td><td style="color:var(--muted)">Il y a 2sem</td></tr>
-                <tr><td><strong>Auto-école Martin</strong></td><td style="color:var(--muted)">Auto-école</td><td><span class="badge badge-green">● Actif</span></td><td style="color:var(--accent);font-weight:700">29€</td><td>990€</td><td style="color:var(--muted)">Il y a 5j</td></tr>
-                <tr><td><strong>Plombier Express</strong></td><td style="color:var(--muted)">Artisan</td><td><span class="badge badge-green">● Actif</span></td><td style="color:var(--accent);font-weight:700">29€</td><td>990€</td><td style="color:var(--muted)">Aujourd'hui</td></tr>
-              </tbody>
-            </table>
+
+          <!-- LIST VIEW -->
+          <div id="cl-list-view">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+              <div>
+                <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">BUSINESS</div>
+                <div style="font-size:26px;font-weight:800;margin-top:2px">Clients</div>
+              </div>
+              <button class="btn-newtask" onclick="clOpenAdd()">+ Nouveau client</button>
+            </div>
+
+            <!-- KPIs -->
+            <div style="display:flex;gap:0;margin-bottom:16px;border:1px solid var(--border);border-radius:12px;overflow:hidden">
+              <div style="flex:1;padding:14px 16px;border-right:1px solid var(--border)">
+                <div style="font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Total</div>
+                <div id="cl-kpi-total" style="font-size:22px;font-weight:800">6</div>
+              </div>
+              <div style="flex:1;padding:14px 16px;border-right:1px solid var(--border)">
+                <div style="font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Actifs</div>
+                <div id="cl-kpi-actifs" style="font-size:22px;font-weight:800;color:#4ade80">0</div>
+              </div>
+              <div style="flex:1;padding:14px 16px;border-right:1px solid var(--border)">
+                <div style="font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">En cours</div>
+                <div id="cl-kpi-encours" style="font-size:22px;font-weight:800;color:var(--accent)">0</div>
+              </div>
+              <div style="flex:1;padding:14px 16px">
+                <div style="font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">MRR</div>
+                <div id="cl-kpi-mrr" style="font-size:22px;font-weight:800;color:var(--accent)">0€</div>
+              </div>
+            </div>
+
+            <!-- Cards grid -->
+            <div id="cl-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px"></div>
           </div>
+
+          <!-- DETAIL VIEW -->
+          <div id="cl-detail-view" style="display:none">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+              <button onclick="clBack()" style="background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;padding:7px 14px;color:var(--muted);font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px">← Retour</button>
+              <div>
+                <div id="cl-detail-name" style="font-size:20px;font-weight:800"></div>
+                <div id="cl-detail-sub" style="font-size:12px;color:var(--muted)"></div>
+              </div>
+              <div style="margin-left:auto;display:flex;gap:8px">
+                <span id="cl-detail-badge"></span>
+                <button onclick="clOpenEdit()" style="background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;padding:7px 14px;color:var(--muted);font-size:12px;cursor:pointer">✏️ Modifier</button>
+              </div>
+            </div>
+
+            <!-- Tabs -->
+            <div style="display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px;overflow-x:auto">
+              <button class="cl-tab active" data-tab="infos" onclick="clTab('infos',this)">Infos</button>
+              <button class="cl-tab" data-tab="docs" onclick="clTab('docs',this)">Documents</button>
+              <button class="cl-tab" data-tab="assets" onclick="clTab('assets',this)">Assets</button>
+              <button class="cl-tab" data-tab="paiement" onclick="clTab('paiement',this)">Paiement</button>
+              <button class="cl-tab" data-tab="devis" onclick="clTab('devis',this)">Devis</button>
+              <button class="cl-tab" data-tab="factures" onclick="clTab('factures',this)">Factures</button>
+              <button class="cl-tab" data-tab="discussion" onclick="clTab('discussion',this)">Discussion</button>
+            </div>
+
+            <!-- Tab: Infos -->
+            <div id="cl-tab-infos" class="cl-tab-pane active">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                <div class="panel">
+                  <div class="panel-head"><h3>Informations générales</h3></div>
+                  <div style="padding:16px">
+                    <div id="cl-info-fields"></div>
+                  </div>
+                </div>
+                <div class="panel">
+                  <div class="panel-head"><h3>Abonnement &amp; paiement</h3></div>
+                  <div style="padding:16px">
+                    <div id="cl-sub-fields"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="panel" style="margin-top:16px">
+                <div class="panel-head"><h3>Notes</h3></div>
+                <div style="padding:16px">
+                  <textarea id="cl-notes-area" placeholder="Notes sur ce client…" style="width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:12px;color:var(--text);font-size:13px;font-family:inherit;resize:vertical;min-height:100px;outline:none" oninput="clSaveNotes()"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab: Documents -->
+            <div id="cl-tab-docs" class="cl-tab-pane" style="display:none">
+              <div class="panel">
+                <div class="panel-head"><h3>Documents</h3><button class="ph-action" onclick="clAddDoc()">+ Ajouter</button></div>
+                <div id="cl-docs-list" style="padding:16px;min-height:80px"></div>
+              </div>
+            </div>
+
+            <!-- Tab: Assets -->
+            <div id="cl-tab-assets" class="cl-tab-pane" style="display:none">
+              <div class="panel">
+                <div class="panel-head"><h3>Assets &amp; accès</h3></div>
+                <div id="cl-assets-list" style="padding:16px;min-height:80px"></div>
+              </div>
+            </div>
+
+            <!-- Tab: Paiement -->
+            <div id="cl-tab-paiement" class="cl-tab-pane" style="display:none">
+              <div class="panel">
+                <div class="panel-head"><h3>Historique paiements</h3><button class="ph-action" onclick="clAddPaiement()">+ Ajouter</button></div>
+                <div id="cl-paiement-list" style="padding:16px;min-height:80px"></div>
+              </div>
+            </div>
+
+            <!-- Tab: Devis -->
+            <div id="cl-tab-devis" class="cl-tab-pane" style="display:none">
+              <div class="panel">
+                <div class="panel-head"><h3>Devis</h3><button class="ph-action" onclick="clAddDevis()">+ Nouveau</button></div>
+                <div id="cl-devis-list" style="padding:16px;min-height:80px"></div>
+              </div>
+            </div>
+
+            <!-- Tab: Factures -->
+            <div id="cl-tab-factures" class="cl-tab-pane" style="display:none">
+              <div class="panel">
+                <div class="panel-head"><h3>Factures</h3><button class="ph-action" onclick="clAddFacture()">+ Nouvelle</button></div>
+                <div id="cl-factures-list" style="padding:16px;min-height:80px"></div>
+              </div>
+            </div>
+
+            <!-- Tab: Discussion -->
+            <div id="cl-tab-discussion" class="cl-tab-pane" style="display:none">
+              <div class="panel">
+                <div class="panel-head"><h3>Discussion interne</h3></div>
+                <div id="cl-messages-list" style="padding:16px;min-height:80px;max-height:400px;overflow-y:auto"></div>
+                <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px">
+                  <input id="cl-msg-input" placeholder="Écrire un message…" style="flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:13px;outline:none" onkeydown="if(event.key==='Enter')clSendMsg()">
+                  <button onclick="clSendMsg()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer">Envoyer</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ADD/EDIT MODAL -->
+          <div id="cl-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;align-items:center;justify-content:center;padding:16px" onclick="if(event.target.id==='cl-modal')clCloseModal()">
+            <div style="background:#18181f;border:1px solid var(--border);border-radius:18px;padding:28px 30px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto">
+              <h3 id="cl-modal-title" style="font-size:18px;font-weight:800;margin:0 0 22px">Nouveau client</h3>
+              <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Nom *</label>
+              <input id="cl-m-nom" placeholder="Nom du client" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:14px;outline:none;box-sizing:border-box">
+              <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Secteur</label>
+              <input id="cl-m-secteur" placeholder="ex: Rénovation, VTC…" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:14px;outline:none;box-sizing:border-box">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+                <div>
+                  <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Téléphone</label>
+                  <input id="cl-m-tel" placeholder="06…" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                </div>
+                <div>
+                  <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Email</label>
+                  <input id="cl-m-email" placeholder="contact@…" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+                <div>
+                  <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Statut</label>
+                  <select id="cl-m-statut" style="width:100%;background:#1a1a22;border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                    <option value="actif">Actif</option>
+                    <option value="encours">En cours</option>
+                    <option value="pause">En pause</option>
+                    <option value="termine">Terminé</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">MRR (€/mois)</label>
+                  <input id="cl-m-mrr" placeholder="ex: 29" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+                <div>
+                  <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Setup (€)</label>
+                  <input id="cl-m-setup" placeholder="ex: 990" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                </div>
+                <div>
+                  <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Depuis</label>
+                  <input id="cl-m-depuis" type="date" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                </div>
+              </div>
+              <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">URL du site</label>
+              <input id="cl-m-url" placeholder="https://…" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:14px;outline:none;box-sizing:border-box">
+              <div style="display:flex;gap:10px;margin-top:8px">
+                <button onclick="clCloseModal()" style="flex:1;padding:12px;border-radius:8px;border:none;background:rgba(255,255,255,.07);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer">Annuler</button>
+                <button onclick="clSaveClient()" style="flex:1;padding:12px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:700;cursor:pointer">Enregistrer</button>
+              </div>
+            </div>
+          </div>
+
         </div>
 
         <!-- ── PROJETS ── -->
@@ -834,6 +1049,7 @@ function bootApp(email) {
   initCharts();
   tcLoad(); tcRender();
   plLoad(); renderPipeline();
+  clLoad(); clRenderGrid();
 }
 
 // Navigation
@@ -1334,6 +1550,428 @@ function addProspect() {
   const id    = 'p'+Date.now();
   plData.push({ id, board, col, name, prix, maint });
   plSave(); renderPipeline(); closeModal();
+}
+
+/* ════════════════════════ CLIENTS CRM ════════════════════════ */
+const CL_KEY = 'cl_crm_v1';
+const CL_DEFAULT = [
+  {
+    id:'cl1', nom:'2RP Renov', secteur:'Rénovation', tel:'', email:'',
+    statut:'actif', mrr:20, setup:0, depuis:'2026-05-01', url:'',
+    notes:'Abonnement 20€/mois. Client converti depuis le pipeline.',
+    docs:[], assets:[], paiements:[], devis:[], factures:[], messages:[]
+  },
+  {
+    id:'cl2', nom:'AZUR PRESSE', secteur:'Presse / Kiosque', tel:'', email:'',
+    statut:'encours', mrr:0, setup:990, depuis:'2026-05-07', url:'',
+    notes:'Appel avant Visio. Demander infos pour pouvoir faire le site.',
+    docs:[], assets:[], paiements:[], devis:[], factures:[], messages:[]
+  },
+  {
+    id:'cl3', nom:'Chakir VTC', secteur:'Transport / VTC', tel:'', email:'',
+    statut:'encours', mrr:0, setup:990, depuis:'2026-05-15', url:'',
+    notes:'Devis en attente. À relancer.',
+    docs:[], assets:[], paiements:[], devis:[], factures:[], messages:[]
+  },
+  {
+    id:'cl4', nom:'MONSIEUR CLAUDE SONGUE', secteur:'Services', tel:'', email:'',
+    statut:'actif', mrr:49, setup:990, depuis:'2026-04-20', url:'',
+    notes:'',
+    docs:[], assets:[], paiements:[], devis:[], factures:[], messages:[]
+  },
+  {
+    id:'cl5', nom:'SJM Rénovation', secteur:'Rénovation', tel:'', email:'',
+    statut:'actif', mrr:49, setup:990, depuis:'2026-04-10', url:'',
+    notes:'Intégrer les photos sur le site. Utiliser photos fiche client A7.',
+    docs:[], assets:[], paiements:[], devis:[], factures:[], messages:[]
+  },
+  {
+    id:'cl6', nom:'Tonio Renov', secteur:'Rénovation', tel:'', email:'',
+    statut:'actif', mrr:20, setup:0, depuis:'2026-05-20', url:'',
+    notes:'Cartes de visite + flyers à commander. Compte Google Ads à créer. Images site en attente réponse.',
+    docs:[], assets:[], paiements:[], devis:[], factures:[], messages:[]
+  }
+];
+
+let clData = [];
+let clCurrentId = null;
+let clEditMode = false;
+
+function clLoad() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(CL_KEY));
+    clData = Array.isArray(raw) && raw.length > 0 ? raw : CL_DEFAULT.map(c=>({...c, docs:[...(c.docs||[])], assets:[...(c.assets||[])], paiements:[...(c.paiements||[])], devis:[...(c.devis||[])], factures:[...(c.factures||[])], messages:[...(c.messages||[])]}));
+  } catch { clData = CL_DEFAULT.map(c=>({...c})); }
+}
+function clSave() { localStorage.setItem(CL_KEY, JSON.stringify(clData)); }
+
+const CL_STATUT_LABELS = { actif:'Actif', encours:'En cours', pause:'En pause', termine:'Terminé' };
+const CL_STATUT_BADGE  = { actif:'badge-green', encours:'badge-orange', pause:'badge-blue', termine:'badge-gray' };
+
+function clInitials(nom) {
+  const parts = nom.trim().split(/\s+/);
+  if (parts.length >= 2) return (parts[0][0] + parts[parts.length-1][0]).toUpperCase();
+  return nom.slice(0,2).toUpperCase();
+}
+
+function clRenderGrid() {
+  const grid = document.getElementById('cl-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  clData.forEach(c => {
+    const div = document.createElement('div');
+    div.className = 'cl-card';
+    div.onclick = () => clOpenDetail(c.id);
+    const mrrTxt = c.mrr ? c.mrr+'€/m' : '—';
+    const setupTxt = c.setup ? c.setup+'€' : '0€';
+    const depuisTxt = c.depuis ? new Date(c.depuis).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'}) : '—';
+    div.innerHTML = `
+      <div class="cl-card-top">
+        <div class="cl-avatar">${clInitials(c.nom)}</div>
+        <div>
+          <div class="cl-card-name">${c.nom}</div>
+          <div class="cl-card-secteur">${c.secteur||'—'}</div>
+        </div>
+        <span class="badge ${CL_STATUT_BADGE[c.statut]||'badge-gray'}" style="margin-left:auto">${CL_STATUT_LABELS[c.statut]||c.statut}</span>
+      </div>
+      <div class="cl-card-rows">
+        <div class="cl-card-row"><span class="cl-card-row-label">MRR</span><span class="cl-card-row-val" style="color:var(--accent)">${mrrTxt}</span></div>
+        <div class="cl-card-row"><span class="cl-card-row-label">Setup</span><span class="cl-card-row-val">${setupTxt}</span></div>
+        <div class="cl-card-row"><span class="cl-card-row-label">Depuis</span><span class="cl-card-row-val" style="color:var(--muted)">${depuisTxt}</span></div>
+      </div>
+    `;
+    grid.appendChild(div);
+  });
+
+  // KPIs
+  const actifs = clData.filter(c=>c.statut==='actif').length;
+  const encours = clData.filter(c=>c.statut==='encours').length;
+  const mrr = clData.reduce((s,c) => s + (parseInt(c.mrr)||0), 0);
+  document.getElementById('cl-kpi-total').textContent = clData.length;
+  document.getElementById('cl-kpi-actifs').textContent = actifs;
+  document.getElementById('cl-kpi-encours').textContent = encours;
+  document.getElementById('cl-kpi-mrr').textContent = mrr+'€';
+}
+
+function clOpenDetail(id) {
+  clCurrentId = id;
+  const c = clData.find(x=>x.id===id);
+  if (!c) return;
+
+  document.getElementById('cl-list-view').style.display = 'none';
+  document.getElementById('cl-detail-view').style.display = 'block';
+  document.getElementById('cl-detail-name').textContent = c.nom;
+  document.getElementById('cl-detail-sub').textContent = c.secteur || '';
+  document.getElementById('cl-detail-badge').innerHTML = `<span class="badge ${CL_STATUT_BADGE[c.statut]||'badge-gray'}">${CL_STATUT_LABELS[c.statut]||c.statut}</span>`;
+
+  // Activate first tab
+  document.querySelectorAll('.cl-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.cl-tab-pane').forEach(p=>{ p.style.display='none'; p.classList.remove('active'); });
+  document.querySelector('.cl-tab[data-tab="infos"]').classList.add('active');
+  document.getElementById('cl-tab-infos').style.display='block';
+  document.getElementById('cl-tab-infos').classList.add('active');
+
+  clRenderInfos(c);
+  clRenderDocs(c);
+  clRenderAssets(c);
+  clRenderPaiements(c);
+  clRenderDevis(c);
+  clRenderFactures(c);
+  clRenderMessages(c);
+}
+
+function clTab(tab, btn) {
+  document.querySelectorAll('.cl-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.cl-tab-pane').forEach(p=>{ p.style.display='none'; p.classList.remove('active'); });
+  btn.classList.add('active');
+  const pane = document.getElementById('cl-tab-'+tab);
+  if (pane) { pane.style.display='block'; pane.classList.add('active'); }
+}
+
+function clBack() {
+  clCurrentId = null;
+  document.getElementById('cl-detail-view').style.display = 'none';
+  document.getElementById('cl-list-view').style.display = 'block';
+  clRenderGrid();
+}
+
+function clRow(label, val) {
+  return `<div class="cl-info-row"><span class="cl-info-label">${label}</span><span class="cl-info-val">${val||'—'}</span></div>`;
+}
+
+function clRenderInfos(c) {
+  const depuisTxt = c.depuis ? new Date(c.depuis).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'}) : '—';
+  document.getElementById('cl-info-fields').innerHTML =
+    clRow('Nom', c.nom) +
+    clRow('Secteur', c.secteur) +
+    clRow('Téléphone', c.tel ? `<a href="tel:${c.tel}" style="color:var(--blue)">${c.tel}</a>` : '—') +
+    clRow('Email', c.email ? `<a href="mailto:${c.email}" style="color:var(--blue)">${c.email}</a>` : '—') +
+    clRow('Site web', c.url ? `<a href="${c.url}" target="_blank" style="color:var(--blue)">Ouvrir →</a>` : '—') +
+    clRow('Client depuis', depuisTxt);
+
+  document.getElementById('cl-sub-fields').innerHTML =
+    clRow('Statut', `<span class="badge ${CL_STATUT_BADGE[c.statut]||'badge-gray'}">${CL_STATUT_LABELS[c.statut]||c.statut}</span>`) +
+    clRow('MRR', c.mrr ? `<strong style="color:var(--accent)">${c.mrr}€/mois</strong>` : '—') +
+    clRow('Setup', c.setup ? c.setup+'€' : '0€');
+
+  document.getElementById('cl-notes-area').value = c.notes || '';
+}
+
+function clSaveNotes() {
+  if (!clCurrentId) return;
+  const c = clData.find(x=>x.id===clCurrentId);
+  if (c) { c.notes = document.getElementById('cl-notes-area').value; clSave(); }
+}
+
+function clRenderDocs(c) {
+  const el = document.getElementById('cl-docs-list');
+  if (!c.docs || c.docs.length === 0) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0">Aucun document</div>'; return;
+  }
+  el.innerHTML = c.docs.map(d => `
+    <div class="cl-doc-row">
+      <span class="cl-doc-icon">📄</span>
+      <span class="cl-doc-name">${d.nom}</span>
+      <span class="cl-doc-date">${d.date||''}</span>
+      <button onclick="clDelDoc('${d.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;opacity:.5" title="Supprimer">🗑</button>
+    </div>`).join('');
+}
+
+function clAddDoc() {
+  const nom = prompt('Nom du document :');
+  if (!nom) return;
+  const c = clData.find(x=>x.id===clCurrentId);
+  if (!c) return;
+  if (!c.docs) c.docs = [];
+  c.docs.push({ id:'d'+Date.now(), nom, date: new Date().toLocaleDateString('fr-FR') });
+  clSave(); clRenderDocs(c);
+}
+
+function clDelDoc(did) {
+  const c = clData.find(x=>x.id===clCurrentId);
+  if (!c) return;
+  c.docs = (c.docs||[]).filter(d=>d.id!==did);
+  clSave(); clRenderDocs(c);
+}
+
+function clRenderAssets(c) {
+  const el = document.getElementById('cl-assets-list');
+  const defaults = [
+    { label:'Accès hébergement', val: c.hebergement||'' },
+    { label:'Accès domaine',     val: c.domaine||'' },
+    { label:'Accès Google',      val: c.google||'' },
+    { label:'Accès Facebook',    val: c.facebook||'' },
+    { label:'Identifiant site',  val: c.loginSite||'' },
+  ];
+  el.innerHTML = defaults.map(r =>
+    `<div class="cl-info-row"><span class="cl-info-label">${r.label}</span><span class="cl-info-val">${r.val||'—'}</span></div>`
+  ).join('');
+}
+
+function clRenderPaiements(c) {
+  const el = document.getElementById('cl-paiement-list');
+  if (!c.paiements || c.paiements.length === 0) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0">Aucun paiement enregistré</div>'; return;
+  }
+  el.innerHTML = `<table><thead><tr><th>Date</th><th>Montant</th><th>Type</th><th>Note</th><th></th></tr></thead><tbody>` +
+    c.paiements.map(p => `<tr>
+      <td>${p.date||'—'}</td>
+      <td style="color:var(--accent);font-weight:700">${p.montant||'—'}</td>
+      <td>${p.type||'—'}</td>
+      <td style="color:var(--muted)">${p.note||''}</td>
+      <td><button onclick="clDelPaiement('${p.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;opacity:.5">🗑</button></td>
+    </tr>`).join('') + '</tbody></table>';
+}
+
+function clAddPaiement() {
+  const montant = prompt('Montant (ex: 990€) :');
+  if (!montant) return;
+  const c = clData.find(x=>x.id===clCurrentId);
+  if (!c) return;
+  if (!c.paiements) c.paiements = [];
+  const type = prompt('Type (setup/mensuel/autre) :') || 'autre';
+  const note = prompt('Note :') || '';
+  c.paiements.push({ id:'pay'+Date.now(), date: new Date().toLocaleDateString('fr-FR'), montant, type, note });
+  clSave(); clRenderPaiements(c);
+}
+
+function clDelPaiement(pid) {
+  const c = clData.find(x=>x.id===clCurrentId);
+  if (!c) return;
+  c.paiements = (c.paiements||[]).filter(p=>p.id!==pid);
+  clSave(); clRenderPaiements(c);
+}
+
+function clRenderDevis(c) {
+  const el = document.getElementById('cl-devis-list');
+  if (!c.devis || c.devis.length === 0) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0">Aucun devis</div>'; return;
+  }
+  el.innerHTML = `<table><thead><tr><th>Réf</th><th>Date</th><th>Montant</th><th>Statut</th><th></th></tr></thead><tbody>` +
+    c.devis.map(d => `<tr>
+      <td style="font-weight:600">${d.ref||'—'}</td>
+      <td style="color:var(--muted)">${d.date||'—'}</td>
+      <td style="color:var(--accent);font-weight:700">${d.montant||'—'}</td>
+      <td><span class="badge ${d.statut==='accepte'?'badge-green':d.statut==='refuse'?'badge-red':'badge-orange'}">${d.statut||'En attente'}</span></td>
+      <td><button onclick="clDelDevis('${d.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;opacity:.5">🗑</button></td>
+    </tr>`).join('') + '</tbody></table>';
+}
+
+function clAddDevis() {
+  const montant = prompt('Montant du devis :');
+  if (!montant) return;
+  const c = clData.find(x=>x.id===clCurrentId);
+  if (!c) return;
+  if (!c.devis) c.devis = [];
+  const ref = 'DEV-' + String(c.devis.length+1).padStart(3,'0');
+  c.devis.push({ id:'dv'+Date.now(), ref, date: new Date().toLocaleDateString('fr-FR'), montant, statut:'attente' });
+  clSave(); clRenderDevis(c);
+}
+
+function clDelDevis(did) {
+  const c = clData.find(x=>x.id===clCurrentId);
+  if (!c) return;
+  c.devis = (c.devis||[]).filter(d=>d.id!==did);
+  clSave(); clRenderDevis(c);
+}
+
+function clRenderFactures(c) {
+  const el = document.getElementById('cl-factures-list');
+  if (!c.factures || c.factures.length === 0) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0">Aucune facture</div>'; return;
+  }
+  el.innerHTML = `<table><thead><tr><th>Réf</th><th>Date</th><th>Montant</th><th>Statut</th><th></th></tr></thead><tbody>` +
+    c.factures.map(f => `<tr>
+      <td style="font-weight:600">${f.ref||'—'}</td>
+      <td style="color:var(--muted)">${f.date||'—'}</td>
+      <td style="color:var(--accent);font-weight:700">${f.montant||'—'}</td>
+      <td><span class="badge ${f.statut==='payee'?'badge-green':f.statut==='retard'?'badge-red':'badge-orange'}">${f.statut==='payee'?'Payée':f.statut==='retard'?'Retard':'En attente'}</span></td>
+      <td><button onclick="clDelFacture('${f.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;opacity:.5">🗑</button></td>
+    </tr>`).join('') + '</tbody></table>';
+}
+
+function clAddFacture() {
+  const montant = prompt('Montant de la facture :');
+  if (!montant) return;
+  const c = clData.find(x=>x.id===clCurrentId);
+  if (!c) return;
+  if (!c.factures) c.factures = [];
+  const ref = 'FAC-' + String(c.factures.length+1).padStart(3,'0');
+  c.factures.push({ id:'fac'+Date.now(), ref, date: new Date().toLocaleDateString('fr-FR'), montant, statut:'attente' });
+  clSave(); clRenderFactures(c);
+}
+
+function clDelFacture(fid) {
+  const c = clData.find(x=>x.id===clCurrentId);
+  if (!c) return;
+  c.factures = (c.factures||[]).filter(f=>f.id!==fid);
+  clSave(); clRenderFactures(c);
+}
+
+function clRenderMessages(c) {
+  const el = document.getElementById('cl-messages-list');
+  if (!c.messages || c.messages.length === 0) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0">Aucun message</div>'; return;
+  }
+  el.innerHTML = c.messages.map(m => `
+    <div class="cl-msg">
+      <div class="cl-msg-head">
+        <div class="cl-msg-av">${m.who==='eloise'?'É':'E'}</div>
+        <span class="cl-msg-who">${m.who==='eloise'?'Éloïse':'Emrick'}</span>
+        <span class="cl-msg-time">${m.time||''}</span>
+      </div>
+      <div class="cl-msg-text">${m.text}</div>
+    </div>`).join('');
+  el.scrollTop = el.scrollHeight;
+}
+
+function clSendMsg() {
+  const input = document.getElementById('cl-msg-input');
+  const text = input.value.trim();
+  if (!text || !clCurrentId) return;
+  const c = clData.find(x=>x.id===clCurrentId);
+  if (!c) return;
+  if (!c.messages) c.messages = [];
+  const now = new Date();
+  c.messages.push({ id:'m'+Date.now(), who:'emrick', text, time: now.toLocaleDateString('fr-FR')+' '+now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) });
+  input.value = '';
+  clSave(); clRenderMessages(c);
+}
+
+function clOpenAdd() {
+  clEditMode = false;
+  document.getElementById('cl-modal-title').textContent = 'Nouveau client';
+  document.getElementById('cl-m-nom').value = '';
+  document.getElementById('cl-m-secteur').value = '';
+  document.getElementById('cl-m-tel').value = '';
+  document.getElementById('cl-m-email').value = '';
+  document.getElementById('cl-m-statut').value = 'actif';
+  document.getElementById('cl-m-mrr').value = '';
+  document.getElementById('cl-m-setup').value = '';
+  document.getElementById('cl-m-depuis').value = '';
+  document.getElementById('cl-m-url').value = '';
+  document.getElementById('cl-modal').style.display = 'flex';
+}
+
+function clOpenEdit() {
+  if (!clCurrentId) return;
+  clEditMode = true;
+  const c = clData.find(x=>x.id===clCurrentId);
+  if (!c) return;
+  document.getElementById('cl-modal-title').textContent = 'Modifier client';
+  document.getElementById('cl-m-nom').value = c.nom||'';
+  document.getElementById('cl-m-secteur').value = c.secteur||'';
+  document.getElementById('cl-m-tel').value = c.tel||'';
+  document.getElementById('cl-m-email').value = c.email||'';
+  document.getElementById('cl-m-statut').value = c.statut||'actif';
+  document.getElementById('cl-m-mrr').value = c.mrr||'';
+  document.getElementById('cl-m-setup').value = c.setup||'';
+  document.getElementById('cl-m-depuis').value = c.depuis||'';
+  document.getElementById('cl-m-url').value = c.url||'';
+  document.getElementById('cl-modal').style.display = 'flex';
+}
+
+function clCloseModal() {
+  document.getElementById('cl-modal').style.display = 'none';
+}
+
+function clSaveClient() {
+  const nom = document.getElementById('cl-m-nom').value.trim();
+  if (!nom) { alert('Le nom est requis.'); return; }
+  if (clEditMode && clCurrentId) {
+    const c = clData.find(x=>x.id===clCurrentId);
+    if (c) {
+      c.nom = nom;
+      c.secteur = document.getElementById('cl-m-secteur').value.trim();
+      c.tel = document.getElementById('cl-m-tel').value.trim();
+      c.email = document.getElementById('cl-m-email').value.trim();
+      c.statut = document.getElementById('cl-m-statut').value;
+      c.mrr = parseInt(document.getElementById('cl-m-mrr').value)||0;
+      c.setup = parseInt(document.getElementById('cl-m-setup').value)||0;
+      c.depuis = document.getElementById('cl-m-depuis').value;
+      c.url = document.getElementById('cl-m-url').value.trim();
+      clSave();
+      clCloseModal();
+      clOpenDetail(c.id);
+    }
+  } else {
+    const newC = {
+      id:'cl'+Date.now(), nom,
+      secteur: document.getElementById('cl-m-secteur').value.trim(),
+      tel: document.getElementById('cl-m-tel').value.trim(),
+      email: document.getElementById('cl-m-email').value.trim(),
+      statut: document.getElementById('cl-m-statut').value,
+      mrr: parseInt(document.getElementById('cl-m-mrr').value)||0,
+      setup: parseInt(document.getElementById('cl-m-setup').value)||0,
+      depuis: document.getElementById('cl-m-depuis').value,
+      url: document.getElementById('cl-m-url').value.trim(),
+      notes:'', docs:[], assets:[], paiements:[], devis:[], factures:[], messages:[]
+    };
+    clData.push(newC);
+    clSave();
+    clCloseModal();
+    clRenderGrid();
+  }
 }
 
 /* ═════════════════════════════════════════════════════════ */
