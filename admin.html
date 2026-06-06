@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Potentieel — CRM Admin</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0c0c0c;
+      --surface:  #141414;
+      --card:     #1c1c1c;
+      --border:   #2a2a2a;
+      --accent:   #E88B4D;
+      --accent2:  #d47a3c;
+      --text:     #f5f5f5;
+      --muted:    #888;
+      --green:    #22c55e;
+      --red:      #ef4444;
+      --blue:     #3b82f6;
+      --sidebar-w: 240px;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ─── LOGIN ─────────────────────────────────── */
+    #login-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: radial-gradient(ellipse at 50% 0%, rgba(232,139,77,.15) 0%, transparent 60%), var(--bg);
+    }
+    .login-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 48px 44px;
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+    }
+    .login-logo {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .login-logo span { color: var(--accent); }
+    .login-subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 36px;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+    }
+    .login-card h2 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .login-card p {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+    .form-group { margin-bottom: 16px; text-align: left; }
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 8px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 13px 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 15px;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .form-group input:focus { border-color: var(--accent); }
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background .2s, transform .1s;
+    }
+    .btn-primary:hover { background: var(--accent2); }
+    .btn-primary:active { transform: scale(.98); }
+    .btn-primary:disabled { opacity: .6; cursor: not-allowed; }
+    #login-error {
+      color: var(--red);
+      font-size: 13px;
+      margin-top: 14px;
+      display: none;
+    }
+    .login-toggle {
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .login-toggle a { color: var(--accent); cursor: pointer; text-decoration: none; }
+    .login-toggle a:hover { text-decoration: underline; }
+
+    /* ─── APP SHELL ─────────────────────────────── */
+    #app { display: none; height: 100vh; overflow: hidden; }
+    .app-layout { display: flex; height: 100%; }
+
+    /* ─── SIDEBAR ───────────────────────────────── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 24px 0;
+      flex-shrink: 0;
+    }
+    .sidebar-logo {
+      padding: 0 20px 28px;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -.5px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+    .sidebar-logo span { color: var(--accent); }
+    .sidebar-section {
+      padding: 4px 12px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin: 12px 0 4px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 10px 20px;
+      margin: 1px 8px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all .15s;
+      text-decoration: none;
+    }
+    .nav-item:hover { background: var(--card); color: var(--text); }
+    .nav-item.active { background: rgba(232,139,77,.15); color: var(--accent); }
+    .nav-item .badge {
+      margin-left: auto;
+      background: var(--accent);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 20px;
+    }
+    .sidebar-bottom {
+      margin-top: auto;
+      padding: 16px 12px;
+      border-top: 1px solid var(--border);
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px;
+      border-radius: 8px;
+    }
+    .user-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: #fff;
+      flex-shrink: 0;
+    }
+    .user-email { font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .btn-logout {
+      margin-top: 8px;
+      width: 100%;
+      padding: 9px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .btn-logout:hover { border-color: var(--red); color: var(--red); }
+
+    /* ─── MAIN ──────────────────────────────────── */
+    .main { flex: 1; overflow-y: auto; background: var(--bg); }
+    .main-header {
+      padding: 28px 32px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .main-header h1 { font-size: 24px; font-weight: 700; }
+    .main-header .date { font-size: 13px; color: var(--muted); }
+
+    .page { padding: 28px 32px; display: none; }
+    .page.active { display: block; }
+
+    /* ─── KPI CARDS ─────────────────────────────── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .kpi-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+    }
+    .kpi-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+    .kpi-value { font-size: 30px; font-weight: 800; letter-spacing: -1px; }
+    .kpi-delta { font-size: 12px; margin-top: 6px; }
+    .kpi-delta.up { color: var(--green); }
+    .kpi-delta.down { color: var(--red); }
+    .kpi-card.accent-card { border-color: rgba(232,139,77,.4); background: rgba(232,139,77,.08); }
+    .kpi-card.accent-card .kpi-value { color: var(--accent); }
+
+    /* ─── GRID 2 COL ─────────────────────────────── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+    .grid-3-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 28px; }
+
+    /* ─── PANEL ─────────────────────────────────── */
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .panel-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .panel-header h3 { font-size: 14px; font-weight: 700; }
+    .panel-header .see-all { font-size: 12px; color: var(--accent); cursor: pointer; }
+
+    /* ─── PIPELINE ───────────────────────────────── */
+    .pipeline { display: flex; gap: 12px; padding: 16px; overflow-x: auto; }
+    .pipeline-col { flex-shrink: 0; width: 200px; }
+    .pipeline-col-header {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--muted);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .pipeline-col-header .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+    }
+    .pipeline-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: border-color .15s;
+    }
+    .pipeline-card:hover { border-color: var(--accent); }
+    .pipeline-card .client { font-size: 13px; font-weight: 600; }
+    .pipeline-card .service { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .pipeline-card .amount { font-size: 13px; font-weight: 700; color: var(--accent); margin-top: 8px; }
+    .pipeline-card .date { font-size: 11px; color: var(--muted); }
+
+    /* ─── TABLE ─────────────────────────────────── */
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,.04); }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,.02); }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .status-badge.lead { background: rgba(59,130,246,.15); color: #60a5fa; }
+    .status-badge.prospect { background: rgba(232,139,77,.15); color: var(--accent); }
+    .status-badge.client { background: rgba(34,197,94,.15); color: #4ade80; }
+    .status-badge.perdu { background: rgba(239,68,68,.12); color: #f87171; }
+
+    /* ─── ACTIVITÉ ───────────────────────────────── */
+    .activity-list { padding: 8px 0; }
+    .activity-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 12px 20px;
+      transition: background .1s;
+    }
+    .activity-item:hover { background: rgba(255,255,255,.02); }
+    .activity-icon {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .activity-text { font-size: 13px; line-height: 1.4; }
+    .activity-text strong { font-weight: 600; }
+    .activity-time { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    /* ─── CHART CONTAINER ────────────────────────── */
+    .chart-wrap { padding: 20px; height: 220px; }
+
+    /* ─── QUICK STATS ────────────────────────────── */
+    .quick-stat {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .quick-stat:last-child { border-bottom: none; }
+    .quick-stat-label { font-size: 13px; color: var(--muted); }
+    .quick-stat-value { font-size: 14px; font-weight: 700; }
+
+    /* ─── TASKS ─────────────────────────────────── */
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .task-item:last-child { border-bottom: none; }
+    .task-check {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .task-check:hover { border-color: var(--accent); }
+    .task-check.done { border-color: var(--green); background: var(--green); }
+    .task-text { font-size: 13px; }
+    .task-priority {
+      margin-left: auto;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+    .task-priority.high { background: rgba(239,68,68,.15); color: #f87171; }
+    .task-priority.med  { background: rgba(232,139,77,.15); color: var(--accent); }
+    .task-priority.low  { background: rgba(34,197,94,.12); color: #4ade80; }
+
+    /* ─── SCROLLBAR ─────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #444; }
+
+    /* ─── RESPONSIVE ────────────────────────────── */
+    @media (max-width: 1100px) {
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .grid-2, .grid-3-1 { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 700px) {
+      .sidebar { display: none; }
+      .kpi-grid { grid-template-columns: 1fr 1fr; }
+      .page { padding: 20px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══ LOGIN ═══════════════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">POTENTIE<span>EL</span></div>
+    <div class="login-subtitle">Espace Administration</div>
+
+    <!-- Sign In form -->
+    <div id="signin-form">
+      <h2>Bon retour 👋</h2>
+      <p>Connectez-vous à votre espace CRM</p>
+      <div class="form-group">
+        <label>Adresse email</label>
+        <input type="email" id="signin-email" placeholder="votre@email.com" autocomplete="email" />
+      </div>
+      <div class="form-group">
+        <label>Mot de passe</label>
+        <input type="password" id="signin-password" placeholder="••••••••" autocomplete="current-password" />
+      </div>
+      <button class="btn-primary" id="signin-btn" onclick="signIn()">Se connecter</button>
+      <div id="login-error"></div>
+      <div class="login-toggle">
+        Première connexion ? <a onclick="toggleForm()">Créer un compte</a>
+      </div>
+    </div>
+
+    <!-- Sign Up form -->
+    <div id="signup-form" style="display:none">
+      <h2>Créer un compte</h2>
+      <p>Réservé à l'équipe Potentieel</p>
+      <div class="form-group">
+        <label>Adresse email</label>
+        <input type="email" id="signup-email" placeholder="votre@email.com" />
+      </div>
+      <div class="form-group">
+        <label>Mot de passe</label>
+        <input type="password" id="signup-password" placeholder="Min. 8 caractères" />
+      </div>
+      <button class="btn-primary" id="signup-btn" onclick="signUp()">Créer le compte</button>
+      <div id="login-error"></div>
+      <div class="login-toggle">
+        Déjà un compte ? <a onclick="toggleForm()">Se connecter</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ APP ══════════════════════════════════════════════════ -->
+<div id="app">
+  <div class="app-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">POTENTIE<span>EL</span></div>
+
+      <div class="sidebar-section">Principal</div>
+      <a class="nav-item active" data-page="dashboard" onclick="navigate(this)">
+        <span>📊</span> Dashboard
+      </a>
+      <a class="nav-item" data-page="pipeline" onclick="navigate(this)">
+        <span>🔀</span> Pipeline
+        <span class="badge">5</span>
+      </a>
+      <a class="nav-item" data-page="clients" onclick="navigate(this)">
+        <span>👥</span> Clients
+      </a>
+
+      <div class="sidebar-section">Gestion</div>
+      <a class="nav-item" data-page="tasks" onclick="navigate(this)">
+        <span>✅</span> Tâches
+        <span class="badge">3</span>
+      </a>
+      <a class="nav-item" data-page="agenda" onclick="navigate(this)">
+        <span>📅</span> Agenda
+      </a>
+      <a class="nav-item" data-page="facturation" onclick="navigate(this)">
+        <span>💶</span> Facturation
+      </a>
+
+      <div class="sidebar-section">Paramètres</div>
+      <a class="nav-item" data-page="settings" onclick="navigate(this)">
+        <span>⚙️</span> Paramètres
+      </a>
+
+      <div class="sidebar-bottom">
+        <div class="user-info">
+          <div class="user-avatar" id="user-avatar">E</div>
+          <div>
+            <div style="font-size:13px;font-weight:600" id="user-name">Utilisateur</div>
+            <div class="user-email" id="user-email-display">—</div>
+          </div>
+        </div>
+        <button class="btn-logout" onclick="signOut()">⬅ Déconnexion</button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+      <!-- ── DASHBOARD ── -->
+      <div id="page-dashboard" class="page active">
+        <div class="main-header">
+          <div>
+            <h1>Dashboard</h1>
+            <div class="date" id="today-date"></div>
+          </div>
+        </div>
+
+        <div style="height:24px"></div>
+
+        <!-- KPIs -->
+        <div class="kpi-grid">
+          <div class="kpi-card accent-card">
+            <div class="kpi-label">CA du mois</div>
+            <div class="kpi-value">2 970€</div>
+            <div class="kpi-delta up">↑ 3 nouveaux clients ce mois</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Clients actifs</div>
+            <div class="kpi-value">3</div>
+            <div class="kpi-delta up">↑ +2 vs mois dernier</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Leads entrants</div>
+            <div class="kpi-value">8</div>
+            <div class="kpi-delta" style="color:var(--muted)">→ Ce mois</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Taux de conversion</div>
+            <div class="kpi-value">37%</div>
+            <div class="kpi-delta down">↓ -5% vs objectif</div>
+          </div>
+        </div>
+
+        <!-- Chart + Quick stats -->
+        <div class="grid-3-1">
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Évolution CA — 6 derniers mois</h3>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="ca-chart"></canvas>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><h3>Répartition pipeline</h3></div>
+            <div class="quick-stat">
+              <span class="quick-stat-label">🔵 Leads</span>
+              <span class="quick-stat-value">3</span>
+            </div>
+            <div class="quick-stat">
+              <span class="quick-stat-label">🟠 Prospects</span>
+              <span class="quick-stat-value">2</span>
+            </div>
+            <div class="quick-stat">
+              <span class="quick-stat-label">🟢 Clients signés</span>
+              <span class="quick-stat-value">3</span>
+            </div>
+            <div class="quick-stat">
+              <span class="quick-stat-label">🔴 Perdus</span>
+              <span class="quick-stat-value">1</span>
+            </div>
+            <div class="quick-stat" style="border-top:1px solid var(--border);margin-top:4px">
+              <span class="quick-stat-label" style="font-weight:600;color:var(--text)">Valeur totale pipeline</span>
+              <span class="quick-stat-value" style="color:var(--accent)">4 920€</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Derniers clients + Tâches -->
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Derniers clients</h3>
+              <span class="see-all" onclick="navigate(document.querySelector('[data-page=clients]'))">Voir tous →</span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Client</th>
+                  <th>Service</th>
+                  <th>Statut</th>
+                  <th>Montant</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Plombier Express</strong></td>
+                  <td style="color:var(--muted)">Site vitrine</td>
+                  <td><span class="status-badge client">● Client</span></td>
+                  <td style="color:var(--accent);font-weight:700">990€</td>
+                </tr>
+                <tr>
+                  <td><strong>Auto-école Martin</strong></td>
+                  <td style="color:var(--muted)">Site vitrine</td>
+                  <td><span class="status-badge client">● Client</span></td>
+                  <td style="color:var(--accent);font-weight:700">990€</td>
+                </tr>
+                <tr>
+                  <td><strong>Chez Chakir VTC</strong></td>
+                  <td style="color:var(--muted)">Devis en cours</td>
+                  <td><span class="status-badge prospect">● Prospect</span></td>
+                  <td style="color:var(--muted)">990€</td>
+                </tr>
+                <tr>
+                  <td><strong>Coiffure Délice</strong></td>
+                  <td style="color:var(--muted)">Site vitrine</td>
+                  <td><span class="status-badge lead">● Lead</span></td>
+                  <td style="color:var(--muted)">—</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h3>À faire aujourd'hui</h3>
+              <span class="see-all" onclick="navigate(document.querySelector('[data-page=tasks]'))">Voir toutes →</span>
+            </div>
+            <div class="task-item">
+              <div class="task-check" onclick="this.classList.toggle('done')"></div>
+              <div class="task-text">Relancer Chakir pour signature devis</div>
+              <div class="task-priority high">Urgent</div>
+            </div>
+            <div class="task-item">
+              <div class="task-check" onclick="this.classList.toggle('done')"></div>
+              <div class="task-text">Envoyer maquette Coiffure Délice</div>
+              <div class="task-priority med">Moyen</div>
+            </div>
+            <div class="task-item">
+              <div class="task-check" onclick="this.classList.toggle('done')"></div>
+              <div class="task-text">Répondre au message FB — plombier Lyon</div>
+              <div class="task-priority med">Moyen</div>
+            </div>
+            <div class="task-item">
+              <div class="task-check" onclick="this.classList.toggle('done')"></div>
+              <div class="task-text">Mettre à jour le site Auto-école Martin</div>
+              <div class="task-priority low">Faible</div>
+            </div>
+            <div class="task-item">
+              <div class="task-check" onclick="this.classList.toggle('done')"></div>
+              <div class="task-text">Préparer facture mensuelle Plombier Express</div>
+              <div class="task-priority low">Faible</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activité récente -->
+        <div class="panel" style="margin-bottom:32px">
+          <div class="panel-header"><h3>Activité récente</h3></div>
+          <div class="activity-list">
+            <div class="activity-item">
+              <div class="activity-icon" style="background:rgba(34,197,94,.15)">✅</div>
+              <div>
+                <div class="activity-text"><strong>Plombier Express</strong> — Contrat signé · Site vitrine 990€</div>
+                <div class="activity-time">Aujourd'hui, 10:32</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon" style="background:rgba(232,139,77,.15)">📄</div>
+              <div>
+                <div class="activity-text">Devis envoyé à <strong>Chakir VTC</strong> — 990€</div>
+                <div class="activity-time">Hier, 15:14</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon" style="background:rgba(59,130,246,.15)">📩</div>
+              <div>
+                <div class="activity-text">Nouveau lead entrant — <strong>Coiffure Délice</strong> via Facebook Ads</div>
+                <div class="activity-time">Hier, 09:45</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon" style="background:rgba(34,197,94,.15)">💶</div>
+              <div>
+                <div class="activity-text">Paiement reçu — <strong>Auto-école Martin</strong> · 330€ (1ère échéance)</div>
+                <div class="activity-time">Il y a 2 jours</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PIPELINE ── -->
+      <div id="page-pipeline" class="page">
+        <div class="main-header"><h1>Pipeline commercial</h1></div>
+        <div style="height:24px"></div>
+        <div class="panel" style="margin-bottom:28px">
+          <div class="panel-header"><h3>Kanban clients</h3></div>
+          <div class="pipeline">
+            <div class="pipeline-col">
+              <div class="pipeline-col-header">
+                <span class="dot" style="background:#3b82f6"></span> Leads (3)
+              </div>
+              <div class="pipeline-card">
+                <div class="client">Coiffure Délice</div>
+                <div class="service">Site vitrine</div>
+                <div class="amount">~990€</div>
+                <div class="date">Via Facebook Ads · Hier</div>
+              </div>
+              <div class="pipeline-card">
+                <div class="client">Boulangerie Luce</div>
+                <div class="service">Site vitrine</div>
+                <div class="amount">~990€</div>
+                <div class="date">Via Google Ads · il y a 3j</div>
+              </div>
+              <div class="pipeline-card">
+                <div class="client">Plombier Lyon Sud</div>
+                <div class="service">À qualifier</div>
+                <div class="amount">—</div>
+                <div class="date">Message FB · il y a 4j</div>
+              </div>
+            </div>
+            <div class="pipeline-col">
+              <div class="pipeline-col-header">
+                <span class="dot" style="background:#E88B4D"></span> Prospects (2)
+              </div>
+              <div class="pipeline-card">
+                <div class="client">Chez Chakir VTC</div>
+                <div class="service">Site vitrine</div>
+                <div class="amount">990€</div>
+                <div class="date">Devis envoyé · Hier</div>
+              </div>
+              <div class="pipeline-card">
+                <div class="client">Électricien Dupont</div>
+                <div class="service">Site + Google Ads</div>
+                <div class="amount">~1 980€</div>
+                <div class="date">RDV prévu · Demain</div>
+              </div>
+            </div>
+            <div class="pipeline-col">
+              <div class="pipeline-col-header">
+                <span class="dot" style="background:#22c55e"></span> Signés (3)
+              </div>
+              <div class="pipeline-card">
+                <div class="client">Plombier Express</div>
+                <div class="service">Site vitrine</div>
+                <div class="amount">990€</div>
+                <div class="date">Signé aujourd'hui</div>
+              </div>
+              <div class="pipeline-card">
+                <div class="client">Auto-école Martin</div>
+                <div class="service">Site vitrine</div>
+                <div class="amount">990€</div>
+                <div class="date">Signé il y a 5j</div>
+              </div>
+              <div class="pipeline-card">
+                <div class="client">Kebab Le Sultan</div>
+                <div class="service">Site vitrine</div>
+                <div class="amount">990€</div>
+                <div class="date">Signé il y a 2sem</div>
+              </div>
+            </div>
+            <div class="pipeline-col">
+              <div class="pipeline-col-header">
+                <span class="dot" style="background:#ef4444"></span> Perdus (1)
+              </div>
+              <div class="pipeline-card" style="opacity:.6">
+                <div class="client">Garage Renov'</div>
+                <div class="service">Site vitrine</div>
+                <div class="amount">—</div>
+                <div class="date">Trop cher · il y a 1sem</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CLIENTS ── -->
+      <div id="page-clients" class="page">
+        <div class="main-header"><h1>Clients &amp; Contacts</h1></div>
+        <div style="height:24px"></div>
+        <div class="panel">
+          <div class="panel-header">
+            <h3>Tous les contacts (9)</h3>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Nom / Entreprise</th>
+                <th>Secteur</th>
+                <th>Service</th>
+                <th>Statut</th>
+                <th>Valeur</th>
+                <th>Contact</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Plombier Express</strong></td><td style="color:var(--muted)">Artisan</td><td style="color:var(--muted)">Site vitrine</td><td><span class="status-badge client">● Client</span></td><td style="color:var(--accent);font-weight:700">990€</td><td style="color:var(--muted)">06 XX XX XX XX</td></tr>
+              <tr><td><strong>Auto-école Martin</strong></td><td style="color:var(--muted)">Auto-école</td><td style="color:var(--muted)">Site vitrine</td><td><span class="status-badge client">● Client</span></td><td style="color:var(--accent);font-weight:700">990€</td><td style="color:var(--muted)">06 XX XX XX XX</td></tr>
+              <tr><td><strong>Kebab Le Sultan</strong></td><td style="color:var(--muted)">Restauration</td><td style="color:var(--muted)">Site vitrine</td><td><span class="status-badge client">● Client</span></td><td style="color:var(--accent);font-weight:700">990€</td><td style="color:var(--muted)">06 XX XX XX XX</td></tr>
+              <tr><td><strong>Chez Chakir VTC</strong></td><td style="color:var(--muted)">Transport</td><td style="color:var(--muted)">Site vitrine</td><td><span class="status-badge prospect">● Prospect</span></td><td style="color:var(--muted)">990€</td><td style="color:var(--muted)">06 XX XX XX XX</td></tr>
+              <tr><td><strong>Électricien Dupont</strong></td><td style="color:var(--muted)">Artisan</td><td style="color:var(--muted)">Site + Ads</td><td><span class="status-badge prospect">● Prospect</span></td><td style="color:var(--muted)">~1 980€</td><td style="color:var(--muted)">06 XX XX XX XX</td></tr>
+              <tr><td><strong>Coiffure Délice</strong></td><td style="color:var(--muted)">Beauté</td><td style="color:var(--muted)">Site vitrine</td><td><span class="status-badge lead">● Lead</span></td><td style="color:var(--muted)">—</td><td style="color:var(--muted)">06 XX XX XX XX</td></tr>
+              <tr><td><strong>Boulangerie Luce</strong></td><td style="color:var(--muted)">Alimentation</td><td style="color:var(--muted)">Site vitrine</td><td><span class="status-badge lead">● Lead</span></td><td style="color:var(--muted)">—</td><td style="color:var(--muted)">06 XX XX XX XX</td></tr>
+              <tr><td><strong>Plombier Lyon Sud</strong></td><td style="color:var(--muted)">Artisan</td><td style="color:var(--muted)">À qualifier</td><td><span class="status-badge lead">● Lead</span></td><td style="color:var(--muted)">—</td><td style="color:var(--muted)">—</td></tr>
+              <tr><td><strong>Garage Renov'</strong></td><td style="color:var(--muted)">Auto</td><td style="color:var(--muted)">Site vitrine</td><td><span class="status-badge perdu">● Perdu</span></td><td style="color:var(--muted)">—</td><td style="color:var(--muted)">06 XX XX XX XX</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── TASKS ── -->
+      <div id="page-tasks" class="page">
+        <div class="main-header"><h1>Tâches</h1></div>
+        <div style="height:24px"></div>
+        <div class="panel">
+          <div class="panel-header"><h3>En cours (5)</h3></div>
+          <div class="task-item"><div class="task-check" onclick="this.classList.toggle('done')"></div><div class="task-text">Relancer Chakir pour signature devis</div><div class="task-priority high">Urgent</div></div>
+          <div class="task-item"><div class="task-check" onclick="this.classList.toggle('done')"></div><div class="task-text">Envoyer maquette Coiffure Délice</div><div class="task-priority med">Moyen</div></div>
+          <div class="task-item"><div class="task-check" onclick="this.classList.toggle('done')"></div><div class="task-text">Répondre message FB — plombier Lyon</div><div class="task-priority med">Moyen</div></div>
+          <div class="task-item"><div class="task-check" onclick="this.classList.toggle('done')"></div><div class="task-text">Mettre à jour site Auto-école Martin</div><div class="task-priority low">Faible</div></div>
+          <div class="task-item"><div class="task-check" onclick="this.classList.toggle('done')"></div><div class="task-text">Préparer facture mensuelle Plombier Express</div><div class="task-priority low">Faible</div></div>
+        </div>
+      </div>
+
+      <!-- ── AGENDA ── -->
+      <div id="page-agenda" class="page">
+        <div class="main-header"><h1>Agenda</h1></div>
+        <div style="height:24px"></div>
+        <div class="panel">
+          <div class="panel-header"><h3>Prochains événements</h3></div>
+          <div class="activity-list">
+            <div class="activity-item"><div class="activity-icon" style="background:rgba(232,139,77,.15)">📞</div><div><div class="activity-text"><strong>RDV découverte — Électricien Dupont</strong></div><div class="activity-time">Demain, 14h00</div></div></div>
+            <div class="activity-item"><div class="activity-icon" style="background:rgba(34,197,94,.15)">🚀</div><div><div class="activity-text"><strong>Mise en ligne site — Auto-école Martin</strong></div><div class="activity-time">Dans 3 jours</div></div></div>
+            <div class="activity-item"><div class="activity-icon" style="background:rgba(59,130,246,.15)">📩</div><div><div class="activity-text"><strong>Relance email — Chakir VTC</strong></div><div class="activity-time">Dans 3 jours</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── FACTURATION ── -->
+      <div id="page-facturation" class="page">
+        <div class="main-header"><h1>Facturation</h1></div>
+        <div style="height:24px"></div>
+        <div class="panel">
+          <div class="panel-header"><h3>Factures récentes</h3></div>
+          <table>
+            <thead><tr><th>#</th><th>Client</th><th>Montant</th><th>Statut</th><th>Date</th></tr></thead>
+            <tbody>
+              <tr><td style="color:var(--muted)">#003</td><td><strong>Plombier Express</strong></td><td style="color:var(--accent);font-weight:700">990€</td><td><span class="status-badge lead">En attente</span></td><td style="color:var(--muted)">Aujourd'hui</td></tr>
+              <tr><td style="color:var(--muted)">#002</td><td><strong>Auto-école Martin</strong></td><td style="color:var(--accent);font-weight:700">330€</td><td><span class="status-badge client">Payée</span></td><td style="color:var(--muted)">Il y a 2j</td></tr>
+              <tr><td style="color:var(--muted)">#001</td><td><strong>Kebab Le Sultan</strong></td><td style="color:var(--accent);font-weight:700">990€</td><td><span class="status-badge client">Payée</span></td><td style="color:var(--muted)">Il y a 2sem</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── SETTINGS ── -->
+      <div id="page-settings" class="page">
+        <div class="main-header"><h1>Paramètres</h1></div>
+        <div style="height:24px"></div>
+        <div class="panel">
+          <div class="panel-header"><h3>Compte</h3></div>
+          <div class="quick-stat"><span class="quick-stat-label">Email connecté</span><span class="quick-stat-value" id="settings-email">—</span></div>
+          <div class="quick-stat"><span class="quick-stat-label">Rôle</span><span class="quick-stat-value">Admin</span></div>
+          <div class="quick-stat"><span class="quick-stat-label">Accès CRM</span><span class="quick-stat-value" style="color:var(--green)">✓ Autorisé</span></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script>
+  // ── Supabase init ──────────────────────────────────────────
+  const SUPABASE_URL  = 'https://alpzagoprkpzirgtrdup.supabase.co';
+  const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFscHphZ29wcmtwemlyZ3RyZHVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3OTg2MDEsImV4cCI6MjA5MjM3NDYwMX0.R7R6esDFce1W4k_wK-aBtAG20oUtK2SmSNCVKENS91g';
+  const ALLOWED_EMAILS = ['emrick.perilliat2006@gmail.com', 'eloisecld73@gmail.com'];
+
+  const { createClient } = supabase;
+  const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // ── Auth helpers ───────────────────────────────────────────
+  function showError(msg) {
+    const el = document.getElementById('login-error');
+    el.style.display = 'block';
+    el.textContent = msg;
+  }
+  function hideError() {
+    const el = document.getElementById('login-error');
+    el.style.display = 'none';
+  }
+
+  async function signIn() {
+    hideError();
+    const email = document.getElementById('signin-email').value.trim();
+    const pass  = document.getElementById('signin-password').value;
+    if (!email || !pass) { showError('Veuillez remplir tous les champs.'); return; }
+    if (!ALLOWED_EMAILS.includes(email)) { showError('Accès non autorisé pour cet email.'); return; }
+    const btn = document.getElementById('signin-btn');
+    btn.disabled = true; btn.textContent = 'Connexion…';
+    const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+    btn.disabled = false; btn.textContent = 'Se connecter';
+    if (error) { showError('Email ou mot de passe incorrect.'); return; }
+    loadApp();
+  }
+
+  async function signUp() {
+    hideError();
+    const email = document.getElementById('signup-email').value.trim();
+    const pass  = document.getElementById('signup-password').value;
+    if (!email || !pass) { showError('Veuillez remplir tous les champs.'); return; }
+    if (!ALLOWED_EMAILS.includes(email)) { showError('Cet email n\'est pas autorisé.'); return; }
+    if (pass.length < 8) { showError('Mot de passe trop court (min. 8 caractères).'); return; }
+    const btn = document.getElementById('signup-btn');
+    btn.disabled = true; btn.textContent = 'Création…';
+    const { error } = await sb.auth.signUp({ email, password: pass });
+    btn.disabled = false; btn.textContent = 'Créer le compte';
+    if (error) { showError(error.message); return; }
+    showError('✅ Compte créé ! Vérifiez votre email puis connectez-vous.');
+  }
+
+  async function signOut() {
+    await sb.auth.signOut();
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+  }
+
+  function toggleForm() {
+    const si = document.getElementById('signin-form');
+    const su = document.getElementById('signup-form');
+    si.style.display = si.style.display === 'none' ? 'block' : 'none';
+    su.style.display = su.style.display === 'none' ? 'block' : 'none';
+    hideError();
+  }
+
+  // ── Load app ───────────────────────────────────────────────
+  function loadApp(email) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    const e = email || '';
+    const initials = e ? e[0].toUpperCase() : 'E';
+    document.getElementById('user-avatar').textContent = initials;
+    document.getElementById('user-email-display').textContent = e;
+    document.getElementById('settings-email').textContent = e;
+    const name = e === 'emrick.perilliat2006@gmail.com' ? 'Emrick' : e === 'eloisecld73@gmail.com' ? 'Éloïse' : 'Admin';
+    document.getElementById('user-name').textContent = name;
+    setDate();
+    initChart();
+  }
+
+  // ── Navigation ─────────────────────────────────────────────
+  function navigate(el) {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
+    const page = el.dataset.page;
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+  }
+
+  // ── Date ───────────────────────────────────────────────────
+  function setDate() {
+    const d = new Date();
+    const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('today-date').textContent =
+      d.toLocaleDateString('fr-FR', opts).replace(/^\w/, c => c.toUpperCase());
+  }
+
+  // ── Chart ──────────────────────────────────────────────────
+  function initChart() {
+    const ctx = document.getElementById('ca-chart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
+        datasets: [{
+          label: 'CA (€)',
+          data: [0, 0, 990, 990, 1980, 2970],
+          backgroundColor: 'rgba(232,139,77,.8)',
+          borderRadius: 6,
+          borderSkipped: false,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: 'rgba(255,255,255,.04)' }, ticks: { color: '#888' } },
+          y: { grid: { color: 'rgba(255,255,255,.04)' }, ticks: { color: '#888', callback: v => v + '€' } }
+        }
+      }
+    });
+  }
+
+  // ── Session check ──────────────────────────────────────────
+  sb.auth.onAuthStateChange((event, session) => {
+    if (session?.user) {
+      const email = session.user.email;
+      if (ALLOWED_EMAILS.includes(email)) {
+        loadApp(email);
+      } else {
+        sb.auth.signOut();
+      }
+    }
+  });
+
+  // Enter key on login
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const si = document.getElementById('signin-form');
+      if (si.style.display !== 'none') signIn();
+    }
+  });
+</script>
+
+</body>
+</html>
