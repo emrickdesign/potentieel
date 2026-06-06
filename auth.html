@@ -3,17 +3,57 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Espace Client — Potentieel</title>
+  <title>Connexion — Potentieel</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { background: var(--bg); margin: 0; }
+    .auth-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .auth-card {
+      background: var(--surface, #111116);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 20px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+    }
+    .auth-logo { text-align: center; margin-bottom: 36px; }
+    .auth-logo a { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 800; font-size: 17px; letter-spacing: 1px; color: var(--text, #fff); }
+    .auth-card h2 { font-size: 22px; font-weight: 700; margin: 0 0 6px; color: var(--text, #fff); }
+    .auth-sub { color: var(--muted, #888); font-size: 13px; margin: 0 0 28px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 500; color: var(--muted, #888); margin-bottom: 6px; }
+    .form-group input {
+      width: 100%; box-sizing: border-box;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px; padding: 12px 16px;
+      color: var(--text, #fff); font-size: 14px; outline: none;
+      transition: border-color .2s;
+    }
+    .form-group input:focus { border-color: var(--orange, #f4926a); }
+    .btn-login {
+      width: 100%; padding: 13px; border-radius: 10px;
+      background: var(--orange, #f4926a); color: #fff;
+      border: none; font-size: 15px; font-weight: 600;
+      cursor: pointer; margin-top: 8px; transition: opacity .2s;
+    }
+    .btn-login:hover { opacity: .88; }
+    .btn-login:disabled { opacity: .5; cursor: not-allowed; }
+    .auth-err { color: #e05a5a; font-size: 12px; margin-top: 10px; display: none; }
+    .auth-footer { margin-top: 24px; text-align: center; font-size: 13px; color: var(--muted, #888); }
+    .auth-footer a { color: var(--orange, #f4926a); text-decoration: none; }
+  </style>
 </head>
-<body style="background:var(--bg);">
+<body>
 
 <div class="auth-page">
   <div class="auth-card">
     <div class="auth-logo">
-      <a href="index.html" class="navbar-logo">
-        <span class="arrow-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#f4926a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
+      <a href="index.html">
+        <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:var(--orange,#f4926a);border-radius:6px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
             <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
           </svg>
         </span>
@@ -21,36 +61,71 @@
       </a>
     </div>
 
-    <h2>Espace client</h2>
-    <p class="auth-sub">Connectez-vous pour accéder à votre tableau de bord.</p>
+    <h2>Se connecter</h2>
+    <p class="auth-sub">Accédez à votre espace personnel.</p>
 
     <form id="loginForm" onsubmit="handleLogin(event)">
       <div class="form-group">
         <label for="loginEmail">Adresse email</label>
-        <input type="email" id="loginEmail" placeholder="vous@exemple.fr" required>
+        <input type="email" id="loginEmail" placeholder="vous@exemple.fr" required autocomplete="email">
       </div>
       <div class="form-group">
         <label for="loginPwd">Mot de passe</label>
-        <input type="password" id="loginPwd" placeholder="••••••••" required>
+        <input type="password" id="loginPwd" placeholder="••••••••" required autocomplete="current-password">
       </div>
-      <div style="display:flex;justify-content:flex-end;margin-bottom:20px;">
-        <a href="#" style="font-size:13px;color:var(--orange);">Mot de passe oublié ?</a>
-      </div>
-      <button type="submit" class="btn-primary" style="width:100%;justify-content:center;font-size:15px;">
-        Se connecter &rarr;
-      </button>
+      <button type="submit" class="btn-login" id="loginBtn">Se connecter →</button>
+      <div class="auth-err" id="loginErr"></div>
     </form>
 
-    <p class="auth-footer-text" style="margin-top:24px;">
+    <p class="auth-footer">
       Pas encore client ? <a href="contact.html">Prendre rendez-vous</a>
     </p>
   </div>
 </div>
 
 <script>
-function handleLogin(e){
+const SUPABASE_URL = 'https://alpzagoprkpzirgtrdup.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFscHphZ29wcmtwemlyZ3RyZHVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3OTg2MDEsImV4cCI6MjA5MjM3NDYwMX0.R7R6esDFce1W4k_wK-aBtAG20oUtK2SmSNCVKENS91g';
+const ADMIN_EMAILS = ['emrick.perilliat2006@gmail.com', 'eloisecld73@gmail.com'];
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Si déjà connecté, rediriger directement
+sb.auth.getSession().then(({ data: { session } }) => {
+  if (session?.user) {
+    redirect(session.user.email);
+  }
+});
+
+function redirect(email) {
+  if (ADMIN_EMAILS.includes(email)) {
+    window.location.href = 'admin.html';
+  } else {
+    window.location.href = 'espace-client.html';
+  }
+}
+
+async function handleLogin(e) {
   e.preventDefault();
-  alert('Espace client en construction. Contactez-nous sur WhatsApp ou par email.');
+  const email = document.getElementById('loginEmail').value.trim();
+  const pwd = document.getElementById('loginPwd').value;
+  const btn = document.getElementById('loginBtn');
+  const err = document.getElementById('loginErr');
+
+  btn.disabled = true;
+  btn.textContent = 'Connexion…';
+  err.style.display = 'none';
+
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pwd });
+
+  if (error) {
+    err.textContent = 'Email ou mot de passe incorrect.';
+    err.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Se connecter →';
+    return;
+  }
+
+  redirect(data.user.email);
 }
 </script>
 </body>
