@@ -222,17 +222,66 @@
     .pri-med  { background: rgba(244,146,106,.13); color: var(--accent); }
     .pri-low  { background: rgba(34,197,94,.1); color: #4ade80; }
 
-    /* Pipeline card */
-    .kanban { display: flex; gap: 12px; padding: 16px; overflow-x: auto; }
-    .kanban-col { flex-shrink: 0; width: 210px; }
-    .kc-header { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-    .kc-dot { width: 7px; height: 7px; border-radius: 50%; }
-    .kc-card { background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 12px; margin-bottom: 8px; cursor: pointer; transition: border-color .13s; }
-    .kc-card:hover { border-color: var(--accent); }
-    .kc-name { font-size: 13px; font-weight: 600; }
-    .kc-service { font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .kc-amount { font-size: 12px; font-weight: 700; color: var(--accent); margin-top: 8px; }
-    .kc-date { font-size: 10px; color: var(--muted2); }
+    /* ── Pipeline ── */
+    .pl-header-row { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:18px; gap:16px; flex-wrap:wrap; }
+    .pl-meta { font-size:10px; color:var(--orange); font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:4px; display:flex; align-items:center; gap:6px; }
+    .pl-meta::before { content:''; display:inline-block; width:20px; height:2px; background:var(--orange); }
+    .pl-title { font-size:28px; font-weight:800; margin:0 0 4px; }
+    .pl-desc  { font-size:13px; color:var(--muted); margin:0; }
+    .btn-prospect { background:var(--orange); color:#fff; border:none; border-radius:10px; padding:11px 18px; font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap; display:flex; align-items:center; gap:6px; transition:opacity .15s; }
+    .btn-prospect:hover { opacity:.85; }
+
+    .pl-kpis { display:flex; gap:0; margin-bottom:12px; border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+    .pl-kpi  { flex:1; padding:14px 16px; border-right:1px solid var(--border); }
+    .pl-kpi:last-child { border-right:none; }
+    .pl-kpi-label { font-size:9px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
+    .pl-kpi-val   { font-size:22px; font-weight:800; }
+    .pl-kpi-val.orange { color:var(--orange); }
+    .mrr-bar { font-size:12px; color:var(--muted); margin-bottom:20px; padding:0 2px; }
+    .mrr-bar strong { color:var(--orange); }
+
+    .pl-section { margin-bottom:28px; }
+    .pl-section-head { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+    .pl-section-head strong { font-size:14px; font-weight:700; }
+    .pl-section-tag { font-size:10px; background:rgba(255,255,255,.07); border-radius:20px; padding:2px 8px; color:var(--muted); }
+    .pl-section-desc { font-size:12px; color:var(--muted); margin-bottom:12px; }
+
+    .kanban-board { display:flex; gap:10px; overflow-x:auto; padding-bottom:8px; }
+    .kanban-board::-webkit-scrollbar { height:4px; }
+    .kb-col { flex-shrink:0; width:220px; background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:12px; padding:10px; min-height:120px; }
+    .kb-col.drag-over { border-color:var(--orange); background:rgba(244,146,106,.06); }
+    .kb-col-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+    .kb-col-name { display:flex; align-items:center; gap:6px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color:var(--muted); }
+    .kb-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+    .kb-count { font-size:10px; font-weight:700; background:rgba(255,255,255,.08); border-radius:20px; padding:1px 7px; color:var(--muted); }
+    .kb-sub { font-size:9px; color:var(--muted2,#444); margin-bottom:8px; }
+
+    .kc { background:var(--surface); border:1px solid var(--border); border-radius:9px; padding:10px 12px; margin-bottom:7px; cursor:grab; transition:border-color .13s, transform .1s, opacity .15s; }
+    .kc:hover { border-color:rgba(244,146,106,.4); }
+    .kc.dragging { opacity:.4; transform:scale(.97); cursor:grabbing; }
+    .kc-row { display:flex; align-items:center; justify-content:space-between; }
+    .kc-name { font-size:12px; font-weight:600; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .kc-price { font-size:11px; color:var(--orange); font-weight:700; white-space:nowrap; margin-left:6px; }
+    .kc-maint { font-size:10px; color:var(--muted); }
+    .kc-actions { display:flex; gap:4px; margin-top:6px; justify-content:flex-end; }
+    .kc-del { background:none; border:none; color:var(--muted); cursor:pointer; font-size:13px; padding:0; opacity:.5; transition:opacity .15s; }
+    .kc-del:hover { opacity:1; color:#ef4444; }
+    .kc-check { background:none; border:none; color:var(--muted); cursor:pointer; font-size:14px; padding:0; opacity:.5; transition:opacity .15s, color .15s; }
+    .kc-check.done { opacity:1; color:#22c55e; }
+    .kb-empty { font-size:11px; color:var(--muted2,#3a3a3a); text-align:center; padding:16px 0; }
+
+    /* Modal ajout prospect */
+    .pl-modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:1000; display:flex; align-items:center; justify-content:center; }
+    .pl-modal { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:28px 32px; width:100%; max-width:400px; }
+    .pl-modal h3 { font-size:18px; font-weight:700; margin:0 0 20px; }
+    .pl-modal label { display:block; font-size:12px; color:var(--muted); margin-bottom:5px; }
+    .pl-modal input, .pl-modal select { width:100%; box-sizing:border-box; background:rgba(255,255,255,.05); border:1px solid var(--border); border-radius:8px; padding:10px 12px; color:#fff; font-size:13px; margin-bottom:14px; outline:none; }
+    .pl-modal input:focus, .pl-modal select:focus { border-color:var(--orange); }
+    .pl-modal select option { background:#1a1a22; }
+    .pl-modal-btns { display:flex; gap:10px; margin-top:6px; }
+    .pl-modal-btns button { flex:1; padding:11px; border-radius:8px; border:none; font-size:13px; font-weight:600; cursor:pointer; }
+    .pl-modal-btns .btn-confirm { background:var(--orange); color:#fff; }
+    .pl-modal-btns .btn-cancel  { background:rgba(255,255,255,.07); color:var(--muted); }
 
     /* Page system */
     .page { display: none; }
@@ -409,33 +458,78 @@
 
         <!-- ── PIPELINE ── -->
         <div id="page-pipeline" class="page">
-          <div style="margin-bottom:18px"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">BUSINESS</div><div style="font-size:22px;font-weight:800;margin-top:2px">Pipeline</div></div>
-          <div class="panel" style="margin-bottom:20px">
-            <div class="panel-head"><h3>Kanban commercial</h3></div>
-            <div class="kanban">
-              <div class="kanban-col">
-                <div class="kc-header"><span class="kc-dot" style="background:#60a5fa"></span> Leads (3)</div>
-                <div class="kc-card"><div class="kc-name">Coiffure Délice</div><div class="kc-service">Site vitrine</div><div class="kc-amount">~990€</div><div class="kc-date">Via Facebook · Hier</div></div>
-                <div class="kc-card"><div class="kc-name">Boulangerie Luce</div><div class="kc-service">Site vitrine</div><div class="kc-amount">~990€</div><div class="kc-date">Via Google Ads · il y a 3j</div></div>
-                <div class="kc-card"><div class="kc-name">Plombier Lyon Sud</div><div class="kc-service">À qualifier</div><div class="kc-amount">—</div><div class="kc-date">Message FB · il y a 4j</div></div>
-              </div>
-              <div class="kanban-col">
-                <div class="kc-header"><span class="kc-dot" style="background:#f4926a"></span> Qualifié (2)</div>
-                <div class="kc-card"><div class="kc-name">Chakir VTC</div><div class="kc-service">Site vitrine</div><div class="kc-amount">990€</div><div class="kc-date">Devis envoyé · Hier</div></div>
-                <div class="kc-card"><div class="kc-name">Électricien Dupont</div><div class="kc-service">Site + Google Ads</div><div class="kc-amount">~1 980€</div><div class="kc-date">RDV demain</div></div>
-              </div>
-              <div class="kanban-col">
-                <div class="kc-header"><span class="kc-dot" style="background:#22c55e"></span> Converti (3)</div>
-                <div class="kc-card"><div class="kc-name">Plombier Express</div><div class="kc-service">Site vitrine</div><div class="kc-amount">990€</div><div class="kc-date">Signé aujourd'hui</div></div>
-                <div class="kc-card"><div class="kc-name">Auto-école Martin</div><div class="kc-service">Site vitrine</div><div class="kc-amount">990€</div><div class="kc-date">Signé il y a 5j</div></div>
-                <div class="kc-card"><div class="kc-name">Kebab Le Sultan</div><div class="kc-service">Site vitrine</div><div class="kc-amount">990€</div><div class="kc-date">Signé il y a 2sem</div></div>
-              </div>
-              <div class="kanban-col">
-                <div class="kc-header"><span class="kc-dot" style="background:#ef4444"></span> Perdu (1)</div>
-                <div class="kc-card" style="opacity:.5"><div class="kc-name">Garage Renov'</div><div class="kc-service">Site vitrine</div><div class="kc-amount">—</div><div class="kc-date">Trop cher · il y a 1sem</div></div>
+
+          <!-- Header -->
+          <div class="pl-header-row">
+            <div>
+              <div class="pl-meta">CRM COMMERCIAL</div>
+              <h1 class="pl-title">Pipeline</h1>
+              <p class="pl-desc">Vue unifiée de tous vos canaux d'acquisition.</p>
+            </div>
+            <button class="btn-prospect" onclick="openModal()">+ Prospect manuel</button>
+          </div>
+
+          <!-- KPIs -->
+          <div class="pl-kpis" id="pl-kpis">
+            <div class="pl-kpi"><div class="pl-kpi-label">PROSPECTS ACTIFS</div><div class="pl-kpi-val" id="kpi-actifs">—</div></div>
+            <div class="pl-kpi"><div class="pl-kpi-label">QUALIFIÉS</div><div class="pl-kpi-val" id="kpi-qual">—</div></div>
+            <div class="pl-kpi"><div class="pl-kpi-label">RDV PRIS</div><div class="pl-kpi-val" id="kpi-rdv">—</div></div>
+            <div class="pl-kpi"><div class="pl-kpi-label">CLIENTS</div><div class="pl-kpi-val" id="kpi-clients">—</div></div>
+            <div class="pl-kpi"><div class="pl-kpi-label">PERDUS</div><div class="pl-kpi-val" id="kpi-perdus">—</div></div>
+            <div class="pl-kpi"><div class="pl-kpi-label">TAUX CONV.</div><div class="pl-kpi-val orange" id="kpi-taux">—</div></div>
+          </div>
+          <div class="mrr-bar">MRR potentiel pipeline ads/site : <strong id="kpi-mrr">—</strong></div>
+
+          <!-- Section Formulaire / Ads -->
+          <div class="pl-section">
+            <div class="pl-section-head">
+              <span>🌐</span>
+              <strong>Ads + Formulaire — entrant</strong>
+              <span class="pl-section-tag">Site &amp; Google Ads</span>
+            </div>
+            <div class="pl-section-desc">Tous les prospects qui viennent à vous : pubs (Meta/Google), formulaire du site. Glissez-déposez entre colonnes.</div>
+            <div class="kanban-board" id="kb-form">
+              <!-- Rendu par JS -->
+            </div>
+          </div>
+
+          <!-- Section WhatsApp / Manuel -->
+          <div class="pl-section">
+            <div class="pl-section-head">
+              <span>📱</span>
+              <strong>WhatsApp — manuel</strong>
+              <span class="pl-section-tag">Ajout manuel</span>
+            </div>
+            <div class="pl-section-desc">Prospects ajoutés manuellement. Suivez-les du premier contact à la signature.</div>
+            <div class="kanban-board" id="kb-wa">
+              <!-- Rendu par JS -->
+            </div>
+          </div>
+
+          <!-- Modal ajout prospect -->
+          <div class="pl-modal-overlay" id="pl-modal" style="display:none" onclick="closeModalOutside(event)">
+            <div class="pl-modal" onclick="event.stopPropagation()">
+              <h3>+ Nouveau prospect</h3>
+              <label>Nom / Entreprise</label>
+              <input type="text" id="m-name" placeholder="Ex: Jean — Plomberie du Nord" />
+              <label>Prix setup</label>
+              <input type="text" id="m-prix" placeholder="990€" />
+              <label>Maintenance / mois</label>
+              <input type="text" id="m-maint" placeholder="49€/m" />
+              <label>Tableau</label>
+              <select id="m-board">
+                <option value="form">Ads + Formulaire</option>
+                <option value="wa">WhatsApp / Manuel</option>
+              </select>
+              <label>Étape</label>
+              <select id="m-col"></select>
+              <div class="pl-modal-btns">
+                <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+                <button class="btn-confirm" onclick="addProspect()">Ajouter →</button>
               </div>
             </div>
           </div>
+
         </div>
 
         <!-- ── TÂCHES ── -->
@@ -528,6 +622,8 @@ function bootApp(email) {
   document.getElementById('sb-av').textContent = e?e[0].toUpperCase():'E';
   document.getElementById('sb-email').textContent = e;
   initCharts();
+  plLoad();
+  renderPipeline();
 }
 
 // Navigation
@@ -614,6 +710,190 @@ function initCharts() {
     }
   });
 }
+
+/* ════════════════════════ PIPELINE ════════════════════════ */
+const PL_KEY = 'pl_v2';
+const FORM_COLS = [
+  { id:'nouveau',   label:'NOUVEAU',   dot:'#60a5fa' },
+  { id:'qualifie',  label:'QUALIFIÉ',  dot:'#f4926a' },
+  { id:'contacte',  label:'CONTACTÉ',  dot:'#a78bfa' },
+  { id:'converti',  label:'CONVERTI',  dot:'#22c55e' },
+  { id:'perdu',     label:'PERDU',     dot:'#ef4444' }
+];
+const WA_COLS = [
+  { id:'wa-nouveau',    label:'NOUVEAU',        dot:'#60a5fa' },
+  { id:'wa-appel1',     label:'PREMIER APPEL',  dot:'#f4926a' },
+  { id:'wa-pres',       label:'PRÉSENTATION',   dot:'#a78bfa' },
+  { id:'wa-devis',      label:'DEVIS ENVOYÉ',   dot:'#facc15' },
+  { id:'wa-signe',      label:'DEVIS SIGNÉ',    dot:'#22c55e' }
+];
+
+const DEFAULT_DATA = [
+  {id:'p1', board:'form', col:'nouveau',  name:'1°22',               prix:'990€',  maint:'49€/m'},
+  {id:'p2', board:'form', col:'nouveau',  name:'Noé — Commerciaux',  prix:'990€',  maint:'49€/m'},
+  {id:'p3', board:'form', col:'nouveau',  name:'LORENZ-PROSPECT',    prix:'990€',  maint:'49€/m'},
+  {id:'p4', board:'form', col:'nouveau',  name:'David BOUKHOBZA',    prix:'1900€', maint:'49€/m'},
+  {id:'p5', board:'form', col:'qualifie', name:'Grigore — Midan Cons',prix:'990€', maint:'49€/m'},
+  {id:'p6', board:'form', col:'qualifie', name:'Jean Claude — La gran',prix:'990€',maint:'49€/m'},
+  {id:'p7', board:'form', col:'qualifie', name:'Nicolas — Tendance R',prix:'990€', maint:'49€/m'},
+  {id:'p8', board:'form', col:'qualifie', name:'Guy — Nkg services',  prix:'990€', maint:'49€/m'},
+  {id:'p9', board:'form', col:'qualifie', name:'Jean — Atlantique Cha',prix:'990€',maint:'49€/m'},
+  {id:'p10',board:'form', col:'contacte', name:'Claude — Channel',   prix:'990€',  maint:'49€/m'},
+  {id:'p11',board:'form', col:'contacte', name:'Chakir — En cours',  prix:'990€',  maint:'49€/m'},
+  {id:'p12',board:'form', col:'contacte', name:'Varrem Mackaya',     prix:'990€',  maint:'49€/m'},
+  {id:'p13',board:'form', col:'contacte', name:'David GUERIN',       prix:'990€',  maint:'49€/m'},
+  {id:'p14',board:'form', col:'converti', name:'Marc',               prix:'0€',    maint:'20€/m'},
+  {id:'p15',board:'form', col:'converti', name:'Tonio Renov',        prix:'0€',    maint:'20€/m'},
+  {id:'p16',board:'form', col:'converti', name:'Perilliat Raphael',  prix:'0€',    maint:'49€/m'},
+  {id:'p17',board:'form', col:'perdu',    name:'Nabil — Sàada',      prix:'990€',  maint:'49€/m'},
+  {id:'p18',board:'form', col:'perdu',    name:'Mostefa — MSN',      prix:'990€',  maint:'49€/m'},
+  {id:'p19',board:'form', col:'perdu',    name:'Encha — Lupus &',    prix:'990€',  maint:'49€/m'},
+  {id:'p20',board:'form', col:'perdu',    name:'Evelyne bondoux',    prix:'990€',  maint:'49€/m'},
+  {id:'p21',board:'form', col:'perdu',    name:'Jean — Ads barber',  prix:'990€',  maint:'49€/m'},
+  {id:'p22',board:'form', col:'perdu',    name:'Elvis Sanchez',      prix:'990€',  maint:'49€/m'},
+  {id:'p23',board:'form', col:'perdu',    name:'Nicolas Dubois',     prix:'930€',  maint:'49€/m'},
+  {id:'p24',board:'form', col:'perdu',    name:'Alchimii',           prix:'990€',  maint:'49€/m'}
+];
+
+let plData = [];
+function plLoad() {
+  try { plData = JSON.parse(localStorage.getItem(PL_KEY)) || DEFAULT_DATA; }
+  catch { plData = DEFAULT_DATA; }
+}
+function plSave() { localStorage.setItem(PL_KEY, JSON.stringify(plData)); }
+
+let dragId = null;
+
+function renderPipeline() {
+  renderBoard('kb-form', FORM_COLS, 'form');
+  renderBoard('kb-wa',   WA_COLS,   'wa');
+  updateKpis();
+}
+
+function renderBoard(containerId, cols, board) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = '';
+  cols.forEach(col => {
+    const cards = plData.filter(p => p.board === board && p.col === col.id);
+    const div = document.createElement('div');
+    div.className = 'kb-col';
+    div.dataset.col = col.id;
+    div.dataset.board = board;
+    div.innerHTML = `
+      <div class="kb-col-head">
+        <span class="kb-col-name"><span class="kb-dot" style="background:${col.dot}"></span>${col.label}</span>
+        <span class="kb-count">${cards.length}</span>
+      </div>
+      ${cards.length === 0 ? '<div class="kb-empty">Vide</div>' : ''}
+      ${cards.map(c => cardHTML(c)).join('')}
+    `;
+    div.addEventListener('dragover', e => { e.preventDefault(); div.classList.add('drag-over'); });
+    div.addEventListener('dragleave', () => div.classList.remove('drag-over'));
+    div.addEventListener('drop', e => {
+      e.preventDefault();
+      div.classList.remove('drag-over');
+      if (!dragId) return;
+      const p = plData.find(x => x.id === dragId);
+      if (p) { p.col = col.id; p.board = board; plSave(); renderPipeline(); }
+    });
+    container.appendChild(div);
+  });
+}
+
+function cardHTML(c) {
+  return `<div class="kc" id="kc-${c.id}" draggable="true"
+    ondragstart="onDragStart(event,'${c.id}')"
+    ondragend="onDragEnd(event)">
+    <div class="kc-row">
+      <div class="kc-name" title="${c.name}">${c.name}</div>
+      <div class="kc-price">${c.prix}</div>
+    </div>
+    <div class="kc-maint">${c.maint}</div>
+    <div class="kc-actions">
+      <button class="kc-del" onclick="delCard('${c.id}')" title="Supprimer">🗑</button>
+    </div>
+  </div>`;
+}
+
+function onDragStart(e, id) {
+  dragId = id;
+  e.dataTransfer.effectAllowed = 'move';
+  setTimeout(() => { const el = document.getElementById('kc-'+id); if(el) el.classList.add('dragging'); }, 0);
+}
+function onDragEnd(e) {
+  if (dragId) { const el = document.getElementById('kc-'+dragId); if(el) el.classList.remove('dragging'); }
+  dragId = null;
+}
+
+function delCard(id) {
+  if (!confirm('Supprimer ce prospect ?')) return;
+  plData = plData.filter(p => p.id !== id);
+  plSave(); renderPipeline();
+}
+
+function updateKpis() {
+  const form = plData.filter(p => p.board === 'form');
+  const wa   = plData.filter(p => p.board === 'wa');
+  const all  = plData;
+  const actifs  = all.filter(p => !['perdu','converti','wa-signe'].includes(p.col)).length;
+  const quals   = all.filter(p => ['qualifie','wa-pres','wa-devis'].includes(p.col)).length;
+  const rdv     = all.filter(p => ['contacte','wa-appel1'].includes(p.col)).length;
+  const clients = all.filter(p => ['converti','wa-signe'].includes(p.col)).length;
+  const perdus  = all.filter(p => p.col === 'perdu').length;
+  const total   = clients + perdus;
+  const taux    = total > 0 ? Math.round(clients/total*100)+'%' : '—';
+  const mrr     = all.filter(p => !['perdu'].includes(p.col))
+                     .reduce((s,p) => s + parseInt((p.maint||'0').replace(/[^0-9]/g,'')||0), 0);
+
+  document.getElementById('kpi-actifs').textContent  = actifs;
+  document.getElementById('kpi-qual').textContent    = quals;
+  document.getElementById('kpi-rdv').textContent     = rdv;
+  document.getElementById('kpi-clients').textContent = clients;
+  document.getElementById('kpi-perdus').textContent  = perdus;
+  document.getElementById('kpi-taux').textContent    = taux;
+  document.getElementById('kpi-mrr').textContent     = mrr+'€';
+}
+
+/* Modal */
+function openModal(boardDefault) {
+  plLoad();
+  document.getElementById('m-name').value  = '';
+  document.getElementById('m-prix').value  = '990€';
+  document.getElementById('m-maint').value = '49€/m';
+  if (boardDefault) document.getElementById('m-board').value = boardDefault;
+  updateModalCols();
+  document.getElementById('pl-modal').style.display = 'flex';
+  document.getElementById('m-name').focus();
+}
+function closeModal() { document.getElementById('pl-modal').style.display = 'none'; }
+function closeModalOutside(e) { if(e.target.id==='pl-modal') closeModal(); }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const bsel = document.getElementById('m-board');
+  if (bsel) bsel.addEventListener('change', updateModalCols);
+});
+
+function updateModalCols() {
+  const board = document.getElementById('m-board').value;
+  const cols  = board === 'wa' ? WA_COLS : FORM_COLS;
+  const sel   = document.getElementById('m-col');
+  sel.innerHTML = cols.map(c => `<option value="${c.id}">${c.label}</option>`).join('');
+}
+
+function addProspect() {
+  const name  = document.getElementById('m-name').value.trim();
+  if (!name) { alert('Renseignez un nom.'); return; }
+  const board = document.getElementById('m-board').value;
+  const col   = document.getElementById('m-col').value;
+  const prix  = document.getElementById('m-prix').value.trim() || '990€';
+  const maint = document.getElementById('m-maint').value.trim() || '49€/m';
+  const id    = 'p'+Date.now();
+  plData.push({ id, board, col, name, prix, maint });
+  plSave(); renderPipeline(); closeModal();
+}
+
+/* ═════════════════════════════════════════════════════════ */
 
 // Session — si pas connecté ou pas admin, retour auth.html
 sb.auth.getSession().then(({ data: { session } }) => {
