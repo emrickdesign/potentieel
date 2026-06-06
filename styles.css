@@ -392,13 +392,13 @@ body {
   right: 0;
   bottom: 0;
   height: 100%;
-  width: 55%;
+  width: 70%;
   object-fit: cover;
-  object-position: right center;
+  object-position: center center;
   z-index: 1;
-  opacity: 0.52;
-  mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.3) 20%, rgba(0,0,0,0.85) 45%, black 70%);
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.3) 20%, rgba(0,0,0,0.85) 45%, black 70%);
+  opacity: 0.45;
+  mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.15) 8%, rgba(0,0,0,0.7) 22%, black 42%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.15) 8%, rgba(0,0,0,0.7) 22%, black 42%);
   pointer-events: none;
 }
 
