@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://potentieel.fr/sitemap.xml

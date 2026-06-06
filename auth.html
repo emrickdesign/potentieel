@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Espace Client — Potentieel</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body style="background:var(--bg);">
+
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <a href="index.html" class="navbar-logo">
+        <span class="arrow-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#f4926a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
+            <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
+          </svg>
+        </span>
+        POTENTIEEL
+      </a>
+    </div>
+
+    <h2>Espace client</h2>
+    <p class="auth-sub">Connectez-vous pour accéder à votre tableau de bord.</p>
+
+    <form id="loginForm" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label for="loginEmail">Adresse email</label>
+        <input type="email" id="loginEmail" placeholder="vous@exemple.fr" required>
+      </div>
+      <div class="form-group">
+        <label for="loginPwd">Mot de passe</label>
+        <input type="password" id="loginPwd" placeholder="••••••••" required>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:20px;">
+        <a href="#" style="font-size:13px;color:var(--orange);">Mot de passe oublié ?</a>
+      </div>
+      <button type="submit" class="btn-primary" style="width:100%;justify-content:center;font-size:15px;">
+        Se connecter &rarr;
+      </button>
+    </form>
+
+    <p class="auth-footer-text" style="margin-top:24px;">
+      Pas encore client ? <a href="contact.html">Prendre rendez-vous</a>
+    </p>
+  </div>
+</div>
+
+<script>
+function handleLogin(e){
+  e.preventDefault();
+  alert('Espace client en construction. Contactez-nous sur WhatsApp ou par email.');
+}
+</script>
+</body>
+</html>
