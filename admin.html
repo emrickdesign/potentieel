@@ -287,6 +287,96 @@
     .page { display: none; }
     .page.active { display: block; }
 
+    /* ── Tâches ── */
+    .tc-header-row { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:20px; gap:12px; flex-wrap:wrap; }
+    .tc-title { font-size:28px; font-weight:800; margin:0 0 2px; }
+    .tc-sub   { font-size:13px; color:var(--muted); margin:0; }
+    .btn-newtask { background:var(--orange); color:#fff; border:none; border-radius:10px; padding:11px 18px; font-size:13px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px; transition:opacity .15s; white-space:nowrap; }
+    .btn-newtask:hover { opacity:.85; }
+
+    .tc-kpis { display:flex; gap:0; margin-bottom:12px; border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+    .tc-kpi  { flex:1; padding:12px 14px; border-right:1px solid var(--border); }
+    .tc-kpi:last-child { border-right:none; flex:1.4; }
+    .tc-kpi-label { font-size:9px; font-weight:700; letter-spacing:.7px; text-transform:uppercase; color:var(--muted); margin-bottom:4px; display:flex; align-items:center; gap:5px; }
+    .tc-kpi-val   { font-size:22px; font-weight:800; }
+    .tc-kpi-val.red { color:#ef4444; }
+    .tc-kpi-val.blue { color:#60a5fa; }
+    .tc-kpi-val.green { color:#22c55e; }
+    .tc-charge { font-size:13px; line-height:1.9; }
+    .tc-charge span { font-weight:700; color:var(--orange); }
+
+    .tc-deadline { border-left:3px solid var(--orange); background:rgba(244,146,106,.06); border-radius:8px; padding:12px 16px; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .tc-deadline-label { font-size:9px; font-weight:700; letter-spacing:.8px; color:var(--orange); text-transform:uppercase; margin-bottom:3px; display:flex; align-items:center; gap:5px; }
+    .tc-deadline-title { font-size:14px; font-weight:600; }
+    .tc-deadline-right { font-size:12px; color:var(--muted); white-space:nowrap; }
+
+    .tc-brief { background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:12px; padding:14px 16px; margin-bottom:16px; }
+    .tc-brief-head { display:flex; align-items:center; gap:8px; margin-bottom:10px; font-size:13px; font-weight:700; }
+    .tc-brief-sub { font-size:11px; color:var(--muted); font-weight:400; }
+    .tc-brief-row { display:flex; gap:10px; }
+    .tc-brief-input { flex:1; background:rgba(255,255,255,.05); border:1px solid var(--border); border-radius:8px; padding:10px 14px; color:#fff; font-size:13px; outline:none; resize:none; font-family:inherit; }
+    .tc-brief-input:focus { border-color:var(--orange); }
+    .btn-proposer { background:rgba(244,146,106,.15); color:var(--orange); border:1px solid rgba(244,146,106,.3); border-radius:8px; padding:10px 16px; font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap; transition:background .15s; }
+    .btn-proposer:hover { background:rgba(244,146,106,.25); }
+
+    .tc-filters { display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap; }
+    .tc-filter-sel { background:rgba(255,255,255,.05); border:1px solid var(--border); border-radius:8px; padding:8px 12px; color:#fff; font-size:12px; outline:none; cursor:pointer; }
+    .tc-filter-sel option { background:#1a1a22; }
+
+    .tc-kanban { display:flex; gap:14px; overflow-x:auto; padding-bottom:8px; align-items:flex-start; }
+    .tc-col { flex-shrink:0; width:320px; }
+    .tc-col-head { display:flex; align-items:center; gap:8px; margin-bottom:12px; padding:0 2px; }
+    .tc-col-dot  { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .tc-col-icon { font-size:14px; }
+    .tc-col-name { font-size:13px; font-weight:700; flex:1; }
+    .tc-col-cnt  { font-size:11px; font-weight:700; background:rgba(255,255,255,.08); border-radius:20px; padding:2px 8px; color:var(--muted); }
+    .tc-col-body { min-height:80px; }
+    .tc-col-body.drag-over .tc-empty { border-color:var(--orange); }
+
+    .tc-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:12px 14px; margin-bottom:8px; cursor:grab; transition:border-color .13s, transform .1s, opacity .15s; }
+    .tc-card:hover { border-color:rgba(244,146,106,.35); }
+    .tc-card.dragging { opacity:.4; transform:scale(.97); cursor:grabbing; }
+    .tc-card-title { font-size:13px; font-weight:600; margin-bottom:4px; line-height:1.4; }
+    .tc-card-desc  { font-size:11px; color:var(--muted); margin-bottom:8px; line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .tc-card-foot  { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+    .tc-pri { font-size:10px; font-weight:700; border-radius:20px; padding:2px 8px; }
+    .pri-urgente { background:rgba(239,68,68,.15); color:#f87171; }
+    .pri-haute    { background:rgba(251,146,60,.15); color:#fb923c; }
+    .pri-moyenne  { background:rgba(148,163,184,.12); color:#94a3b8; }
+    .pri-basse    { background:rgba(34,197,94,.1); color:#4ade80; }
+    .tc-date { font-size:10px; color:var(--muted); display:flex; align-items:center; gap:3px; margin-left:auto; }
+    .tc-date.retard { color:#ef4444; }
+    .tc-avs { display:flex; gap:3px; }
+    .tc-av  { width:20px; height:20px; border-radius:50%; font-size:9px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .av-e { background:rgba(244,146,106,.3); color:var(--orange); }
+    .av-el { background:rgba(167,139,250,.3); color:#c4b5fd; }
+    .tc-card-del { background:none; border:none; color:var(--muted); font-size:11px; cursor:pointer; margin-left:2px; opacity:.5; padding:0; transition:opacity .15s; }
+    .tc-card-del:hover { opacity:1; color:#ef4444; }
+
+    .tc-empty { border:1px dashed var(--border); border-radius:8px; padding:24px; text-align:center; color:var(--muted2,#3a3a3a); font-size:12px; }
+
+    /* Task modal */
+    .tm-overlay { position:fixed; inset:0; background:rgba(0,0,0,.75); z-index:1000; display:flex; align-items:center; justify-content:center; padding:16px; }
+    .tm-modal { background:#18181f; border:1px solid var(--border); border-radius:18px; padding:28px 30px; width:100%; max-width:480px; max-height:90vh; overflow-y:auto; }
+    .tm-modal h3 { font-size:20px; font-weight:800; margin:0 0 22px; }
+    .tm-modal label { display:block; font-size:12px; color:var(--muted); margin-bottom:5px; font-weight:500; }
+    .tm-modal input[type=text], .tm-modal textarea, .tm-modal select, .tm-modal input[type=date] {
+      width:100%; box-sizing:border-box; background:rgba(255,255,255,.05); border:1px solid var(--border);
+      border-radius:8px; padding:10px 12px; color:#fff; font-size:13px; margin-bottom:14px; outline:none; font-family:inherit;
+    }
+    .tm-modal input:focus, .tm-modal textarea:focus, .tm-modal select:focus { border-color:var(--orange); }
+    .tm-modal textarea { resize:vertical; min-height:70px; }
+    .tm-modal select option { background:#1a1a22; }
+    .tm-row2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .tm-assignees { display:flex; gap:12px; margin-bottom:14px; }
+    .tm-assignee { display:flex; align-items:center; gap:7px; cursor:pointer; font-size:13px; }
+    .tm-assignee input[type=checkbox] { width:15px; height:15px; accent-color:var(--orange); margin:0; }
+    .tm-av { width:26px; height:26px; border-radius:50%; font-size:11px; font-weight:800; display:flex; align-items:center; justify-content:center; }
+    .tm-modal-btns { display:flex; gap:10px; margin-top:8px; }
+    .tm-modal-btns button { flex:1; padding:12px; border-radius:8px; border:none; font-size:13px; font-weight:700; cursor:pointer; }
+    .tm-btn-cancel  { background:rgba(255,255,255,.07); color:var(--muted); }
+    .tm-btn-confirm { background:var(--orange); color:#fff; }
+
     /* Empty state */
     .empty { padding: 40px; text-align: center; color: var(--muted); font-size: 13px; }
     .empty .ei { font-size: 32px; margin-bottom: 10px; }
@@ -534,15 +624,121 @@
 
         <!-- ── TÂCHES ── -->
         <div id="page-taches" class="page">
-          <div style="margin-bottom:18px"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">PILOTAGE</div><div style="font-size:22px;font-weight:800;margin-top:2px">Tâches</div></div>
-          <div class="panel">
-            <div class="panel-head"><h3>À faire (3)</h3></div>
-            <div class="task-row"><div class="task-cb" onclick="toggleTask(this)"></div><span class="task-text">Relancer Chakir — devis en attente</span><span class="task-pri pri-high">Urgent</span></div>
-            <div class="task-row"><div class="task-cb" onclick="toggleTask(this)"></div><span class="task-text">Envoyer maquette Coiffure Délice</span><span class="task-pri pri-med">Moyen</span></div>
-            <div class="task-row"><div class="task-cb" onclick="toggleTask(this)"></div><span class="task-text">Répondre lead Facebook — plombier Lyon</span><span class="task-pri pri-med">Moyen</span></div>
-            <div class="task-row"><div class="task-cb" onclick="toggleTask(this)"></div><span class="task-text">Mettre à jour site Auto-école Martin</span><span class="task-pri pri-low">Faible</span></div>
-            <div class="task-row"><div class="task-cb" onclick="toggleTask(this)"></div><span class="task-text">Préparer facture mensuelle — Plombier Express</span><span class="task-pri pri-low">Faible</span></div>
+
+          <!-- Header -->
+          <div class="tc-header-row">
+            <div>
+              <h1 class="tc-title">Tâches</h1>
+              <p class="tc-sub">Pilotage interne — Éloïse &amp; Emrick</p>
+            </div>
+            <button class="btn-newtask" onclick="tcOpenModal()">+ Nouvelle tâche</button>
           </div>
+
+          <!-- KPIs -->
+          <div class="tc-kpis" id="tc-kpis">
+            <div class="tc-kpi"><div class="tc-kpi-label">☰ TOTAL</div><div class="tc-kpi-val" id="tc-total">—</div></div>
+            <div class="tc-kpi"><div class="tc-kpi-label">☰ À FAIRE</div><div class="tc-kpi-val" id="tc-afaire">—</div></div>
+            <div class="tc-kpi"><div class="tc-kpi-label">🕐 EN COURS</div><div class="tc-kpi-val blue" id="tc-encours">—</div></div>
+            <div class="tc-kpi"><div class="tc-kpi-label">⏸ EN ATTENTE</div><div class="tc-kpi-val" id="tc-attente">—</div></div>
+            <div class="tc-kpi"><div class="tc-kpi-label">⚠ EN RETARD</div><div class="tc-kpi-val red" id="tc-retard">—</div></div>
+            <div class="tc-kpi" style="flex:1.5">
+              <div class="tc-kpi-label">👤 CHARGE ACTIVE</div>
+              <div class="tc-charge">Éloïse <span id="tc-charge-el">—</span> &nbsp; Emrick <span id="tc-charge-em">—</span></div>
+            </div>
+          </div>
+
+          <!-- Prochaine échéance -->
+          <div class="tc-deadline" id="tc-deadline-bar">
+            <div>
+              <div class="tc-deadline-label">🚩 PROCHAINE ÉCHÉANCE</div>
+              <div class="tc-deadline-title" id="tc-deadline-title">—</div>
+            </div>
+            <div class="tc-deadline-right" id="tc-deadline-right">—</div>
+          </div>
+
+          <!-- Brief vocal → IA -->
+          <div class="tc-brief">
+            <div class="tc-brief-head">✨ Brief vocal → tâches IA <span class="tc-brief-sub">Parle ou écris, je découpe en tâches.</span></div>
+            <div class="tc-brief-row">
+              <textarea class="tc-brief-input" id="tc-brief-text" rows="2" placeholder="Ex: Demain Éloïse appelle le boulanger d'Antibes, urgent. Emrick prépare la maquette avant vendredi."></textarea>
+              <button class="btn-proposer" onclick="tcParserBrief()">✨ Proposer</button>
+            </div>
+          </div>
+
+          <!-- Filtres -->
+          <div class="tc-filters">
+            <select class="tc-filter-sel" id="tc-filter-who" onchange="tcRender()">
+              <option value="">Tout le monde</option>
+              <option value="eloise">Éloïse</option>
+              <option value="emrick">Emrick</option>
+            </select>
+            <select class="tc-filter-sel" id="tc-filter-pri" onchange="tcRender()">
+              <option value="">Toutes priorités</option>
+              <option value="urgente">Urgente</option>
+              <option value="haute">Haute</option>
+              <option value="moyenne">Moyenne</option>
+              <option value="basse">Basse</option>
+            </select>
+          </div>
+
+          <!-- Kanban -->
+          <div class="tc-kanban" id="tc-kanban">
+            <div class="tc-col">
+              <div class="tc-col-head"><span class="tc-col-dot" style="background:#94a3b8"></span><span class="tc-col-icon">☰</span><span class="tc-col-name">À faire</span><span class="tc-col-cnt" id="tc-cnt-afaire">0</span></div>
+              <div class="tc-col-body" id="tc-body-afaire" data-status="afaire"></div>
+            </div>
+            <div class="tc-col">
+              <div class="tc-col-head"><span class="tc-col-dot" style="background:#60a5fa"></span><span class="tc-col-icon">🕐</span><span class="tc-col-name">En cours</span><span class="tc-col-cnt" id="tc-cnt-encours">0</span></div>
+              <div class="tc-col-body" id="tc-body-encours" data-status="encours"></div>
+            </div>
+            <div class="tc-col">
+              <div class="tc-col-head"><span class="tc-col-dot" style="background:#f4926a"></span><span class="tc-col-icon">⏸</span><span class="tc-col-name">En attente</span><span class="tc-col-cnt" id="tc-cnt-attente">0</span></div>
+              <div class="tc-col-body" id="tc-body-attente" data-status="attente"></div>
+            </div>
+          </div>
+
+          <!-- Modal tâche -->
+          <div class="tm-overlay" id="tc-modal" style="display:none" onclick="tcCloseOut(event)">
+            <div class="tm-modal" onclick="event.stopPropagation()">
+              <h3 id="tc-modal-title">Nouvelle tâche</h3>
+              <input type="hidden" id="tc-edit-id" />
+              <label>Titre *</label>
+              <input type="text" id="tc-m-title" placeholder="Ex : Relancer le boulanger d'Antibes" />
+              <label>Description</label>
+              <textarea id="tc-m-desc" placeholder="Détails optionnels..."></textarea>
+              <div class="tm-row2">
+                <div>
+                  <label>Statut</label>
+                  <select id="tc-m-status">
+                    <option value="afaire">À faire</option>
+                    <option value="encours">En cours</option>
+                    <option value="attente">En attente</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Priorité</label>
+                  <select id="tc-m-pri">
+                    <option value="urgente">Urgente</option>
+                    <option value="haute">Haute</option>
+                    <option value="moyenne" selected>Moyenne</option>
+                    <option value="basse">Basse</option>
+                  </select>
+                </div>
+              </div>
+              <label>Échéance</label>
+              <input type="date" id="tc-m-due" />
+              <label>Assignée à</label>
+              <div class="tm-assignees">
+                <label class="tm-assignee"><input type="checkbox" id="tc-m-eloise"><div class="tm-av av-el">É</div> Éloïse</label>
+                <label class="tm-assignee"><input type="checkbox" id="tc-m-emrick"><div class="tm-av av-e">E</div> Emrick</label>
+              </div>
+              <div class="tm-modal-btns">
+                <button class="tm-btn-cancel" onclick="tcCloseModal()">Annuler</button>
+                <button class="tm-btn-confirm" onclick="tcSaveTask()">Créer →</button>
+              </div>
+            </div>
+          </div>
+
         </div>
 
         <!-- ── CLIENTS ── -->
@@ -622,8 +818,8 @@ function bootApp(email) {
   document.getElementById('sb-av').textContent = e?e[0].toUpperCase():'E';
   document.getElementById('sb-email').textContent = e;
   initCharts();
-  plLoad();
-  renderPipeline();
+  tcLoad(); tcRender();
+  plLoad(); renderPipeline();
 }
 
 // Navigation
@@ -709,6 +905,224 @@ function initCharts() {
       }
     }
   });
+}
+
+/* ════════════════════════ TÂCHES ════════════════════════ */
+const TC_KEY = 'tc_v1';
+const TC_DEFAULT = [
+  // À faire
+  {id:'t1',  status:'afaire',  pri:'moyenne', title:'apprendre gestion mail pro',                    desc:'',                                              due:'2026-06-04', assignees:['emrick','eloise']},
+  {id:'t2',  status:'afaire',  pri:'urgente', title:'changer l\'abonnement de tonio',                desc:'',                                              due:'2026-06-06', assignees:[]},
+  {id:'t3',  status:'afaire',  pri:'moyenne', title:'tourner monter et faire campagne meta ads',     desc:'',                                              due:'2026-06-06', assignees:['eloise']},
+  {id:'t4',  status:'afaire',  pri:'urgente', title:'envoyer toutes les factures',                   desc:'',                                              due:'2026-06-07', assignees:['eloise']},
+  {id:'t5',  status:'afaire',  pri:'moyenne', title:'faire compte google ads tonio',                 desc:'',                                              due:'2026-06-07', assignees:['emrick']},
+  {id:'t6',  status:'afaire',  pri:'moyenne', title:'commender cartes de visite et flyers tonio',   desc:'500 cartes et 1000 ou 5000 flyers',              due:'2026-06-07', assignees:['eloise']},
+  {id:'t7',  status:'afaire',  pri:'moyenne', title:'faire payer abonnement 20 euro 123 renov',     desc:'',                                              due:'2026-06-07', assignees:['eloise']},
+  {id:'t8',  status:'afaire',  pri:'haute',   title:'Intégrer les photos sur le site SJM Rénovation',desc:'Utiliser les photos de sa fiche client (A7). Pour les manquantes, en générer ou trouver des alternatives.',due:'2026-06-08', assignees:['eloise']},
+  {id:'t9',  status:'afaire',  pri:'haute',   title:'V1 edvard milicevic',                          desc:'',                                              due:'2026-06-10', assignees:['eloise']},
+  {id:'t10', status:'afaire',  pri:'moyenne', title:'appeler NOE',                                  desc:'Il avait un problème jusqu\'au 16',             due:'2026-06-16', assignees:['emrick']},
+  // En cours
+  {id:'t11', status:'encours', pri:'haute',   title:'appeler jean plombier 18h30 fin de bouot',     desc:'',                                              due:'2026-06-04', assignees:['emrick']},
+  {id:'t12', status:'encours', pri:'moyenne', title:'appeller nouveau prospect hotelerie 18h reesayer',desc:'',                                           due:'2026-06-04', assignees:['emrick']},
+  {id:'t13', status:'encours', pri:'moyenne', title:'attendre reponse dame magagescard',            desc:'',                                              due:'2026-06-04', assignees:['emrick']},
+  {id:'t14', status:'encours', pri:'moyenne', title:'appeller grigore 20h',                        desc:'',                                              due:'2026-06-05', assignees:['emrick']},
+  {id:'t15', status:'encours', pri:'moyenne', title:'varrem est malade mais il va signer le devis', desc:'',                                              due:'2026-06-05', assignees:['emrick']},
+  {id:'t16', status:'encours', pri:'moyenne', title:'regler probleme de pixel',                    desc:'',                                              due:'2026-06-05', assignees:['emrick']},
+  {id:'t17', status:'encours', pri:'moyenne', title:'bien regarder la strategie anti no show pour l\'appliquer aux nouveaux prospects',desc:'',           due:'2026-06-06', assignees:['eloise']},
+  // En attente
+  {id:'t18', status:'attente', pri:'haute',   title:'Image site tonio',                             desc:'toutes les images sont faites sauf mes réalisations, en attente de sa réponse', due:'2026-05-05', assignees:['emrick','eloise']},
+  {id:'t19', status:'attente', pri:'urgente', title:'appeler azur press',                          desc:'appel avant Visio, demander info pour pouvoir faire le site',                   due:'2026-05-07', assignees:['emrick']}
+];
+
+let tcData = [];
+let tcDragId = null;
+
+function tcLoad() {
+  try { tcData = JSON.parse(localStorage.getItem(TC_KEY)); if(!Array.isArray(tcData)||tcData.length===0) tcData=TC_DEFAULT.map(t=>({...t})); }
+  catch { tcData = TC_DEFAULT.map(t=>({...t})); }
+}
+function tcSave() { localStorage.setItem(TC_KEY, JSON.stringify(tcData)); }
+
+const TODAY = new Date(); TODAY.setHours(0,0,0,0);
+
+function isRetard(due) {
+  if (!due) return false;
+  const d = new Date(due); d.setHours(0,0,0,0);
+  return d < TODAY;
+}
+
+function fmtDate(due) {
+  if (!due) return '';
+  const d = new Date(due);
+  const months=['jan','fév','mar','avr','mai','juin','juil','aoû','sep','oct','nov','déc'];
+  return d.getDate()+' '+months[d.getMonth()];
+}
+
+function tcRender() {
+  const who = document.getElementById('tc-filter-who')?.value || '';
+  const pri = document.getElementById('tc-filter-pri')?.value || '';
+
+  const statuses = ['afaire','encours','attente'];
+  statuses.forEach(st => {
+    const body = document.getElementById('tc-body-'+st);
+    if (!body) return;
+    body.innerHTML = '';
+    const cards = tcData.filter(t => {
+      if (t.status !== st) return false;
+      if (who && !t.assignees.includes(who)) return false;
+      if (pri && t.pri !== pri) return false;
+      return true;
+    });
+    if (cards.length === 0) {
+      body.innerHTML = '<div class="tc-empty">Vide</div>';
+    } else {
+      cards.forEach(t => {
+        const el = document.createElement('div');
+        el.className = 'tc-card';
+        el.id = 'tc-'+t.id;
+        el.draggable = true;
+        const retard = isRetard(t.due);
+        const avHtml = t.assignees.map(a => a==='eloise'
+          ? '<div class="tc-av av-el">É</div>'
+          : '<div class="tc-av av-e">E</div>').join('');
+        el.innerHTML = `
+          <div class="tc-card-title">${t.title}</div>
+          ${t.desc ? `<div class="tc-card-desc">${t.desc}</div>` : ''}
+          <div class="tc-card-foot">
+            <span class="tc-pri pri-${t.pri}">${t.pri.charAt(0).toUpperCase()+t.pri.slice(1)}</span>
+            <div class="tc-avs">${avHtml}</div>
+            ${t.due ? `<span class="tc-date${retard?' retard':''}">📅 ${fmtDate(t.due)}</span>` : ''}
+            <button class="tc-card-del" onclick="tcDel('${t.id}')" title="Terminer / Supprimer">✓ Terminé</button>
+          </div>`;
+        el.addEventListener('dragstart', ev => {
+          tcDragId = t.id;
+          ev.dataTransfer.effectAllowed = 'move';
+          setTimeout(() => el.classList.add('dragging'), 0);
+        });
+        el.addEventListener('dragend', () => el.classList.remove('dragging'));
+        body.appendChild(el);
+      });
+    }
+    // drop zone
+    body.addEventListener('dragover', ev => { ev.preventDefault(); body.classList.add('drag-over'); });
+    body.addEventListener('dragleave', () => body.classList.remove('drag-over'));
+    body.addEventListener('drop', ev => {
+      ev.preventDefault(); body.classList.remove('drag-over');
+      if (!tcDragId) return;
+      const t = tcData.find(x => x.id === tcDragId);
+      if (t) { t.status = st; tcSave(); tcRender(); tcUpdateKpis(); }
+      tcDragId = null;
+    });
+    document.getElementById('tc-cnt-'+st).textContent = cards.length;
+  });
+  tcUpdateKpis();
+  tcUpdateDeadline();
+}
+
+function tcUpdateKpis() {
+  const total   = tcData.length;
+  const afaire  = tcData.filter(t=>t.status==='afaire').length;
+  const encours = tcData.filter(t=>t.status==='encours').length;
+  const attente = tcData.filter(t=>t.status==='attente').length;
+  const retard  = tcData.filter(t=>isRetard(t.due)&&t.status!=='attente').length;
+  const chargeEl= tcData.filter(t=>t.assignees.includes('eloise')&&t.status!=='attente').length;
+  const chargeEm= tcData.filter(t=>t.assignees.includes('emrick')&&t.status!=='attente').length;
+  document.getElementById('tc-total').textContent   = total;
+  document.getElementById('tc-afaire').textContent  = afaire;
+  document.getElementById('tc-encours').textContent = encours;
+  document.getElementById('tc-attente').textContent = attente;
+  document.getElementById('tc-retard').textContent  = retard;
+  document.getElementById('tc-charge-el').textContent = chargeEl;
+  document.getElementById('tc-charge-em').textContent = chargeEm;
+  const badge = document.getElementById('badge-taches');
+  if (badge) badge.textContent = afaire + encours;
+}
+
+function tcUpdateDeadline() {
+  const active = tcData.filter(t=>t.status!=='attente'&&t.due).sort((a,b)=>new Date(a.due)-new Date(b.due));
+  const next = active[0];
+  if (!next) return;
+  const assignee = next.assignees.includes('emrick')&&next.assignees.includes('eloise') ? 'Éloïse & Emrick'
+    : next.assignees.includes('emrick') ? 'Emrick'
+    : next.assignees.includes('eloise') ? 'Éloïse' : '';
+  const d = new Date(next.due);
+  const dayNames = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
+  const months = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  const dateStr = dayNames[d.getDay()]+' '+d.getDate()+' '+months[d.getMonth()];
+  document.getElementById('tc-deadline-title').textContent = next.title;
+  document.getElementById('tc-deadline-right').textContent = dateStr+(assignee?' · '+assignee:'');
+}
+
+function tcDel(id) {
+  tcData = tcData.filter(t=>t.id!==id);
+  tcSave(); tcRender();
+}
+
+/* Modal */
+function tcOpenModal(prefill) {
+  document.getElementById('tc-edit-id').value  = '';
+  document.getElementById('tc-m-title').value  = prefill?.title || '';
+  document.getElementById('tc-m-desc').value   = prefill?.desc  || '';
+  document.getElementById('tc-m-status').value = prefill?.status|| 'afaire';
+  document.getElementById('tc-m-pri').value    = prefill?.pri   || 'moyenne';
+  document.getElementById('tc-m-due').value    = prefill?.due   || '';
+  document.getElementById('tc-m-eloise').checked = prefill?.assignees?.includes('eloise') || false;
+  document.getElementById('tc-m-emrick').checked = prefill?.assignees?.includes('emrick') || false;
+  document.getElementById('tc-modal-title').textContent = 'Nouvelle tâche';
+  document.getElementById('tc-modal').style.display = 'flex';
+  setTimeout(()=>document.getElementById('tc-m-title').focus(), 50);
+}
+function tcCloseModal() { document.getElementById('tc-modal').style.display='none'; }
+function tcCloseOut(e)  { if(e.target.id==='tc-modal') tcCloseModal(); }
+
+function tcSaveTask() {
+  const title = document.getElementById('tc-m-title').value.trim();
+  if (!title) { alert('Renseignez un titre.'); return; }
+  const id = 't'+Date.now();
+  const assignees = [];
+  if (document.getElementById('tc-m-eloise').checked) assignees.push('eloise');
+  if (document.getElementById('tc-m-emrick').checked) assignees.push('emrick');
+  tcData.push({
+    id, status: document.getElementById('tc-m-status').value,
+    pri: document.getElementById('tc-m-pri').value,
+    title, desc: document.getElementById('tc-m-desc').value.trim(),
+    due: document.getElementById('tc-m-due').value,
+    assignees
+  });
+  tcSave(); tcRender(); tcCloseModal();
+}
+
+/* Brief IA parser */
+function tcParserBrief() {
+  const txt = document.getElementById('tc-brief-text').value.trim();
+  if (!txt) return;
+  // Detect assignee
+  const hasEloise = /éloïse|eloise|eloïse/i.test(txt);
+  const hasEmrick = /emrick/i.test(txt);
+  const assignees = [];
+  if (hasEloise) assignees.push('eloise');
+  if (hasEmrick) assignees.push('emrick');
+  // Detect priority
+  const pri = /urgent/i.test(txt) ? 'urgente' : /haute|important/i.test(txt) ? 'haute' : 'moyenne';
+  // Detect date
+  let due = '';
+  const t = new Date(); t.setHours(0,0,0,0);
+  if (/demain/i.test(txt))              { const d=new Date(t); d.setDate(d.getDate()+1); due=d.toISOString().slice(0,10); }
+  else if (/après.?demain/i.test(txt))  { const d=new Date(t); d.setDate(d.getDate()+2); due=d.toISOString().slice(0,10); }
+  else if (/lundi/i.test(txt))    due = nextWeekday(t,1);
+  else if (/mardi/i.test(txt))    due = nextWeekday(t,2);
+  else if (/mercredi/i.test(txt)) due = nextWeekday(t,3);
+  else if (/jeudi/i.test(txt))    due = nextWeekday(t,4);
+  else if (/vendredi/i.test(txt)) due = nextWeekday(t,5);
+  // Clean title
+  let title = txt.replace(/éloïse|eloise|eloïse|emrick/gi,'').replace(/demain|après.?demain|lundi|mardi|mercredi|jeudi|vendredi|urgent/gi,'').replace(/\s+/g,' ').trim();
+  if (title.length > 80) title = title.slice(0,80)+'…';
+  tcOpenModal({ title, pri, due, assignees });
+  document.getElementById('tc-brief-text').value = '';
+}
+function nextWeekday(from, target) {
+  const d = new Date(from); let diff = target - d.getDay(); if(diff<=0)diff+=7;
+  d.setDate(d.getDate()+diff); return d.toISOString().slice(0,10);
 }
 
 /* ════════════════════════ PIPELINE ════════════════════════ */
