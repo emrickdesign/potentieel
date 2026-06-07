@@ -899,8 +899,35 @@
             <!-- Tab: Assets -->
             <div id="cl-tab-assets" class="cl-tab-pane" style="display:none">
               <div class="panel">
-                <div class="panel-head"><h3>Assets &amp; accès</h3></div>
-                <div id="cl-assets-list" style="padding:16px;min-height:80px"></div>
+                <div class="panel-head">
+                  <div>
+                    <h3 style="margin:0 0 2px">Photos &amp; vidéos du client</h3>
+                    <p style="margin:0;font-size:12px;color:var(--muted)">Réutilisables sur le site, les réseaux, les supports.</p>
+                  </div>
+                  <button class="ph-action" onclick="document.getElementById('cl-asset-input').click()" style="display:flex;align-items:center;gap:6px">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Ajouter des fichiers
+                  </button>
+                </div>
+                <input type="file" id="cl-asset-input" multiple accept="image/*,video/*" style="display:none" onchange="clHandleAssets(this.files)">
+                <!-- Drop zone (hidden when assets exist) -->
+                <div id="cl-asset-drop"
+                  style="margin:16px;border:2px dashed rgba(255,255,255,.12);border-radius:12px;padding:40px;text-align:center;color:var(--muted);font-size:13px;cursor:pointer;transition:border-color .2s"
+                  onclick="document.getElementById('cl-asset-input').click()"
+                  ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
+                  ondragleave="this.style.borderColor='rgba(255,255,255,.12)'"
+                  ondrop="event.preventDefault();this.style.borderColor='rgba(255,255,255,.12)';clHandleAssets(event.dataTransfer.files)">
+                  <div style="font-size:28px;margin-bottom:8px">🖼️</div>
+                  Glissez vos photos &amp; vidéos ici ou cliquez pour choisir
+                </div>
+                <!-- Grid -->
+                <div id="cl-assets-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;padding:0 16px 16px"></div>
+              </div>
+              <!-- Lightbox -->
+              <div id="cl-asset-lightbox" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999;align-items:center;justify-content:center;flex-direction:column" onclick="this.style.display='none'">
+                <img id="cl-lb-img" style="max-width:90vw;max-height:85vh;border-radius:10px;object-fit:contain" src="">
+                <video id="cl-lb-vid" controls style="display:none;max-width:90vw;max-height:85vh;border-radius:10px" src=""></video>
+                <p id="cl-lb-name" style="color:rgba(255,255,255,.6);font-size:12px;margin-top:12px"></p>
               </div>
             </div>
 
@@ -1807,17 +1834,87 @@ function clDelDoc(did) {
 }
 
 function clRenderAssets(c) {
-  const el = document.getElementById('cl-assets-list');
-  const defaults = [
-    { label:'Accès hébergement', val: c.hebergement||'' },
-    { label:'Accès domaine',     val: c.domaine||'' },
-    { label:'Accès Google',      val: c.google||'' },
-    { label:'Accès Facebook',    val: c.facebook||'' },
-    { label:'Identifiant site',  val: c.loginSite||'' },
-  ];
-  el.innerHTML = defaults.map(r =>
-    `<div class="cl-info-row"><span class="cl-info-label">${r.label}</span><span class="cl-info-val">${r.val||'—'}</span></div>`
-  ).join('');
+  const grid = document.getElementById('cl-assets-list');
+  const drop = document.getElementById('cl-asset-drop');
+  const assets = c.assets || [];
+  if (assets.length === 0) {
+    drop.style.display = 'block';
+    grid.innerHTML = '';
+    return;
+  }
+  drop.style.display = 'none';
+  grid.innerHTML = assets.map(a => {
+    const isVideo = a.type && a.type.startsWith('video/');
+    const thumb = isVideo
+      ? `<div style="width:100%;height:140px;background:#111;display:flex;align-items:center;justify-content:center;font-size:36px">▶️</div>`
+      : `<img src="${a.data}" alt="${a.nom}" style="width:100%;height:140px;object-fit:cover;display:block">`;
+    return `<div style="background:rgba(255,255,255,.04);border-radius:10px;overflow:hidden;position:relative;cursor:pointer" onclick="clOpenLightbox('${a.id}')">
+      ${thumb}
+      <div style="position:absolute;top:6px;right:6px;display:flex;gap:4px;opacity:0;transition:opacity .2s" class="cl-asset-actions">
+        <a href="${a.data}" download="${a.nom}" onclick="event.stopPropagation()" style="background:rgba(0,0,0,.6);border-radius:6px;padding:5px;color:#fff;display:flex;align-items:center;justify-content:center;text-decoration:none" title="Télécharger">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </a>
+        <button onclick="event.stopPropagation();clDelAsset('${a.id}')" style="background:rgba(0,0,0,.6);border:none;border-radius:6px;padding:5px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center" title="Supprimer">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+        </button>
+      </div>
+      <div style="padding:8px 10px;font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${a.nom}</div>
+    </div>`;
+  }).join('');
+
+  // Show hover actions on hover
+  grid.querySelectorAll('[onclick^="clOpenLightbox"]').forEach(card => {
+    card.addEventListener('mouseenter', () => card.querySelector('.cl-asset-actions').style.opacity='1');
+    card.addEventListener('mouseleave', () => card.querySelector('.cl-asset-actions').style.opacity='0');
+  });
+}
+
+function clOpenLightbox(aid) {
+  const c = clData.find(x=>x.id===clCurrentId);
+  if (!c) return;
+  const a = (c.assets||[]).find(x=>x.id===aid);
+  if (!a) return;
+  const lb = document.getElementById('cl-asset-lightbox');
+  const img = document.getElementById('cl-lb-img');
+  const vid = document.getElementById('cl-lb-vid');
+  const nm = document.getElementById('cl-lb-name');
+  const isVideo = a.type && a.type.startsWith('video/');
+  img.style.display = isVideo ? 'none' : 'block';
+  vid.style.display = isVideo ? 'block' : 'none';
+  if (isVideo) { vid.src = a.data; vid.play(); } else { img.src = a.data; vid.pause(); vid.src=''; }
+  nm.textContent = a.nom;
+  lb.style.display = 'flex';
+}
+
+function clHandleAssets(files) {
+  if (!files || !files.length) return;
+  const c = clData.find(x=>x.id===clCurrentId);
+  if (!c) return;
+  if (!c.assets) c.assets = [];
+  let remaining = files.length;
+  Array.from(files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      c.assets.push({
+        id: 'a'+Date.now()+Math.random().toString(36).slice(2),
+        nom: file.name,
+        type: file.type,
+        date: new Date().toLocaleDateString('fr-FR'),
+        data: e.target.result
+      });
+      remaining--;
+      if (remaining === 0) { clSave(); clRenderAssets(c); }
+    };
+    reader.readAsDataURL(file);
+  });
+  document.getElementById('cl-asset-input').value = '';
+}
+
+function clDelAsset(aid) {
+  const c = clData.find(x=>x.id===clCurrentId);
+  if (!c) return;
+  c.assets = (c.assets||[]).filter(a=>a.id!==aid);
+  clSave(); clRenderAssets(c);
 }
 
 function clRenderPaiements(c) {
