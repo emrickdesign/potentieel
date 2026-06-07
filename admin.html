@@ -882,8 +882,17 @@
             <!-- Tab: Documents -->
             <div id="cl-tab-docs" class="cl-tab-pane" style="display:none">
               <div class="panel">
-                <div class="panel-head"><h3>Documents</h3><button class="ph-action" onclick="clAddDoc()">+ Ajouter</button></div>
-                <div id="cl-docs-list" style="padding:16px;min-height:80px"></div>
+                <div class="panel-head"><h3>Documents</h3><button class="ph-action" onclick="document.getElementById('cl-file-input').click()">+ Ajouter</button></div>
+                <input type="file" id="cl-file-input" multiple accept="*/*" style="display:none" onchange="clHandleFiles(this.files)">
+                <div id="cl-drop-zone"
+                  style="margin:12px 16px;border:2px dashed rgba(255,255,255,.12);border-radius:12px;padding:24px;text-align:center;color:var(--muted);font-size:13px;transition:border-color .2s;cursor:pointer"
+                  onclick="document.getElementById('cl-file-input').click()"
+                  ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
+                  ondragleave="this.style.borderColor='rgba(255,255,255,.12)'"
+                  ondrop="event.preventDefault();this.style.borderColor='rgba(255,255,255,.12)';clHandleFiles(event.dataTransfer.files)">
+                  Glissez vos fichiers ici ou cliquez pour choisir
+                </div>
+                <div id="cl-docs-list" style="padding:0 16px 16px;min-height:40px"></div>
               </div>
             </div>
 
@@ -973,6 +982,18 @@
                 <div>
                   <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Depuis</label>
                   <input id="cl-m-depuis" type="date" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                </div>
+              </div>
+              <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Adresse</label>
+              <input id="cl-m-adresse" placeholder="ex: 12 rue de la Paix, 75001 Paris" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:14px;outline:none;box-sizing:border-box">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+                <div>
+                  <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">SIRET</label>
+                  <input id="cl-m-siret" placeholder="ex: 85005018800026" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                </div>
+                <div>
+                  <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">SIREN</label>
+                  <input id="cl-m-siren" placeholder="ex: 850050188" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
                 </div>
               </div>
               <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">URL du site</label>
@@ -1707,7 +1728,10 @@ function clRenderInfos(c) {
     clRow('Téléphone', c.tel ? `<a href="tel:${c.tel}" style="color:var(--blue)">${c.tel}</a>` : '—') +
     clRow('Email', c.email ? `<a href="mailto:${c.email}" style="color:var(--blue)">${c.email}</a>` : '—') +
     clRow('Site web', c.url ? `<a href="${c.url}" target="_blank" style="color:var(--blue)">Ouvrir →</a>` : '—') +
-    clRow('Client depuis', depuisTxt);
+    clRow('Client depuis', depuisTxt) +
+    clRow('Adresse', c.adresse) +
+    clRow('SIRET', c.siret) +
+    clRow('SIREN', c.siren);
 
   document.getElementById('cl-sub-fields').innerHTML =
     clRow('Statut', `<span class="badge ${CL_STATUT_BADGE[c.statut]||'badge-gray'}">${CL_STATUT_LABELS[c.statut]||c.statut}</span>`) +
@@ -1723,28 +1747,56 @@ function clSaveNotes() {
   if (c) { c.notes = document.getElementById('cl-notes-area').value; clSave(); }
 }
 
+function clDocIcon(type) {
+  if (!type) return '📄';
+  if (type.startsWith('image/')) return '🖼️';
+  if (type === 'application/pdf') return '📕';
+  if (type.includes('word') || type.includes('document')) return '📝';
+  if (type.includes('sheet') || type.includes('excel')) return '📊';
+  if (type.includes('presentation') || type.includes('powerpoint')) return '📊';
+  if (type.includes('zip') || type.includes('archive')) return '🗜️';
+  return '📄';
+}
+
 function clRenderDocs(c) {
   const el = document.getElementById('cl-docs-list');
-  if (!c.docs || c.docs.length === 0) {
-    el.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0">Aucun document</div>'; return;
-  }
+  if (!c.docs || c.docs.length === 0) { el.innerHTML = ''; return; }
   el.innerHTML = c.docs.map(d => `
     <div class="cl-doc-row">
-      <span class="cl-doc-icon">📄</span>
-      <span class="cl-doc-name">${d.nom}</span>
-      <span class="cl-doc-date">${d.date||''}</span>
-      <button onclick="clDelDoc('${d.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;opacity:.5" title="Supprimer">🗑</button>
+      <span class="cl-doc-icon">${clDocIcon(d.type)}</span>
+      <span class="cl-doc-name" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.nom}</span>
+      <span class="cl-doc-date" style="flex-shrink:0">${d.date||''}</span>
+      ${d.data ? `<a href="${d.data}" download="${d.nom}" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;opacity:.7;text-decoration:none" title="Télécharger">⬇️</a>` : ''}
+      <button onclick="clDelDoc('${d.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;opacity:.5;margin-left:4px" title="Supprimer">🗑</button>
     </div>`).join('');
 }
 
-function clAddDoc() {
-  const nom = prompt('Nom du document :');
-  if (!nom) return;
+function clHandleFiles(files) {
+  if (!files || !files.length) return;
   const c = clData.find(x=>x.id===clCurrentId);
   if (!c) return;
   if (!c.docs) c.docs = [];
-  c.docs.push({ id:'d'+Date.now(), nom, date: new Date().toLocaleDateString('fr-FR') });
-  clSave(); clRenderDocs(c);
+  let remaining = files.length;
+  Array.from(files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      c.docs.push({
+        id: 'd'+Date.now()+Math.random().toString(36).slice(2),
+        nom: file.name,
+        type: file.type,
+        date: new Date().toLocaleDateString('fr-FR'),
+        data: e.target.result
+      });
+      remaining--;
+      if (remaining === 0) { clSave(); clRenderDocs(c); }
+    };
+    reader.readAsDataURL(file);
+  });
+  document.getElementById('cl-file-input').value = '';
+}
+
+function clAddDoc() {
+  document.getElementById('cl-file-input').click();
 }
 
 function clDelDoc(did) {
@@ -1910,6 +1962,9 @@ function clOpenAdd() {
   document.getElementById('cl-m-setup').value = '';
   document.getElementById('cl-m-depuis').value = '';
   document.getElementById('cl-m-url').value = '';
+  document.getElementById('cl-m-adresse').value = '';
+  document.getElementById('cl-m-siret').value = '';
+  document.getElementById('cl-m-siren').value = '';
   document.getElementById('cl-modal').style.display = 'flex';
 }
 
@@ -1928,6 +1983,9 @@ function clOpenEdit() {
   document.getElementById('cl-m-setup').value = c.setup||'';
   document.getElementById('cl-m-depuis').value = c.depuis||'';
   document.getElementById('cl-m-url').value = c.url||'';
+  document.getElementById('cl-m-adresse').value = c.adresse||'';
+  document.getElementById('cl-m-siret').value = c.siret||'';
+  document.getElementById('cl-m-siren').value = c.siren||'';
   document.getElementById('cl-modal').style.display = 'flex';
 }
 
@@ -1950,6 +2008,9 @@ function clSaveClient() {
       c.setup = parseInt(document.getElementById('cl-m-setup').value)||0;
       c.depuis = document.getElementById('cl-m-depuis').value;
       c.url = document.getElementById('cl-m-url').value.trim();
+      c.adresse = document.getElementById('cl-m-adresse').value.trim();
+      c.siret = document.getElementById('cl-m-siret').value.trim();
+      c.siren = document.getElementById('cl-m-siren').value.trim();
       clSave();
       clCloseModal();
       clOpenDetail(c.id);
@@ -1965,6 +2026,9 @@ function clSaveClient() {
       setup: parseInt(document.getElementById('cl-m-setup').value)||0,
       depuis: document.getElementById('cl-m-depuis').value,
       url: document.getElementById('cl-m-url').value.trim(),
+      adresse: document.getElementById('cl-m-adresse').value.trim(),
+      siret: document.getElementById('cl-m-siret').value.trim(),
+      siren: document.getElementById('cl-m-siren').value.trim(),
       notes:'', docs:[], assets:[], paiements:[], devis:[], factures:[], messages:[]
     };
     clData.push(newC);
