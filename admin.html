@@ -6,6 +6,7 @@
   <title>Potentieel OS — Admin</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -615,9 +616,6 @@
               <table>
                 <thead><tr><th>Client</th><th>Statut</th><th>MRR</th></tr></thead>
                 <tbody>
-                  <tr><td><strong>Kebab Le Sultan</strong><br><span style="font-size:11px;color:var(--muted)">Restauration</span></td><td><span class="badge badge-green">● Actif</span></td><td style="color:var(--accent);font-weight:700">29€</td></tr>
-                  <tr><td><strong>Auto-école Martin</strong><br><span style="font-size:11px;color:var(--muted)">Auto-école</span></td><td><span class="badge badge-green">● Actif</span></td><td style="color:var(--accent);font-weight:700">29€</td></tr>
-                  <tr><td><strong>Plombier Express</strong><br><span style="font-size:11px;color:var(--muted)">Artisan</span></td><td><span class="badge badge-green">● Actif</span></td><td style="color:var(--accent);font-weight:700">29€</td></tr>
                   <tr><td><strong>Chakir VTC</strong><br><span style="font-size:11px;color:var(--muted)">Transport</span></td><td><span class="badge badge-orange">⏳ En cours</span></td><td style="color:var(--muted)">—</td></tr>
                 </tbody>
               </table>
@@ -627,8 +625,6 @@
               <div class="task-row"><div class="task-cb" onclick="toggleTask(this)"></div><span class="task-text">Relancer Chakir — devis en attente</span><span class="task-pri pri-high">Urgent</span></div>
               <div class="task-row"><div class="task-cb" onclick="toggleTask(this)"></div><span class="task-text">Envoyer maquette Coiffure Délice</span><span class="task-pri pri-med">Moyen</span></div>
               <div class="task-row"><div class="task-cb" onclick="toggleTask(this)"></div><span class="task-text">Répondre lead Facebook — plombier Lyon</span><span class="task-pri pri-med">Moyen</span></div>
-              <div class="task-row"><div class="task-cb" onclick="toggleTask(this)"></div><span class="task-text">Mettre à jour site Auto-école Martin</span><span class="task-pri pri-low">Faible</span></div>
-              <div class="task-row"><div class="task-cb" onclick="toggleTask(this)"></div><span class="task-text">Préparer facture mensuelle — Plombier Express</span><span class="task-pri pri-low">Faible</span></div>
             </div>
           </div>
         </div>
@@ -983,13 +979,6 @@
                 <div class="panel-head"><h3 style="display:flex;align-items:center;gap:8px"><span style="color:var(--accent)">💳</span> Générer un lien de paiement Stripe</h3></div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px 16px">
 
-                  <!-- Combo 990+49 -->
-                  <div class="pay-card" onclick="clGenerateStripe('combo_990_49','Combo 990€ + 49€/m')">
-                    <div class="pay-card-label">COMBO 990 € + 49 €/M</div>
-                    <div class="pay-card-price">1 039 € <span>aujourd'hui</span></div>
-                    <div class="pay-card-sub">puis 49 €/mois automatique</div>
-                  </div>
-
                   <!-- Abo 49 -->
                   <div class="pay-card" onclick="clGenerateStripe('sub_49','Abo 49 €/m')">
                     <div class="pay-card-label">ABONNEMENT SEUL</div>
@@ -1002,13 +991,6 @@
                     <div class="pay-card-label">ABONNEMENT LIGHT</div>
                     <div class="pay-card-price">20 € <span>/mois</span></div>
                     <div class="pay-card-sub">sans frais de setup</div>
-                  </div>
-
-                  <!-- Unique 20 -->
-                  <div class="pay-card" onclick="clGenerateStripe('one_20','Paiement unique 20 €')">
-                    <div class="pay-card-label">PAIEMENT UNIQUE 20 €</div>
-                    <div class="pay-card-price">20 € <span>une seule fois</span></div>
-                    <div class="pay-card-sub">gestion 1 mois — pas d'abonnement</div>
                   </div>
 
                   <!-- Unique 49 -->
@@ -3197,15 +3179,73 @@ function faView(fid){
   const c=clData.find(x=>(x.factures||[]).find(f=>f.id===fid));if(!c)return;
   const fa=c.factures.find(f=>f.id===fid);if(fa)faPrintFa(fa);
 }
-function faSendEmail(fid){
+const FA_EMAIL_FN_URL = 'https://alpzagoprkpzirgtrdup.supabase.co/functions/v1/send-invoice-email';
+
+// Construit un PDF (base64) à partir du HTML de facture, via html2pdf.js (rendu hors-écran)
+async function faBuildPdfBase64(fa) {
+  const html = faInvoiceHtml(fa, false);
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'position:fixed;left:-99999px;top:0;width:820px;background:#fff';
+  wrap.innerHTML = html.replace(/^[\s\S]*?<body[^>]*>/i,'').replace(/<\/body>[\s\S]*$/i,'');
+  document.body.appendChild(wrap);
+  try {
+    const blob = await html2pdf().set({
+      margin: 0,
+      filename: `facture-${fa.ref||'potentieel'}.pdf`,
+      image: { type: 'jpeg', quality: 0.95 },
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    }).from(wrap).outputPdf('blob');
+    const base64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(String(reader.result).split(',')[1] || '');
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+    return base64;
+  } finally {
+    wrap.remove();
+  }
+}
+
+async function faSendEmail(fid){
   const c=clData.find(x=>(x.factures||[]).find(f=>f.id===fid));if(!c)return;
   const fa=c.factures.find(f=>f.id===fid);if(!fa)return;
-  faPrintFa(fa);
   const email=(fa.data&&fa.data.email)||c.email||'';
-  if(!email){alert('Aucun email enregistré.');return;}
-  const subj=encodeURIComponent(`Facture ${fa.ref} — Potentieel`);
-  const body=encodeURIComponent(`Bonjour,\n\nVeuillez trouver en pièce jointe votre facture ${fa.ref} d'un montant de ${fa.totalTxt||'—'}.\n\nLa facture vient de s'ouvrir dans votre navigateur — imprimez-la ou enregistrez-la en PDF pour l'attacher à cet email.\n\nCordialement,\nEmrick — Potentieel\ncontact@potentieel.fr`);
-  setTimeout(()=>window.open(`mailto:${email}?subject=${subj}&body=${body}`),400);
+  if(!email){alert('Aucun email enregistré pour ce client.');return;}
+
+  const btns = document.querySelectorAll(`button[onclick*="faSendEmail('${fid}')"], button[onclick*="faSendEmailFromGlobal('${fid}')"]`);
+  btns.forEach(b=>{ b.dataset.orig = b.textContent; b.textContent='⏳'; b.disabled = true; });
+
+  try {
+    const pdfBase64 = await faBuildPdfBase64(fa);
+    const { data: { session } } = await sb.auth.getSession();
+    const resp = await fetch(FA_EMAIL_FN_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session?.access_token || SUPABASE_KEY}`,
+        'apikey': SUPABASE_KEY
+      },
+      body: JSON.stringify({
+        to: email,
+        clientName: (fa.data&&fa.data.entreprise) || c.nom || '',
+        ref: fa.ref,
+        totalTxt: fa.totalTxt || '',
+        fileName: `facture-${fa.ref||'potentieel'}.pdf`,
+        pdfBase64
+      })
+    });
+    const out = await resp.json().catch(()=>({}));
+    if (!resp.ok || out.error) throw new Error(out.error || `Erreur ${resp.status}`);
+    alert(`Facture ${fa.ref} envoyée par email à ${email} ✓`);
+  } catch(e) {
+    console.error(e);
+    alert("Échec de l'envoi automatique : " + (e.message||e) + "\n\nOuverture de la facture pour envoi manuel…");
+    faPrintFa(fa);
+  } finally {
+    btns.forEach(b=>{ b.textContent = b.dataset.orig || '📧'; b.disabled = false; });
+  }
 }
 // Global actions (since clientId must be found from global list)
 function faViewFromGlobal(fid){faView(fid);}
@@ -3332,6 +3372,12 @@ function dvDelFromGlobal(did){const c=clData.find(x=>(x.devis||[]).find(d=>d.id=
 
 // ─── FACTURE PDF ──────────────────────────────────────────
 function faPrintFa(fa) {
+  const html = faInvoiceHtml(fa, true);
+  const w=window.open('','_blank');if(w){w.document.write(html);w.document.close();}
+}
+
+// Génère le HTML de la facture. withPrintBtn=true ajoute le bouton "Imprimer / Enregistrer en PDF" (fenêtre de visualisation).
+function faInvoiceHtml(fa, withPrintBtn) {
   const d=fa.data||{};
   const cPrix={'1x':'990,00 €','2x':'2 × 495,00 €','3x':'3 × 330,00 €','4x':'4 × 247,50 €'};
   const cDesc={'1x':'Conception, développement et mise en ligne. Site multi-pages, responsive, SEO local, boutons d\'action (appel, WhatsApp), formulaire de contact.','2x':'Idem — règlement en 2 versements de 495,00 € espacés de 30 jours.','3x':'Idem — règlement en 3 versements de 330,00 € espacés de 30 jours.','4x':'Idem — règlement en 4 versements de 247,50 € espacés de 30 jours.'};
@@ -3404,7 +3450,7 @@ tbody tr:last-child td{border-bottom:none}
 .cond-dot{position:absolute;left:1px;top:5px;width:5px;height:5px;border-radius:50%;background:#f4926a;display:inline-block}
 .btn{background:#f4926a;color:#fff;border:none;padding:10px 24px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;margin:14px 32px}
 </style></head><body>
-<button class="btn no-print" onclick="window.print()">🖨 Imprimer / Enregistrer en PDF</button>
+${withPrintBtn ? '<button class="btn no-print" onclick="window.print()">🖨 Imprimer / Enregistrer en PDF</button>' : ''}
 <div class="topbar">
   <div class="logo">
     <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
@@ -3441,7 +3487,7 @@ tbody tr:last-child td{border-bottom:none}
 </div>
 </div>
 </body></html>`;
-  const w=window.open('','_blank');if(w){w.document.write(html);w.document.close();}
+  return html;
 }
 
 function clRenderMessages(c) {
