@@ -194,6 +194,30 @@
     .badge-purple  { background: rgba(167,139,250,.12);color: #a78bfa; }
     .badge-gray    { background: rgba(255,255,255,.07); color: var(--muted); }
 
+    /* Leads */
+    .ld-stab{background:none;border:none;border-bottom:2px solid transparent;padding:10px 16px;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;margin-bottom:-1px}
+    .ld-stab.active{color:var(--accent);border-bottom-color:var(--accent)}
+    .ld-cnt{background:rgba(255,255,255,.1);border-radius:10px;padding:1px 7px;font-size:11px;margin-left:4px}
+    .ld-stab.active .ld-cnt{background:rgba(244,146,106,.2);color:var(--accent)}
+    .ld-card{background:rgba(255,255,255,.03);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:12px;padding:16px 18px;margin-bottom:12px}
+    .ld-card:hover{background:rgba(255,255,255,.05)}
+    .ld-status-wrap{position:relative;display:inline-block}
+    .ld-status-btn{border-radius:8px;padding:8px 14px;font-weight:700;cursor:pointer;min-width:140px;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px}
+    .ld-s-nouveau{background:rgba(163,230,53,.1);color:#a3e635;border:1px solid rgba(163,230,53,.3)}
+    .ld-s-qualifie{background:rgba(96,165,250,.1);color:#60a5fa;border:1px solid rgba(96,165,250,.3)}
+    .ld-s-contacte{background:rgba(244,146,106,.1);color:var(--accent);border:1px solid rgba(244,146,106,.3)}
+    .ld-s-converti{background:rgba(74,222,128,.1);color:#4ade80;border:1px solid rgba(74,222,128,.3)}
+    .ld-s-perdu{background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.3)}
+    .ld-status-menu{position:absolute;right:0;top:calc(100%+4px);background:#1c1c26;border:1px solid var(--border);border-radius:12px;padding:6px;min-width:160px;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+    .ld-status-opt{padding:10px 14px;border-radius:8px;cursor:pointer;font-size:13px;color:#fff;display:flex;align-items:center;gap:8px}
+    .ld-status-opt:hover{background:rgba(255,255,255,.07)}
+    .ld-status-opt.sel{background:rgba(163,230,53,.15);color:#a3e635;font-weight:700}
+    .ld-badge-formulaire{background:rgba(74,222,128,.12);color:#4ade80}
+    .ld-badge-site{background:rgba(96,165,250,.12);color:#60a5fa}
+    .ld-badge-csv{background:rgba(167,139,250,.12);color:#a78bfa}
+    .ld-badge-scraping{background:rgba(244,146,106,.12);color:var(--accent)}
+    .ld-badge-manuel{background:rgba(255,255,255,.08);color:var(--muted)}
+
     /* Filtre factures/devis */
     .fa-filter,.dv-filter{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:7px;padding:6px 14px;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
     .fa-filter.active,.dv-filter.active,.fa-filter:hover,.dv-filter:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
@@ -472,7 +496,6 @@
 
         <div class="sb-section">Business</div>
         <div class="nav-item" data-page="clients" onclick="nav(this)"><span class="ni-icon">👥</span> Clients</div>
-        <div class="nav-item" data-page="projets" onclick="nav(this)"><span class="ni-icon">📁</span> Projets</div>
         <div class="nav-item" data-page="leads" onclick="nav(this)"><span class="ni-icon">📥</span> Leads</div>
         <div class="nav-item" data-page="formulaire" onclick="nav(this)"><span class="ni-icon">📋</span> Formulaire</div>
         <div class="nav-item" data-page="appels" onclick="nav(this)"><span class="ni-icon">📞</span> Appels</div>
@@ -867,7 +890,6 @@
               <button class="cl-tab" data-tab="paiement" onclick="clTab('paiement',this)">Paiement</button>
               <button class="cl-tab" data-tab="devis" onclick="clTab('devis',this)">Devis</button>
               <button class="cl-tab" data-tab="factures" onclick="clTab('factures',this)">Factures</button>
-              <button class="cl-tab" data-tab="discussion" onclick="clTab('discussion',this)">Discussion</button>
             </div>
 
             <!-- Tab: Infos -->
@@ -1048,16 +1070,6 @@
             </div>
 
             <!-- Tab: Discussion -->
-            <div id="cl-tab-discussion" class="cl-tab-pane" style="display:none">
-              <div class="panel">
-                <div class="panel-head"><h3>Discussion interne</h3></div>
-                <div id="cl-messages-list" style="padding:16px;min-height:80px;max-height:400px;overflow-y:auto"></div>
-                <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px">
-                  <input id="cl-msg-input" placeholder="Écrire un message…" style="flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:13px;outline:none" onkeydown="if(event.key==='Enter')clSendMsg()">
-                  <button onclick="clSendMsg()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer">Envoyer</button>
-                </div>
-              </div>
-            </div>
           </div>
 
           <!-- DEVIS MODAL -->
@@ -1329,8 +1341,83 @@
 
         <!-- ── LEADS ── -->
         <div id="page-leads" class="page">
-          <div style="margin-bottom:18px"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">BUSINESS</div><div style="font-size:22px;font-weight:800;margin-top:2px">Leads</div></div>
-          <div class="empty"><div class="ei">📥</div>Envoie-moi le screenshot de cette page pour que je la recrée.</div>
+          <!-- Header -->
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+            <div>
+              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">CRM — ACQUISITION</div>
+              <div style="font-size:26px;font-weight:800;margin:2px 0 4px">Leads</div>
+              <div style="font-size:13px;color:var(--muted)">Site, CSV (Google/Meta Ads), scraping — tout au même endroit.</div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+              <label for="ld-csv-input" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;color:#fff">↑ Importer CSV</label>
+              <input type="file" id="ld-csv-input" accept=".csv" style="display:none" onchange="ldImportCSV(this)">
+              <button onclick="ldOpenAdd()" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;color:#fff">+ Ajouter</button>
+              <button onclick="ldScraper()" style="background:var(--accent);color:#fff;border:none;border-radius:20px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer">⚡ Scraper</button>
+            </div>
+          </div>
+          <!-- Source tabs -->
+          <div style="display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:16px;overflow-x:auto">
+            <button class="ld-stab active" data-src="all" onclick="ldTabSource('all',this)">Tous <span id="ld-cnt-all" class="ld-cnt">0</span></button>
+            <button class="ld-stab" data-src="formulaire" onclick="ldTabSource('formulaire',this)">Formulaire <span id="ld-cnt-formulaire" class="ld-cnt">0</span></button>
+            <button class="ld-stab" data-src="site" onclick="ldTabSource('site',this)">Site <span id="ld-cnt-site" class="ld-cnt">0</span></button>
+            <button class="ld-stab" data-src="csv" onclick="ldTabSource('csv',this)">CSV <span id="ld-cnt-csv" class="ld-cnt">0</span></button>
+            <button class="ld-stab" data-src="scraping" onclick="ldTabSource('scraping',this)">Scraping <span id="ld-cnt-scraping" class="ld-cnt">0</span></button>
+            <button class="ld-stab" data-src="manuel" onclick="ldTabSource('manuel',this)">Manuel <span id="ld-cnt-manuel" class="ld-cnt">0</span></button>
+          </div>
+          <!-- Filtres -->
+          <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap">
+            <input id="ld-search" placeholder="Rechercher (nom, email, message...)" oninput="ldRender()" style="flex:1;min-width:180px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:#fff;font-size:13px;outline:none">
+            <select id="ld-filter-statut" onchange="ldRender()" style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:#fff;font-size:13px;outline:none">
+              <option value="">Tous statuts</option>
+              <option value="nouveau">Nouveau</option>
+              <option value="qualifie">Qualifié</option>
+              <option value="contacte">Contacté</option>
+              <option value="converti">Converti</option>
+              <option value="perdu">Perdu</option>
+            </select>
+            <select id="ld-filter-campagne" onchange="ldRender()" style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:#fff;font-size:13px;outline:none">
+              <option value="">Toutes campagnes</option>
+            </select>
+          </div>
+          <!-- Liste -->
+          <div id="ld-list"></div>
+
+          <!-- Modale ajout manuel -->
+          <div id="ld-add-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1100;align-items:center;justify-content:center;padding:16px" onclick="if(event.target.id==='ld-add-modal')ldCloseAdd()">
+            <div style="background:#18181f;border:1px solid var(--border);border-radius:18px;padding:28px 30px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;position:relative">
+              <button onclick="ldCloseAdd()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">×</button>
+              <h3 style="font-size:18px;font-weight:800;margin:0 0 20px">Ajouter un lead</h3>
+              <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Nom *</label>
+              <input id="ld-add-nom" placeholder="Prénom Nom" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:12px;outline:none;box-sizing:border-box">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+                <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Téléphone</label>
+                <input id="ld-add-tel" placeholder="0600000000" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
+                <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Email</label>
+                <input id="ld-add-email" type="email" placeholder="email@ex.fr" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+                <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Métier / Projet</label>
+                <input id="ld-add-metier" placeholder="Hôtellerie..." style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
+                <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Entreprise</label>
+                <input id="ld-add-entreprise" placeholder="Nom société" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+                <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Source</label>
+                <select id="ld-add-source" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
+                  <option value="manuel">Manuel</option>
+                  <option value="formulaire">Formulaire</option>
+                  <option value="site">Site</option>
+                  <option value="csv">CSV</option>
+                </select></div>
+                <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Campagne</label>
+                <input id="ld-add-campagne" placeholder="META ADS — V1..." style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
+              </div>
+              <div style="display:flex;gap:10px">
+                <button onclick="ldCloseAdd()" style="flex:1;padding:12px;border-radius:8px;border:none;background:rgba(255,255,255,.07);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer">Annuler</button>
+                <button onclick="ldAddManual()" style="flex:2;padding:12px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:700;cursor:pointer">+ Ajouter le lead</button>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- ── FORMULAIRE ── -->
@@ -1404,18 +1491,19 @@ function bootApp(email) {
   tcLoad(); tcRender();
   plLoad(); renderPipeline();
   clLoad(); clRenderGrid();
+  ldInit();
 }
 
 // Navigation
 const sections = {
   dashboard:'VUE D\'ENSEMBLE', pipeline:'BUSINESS', taches:'PILOTAGE',
-  clients:'BUSINESS', projets:'BUSINESS', leads:'BUSINESS',
+  clients:'BUSINESS', leads:'BUSINESS',
   formulaire:'BUSINESS', appels:'BUSINESS',
   documents:'OPÉRATIONS', facturation:'OPÉRATIONS', devis:'OPÉRATIONS'
 };
 const titles = {
   dashboard:'Dashboard', pipeline:'Pipeline', taches:'Tâches',
-  clients:'Clients', projets:'Projets', leads:'Leads',
+  clients:'Clients', leads:'Leads',
   formulaire:'Formulaire', appels:'Appels',
   documents:'Documents', facturation:'Facturation', devis:'Devis'
 };
@@ -1429,6 +1517,7 @@ function nav(el) {
   document.getElementById('tb-title').textContent   = titles[p]||p;
   if(p==='facturation') renderGlobalFactures();
   if(p==='devis') renderGlobalDevis();
+  if(p==='leads') ldRender();
 }
 
 function toggleTask(cb) {
@@ -2036,7 +2125,6 @@ function clOpenDetail(id) {
   clSetAds(150);
   clRenderDevis(c);
   clRenderFactures(c);
-  clRenderMessages(c);
 }
 
 function clTab(tab, btn) {
@@ -3115,6 +3203,269 @@ async function clGenerateAds() {
   if (!amt || amt < 1) { alert('Montant invalide.'); return; }
   const url = await clCallStripe('ads_custom', { customAmount: amt });
   if (url) { clSavePayLink(url, `Recharge Ads ${amt} €`); window.open(url, '_blank'); }
+}
+
+/* ═════════════════════════════════════════════════════════ */
+
+// ── LEADS ─────────────────────────────────────────────────
+const LD_KEY = 'ld_v1';
+let ldData = [];
+let ldCurrentSource = 'all';
+
+const LD_STATUT_LABELS = {
+  nouveau:  {label:'Nouveau',  cls:'ld-s-nouveau'},
+  qualifie: {label:'Qualifié', cls:'ld-s-qualifie'},
+  contacte: {label:'Contacté', cls:'ld-s-contacte'},
+  converti: {label:'Converti', cls:'ld-s-converti'},
+  perdu:    {label:'Perdu',    cls:'ld-s-perdu'},
+};
+const LD_SOURCE_LABELS = {
+  formulaire:{label:'Formulaire',cls:'ld-badge-formulaire'},
+  site:      {label:'Site',       cls:'ld-badge-site'},
+  csv:       {label:'CSV',        cls:'ld-badge-csv'},
+  scraping:  {label:'Scraping',   cls:'ld-badge-scraping'},
+  manuel:    {label:'Manuel',     cls:'ld-badge-manuel'},
+};
+
+const LD_DEFAULT = [];
+
+function ldInit() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(LD_KEY));
+    ldData = Array.isArray(raw) ? raw : [];
+  } catch { ldData = []; }
+  ldRender();
+}
+
+function ldSave() { localStorage.setItem(LD_KEY, JSON.stringify(ldData)); }
+
+function ldRender() {
+  const listEl = document.getElementById('ld-list');
+  if (!listEl) return;
+
+  const search = (document.getElementById('ld-search')?.value || '').toLowerCase();
+  const filtStatut = document.getElementById('ld-filter-statut')?.value || '';
+  const filtCampagne = document.getElementById('ld-filter-campagne')?.value || '';
+
+  // Update source tabs counts
+  ['all','formulaire','site','csv','scraping','manuel'].forEach(src => {
+    const el = document.getElementById('ld-cnt-' + src);
+    if (el) el.textContent = src === 'all' ? ldData.length : ldData.filter(l => l.source === src).length;
+  });
+
+  // Update campagne filter options
+  const campEl = document.getElementById('ld-filter-campagne');
+  if (campEl) {
+    const current = campEl.value;
+    const camps = [...new Set(ldData.map(l => l.campagne).filter(Boolean))];
+    campEl.innerHTML = '<option value="">Toutes campagnes</option>' +
+      camps.map(c => `<option value="${c}" ${c===current?'selected':''}>${c}</option>`).join('');
+  }
+
+  let filtered = ldData.filter(l => {
+    if (ldCurrentSource !== 'all' && l.source !== ldCurrentSource) return false;
+    if (filtStatut && l.statut !== filtStatut) return false;
+    if (filtCampagne && l.campagne !== filtCampagne) return false;
+    if (search) {
+      const hay = [l.nom,l.email,l.tel,l.metier,l.entreprise,l.message,l.campagne].join(' ').toLowerCase();
+      if (!hay.includes(search)) return false;
+    }
+    return true;
+  });
+
+  if (!filtered.length) {
+    listEl.innerHTML = `<div class="empty" style="padding:40px 20px"><div class="ei">🎯</div>Aucun lead trouvé.</div>`;
+    return;
+  }
+
+  listEl.innerHTML = filtered.map(l => ldCardHTML(l)).join('');
+}
+
+function ldCardHTML(l) {
+  const s = LD_STATUT_LABELS[l.statut] || LD_STATUT_LABELS.nouveau;
+  const src = LD_SOURCE_LABELS[l.source] || LD_SOURCE_LABELS.manuel;
+  const date = l.createdAt ? new Date(l.createdAt).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'}) : '';
+  const tel = l.tel ? `<a href="tel:${l.tel}" style="color:var(--muted);text-decoration:none;font-size:12px">📞 ${l.tel}</a>` : '';
+  const email = l.email ? `<a href="mailto:${l.email}" style="color:var(--muted);text-decoration:none;font-size:12px">✉ ${l.email}</a>` : '';
+  const wa = l.tel ? `<button onclick="ldWhatsApp('${l.id}')" style="background:rgba(37,211,102,.15);color:#25d366;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer">WhatsApp</button>` : '';
+  const metierStr = [l.metier,l.entreprise].filter(Boolean).join(' · ');
+  const notesBtnLabel = l._notesOpen ? 'Masquer notes' : 'Notes';
+  const notesArea = l._notesOpen
+    ? `<div style="margin-top:12px"><textarea id="ld-notes-${l.id}" rows="3" placeholder="Notes internes..." onblur="ldSaveNotes('${l.id}')" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px;color:#fff;font-size:12px;resize:vertical;outline:none;box-sizing:border-box">${l.notes||''}</textarea></div>`
+    : '';
+
+  return `<div class="ld-card" id="ld-card-${l.id}">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap">
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px">
+          <span style="font-size:15px;font-weight:800;color:#fff">${l.nom||'(sans nom)'}</span>
+          <span class="ld-badge ${src.cls}" style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px">${src.label}</span>
+          ${l.campagne ? `<span style="font-size:10px;color:var(--muted);background:rgba(255,255,255,.06);padding:2px 7px;border-radius:20px">${l.campagne}</span>` : ''}
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:6px">
+          ${metierStr ? `<span style="font-size:12px;color:var(--muted)">${metierStr}</span>` : ''}
+          ${tel}${email}
+        </div>
+        ${l.message ? `<div style="font-size:12px;color:var(--muted);font-style:italic;margin-top:4px;white-space:pre-wrap">${l.message}</div>` : ''}
+        ${notesArea}
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span class="ld-badge ${s.cls}" style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;cursor:pointer" onclick="ldCycleStatus('${l.id}')">${s.label}</span>
+          <button onclick="ldToggleMenu('${l.id}')" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;padding:2px 6px;line-height:1">⋯</button>
+        </div>
+        <div style="font-size:11px;color:var(--muted)">${date}</div>
+        <div id="ld-menu-${l.id}" style="display:none;background:#222;border:1px solid var(--border);border-radius:10px;padding:6px 0;min-width:150px;box-shadow:0 8px 24px rgba(0,0,0,.5);position:relative;z-index:100">
+          ${wa ? `<div onclick="ldWhatsApp('${l.id}')" style="padding:9px 16px;font-size:13px;cursor:pointer;color:#25d366" onmouseover="this.style.background='rgba(255,255,255,.05)'" onmouseout="this.style.background='none'">💬 WhatsApp</div>` : ''}
+          <div onclick="ldToggleNotes('${l.id}')" style="padding:9px 16px;font-size:13px;cursor:pointer" onmouseover="this.style.background='rgba(255,255,255,.05)'" onmouseout="this.style.background='none'">${notesBtnLabel}</div>
+          <div onclick="ldSetStatus('${l.id}','converti')" style="padding:9px 16px;font-size:13px;cursor:pointer;color:#4ade80" onmouseover="this.style.background='rgba(255,255,255,.05)'" onmouseout="this.style.background='none'">✓ Converti</div>
+          <div onclick="ldSetStatus('${l.id}','perdu')" style="padding:9px 16px;font-size:13px;cursor:pointer;color:#f87171" onmouseover="this.style.background='rgba(255,255,255,.05)'" onmouseout="this.style.background='none'">✗ Perdu</div>
+          <div onclick="ldDelete('${l.id}')" style="padding:9px 16px;font-size:13px;cursor:pointer;color:#f87171;border-top:1px solid var(--border);margin-top:4px" onmouseover="this.style.background='rgba(255,255,255,.05)'" onmouseout="this.style.background='none'">🗑 Supprimer</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function ldToggleMenu(id) {
+  const el = document.getElementById('ld-menu-' + id);
+  if (!el) return;
+  const wasOpen = el.style.display !== 'none';
+  // close all menus
+  document.querySelectorAll('[id^="ld-menu-"]').forEach(m => m.style.display = 'none');
+  if (!wasOpen) el.style.display = 'block';
+}
+
+function ldCycleStatus(id) {
+  const l = ldData.find(x => x.id === id);
+  if (!l) return;
+  const statuts = ['nouveau','qualifie','contacte','converti','perdu'];
+  const idx = statuts.indexOf(l.statut);
+  l.statut = statuts[(idx + 1) % statuts.length];
+  ldSave();
+  ldRender();
+}
+
+function ldSetStatus(id, statut) {
+  const l = ldData.find(x => x.id === id);
+  if (!l) return;
+  l.statut = statut;
+  ldSave();
+  ldRender();
+}
+
+function ldDelete(id) {
+  if (!confirm('Supprimer ce lead ?')) return;
+  ldData = ldData.filter(x => x.id !== id);
+  ldSave();
+  ldRender();
+}
+
+function ldWhatsApp(id) {
+  const l = ldData.find(x => x.id === id);
+  if (!l || !l.tel) return;
+  const tel = l.tel.replace(/\D/g, '');
+  const intl = tel.startsWith('0') ? '33' + tel.slice(1) : tel;
+  window.open('https://wa.me/' + intl, '_blank');
+}
+
+function ldToggleNotes(id) {
+  const l = ldData.find(x => x.id === id);
+  if (!l) return;
+  l._notesOpen = !l._notesOpen;
+  ldRender();
+}
+
+function ldSaveNotes(id) {
+  const l = ldData.find(x => x.id === id);
+  const ta = document.getElementById('ld-notes-' + id);
+  if (!l || !ta) return;
+  l.notes = ta.value;
+  ldSave();
+}
+
+function ldTabSource(src, btn) {
+  ldCurrentSource = src;
+  document.querySelectorAll('.ld-stab').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  ldRender();
+}
+
+function ldImportCSV(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const lines = e.target.result.split('\n').filter(l => l.trim());
+    if (lines.length < 2) { alert('CSV vide ou invalide.'); return; }
+    const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/"/g,''));
+    let added = 0;
+    for (let i = 1; i < lines.length; i++) {
+      const vals = lines[i].split(',').map(v => v.trim().replace(/"/g,''));
+      const row = {};
+      headers.forEach((h, idx) => row[h] = vals[idx] || '');
+      const nom = row['nom'] || row['name'] || row['prénom nom'] || row['full name'] || '';
+      if (!nom) continue;
+      ldData.unshift({
+        id: 'ld' + Date.now() + i,
+        nom, email: row['email'] || '', tel: row['téléphone'] || row['telephone'] || row['phone'] || row['tel'] || '',
+        metier: row['métier'] || row['metier'] || row['projet'] || '',
+        entreprise: row['entreprise'] || row['company'] || '',
+        source: 'csv',
+        campagne: row['campagne'] || row['campaign'] || '',
+        message: row['message'] || '',
+        statut: 'nouveau',
+        notes: '',
+        createdAt: new Date().toISOString(),
+      });
+      added++;
+    }
+    ldSave();
+    ldRender();
+    alert(`${added} leads importés avec succès.`);
+    input.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function ldScraper() {
+  alert('Fonctionnalité scraping en cours de développement.\n\nBientôt : extraction automatique de contacts depuis LinkedIn, Pages Jaunes, Google Maps...');
+}
+
+function ldOpenAdd() {
+  document.getElementById('ld-add-modal').style.display = 'flex';
+  document.getElementById('ld-add-nom').focus();
+}
+
+function ldCloseAdd() {
+  document.getElementById('ld-add-modal').style.display = 'none';
+  ['ld-add-nom','ld-add-tel','ld-add-email','ld-add-metier','ld-add-entreprise','ld-add-campagne'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('ld-add-source').value = 'manuel';
+}
+
+function ldAddManual() {
+  const nom = document.getElementById('ld-add-nom').value.trim();
+  if (!nom) { document.getElementById('ld-add-nom').focus(); return; }
+  ldData.unshift({
+    id: 'ld' + Date.now(),
+    nom,
+    tel:        document.getElementById('ld-add-tel').value.trim(),
+    email:      document.getElementById('ld-add-email').value.trim(),
+    metier:     document.getElementById('ld-add-metier').value.trim(),
+    entreprise: document.getElementById('ld-add-entreprise').value.trim(),
+    source:     document.getElementById('ld-add-source').value,
+    campagne:   document.getElementById('ld-add-campagne').value.trim(),
+    message: '',
+    statut: 'nouveau',
+    notes: '',
+    createdAt: new Date().toISOString(),
+  });
+  ldSave();
+  ldRender();
+  ldCloseAdd();
 }
 
 /* ═════════════════════════════════════════════════════════ */
