@@ -2204,29 +2204,141 @@ function dvPrint(did){dvPreview(did);}
 function dvPrintDv(dv) {
   const d=dv.data||{};
   const cPrix={'1x':'990,00 €','2x':'2 × 495,00 €','3x':'3 × 330,00 €','4x':'4 × 247,50 €'};
-  const cLbl={'1x':'Création de site web','2x':'Création de site web (2 versements)','3x':'Création de site web (3 versements)','4x':'Création de site web (4 versements)'};
-  const aLbl={'20':'Abonnement mensuel — Assistant Digital','49':'Abonnement mensuel — Gestion complète'};
+  const cDesc={'1x':'Conception, développement et mise en ligne. Site multi-pages, responsive, SEO local, boutons d\'action (appel, WhatsApp), formulaire de contact. 1ère version présentée gratuitement avant tout engagement.','2x':'Idem — règlement en 2 versements de 495,00 € espacés de 30 jours.','3x':'Idem — règlement en 3 versements de 330,00 € espacés de 30 jours.','4x':'Idem — règlement en 4 versements de 247,50 € espacés de 30 jours.'};
+  const cLbl={'1x':'Création de site web','2x':'Création de site web','3x':'Création de site web','4x':'Création de site web'};
+  const aLbl={'20':'Abonnement mensuel — Assistant Digital','49':'Abonnement mensuel — Gestion & Tranquillité'};
+  const aDesc={'20':'Hébergement inclus, support WhatsApp, modifications de contenu illimitées sous 48 h.','49':'Hébergement, sécurité SSL, support VIP WhatsApp, modifications illimitées sous 48 h, sauvegardes automatiques, surveillance technique.'};
   const aPrix={'20':'20,00 €/mois','49':'49,00 €/mois'};
   let lignes='';
-  if(d.creation)lignes+=`<tr><td style="padding:12px 8px;border-bottom:1px solid #eee;font-size:13px"><strong>${cLbl[d.creation]||'Création'}</strong><br><span style="color:#888;font-size:12px">Conception, développement, mise en ligne, formation</span></td><td style="padding:12px 8px;border-bottom:1px solid #eee;font-size:13px;text-align:right;font-weight:700;white-space:nowrap">${cPrix[d.creation]||''}</td></tr>`;
-  if(d.abo)lignes+=`<tr><td style="padding:12px 8px;border-bottom:1px solid #eee;font-size:13px"><strong>${aLbl[d.abo]||'Abonnement'}</strong><br><span style="color:#888;font-size:12px">Gestion mensuelle, mises à jour, support</span></td><td style="padding:12px 8px;border-bottom:1px solid #eee;font-size:13px;text-align:right;font-weight:700;white-space:nowrap">${aPrix[d.abo]||''}</td></tr>`;
-  if(!lignes)lignes=`<tr><td colspan="2" style="padding:20px;color:#888;text-align:center;font-size:13px">Aucune prestation sélectionnée</td></tr>`;
-  const idLine=d.idNum?`<br>${d.idType||'SIRET'} : ${d.idNum}`:'';
-  const valid=new Date();valid.setDate(valid.getDate()+30);
+  if(d.creation)lignes+=`<tr><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0"><div style="font-weight:700;font-size:14px;color:#111;margin-bottom:4px">${cLbl[d.creation]}</div><div style="font-size:12px;color:#777;line-height:1.6">${cDesc[d.creation]||''}</div></td><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0;text-align:right;vertical-align:top;white-space:nowrap"><span style="font-size:16px;font-weight:800;color:#f4926a">${cPrix[d.creation]}</span></td></tr>`;
+  if(d.abo)lignes+=`<tr><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0"><div style="font-weight:700;font-size:14px;color:#111;margin-bottom:4px">${aLbl[d.abo]}</div><div style="font-size:12px;color:#777;line-height:1.6">${aDesc[d.abo]||''}</div></td><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0;text-align:right;vertical-align:top;white-space:nowrap"><span style="font-size:16px;font-weight:800;color:#f4926a">${aPrix[d.abo]}</span></td></tr>`;
+  if(!lignes)lignes=`<tr><td colspan="2" style="padding:20px;color:#aaa;text-align:center;font-size:13px">Aucune prestation sélectionnée</td></tr>`;
+  const idLine=d.idNum?`<br><span style="font-size:11px;color:#aaa">${d.idType||'SIRET'} : ${d.idNum}</span>`:'';
+  const valid=new Date();valid.setDate(valid.getDate()+5);
   const validTxt=valid.toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
   const today=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
   const totalCell=`${d.creation?(cPrix[d.creation]||''):''}${d.creation&&d.abo?' + ':''}${d.abo?(aPrix[d.abo]||''):''}`;
-  const condCreation=d.creation?`• Création : ${cPrix[d.creation]||''} — premier versement à la signature.<br>`:'';
-  const condAbo=d.abo?`• Abonnement : ${aPrix[d.abo]||''} — ${d.creation?'démarre le 7 du mois suivant le dernier versement de création.':'premier prélèvement à la signature.'}<br>`:'';
-  const condCombo=d.creation&&d.abo?`• Aucun prélèvement d'abonnement tant que la création n'est pas intégralement réglée.<br>`:'';
 
-  const html=`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Devis ${dv.ref} — Potentieel</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff;color:#111;padding:40px;max-width:800px;margin:0 auto}@media print{body{padding:0}.no-print{display:none!important}}.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px}.logo{display:flex;align-items:center;gap:10px}.logo-icon{width:36px;height:36px;background:#f4926a;border-radius:8px;display:flex;align-items:center;justify-content:center}.logo-name{font-size:18px;font-weight:800;letter-spacing:1px;color:#111}.info{font-size:12px;color:#666;margin-top:8px;line-height:1.7}.badge{background:#f4926a;color:#fff;font-size:11px;font-weight:700;letter-spacing:1px;padding:4px 10px;border-radius:20px}.meta{text-align:right;font-size:13px;color:#444;margin-top:6px}.parties{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:36px;padding:24px;background:#f9f9f9;border-radius:12px}.plabel{font-size:10px;font-weight:700;color:#f4926a;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}.pname{font-size:15px;font-weight:700;color:#111;margin-bottom:4px}.pdetail{font-size:12px;color:#666;line-height:1.8}table{width:100%;border-collapse:collapse;margin-bottom:24px}thead th{background:#111;color:#fff;padding:10px 8px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}thead th:last-child{text-align:right}.total-row td{padding:14px 8px;font-weight:700;font-size:14px;border-top:2px solid #111}.total-val{color:#f4926a;font-size:15px;text-align:right}.cond{background:#f9f9f9;border-radius:10px;padding:16px;font-size:12px;color:#666;line-height:1.9;margin-bottom:24px}.sigs{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:32px}.sig{border:1px dashed #ddd;border-radius:8px;padding:16px;min-height:80px}.slabel{font-size:11px;color:#888;margin-bottom:8px}.btn{background:#f4926a;color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:24px}</style></head><body>
+  // Conditions de paiement
+  let cond='';
+  if(d.creation){
+    const n={'1x':1,'2x':2,'3x':3,'4x':4}[d.creation]||1;
+    const amt={'1x':'990,00','2x':'495,00','3x':'330,00','4x':'247,50'}[d.creation];
+    if(n===1)cond+=`<div class="cond-item"><span class="cond-dot"></span>Création du site : <strong>${amt} € à la validation de ce devis.</strong> La 1ère version du site est présentée gratuitement avant tout paiement.</div>`;
+    else cond+=`<div class="cond-item"><span class="cond-dot"></span>Création du site : <strong>${n} versements de ${amt} €</strong>, espacés de 30 jours. Le 1er versement est déclenché à la validation de ce devis. La 1ère version du site est présentée gratuitement avant tout paiement.</div>`;
+  }
+  if(d.abo){
+    const aboTxt=d.creation
+      ?`Aucun prélèvement d'abonnement pendant la phase de création. L'abonnement de <strong>${aPrix[d.abo]}</strong> démarre automatiquement le 7 du mois suivant le dernier versement de création. <em>Les mois de création sont offerts.</em>`
+      :`Abonnement de <strong>${aPrix[d.abo]}</strong> — premier prélèvement à la validation de ce devis. Résiliable à tout moment par simple message.`;
+    cond+=`<div class="cond-item"><span class="cond-dot"></span>${aboTxt}</div>`;
+  }
+  cond+=`<div class="cond-item"><span class="cond-dot" style="background:#f4926a"></span>Devis valable <strong>5 jours</strong> à compter de la date d'émission (jusqu'au ${validTxt}).</div>`;
+  cond+=`<div class="cond-item"><span class="cond-dot" style="background:#999"></span>TVA non applicable — art. 293B du CGI (micro-entreprise). Pas de TVA à récupérer.</div>`;
+
+  const html=`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Devis ${dv.ref} — Potentieel</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff;color:#111;padding:0;max-width:860px;margin:0 auto}
+@media print{.no-print{display:none!important}body{max-width:100%}}
+.topbar{background:#111;color:#fff;padding:16px 40px;display:flex;justify-content:space-between;align-items:center}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:32px;height:32px;background:#f4926a;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-name{font-size:16px;font-weight:800;letter-spacing:2px;color:#fff}
+.devis-tag{background:#f4926a;color:#fff;font-size:10px;font-weight:800;letter-spacing:2px;padding:5px 12px;border-radius:20px;text-transform:uppercase}
+.meta-top{text-align:right;font-size:12px;color:#aaa;line-height:1.8}
+.meta-top strong{color:#fff}
+.content{padding:32px 40px}
+.parties{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px}
+.party-card{border-radius:12px;padding:20px 22px}
+.party-card.prest{background:#fff8f5;border:1.5px solid #f4926a}
+.party-card.client{background:#f8f8f8;border:1.5px solid #e0e0e0}
+.party-label{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+.prest .party-label{color:#f4926a}
+.client .party-label{color:#999}
+.party-name{font-size:15px;font-weight:800;color:#111;margin-bottom:6px}
+.party-detail{font-size:12px;color:#666;line-height:1.9}
+table{width:100%;border-collapse:collapse;margin-bottom:28px;border-radius:10px;overflow:hidden}
+thead tr{background:#f4926a}
+thead th{color:#fff;padding:12px 14px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+thead th:last-child{text-align:right}
+.total-row{background:#111}
+.total-row td{padding:14px 14px;font-weight:800;font-size:14px;color:#fff}
+.total-row td:last-child{color:#f4926a;font-size:17px;text-align:right}
+.cond-box{background:#f8f8f8;border-radius:12px;padding:20px 22px;margin-bottom:28px}
+.cond-title{font-size:12px;font-weight:800;color:#111;letter-spacing:1px;text-transform:uppercase;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #f4926a;display:inline-block}
+.cond-item{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#555;line-height:1.7;margin-bottom:8px}
+.cond-dot{width:6px;height:6px;border-radius:50%;background:#f4926a;flex-shrink:0;margin-top:6px}
+.sigs{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:8px}
+.sig-box{border:1.5px dashed #ddd;border-radius:12px;padding:20px;min-height:100px}
+.sig-title{font-size:10px;font-weight:800;letter-spacing:1px;color:#f4926a;text-transform:uppercase;margin-bottom:10px}
+.sig-field{border-bottom:1px solid #e0e0e0;margin-bottom:10px;padding-bottom:6px;font-size:12px;color:#bbb}
+.btn{background:#f4926a;color:#fff;border:none;padding:12px 28px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;margin:20px 40px}
+</style></head><body>
 <button class="btn no-print" onclick="window.print()">🖨 Imprimer / Enregistrer en PDF</button>
-<div class="header"><div><div class="logo"><div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div><div class="logo-name">POTENTIEEL</div></div><div class="info">PERILLIAT EMRICK — Entrepreneur individuel · Micro-entreprise<br>SIREN : 990 572 117 · SIRET : 990 572 117 00010<br>TVA non applicable — art. 293B du CGI<br>RCS Chambéry : 990 572 117 R.C.S. Chambery</div></div><div style="text-align:right"><div class="badge">DEVIS</div><div class="meta"><strong>Réf.</strong> ${dv.ref}<br><strong>Date :</strong> ${today}<br><strong>Valable jusqu'au :</strong> ${validTxt}</div></div></div>
-<div class="parties"><div><div class="plabel">Prestataire</div><div class="pname">Potentieel</div><div class="pdetail">PERILLIAT EMRICK<br>contact@potentieel.fr<br>potentieel.fr</div></div><div><div class="plabel">Client</div><div class="pname">${d.entreprise||'—'}</div><div class="pdetail">${d.email||''}${d.email?'<br>':''}${d.tel||''}${d.tel?'<br>':''}${d.adresse||''}${idLine}</div></div></div>
-<table><thead><tr><th style="text-align:left">Prestation</th><th>Montant HT</th></tr></thead><tbody>${lignes}<tr class="total-row"><td>Total</td><td class="total-val">${totalCell||'—'}</td></tr></tbody></table>
-<div class="cond"><strong style="color:#111;display:block;margin-bottom:6px">Conditions de paiement</strong>${condCreation}${condAbo}${condCombo}• Devis valable 30 jours à compter de la date d'émission.<br>• TVA non applicable — art. 293B du CGI (micro-entreprise).</div>
-<div class="sigs"><div class="sig"><div class="slabel">Bon pour accord — Client</div><div style="font-size:12px;color:#bbb;margin-top:8px">Date et signature :</div></div><div class="sig"><div class="slabel">Émetteur — Potentieel</div><div style="font-size:12px;color:#bbb;margin-top:8px">PERILLIAT EMRICK</div></div></div>
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
+    <div class="logo-name">POTENTIEEL</div>
+  </div>
+  <div style="text-align:center"><div class="devis-tag">Devis</div></div>
+  <div class="meta-top"><strong>Réf. ${dv.ref}</strong><br>Émis le ${today}<br>Valable jusqu'au <strong style="color:#f4926a">${validTxt}</strong></div>
+</div>
+<div class="content">
+<div class="parties">
+  <div class="party-card prest">
+    <div class="party-label">Prestataire</div>
+    <div class="party-name">Potentieel</div>
+    <div class="party-detail">
+      PERILLIAT EMRICK<br>
+      Entrepreneur individuel · Micro-entreprise<br>
+      SIREN : 990 572 117<br>
+      SIRET : 990 572 117 00010<br>
+      RCS Chambéry : 990 572 117 R.C.S. Chambery<br>
+      TVA non applicable — art. 293B du CGI<br>
+      contact@potentieel.fr · potentieel.fr
+    </div>
+  </div>
+  <div class="party-card client">
+    <div class="party-label">Client</div>
+    <div class="party-name">${d.entreprise||'—'}</div>
+    <div class="party-detail">
+      ${d.email||''}${d.email?'<br>':''}
+      ${d.tel||''}${d.tel?'<br>':''}
+      ${d.adresse||''}${d.adresse?'<br>':''}
+      ${idLine}
+    </div>
+  </div>
+</div>
+
+<table>
+  <thead><tr><th style="text-align:left">Prestation</th><th style="width:160px">Prix</th></tr></thead>
+  <tbody>
+    ${lignes}
+    <tr class="total-row"><td>Total estimé</td><td style="text-align:right">${totalCell||'—'}</td></tr>
+  </tbody>
+</table>
+
+<div class="cond-box">
+  <div class="cond-title">Conditions de paiement</div>
+  ${cond}
+</div>
+
+<div class="sigs">
+  <div class="sig-box">
+    <div class="sig-title">Bon pour accord — Client</div>
+    <div class="sig-field">Date : ___________________</div>
+    <div class="sig-field">Signature :</div>
+    <div style="height:40px"></div>
+  </div>
+  <div class="sig-box">
+    <div class="sig-title">Potentieel — Émetteur</div>
+    <div class="sig-field">PERILLIAT EMRICK</div>
+    <div class="sig-field">Date : ${today}</div>
+    <div style="height:40px"></div>
+  </div>
+</div>
+</div>
 </body></html>`;
   const w=window.open('','_blank');if(w){w.document.write(html);w.document.close();}
 }
