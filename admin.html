@@ -2239,49 +2239,59 @@ function dvPrintDv(dv) {
   const html=`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Devis ${dv.ref} — Potentieel</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff;color:#111;padding:0;max-width:860px;margin:0 auto}
-@media print{.no-print{display:none!important}body{max-width:100%}}
-.topbar{background:#111;color:#fff;padding:16px 40px;display:flex;justify-content:space-between;align-items:center}
-.logo{display:flex;align-items:center;gap:10px}
-.logo-icon{width:32px;height:32px;background:#f4926a;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.logo-name{font-size:16px;font-weight:800;letter-spacing:2px;color:#fff}
-.devis-tag{background:#f4926a;color:#fff;font-size:10px;font-weight:800;letter-spacing:2px;padding:5px 12px;border-radius:20px;text-transform:uppercase}
-.meta-top{text-align:right;font-size:12px;color:#aaa;line-height:1.8}
+html{font-size:11px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff;color:#111;padding:0;max-width:820px;margin:0 auto}
+@media print{
+  .no-print{display:none!important}
+  body{max-width:100%;font-size:10px}
+  @page{margin:0;size:A4}
+  .content{padding:16px 28px}
+  .topbar{padding:12px 28px}
+}
+.topbar{background:#111;color:#fff;padding:14px 32px;display:flex;justify-content:space-between;align-items:center}
+.logo{display:flex;align-items:center;gap:8px}
+.logo-icon{width:28px;height:28px;background:#f4926a;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-name{font-size:14px;font-weight:800;letter-spacing:2px;color:#fff}
+.devis-tag{background:#f4926a;color:#fff;font-size:9px;font-weight:800;letter-spacing:2px;padding:4px 10px;border-radius:20px;text-transform:uppercase}
+.meta-top{text-align:right;font-size:11px;color:#aaa;line-height:1.7}
 .meta-top strong{color:#fff}
-.content{padding:32px 40px}
-.parties{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px}
-.party-card{border-radius:12px;padding:20px 22px}
+.content{padding:20px 32px 16px}
+.parties{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
+.party-card{border-radius:9px;padding:14px 16px}
 .party-card.prest{background:#fff8f5;border:1.5px solid #f4926a}
 .party-card.client{background:#f8f8f8;border:1.5px solid #e0e0e0}
-.party-label{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+.party-label{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:7px}
 .prest .party-label{color:#f4926a}
 .client .party-label{color:#999}
-.party-name{font-size:15px;font-weight:800;color:#111;margin-bottom:6px}
-.party-detail{font-size:12px;color:#666;line-height:1.9}
-table{width:100%;border-collapse:collapse;margin-bottom:28px;border-radius:10px;overflow:hidden}
+.party-name{font-size:13px;font-weight:800;color:#111;margin-bottom:4px}
+.party-detail{font-size:11px;color:#666;line-height:1.8}
+.table-wrap{border:1.5px solid #e8e8e8;border-radius:10px;overflow:hidden;margin-bottom:16px}
+table{width:100%;border-collapse:collapse}
 thead tr{background:#f4926a}
-thead th{color:#fff;padding:12px 14px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+thead th{color:#fff;padding:9px 12px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
 thead th:last-child{text-align:right}
+tbody tr:last-child td{border-bottom:none}
 .total-row{background:#111}
-.total-row td{padding:14px 14px;font-weight:800;font-size:14px;color:#fff}
-.total-row td:last-child{color:#f4926a;font-size:17px;text-align:right}
-.cond-box{background:#f8f8f8;border-radius:12px;padding:20px 22px;margin-bottom:28px}
-.cond-title{font-size:12px;font-weight:800;color:#111;letter-spacing:1px;text-transform:uppercase;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #f4926a;display:inline-block}
-.cond-item{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#555;line-height:1.7;margin-bottom:8px}
-.cond-dot{width:6px;height:6px;border-radius:50%;background:#f4926a;flex-shrink:0;margin-top:6px}
-.sigs{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:8px}
-.sig-box{border:1.5px dashed #ddd;border-radius:12px;padding:20px;min-height:100px}
-.sig-title{font-size:10px;font-weight:800;letter-spacing:1px;color:#f4926a;text-transform:uppercase;margin-bottom:10px}
-.sig-field{border-bottom:1px solid #e0e0e0;margin-bottom:10px;padding-bottom:6px;font-size:12px;color:#bbb}
-.btn{background:#f4926a;color:#fff;border:none;padding:12px 28px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;margin:20px 40px}
+.total-row td{padding:10px 12px;font-weight:800;font-size:12px;color:#fff}
+.total-row td:last-child{color:#f4926a;font-size:14px;text-align:right}
+.cond-box{background:#f8f8f8;border:1px solid #e8e8e8;border-radius:9px;padding:14px 16px;margin-bottom:14px}
+.cond-title{font-size:10px;font-weight:800;color:#111;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid #f4926a;display:inline-block}
+.cond-item{display:flex;align-items:flex-start;gap:7px;font-size:11px;color:#444;line-height:1.65;margin-bottom:6px}
+.cond-dot{width:5px;height:5px;border-radius:50%;background:#f4926a;flex-shrink:0;margin-top:5px}
+.sigs{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.sig-box{border:1.5px dashed #ddd;border-radius:9px;padding:12px 14px}
+.sig-title{font-size:9px;font-weight:800;letter-spacing:1px;color:#f4926a;text-transform:uppercase;margin-bottom:8px}
+.sig-field{border-bottom:1px solid #e8e8e8;margin-bottom:7px;padding-bottom:4px;font-size:11px;color:#bbb}
+.sig-space{height:28px}
+.btn{background:#f4926a;color:#fff;border:none;padding:10px 24px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;margin:14px 32px}
 </style></head><body>
 <button class="btn no-print" onclick="window.print()">🖨 Imprimer / Enregistrer en PDF</button>
 <div class="topbar">
   <div class="logo">
-    <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
+    <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
     <div class="logo-name">POTENTIEEL</div>
   </div>
-  <div style="text-align:center"><div class="devis-tag">Devis</div></div>
+  <div class="devis-tag">Devis</div>
   <div class="meta-top"><strong>Réf. ${dv.ref}</strong><br>Émis le ${today}<br>Valable jusqu'au <strong style="color:#f4926a">${validTxt}</strong></div>
 </div>
 <div class="content">
@@ -2289,35 +2299,24 @@ thead th:last-child{text-align:right}
   <div class="party-card prest">
     <div class="party-label">Prestataire</div>
     <div class="party-name">Potentieel</div>
-    <div class="party-detail">
-      PERILLIAT EMRICK<br>
-      Entrepreneur individuel · Micro-entreprise<br>
-      SIREN : 990 572 117<br>
-      SIRET : 990 572 117 00010<br>
-      RCS Chambéry : 990 572 117 R.C.S. Chambery<br>
-      TVA non applicable — art. 293B du CGI<br>
-      contact@potentieel.fr · potentieel.fr
-    </div>
+    <div class="party-detail">PERILLIAT EMRICK — Entrepreneur individuel<br>SIREN : 990 572 117 · SIRET : 990 572 117 00010<br>RCS Chambéry · TVA non applicable (art. 293B CGI)<br>contact@potentieel.fr · potentieel.fr</div>
   </div>
   <div class="party-card client">
     <div class="party-label">Client</div>
     <div class="party-name">${d.entreprise||'—'}</div>
-    <div class="party-detail">
-      ${d.email||''}${d.email?'<br>':''}
-      ${d.tel||''}${d.tel?'<br>':''}
-      ${d.adresse||''}${d.adresse?'<br>':''}
-      ${idLine}
-    </div>
+    <div class="party-detail">${d.email||''}${d.email?'<br>':''}${d.tel||''}${d.tel?'<br>':''}${d.adresse||''}${d.adresse?'<br>':''}${idLine}</div>
   </div>
 </div>
 
+<div class="table-wrap">
 <table>
-  <thead><tr><th style="text-align:left">Prestation</th><th style="width:160px">Prix</th></tr></thead>
+  <thead><tr><th style="text-align:left">Prestation</th><th style="width:150px">Prix</th></tr></thead>
   <tbody>
     ${lignes}
     <tr class="total-row"><td>Total estimé</td><td style="text-align:right">${totalCell||'—'}</td></tr>
   </tbody>
 </table>
+</div>
 
 <div class="cond-box">
   <div class="cond-title">Conditions de paiement</div>
@@ -2329,13 +2328,13 @@ thead th:last-child{text-align:right}
     <div class="sig-title">Bon pour accord — Client</div>
     <div class="sig-field">Date : ___________________</div>
     <div class="sig-field">Signature :</div>
-    <div style="height:40px"></div>
+    <div class="sig-space"></div>
   </div>
   <div class="sig-box">
     <div class="sig-title">Potentieel — Émetteur</div>
     <div class="sig-field">PERILLIAT EMRICK</div>
     <div class="sig-field">Date : ${today}</div>
-    <div style="height:40px"></div>
+    <div class="sig-space"></div>
   </div>
 </div>
 </div>
