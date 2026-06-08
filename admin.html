@@ -1691,18 +1691,36 @@
             .pl-day.today .pl-day-num{color:var(--accent)}
             .pl-task-pill{font-size:10px;background:rgba(244,146,106,.15);color:var(--accent);border-radius:4px;padding:2px 5px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
             .pl-task-pill.done{background:rgba(34,197,94,.1);color:#4ade80;text-decoration:line-through}
-            .pl-task-pill.other{background:rgba(96,165,250,.1);color:var(--blue)}
             .pl-nav{display:flex;align-items:center;gap:12px}
             .pl-nav button{background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;color:#fff;cursor:pointer}
-            .pl-month-title{font-size:16px;font-weight:800;min-width:160px;text-align:center}
-            .pl-list{display:none}
+            .pl-month-title{font-size:16px;font-weight:800;min-width:170px;text-align:center}
+            .pl-view-btn{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer}
+            .pl-view-btn.active{background:rgba(244,146,106,.15);color:var(--accent);border-color:rgba(244,146,106,.3)}
+            .pln-tl-wrap{display:flex;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--card);margin-top:14px}
+            .pln-tl-time{width:50px;flex-shrink:0;border-right:1px solid var(--border)}
+            .pln-tl-hour{height:52px;font-size:10px;color:var(--muted);text-align:right;padding:0 8px;box-sizing:border-box;transform:translateY(-6px)}
+            .pln-tl-cols{flex:1;display:flex;overflow-x:auto}
+            .pln-tl-col{flex:1;min-width:90px;position:relative;border-right:1px solid rgba(255,255,255,.04)}
+            .pln-tl-col:last-child{border-right:none}
+            .pln-tl-day-hd{text-align:center;font-size:11px;font-weight:700;color:var(--muted);padding:8px 4px;text-transform:uppercase;border-bottom:1px solid var(--border);height:34px;box-sizing:border-box}
+            .pln-tl-day-hd.today{color:var(--accent)}
+            .pln-tl-cell{height:52px;border-bottom:1px solid rgba(255,255,255,.03);cursor:pointer}
+            .pln-tl-cell:hover{background:rgba(244,146,106,.05)}
+            .pln-tl-block{position:absolute;left:3px;right:3px;background:rgba(244,146,106,.18);border-left:3px solid var(--accent);border-radius:6px;padding:4px 7px;font-size:11px;font-weight:600;color:#fff;overflow:hidden;cursor:pointer;z-index:2;box-sizing:border-box}
+            .pln-tl-block.done{background:rgba(34,197,94,.13);border-left-color:#4ade80;text-decoration:line-through;opacity:.75}
+            .pln-tl-block .tm{font-size:9px;font-weight:500;opacity:.75;display:block}
           </style>
           <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:16px">
             <div>
               <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">PILOTAGE</div>
               <div style="font-size:24px;font-weight:800;margin:2px 0 3px">Planning</div>
             </div>
-            <div style="display:flex;gap:8px;align-items:center">
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <div style="display:flex;gap:6px">
+                <button class="pl-view-btn active" data-v="month" onclick="plSetView('month',this)">Mois</button>
+                <button class="pl-view-btn" data-v="week" onclick="plSetView('week',this)">Semaine</button>
+                <button class="pl-view-btn" data-v="day" onclick="plSetView('day',this)">Jour</button>
+              </div>
               <div class="pl-nav">
                 <button onclick="plPrev()">‹</button>
                 <div class="pl-month-title" id="pl-month-title"></div>
@@ -1711,34 +1729,61 @@
               <button onclick="plOpenAdd(null)" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer">+ Tâche</button>
             </div>
           </div>
-          <!-- Days header -->
-          <div class="pl-grid" id="pl-header"></div>
-          <!-- Calendar -->
-          <div class="pl-grid" id="pl-calendar" style="margin-top:4px"></div>
 
-          <!-- Modal ajout tâche -->
-          <div id="pl-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1100;align-items:center;justify-content:center;padding:16px" onclick="if(event.target.id==='pl-modal')plCloseModal()">
-            <div style="background:#18181f;border:1px solid var(--border);border-radius:18px;padding:26px 28px;width:100%;max-width:420px;position:relative">
+          <!-- Vue Mois -->
+          <div id="pl-month-view">
+            <div class="pl-grid" id="pl-header"></div>
+            <div class="pl-grid" id="pl-calendar" style="margin-top:4px"></div>
+          </div>
+
+          <!-- Vue Semaine / Jour -->
+          <div id="pl-timeline-view" style="display:none">
+            <div class="pln-tl-wrap">
+              <div class="pln-tl-time" id="pln-tl-time"></div>
+              <div class="pln-tl-cols" id="pln-tl-cols"></div>
+            </div>
+          </div>
+
+          <!-- Modal ajout/édition tâche -->
+          <div id="pln-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1100;align-items:center;justify-content:center;padding:16px" onclick="if(event.target.id==='pln-modal')plCloseModal()">
+            <div style="background:#18181f;border:1px solid var(--border);border-radius:18px;padding:26px 28px;width:100%;max-width:440px;position:relative;max-height:90vh;overflow-y:auto">
               <button onclick="plCloseModal()" style="position:absolute;top:14px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">×</button>
-              <h3 style="font-size:17px;font-weight:800;margin:0 0 16px">Nouvelle tâche</h3>
-              <input type="hidden" id="pl-task-id">
+              <h3 id="pln-modal-title" style="font-size:17px;font-weight:800;margin:0 0 16px">Nouvelle tâche</h3>
+              <input type="hidden" id="pln-task-id">
               <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Titre *</label>
-              <input id="pl-task-title" placeholder="Ex : Appel Cédric" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:12px;outline:none;box-sizing:border-box">
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+              <input id="pln-task-title" placeholder="Ex : Appel Cédric" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:12px;outline:none;box-sizing:border-box">
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px">
                 <div>
                   <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Date</label>
-                  <input id="pl-task-date" type="date" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                  <input id="pln-task-date" type="date" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
                 </div>
                 <div>
-                  <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Statut</label>
-                  <select id="pl-task-status" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
-                    <option value="todo">À faire</option>
-                    <option value="done">Fait ✓</option>
+                  <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Heure</label>
+                  <input id="pln-task-time" type="time" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                </div>
+                <div>
+                  <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Durée</label>
+                  <select id="pln-task-duration" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
+                    <option value="30">30 min</option>
+                    <option value="60" selected>1 h</option>
+                    <option value="90">1 h 30</option>
+                    <option value="120">2 h</option>
+                    <option value="180">3 h</option>
+                    <option value="240">4 h</option>
                   </select>
                 </div>
               </div>
+              <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Description</label>
+              <textarea id="pln-task-desc" rows="2" placeholder="Détails…" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;resize:vertical;box-sizing:border-box;margin-bottom:12px"></textarea>
+              <div style="margin-bottom:16px">
+                <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Statut</label>
+                <select id="pln-task-status" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
+                  <option value="todo">À faire</option>
+                  <option value="done">Fait ✓</option>
+                </select>
+              </div>
               <div style="display:flex;gap:10px">
-                <button id="pl-delete-btn" onclick="plDeleteTask()" style="flex:1;padding:11px;border-radius:8px;border:none;background:rgba(239,68,68,.12);color:#f87171;font-size:13px;font-weight:700;cursor:pointer;display:none">Supprimer</button>
+                <button id="pln-delete-btn" onclick="plDeleteTask()" style="flex:1;padding:11px;border-radius:8px;border:none;background:rgba(239,68,68,.12);color:#f87171;font-size:13px;font-weight:700;cursor:pointer;display:none">Supprimer</button>
                 <button onclick="plSaveTask()" style="flex:2;padding:11px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:700;cursor:pointer">Enregistrer</button>
               </div>
             </div>
@@ -2057,6 +2102,11 @@ function tcRender() {
         el.className = 'tc-card';
         el.id = 'tc-'+t.id;
         el.draggable = true;
+        el.style.cursor = 'pointer';
+        el.addEventListener('click', ev => {
+          if (ev.target.closest('.tc-card-del')) return;
+          tcOpenEditModal(t.id);
+        });
         const retard = isRetard(t.due);
         const avHtml = t.assignees.map(a => a==='eloise'
           ? '<div class="tc-av av-el">É</div>'
@@ -2166,20 +2216,42 @@ function tcOpenModal(prefill) {
 function tcCloseModal() { document.getElementById('tc-modal').style.display='none'; }
 function tcCloseOut(e)  { if(e.target.id==='tc-modal') tcCloseModal(); }
 
+function tcOpenEditModal(id) {
+  const t = tcData.find(x=>x.id===id);
+  if (!t) return;
+  document.getElementById('tc-edit-id').value  = t.id;
+  document.getElementById('tc-m-title').value  = t.title || '';
+  document.getElementById('tc-m-desc').value   = t.desc  || '';
+  document.getElementById('tc-m-status').value = t.status|| 'afaire';
+  document.getElementById('tc-m-pri').value    = t.pri   || 'moyenne';
+  document.getElementById('tc-m-due').value    = t.due   || '';
+  document.getElementById('tc-m-eloise').checked = t.assignees?.includes('eloise') || false;
+  document.getElementById('tc-m-emrick').checked = t.assignees?.includes('emrick') || false;
+  document.getElementById('tc-modal-title').textContent = 'Modifier la tâche';
+  document.getElementById('tc-modal').style.display = 'flex';
+  setTimeout(()=>document.getElementById('tc-m-title').focus(), 50);
+}
+
 function tcSaveTask() {
   const title = document.getElementById('tc-m-title').value.trim();
   if (!title) { alert('Renseignez un titre.'); return; }
-  const id = 't'+Date.now();
+  const editId = document.getElementById('tc-edit-id').value;
   const assignees = [];
   if (document.getElementById('tc-m-eloise').checked) assignees.push('eloise');
   if (document.getElementById('tc-m-emrick').checked) assignees.push('emrick');
-  tcData.push({
-    id, status: document.getElementById('tc-m-status').value,
+  const fields = {
+    status: document.getElementById('tc-m-status').value,
     pri: document.getElementById('tc-m-pri').value,
     title, desc: document.getElementById('tc-m-desc').value.trim(),
     due: document.getElementById('tc-m-due').value,
     assignees
-  });
+  };
+  if (editId) {
+    const t = tcData.find(x=>x.id===editId);
+    if (t) Object.assign(t, fields);
+  } else {
+    tcData.push({ id: 't'+Date.now(), ...fields });
+  }
   tcSave(); tcRender(); tcCloseModal();
 }
 
@@ -4514,9 +4586,12 @@ function obCloseModal() {
    PLANNING
 ═══════════════════════════════════════════════ */
 let plTasks = [];
-let plYear = new Date().getFullYear();
-let plMonth = new Date().getMonth();
+let plCursor = new Date();
+let plView = 'month'; // 'month' | 'week' | 'day'
 let plEditTaskId = null;
+const PL_HOUR_START = 7;
+const PL_HOUR_END = 21;
+const PL_ROW_H = 52;
 
 async function plInit() {
   const { data } = await sb.from('planning_tasks').select('*');
@@ -4524,23 +4599,61 @@ async function plInit() {
   plRender();
 }
 
+function plDateStr(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function plMondayOf(d) {
+  const x = new Date(d);
+  let dow = x.getDay();
+  dow = dow === 0 ? 6 : dow - 1;
+  x.setDate(x.getDate() - dow);
+  x.setHours(0,0,0,0);
+  return x;
+}
+function plSameDay(a,b){ return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
+
+function plSetView(v, btn) {
+  plView = v;
+  document.querySelectorAll('.pl-view-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.getElementById('pl-month-view').style.display = v === 'month' ? '' : 'none';
+  document.getElementById('pl-timeline-view').style.display = v === 'month' ? 'none' : '';
+  plRender();
+}
+
+function plPrev() {
+  if (plView === 'month') plCursor.setMonth(plCursor.getMonth()-1);
+  else if (plView === 'week') plCursor.setDate(plCursor.getDate()-7);
+  else plCursor.setDate(plCursor.getDate()-1);
+  plRender();
+}
+function plNext() {
+  if (plView === 'month') plCursor.setMonth(plCursor.getMonth()+1);
+  else if (plView === 'week') plCursor.setDate(plCursor.getDate()+7);
+  else plCursor.setDate(plCursor.getDate()+1);
+  plRender();
+}
+
 function plRender() {
+  if (plView === 'month') plRenderMonth();
+  else plRenderTimeline();
+}
+
+function plRenderMonth() {
   const months = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
   const days = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+  const plYear = plCursor.getFullYear(), plMonth = plCursor.getMonth();
   document.getElementById('pl-month-title').textContent = `${months[plMonth]} ${plYear}`;
 
-  // Header
   document.getElementById('pl-header').innerHTML = days.map(d => `<div class="pl-day-hd">${d}</div>`).join('');
 
-  // First day of month (ISO: Mon=1)
   const first = new Date(plYear, plMonth, 1);
-  let startDow = first.getDay(); // 0=Sun
-  startDow = startDow === 0 ? 6 : startDow - 1; // Mon=0
+  let startDow = first.getDay();
+  startDow = startDow === 0 ? 6 : startDow - 1;
   const daysInMonth = new Date(plYear, plMonth + 1, 0).getDate();
   const today = new Date();
 
   let cells = '';
-  // Empty cells before
   for (let i = 0; i < startDow; i++) cells += '<div></div>';
   for (let d = 1; d <= daysInMonth; d++) {
     const dateStr = `${plYear}-${String(plMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
@@ -4557,37 +4670,99 @@ function plRender() {
   document.getElementById('pl-calendar').innerHTML = cells;
 }
 
-function plPrev() { if (plMonth === 0) { plMonth=11; plYear--; } else plMonth--; plRender(); }
-function plNext() { if (plMonth === 11) { plMonth=0; plYear++; } else plMonth++; plRender(); }
+function plRenderTimeline() {
+  const months = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  const dayNames = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+  const today = new Date();
+  let dayList = [];
+  if (plView === 'week') {
+    const mon = plMondayOf(plCursor);
+    for (let i=0;i<7;i++){ const d=new Date(mon); d.setDate(mon.getDate()+i); dayList.push(d); }
+    const sun = dayList[6];
+    document.getElementById('pl-month-title').textContent =
+      `${mon.getDate()} ${months[mon.getMonth()].slice(0,3)} – ${sun.getDate()} ${months[sun.getMonth()].slice(0,3)} ${sun.getFullYear()}`;
+  } else {
+    dayList = [new Date(plCursor)];
+    document.getElementById('pl-month-title').textContent =
+      `${dayNames[(plCursor.getDay()+6)%7]} ${plCursor.getDate()} ${months[plCursor.getMonth()]} ${plCursor.getFullYear()}`;
+  }
 
-function plOpenAdd(id, prefillDate) {
+  let timeHtml = `<div class="pln-tl-day-hd"></div>`;
+  for (let h = PL_HOUR_START; h < PL_HOUR_END; h++) {
+    timeHtml += `<div class="pln-tl-hour">${String(h).padStart(2,'0')}:00</div>`;
+  }
+  document.getElementById('pln-tl-time').innerHTML = timeHtml;
+
+  const totalRows = PL_HOUR_END - PL_HOUR_START;
+  let colsHtml = '';
+  dayList.forEach(d => {
+    const dateStr = plDateStr(d);
+    const isToday = plSameDay(d, today);
+    let cellsHtml = '';
+    for (let h = PL_HOUR_START; h < PL_HOUR_END; h++) {
+      cellsHtml += `<div class="pln-tl-cell" onclick="plOpenAdd(null,'${dateStr}','${String(h).padStart(2,'0')}:00')"></div>`;
+    }
+    const dayTasks = plTasks.filter(t => t.date === dateStr && t.start_time);
+    let blocksHtml = '';
+    dayTasks.forEach(t => {
+      const [hh, mm] = t.start_time.split(':').map(Number);
+      const startMin = (hh - PL_HOUR_START) * 60 + (mm || 0);
+      const dur = t.duration_min || 60;
+      if (startMin < 0 || startMin >= totalRows*60) return;
+      const top = 34 + (startMin / 60) * PL_ROW_H;
+      const height = Math.max(20, (dur / 60) * PL_ROW_H - 2);
+      const endH = Math.floor((hh*60+mm+dur)/60), endM = (hh*60+mm+dur)%60;
+      blocksHtml += `<div class="pln-tl-block${t.status==='done'?' done':''}" style="top:${top}px;height:${height}px" title="${t.title}" onclick="event.stopPropagation();plOpenAdd('${t.id}')">
+        <span class="tm">${t.start_time.slice(0,5)}–${String(endH).padStart(2,'0')}:${String(endM).padStart(2,'0')}</span>${t.title}
+      </div>`;
+    });
+    colsHtml += `<div class="pln-tl-col">
+      <div class="pln-tl-day-hd${isToday?' today':''}">${dayNames[(d.getDay()+6)%7]} ${d.getDate()}</div>
+      <div style="position:relative">${cellsHtml}${blocksHtml}</div>
+    </div>`;
+  });
+  document.getElementById('pln-tl-cols').innerHTML = colsHtml;
+}
+
+function plOpenAdd(id, prefillDate, prefillTime) {
   plEditTaskId = id || null;
+  document.getElementById('pln-modal-title').textContent = id ? 'Modifier la tâche' : 'Nouvelle tâche';
   if (id) {
     const t = plTasks.find(x => x.id === id);
     if (!t) return;
-    document.getElementById('pl-task-id').value = t.id;
-    document.getElementById('pl-task-title').value = t.title;
-    document.getElementById('pl-task-date').value = t.date || '';
-    document.getElementById('pl-task-status').value = t.status || 'todo';
-    document.getElementById('pl-delete-btn').style.display = '';
+    document.getElementById('pln-task-id').value = t.id;
+    document.getElementById('pln-task-title').value = t.title;
+    document.getElementById('pln-task-date').value = t.date || '';
+    document.getElementById('pln-task-time').value = t.start_time ? t.start_time.slice(0,5) : '';
+    document.getElementById('pln-task-duration').value = t.duration_min || 60;
+    document.getElementById('pln-task-desc').value = t.description || '';
+    document.getElementById('pln-task-status').value = t.status || 'todo';
+    document.getElementById('pln-delete-btn').style.display = '';
   } else {
-    document.getElementById('pl-task-id').value = '';
-    document.getElementById('pl-task-title').value = '';
-    document.getElementById('pl-task-date').value = prefillDate || '';
-    document.getElementById('pl-task-status').value = 'todo';
-    document.getElementById('pl-delete-btn').style.display = 'none';
+    document.getElementById('pln-task-id').value = '';
+    document.getElementById('pln-task-title').value = '';
+    document.getElementById('pln-task-date').value = prefillDate || '';
+    document.getElementById('pln-task-time').value = prefillTime || '';
+    document.getElementById('pln-task-duration').value = 60;
+    document.getElementById('pln-task-desc').value = '';
+    document.getElementById('pln-task-status').value = 'todo';
+    document.getElementById('pln-delete-btn').style.display = 'none';
   }
-  document.getElementById('pl-modal').style.display = 'flex';
-  setTimeout(() => document.getElementById('pl-task-title').focus(), 100);
+  document.getElementById('pln-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('pln-task-title').focus(), 100);
 }
 
 async function plSaveTask() {
-  const title = document.getElementById('pl-task-title').value.trim();
-  if (!title) { document.getElementById('pl-task-title').focus(); return; }
+  const title = document.getElementById('pln-task-title').value.trim();
+  if (!title) { document.getElementById('pln-task-title').focus(); return; }
+  const time = document.getElementById('pln-task-time').value;
   const payload = {
     title,
-    date: document.getElementById('pl-task-date').value || null,
-    status: document.getElementById('pl-task-status').value
+    date: document.getElementById('pln-task-date').value || null,
+    start_time: time || null,
+    duration_min: parseInt(document.getElementById('pln-task-duration').value, 10) || 60,
+    description: document.getElementById('pln-task-desc').value.trim() || null,
+    status: document.getElementById('pln-task-status').value
   };
   if (plEditTaskId) {
     await sb.from('planning_tasks').update(payload).eq('id', plEditTaskId);
@@ -4610,7 +4785,7 @@ async function plDeleteTask() {
 }
 
 function plCloseModal() {
-  document.getElementById('pl-modal').style.display = 'none';
+  document.getElementById('pln-modal').style.display = 'none';
   plEditTaskId = null;
 }
 
