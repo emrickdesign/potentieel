@@ -194,6 +194,10 @@
     .badge-purple  { background: rgba(167,139,250,.12);color: #a78bfa; }
     .badge-gray    { background: rgba(255,255,255,.07); color: var(--muted); }
 
+    /* Filtre factures/devis */
+    .fa-filter,.dv-filter{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:7px;padding:6px 14px;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+    .fa-filter.active,.dv-filter.active,.fa-filter:hover,.dv-filter:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+
     /* Quick rows */
     .qrow { display: flex; align-items: center; justify-content: space-between; padding: 11px 18px; border-bottom: 1px solid rgba(255,255,255,.03); }
     .qrow:last-child { border-bottom: none; }
@@ -1038,7 +1042,7 @@
             <!-- Tab: Factures -->
             <div id="cl-tab-factures" class="cl-tab-pane" style="display:none">
               <div class="panel">
-                <div class="panel-head"><h3>Factures</h3><button class="ph-action" onclick="clAddFacture()">+ Nouvelle</button></div>
+                <div class="panel-head"><h3>Factures</h3><button class="ph-action" onclick="faOpenModal(clCurrentId)">+ Nouvelle</button></div>
                 <div id="cl-factures-list" style="padding:16px;min-height:80px"></div>
               </div>
             </div>
@@ -1132,6 +1136,67 @@
               <div style="display:flex;gap:10px">
                 <button onclick="dvCloseModal()" style="flex:1;padding:12px;border-radius:8px;border:none;background:rgba(255,255,255,.07);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer">Annuler</button>
                 <button onclick="dvCreate()" style="flex:2;padding:12px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:700;cursor:pointer">+ Créer le devis</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- FACTURE MODAL -->
+          <div id="fa-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1100;align-items:center;justify-content:center;padding:16px;overflow-y:auto" onclick="if(event.target.id==='fa-modal')faCloseModal()">
+            <div style="background:#18181f;border:1px solid var(--border);border-radius:18px;padding:28px 30px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;position:relative">
+              <button onclick="faCloseModal()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">×</button>
+              <h3 style="font-size:18px;font-weight:800;margin:0 0 22px">Nouvelle facture</h3>
+              <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Client existant <span style="font-weight:400">(optionnel)</span></label>
+              <select id="fa-cl-select" onchange="faPrefill()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:16px;outline:none">
+                <option value="">— Aucun client sélectionné —</option>
+              </select>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+                <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Entreprise *</label>
+                <input id="fa-entreprise" placeholder="Nom entreprise" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
+                <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Téléphone</label>
+                <input id="fa-tel" placeholder="0600000000" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
+              </div>
+              <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Email *</label>
+              <input id="fa-email" type="email" placeholder="client@exemple.fr" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:14px;outline:none;box-sizing:border-box">
+              <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Adresse</label>
+              <input id="fa-adresse" placeholder="12 rue des Exemples, 73000 Chambéry" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:14px;outline:none;box-sizing:border-box">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+                <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Type d'identifiant</label>
+                <select id="fa-id-type" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
+                  <option value="SIRET">SIRET</option><option value="SIREN">SIREN</option><option value="">Non applicable</option>
+                </select></div>
+                <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Numéro</label>
+                <input id="fa-id-num" placeholder="85005018800026" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+                <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Prestation site web</label>
+                <select id="fa-creation" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
+                  <option value="">Aucun</option>
+                  <option value="1x">Création site — 990 €</option>
+                  <option value="2x">Création site — 2 × 495 €</option>
+                  <option value="3x">Création site — 3 × 330 €</option>
+                  <option value="4x">Création site — 4 × 247,50 €</option>
+                </select></div>
+                <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Abonnement mensuel</label>
+                <select id="fa-abo" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
+                  <option value="">Aucun</option>
+                  <option value="20">Assistant Digital — 20 €/mois</option>
+                  <option value="49">Gestion complète — 49 €/mois</option>
+                </select></div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+                <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Date d'échéance</label>
+                <input id="fa-echeance" type="date" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
+                <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Mode de règlement</label>
+                <select id="fa-reglement" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
+                  <option value="virement">Virement bancaire</option>
+                  <option value="stripe">Paiement en ligne (Stripe)</option>
+                  <option value="especes">Espèces</option>
+                  <option value="cheque">Chèque</option>
+                </select></div>
+              </div>
+              <div style="display:flex;gap:10px">
+                <button onclick="faCloseModal()" style="flex:1;padding:12px;border-radius:8px;border:none;background:rgba(255,255,255,.07);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer">Annuler</button>
+                <button onclick="faCreate()" style="flex:2;padding:12px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:700;cursor:pointer">+ Créer la facture</button>
               </div>
             </div>
           </div>
@@ -1234,14 +1299,33 @@
 
         <!-- ── FACTURATION ── -->
         <div id="page-facturation" class="page">
-          <div style="margin-bottom:18px"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">OPÉRATIONS</div><div style="font-size:22px;font-weight:800;margin-top:2px">Facturation</div></div>
-          <div class="empty"><div class="ei">💶</div>Envoie-moi le screenshot de cette page pour que je la recrée.</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+            <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">OPÉRATIONS</div><div style="font-size:22px;font-weight:800;margin-top:2px">Facturation</div></div>
+            <button onclick="faOpenModal()" style="background:var(--accent);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">+ Nouvelle facture</button>
+          </div>
+          <div id="fa-stats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px"></div>
+          <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+            <button class="fa-filter active" data-f="all" onclick="faFilter('all',this)">Toutes</button>
+            <button class="fa-filter" data-f="attente" onclick="faFilter('attente',this)">En attente</button>
+            <button class="fa-filter" data-f="payee" onclick="faFilter('payee',this)">Payées</button>
+            <button class="fa-filter" data-f="retard" onclick="faFilter('retard',this)">Retard</button>
+          </div>
+          <div id="fa-global-list"></div>
         </div>
 
         <!-- ── DEVIS ── -->
         <div id="page-devis" class="page">
-          <div style="margin-bottom:18px"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">OPÉRATIONS</div><div style="font-size:22px;font-weight:800;margin-top:2px">Devis</div></div>
-          <div class="empty"><div class="ei">📝</div>Envoie-moi le screenshot de cette page pour que je la recrée.</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+            <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">OPÉRATIONS</div><div style="font-size:22px;font-weight:800;margin-top:2px">Devis</div></div>
+            <button onclick="dvOpenModal()" style="background:var(--accent);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">+ Nouveau devis</button>
+          </div>
+          <div id="dv-stats" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px"></div>
+          <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+            <button class="dv-filter active" data-f="all" onclick="dvFilter('all',this)">Tous</button>
+            <button class="dv-filter" data-f="en attente" onclick="dvFilter('en attente',this)">En attente</button>
+            <button class="dv-filter" data-f="signé" onclick="dvFilter('signé',this)">Signés</button>
+          </div>
+          <div id="dv-global-list"></div>
         </div>
 
       </div><!-- /main -->
@@ -1289,6 +1373,8 @@ function nav(el) {
   document.getElementById('page-'+p).classList.add('active');
   document.getElementById('tb-section').textContent = sections[p]||'';
   document.getElementById('tb-title').textContent   = titles[p]||p;
+  if(p==='facturation') renderGlobalFactures();
+  if(p==='devis') renderGlobalDevis();
 }
 
 function toggleTask(cb) {
@@ -2128,15 +2214,18 @@ function clRenderDevis(c) {
     el.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0">Aucun devis</div>'; return;
   }
   el.innerHTML = c.devis.map(d => `
-    <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.05)">
+    <div style="display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--border)">
       <div style="flex:1;min-width:0">
         <div style="font-size:13px;font-weight:700;color:var(--text)">${d.ref||'DEV'}</div>
         <div style="font-size:12px;color:var(--muted)">${d.date||''} · ${d.totalTxt||d.montant||''}</div>
       </div>
-      <span class="badge ${d.statut==='accepté'?'badge-green':d.statut==='refusé'?'badge-red':'badge-blue'}">${d.statut||'en attente'}</span>
-      <button onclick="dvPreview('${d.id}')" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:6px;padding:6px 12px;color:var(--muted);font-size:12px;cursor:pointer">👁 Voir</button>
-      <button onclick="dvPrint('${d.id}')" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:6px;padding:6px 12px;color:var(--muted);font-size:12px;cursor:pointer">🖨 PDF</button>
-      <button onclick="clDelDevis('${d.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;opacity:.5;font-size:13px">🗑</button>
+      <span class="badge ${d.statut==='signé'?'badge-green':d.statut==='refusé'?'badge-red':'badge-blue'}">${d.statut||'en attente'}</span>
+      <div style="display:flex;gap:4px;flex-shrink:0">
+        <button onclick="dvPreview('${d.id}')" title="Voir PDF" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">👁</button>
+        <button onclick="dvSendEmail('${d.id}')" title="Envoyer par email" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">📧</button>
+        ${d.statut!=='signé'?`<button onclick="dvSign('${d.id}')" title="Marquer signé" style="background:rgba(74,222,128,.15);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#4ade80;font-size:13px;font-weight:700">✓</button>`:''}
+        <button onclick="clDelDevis('${d.id}')" title="Supprimer" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:13px;opacity:.5">🗑</button>
+      </div>
     </div>`).join('');
 }
 
@@ -2347,32 +2436,330 @@ function clRenderFactures(c) {
   if (!c.factures || c.factures.length === 0) {
     el.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0">Aucune facture</div>'; return;
   }
-  el.innerHTML = `<table><thead><tr><th>Réf</th><th>Date</th><th>Montant</th><th>Statut</th><th></th></tr></thead><tbody>` +
-    c.factures.map(f => `<tr>
-      <td style="font-weight:600">${f.ref||'—'}</td>
-      <td style="color:var(--muted)">${f.date||'—'}</td>
-      <td style="color:var(--accent);font-weight:700">${f.montant||'—'}</td>
-      <td><span class="badge ${f.statut==='payee'?'badge-green':f.statut==='retard'?'badge-red':'badge-orange'}">${f.statut==='payee'?'Payée':f.statut==='retard'?'Retard':'En attente'}</span></td>
-      <td><button onclick="clDelFacture('${f.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;opacity:.5">🗑</button></td>
-    </tr>`).join('') + '</tbody></table>';
+  el.innerHTML = c.factures.map(f => `
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:13px">${f.ref||'—'} <span style="font-size:11px;color:var(--muted);font-weight:400">· ${f.date||''}</span></div>
+        <div style="font-size:12px;color:var(--accent);font-weight:600">${f.totalTxt||f.montant||'—'}${f.echeance?` <span style="color:var(--muted);font-weight:400">— échéance ${f.echeance}</span>`:''}</div>
+      </div>
+      <span class="badge ${f.statut==='payee'?'badge-green':f.statut==='retard'?'badge-red':'badge-orange'}" style="flex-shrink:0">${f.statut==='payee'?'Payée':f.statut==='retard'?'Retard':'En attente'}</span>
+      <div style="display:flex;gap:4px;flex-shrink:0">
+        <button onclick="faView('${f.id}')" title="Voir PDF" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">👁</button>
+        <button onclick="faSendEmail('${f.id}')" title="Envoyer par email" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">📧</button>
+        ${f.statut!=='payee'?`<button onclick="faMarkPaid('${f.id}')" title="Marquer payée" style="background:rgba(74,222,128,.15);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#4ade80;font-size:13px;font-weight:700">✓</button>`:''}
+        <button onclick="faDelFacture('${f.id}')" title="Supprimer" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:13px;opacity:.5">🗑</button>
+      </div>
+    </div>`).join('');
 }
 
-function clAddFacture() {
-  const montant = prompt('Montant de la facture :');
-  if (!montant) return;
-  const c = clData.find(x=>x.id===clCurrentId);
-  if (!c) return;
-  if (!c.factures) c.factures = [];
-  const ref = 'FAC-' + String(c.factures.length+1).padStart(3,'0');
-  c.factures.push({ id:'fac'+Date.now(), ref, date: new Date().toLocaleDateString('fr-FR'), montant, statut:'attente' });
-  clSave(); clRenderFactures(c);
-}
-
-function clDelFacture(fid) {
+function faDelFacture(fid) {
   const c = clData.find(x=>x.id===clCurrentId);
   if (!c) return;
   c.factures = (c.factures||[]).filter(f=>f.id!==fid);
   clSave(); clRenderFactures(c);
+}
+
+// ─── FACTURES ───────────────────────────────────────────────
+function faOpenModal(clientId) {
+  const sel = document.getElementById('fa-cl-select');
+  sel.innerHTML = '<option value="">— Aucun client sélectionné —</option>' +
+    clData.map(c => `<option value="${c.id}" ${c.id===(clientId||clCurrentId)?'selected':''}>${c.nom||c.id}</option>`).join('');
+  ['fa-entreprise','fa-tel','fa-email','fa-adresse','fa-id-num'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('fa-id-type').value='SIRET';
+  document.getElementById('fa-creation').value='';
+  document.getElementById('fa-abo').value='';
+  document.getElementById('fa-reglement').value='virement';
+  const ech=new Date();ech.setDate(ech.getDate()+30);
+  document.getElementById('fa-echeance').value=ech.toISOString().split('T')[0];
+  if(clientId||clCurrentId){sel.value=clientId||clCurrentId;faPrefill();}
+  document.getElementById('fa-modal').style.display='flex';
+}
+function faCloseModal(){document.getElementById('fa-modal').style.display='none';}
+function faPrefill(){
+  const cid=document.getElementById('fa-cl-select').value;if(!cid)return;
+  const c=clData.find(x=>x.id===cid);if(!c)return;
+  const set=(id,val)=>{const el=document.getElementById(id);if(el&&val)el.value=val;};
+  set('fa-entreprise',c.nom);set('fa-tel',c.tel);set('fa-email',c.email);
+  set('fa-adresse',c.adresse);set('fa-id-num',c.siret||c.siren);
+  if(c.siret)document.getElementById('fa-id-type').value='SIRET';
+  else if(c.siren)document.getElementById('fa-id-type').value='SIREN';
+}
+function faCreate(){
+  const entreprise=document.getElementById('fa-entreprise').value.trim();
+  if(!entreprise){alert('Le nom d\'entreprise est requis.');return;}
+  const creation=document.getElementById('fa-creation').value;
+  const abo=document.getElementById('fa-abo').value;
+  if(!creation&&!abo){alert('Sélectionne au moins une prestation.');return;}
+  const cPrix={'1x':'990,00 €','2x':'2 × 495,00 €','3x':'3 × 330,00 €','4x':'4 × 247,50 €'};
+  const aPrix={'20':'20,00 €/mois','49':'49,00 €/mois'};
+  const parts=[];
+  if(creation)parts.push(cPrix[creation]);
+  if(abo)parts.push(aPrix[abo]);
+  const totalTxt=parts.join(' + ')||'—';
+  const montantNum=(creation?990:0)+(abo?parseInt(abo):0);
+  const echInput=document.getElementById('fa-echeance').value;
+  const echDate=echInput?new Date(echInput).toLocaleDateString('fr-FR'):null;
+  const cid=document.getElementById('fa-cl-select').value||clCurrentId;
+  const c=clData.find(x=>x.id===cid);
+  const allFa=clData.flatMap(x=>x.factures||[]);
+  const ref='FA-'+String(allFa.length+1).padStart(3,'0')+'-'+new Date().getFullYear();
+  const fa={id:'fa'+Date.now(),ref,date:new Date().toLocaleDateString('fr-FR'),echeance:echDate,statut:'attente',totalTxt,montantNum,
+    data:{entreprise,tel:document.getElementById('fa-tel').value.trim(),email:document.getElementById('fa-email').value.trim(),
+      adresse:document.getElementById('fa-adresse').value.trim(),idType:document.getElementById('fa-id-type').value,
+      idNum:document.getElementById('fa-id-num').value.trim(),creation,abo,reglement:document.getElementById('fa-reglement').value}};
+  if(c){if(!c.factures)c.factures=[];c.factures.unshift(fa);clSave();clRenderFactures(c);}
+  faCloseModal();faPrintFa(fa);
+}
+function faMarkPaid(fid){
+  const c=clData.find(x=>(x.factures||[]).find(f=>f.id===fid));if(!c)return;
+  const fa=c.factures.find(f=>f.id===fid);if(!fa)return;
+  fa.statut='payee';clSave();clRenderFactures(c);
+}
+function faView(fid){
+  const c=clData.find(x=>(x.factures||[]).find(f=>f.id===fid));if(!c)return;
+  const fa=c.factures.find(f=>f.id===fid);if(fa)faPrintFa(fa);
+}
+function faSendEmail(fid){
+  const c=clData.find(x=>(x.factures||[]).find(f=>f.id===fid));if(!c)return;
+  const fa=c.factures.find(f=>f.id===fid);if(!fa)return;
+  faPrintFa(fa);
+  const email=(fa.data&&fa.data.email)||c.email||'';
+  if(!email){alert('Aucun email enregistré.');return;}
+  const subj=encodeURIComponent(`Facture ${fa.ref} — Potentieel`);
+  const body=encodeURIComponent(`Bonjour,\n\nVeuillez trouver en pièce jointe votre facture ${fa.ref} d'un montant de ${fa.totalTxt||'—'}.\n\nLa facture vient de s'ouvrir dans votre navigateur — imprimez-la ou enregistrez-la en PDF pour l'attacher à cet email.\n\nCordialement,\nEmrick — Potentieel\ncontact@potentieel.fr`);
+  setTimeout(()=>window.open(`mailto:${email}?subject=${subj}&body=${body}`),400);
+}
+// Global actions (since clientId must be found from global list)
+function faViewFromGlobal(fid){faView(fid);}
+function faSendEmailFromGlobal(fid){faSendEmail(fid);}
+function faMarkPaidFromGlobal(fid){
+  const c=clData.find(x=>(x.factures||[]).find(f=>f.id===fid));if(!c)return;
+  const fa=c.factures.find(f=>f.id===fid);if(!fa)return;
+  fa.statut='payee';clSave();renderGlobalFactures(document.querySelector('.fa-filter.active')?.dataset?.f||'all');
+}
+function faDelFromGlobal(fid){
+  const c=clData.find(x=>(x.factures||[]).find(f=>f.id===fid));if(!c)return;
+  c.factures=(c.factures||[]).filter(f=>f.id!==fid);
+  clSave();renderGlobalFactures(document.querySelector('.fa-filter.active')?.dataset?.f||'all');
+}
+
+// ─── DEVIS email + signer ─────────────────────────────────
+function dvSign(did){
+  const c=clData.find(x=>(x.devis||[]).find(d=>d.id===did));if(!c)return;
+  const dv=c.devis.find(d=>d.id===did);if(!dv)return;
+  dv.statut='signé';clSave();clRenderDevis(c);
+}
+function dvSendEmail(did){
+  const c=clData.find(x=>(x.devis||[]).find(d=>d.id===did));if(!c)return;
+  const dv=c.devis.find(d=>d.id===did);if(!dv)return;
+  dvPrintDv(dv);
+  const email=(dv.data&&dv.data.email)||c.email||'';
+  if(!email){alert('Aucun email enregistré.');return;}
+  const subj=encodeURIComponent(`Devis ${dv.ref} — Potentieel`);
+  const body=encodeURIComponent(`Bonjour,\n\nVeuillez trouver en pièce jointe votre devis ${dv.ref} d'un montant de ${dv.totalTxt||'—'}.\n\nLe devis vient de s'ouvrir dans votre navigateur — imprimez-le ou enregistrez-le en PDF pour l'attacher à cet email.\n\nN'hésitez pas à me contacter pour toute question.\n\nCordialement,\nEmrick — Potentieel\ncontact@potentieel.fr`);
+  setTimeout(()=>window.open(`mailto:${email}?subject=${subj}&body=${body}`),400);
+}
+
+// ─── VUES GLOBALES ───────────────────────────────────────
+let _faCurrentFilter='all';
+let _dvCurrentFilter='all';
+
+function faFilter(f,el){
+  _faCurrentFilter=f;
+  document.querySelectorAll('.fa-filter').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderGlobalFactures(f);
+}
+function dvFilter(f,el){
+  _dvCurrentFilter=f;
+  document.querySelectorAll('.dv-filter').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderGlobalDevis(f);
+}
+
+function renderGlobalFactures(filter){
+  filter=filter||_faCurrentFilter||'all';
+  const allFa=clData.flatMap(c=>(c.factures||[]).map(f=>({...f,clientNom:c.nom||c.id,clientId:c.id})));
+  allFa.sort((a,b)=>{const da=(a.date||'').split('/').reverse().join('');const db=(b.date||'').split('/').reverse().join('');return db.localeCompare(da);});
+  const filtered=filter==='all'?allFa:allFa.filter(f=>f.statut===filter);
+  const totAttente=allFa.filter(f=>f.statut==='attente').reduce((s,f)=>s+(f.montantNum||0),0);
+  const totPayee=allFa.filter(f=>f.statut==='payee').reduce((s,f)=>s+(f.montantNum||0),0);
+  const totRetard=allFa.filter(f=>f.statut==='retard').reduce((s,f)=>s+(f.montantNum||0),0);
+  const stat=(label,val,nb,color)=>`<div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:14px 16px">
+    <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">${label}</div>
+    <div style="font-size:22px;font-weight:800;color:${color}">${val.toLocaleString('fr-FR')} €</div>
+    <div style="font-size:12px;color:var(--muted)">${nb} facture${nb!==1?'s':''}</div>
+  </div>`;
+  const statsEl=document.getElementById('fa-stats');
+  if(statsEl)statsEl.innerHTML=
+    stat('En attente',totAttente,allFa.filter(f=>f.statut==='attente').length,'var(--accent)')+
+    stat('Payées',totPayee,allFa.filter(f=>f.statut==='payee').length,'#4ade80')+
+    stat('Retard',totRetard,allFa.filter(f=>f.statut==='retard').length,'#f87171');
+  const listEl=document.getElementById('fa-global-list');
+  if(!listEl)return;
+  if(filtered.length===0){listEl.innerHTML='<div style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0">Aucune facture</div>';return;}
+  listEl.innerHTML=`<table><thead><tr><th>Client</th><th>Réf</th><th>Émise le</th><th>Échéance</th><th>Montant</th><th>Statut</th><th></th></tr></thead><tbody>`+
+    filtered.map(f=>`<tr>
+      <td style="font-weight:600">${f.clientNom}</td>
+      <td style="color:var(--muted);font-size:12px">${f.ref||'—'}</td>
+      <td style="color:var(--muted)">${f.date||'—'}</td>
+      <td style="color:${f.statut==='retard'?'#f87171':'var(--muted)'}">${f.echeance||'—'}</td>
+      <td style="color:var(--accent);font-weight:700">${f.totalTxt||f.montant||'—'}</td>
+      <td><span class="badge ${f.statut==='payee'?'badge-green':f.statut==='retard'?'badge-red':'badge-orange'}">${f.statut==='payee'?'Payée':f.statut==='retard'?'Retard':'En attente'}</span></td>
+      <td style="white-space:nowrap">
+        <button onclick="faViewFromGlobal('${f.id}')" title="Voir PDF" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px">👁</button>
+        <button onclick="faSendEmailFromGlobal('${f.id}')" title="Email" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px">📧</button>
+        ${f.statut!=='payee'?`<button onclick="faMarkPaidFromGlobal('${f.id}')" title="Marquer payée" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:#4ade80;font-size:14px;font-weight:700">✓</button>`:''}
+        <button onclick="faDelFromGlobal('${f.id}')" title="Supprimer" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px;opacity:.5">🗑</button>
+      </td></tr>`).join('')+
+    '</tbody></table>';
+}
+
+function renderGlobalDevis(filter){
+  filter=filter||_dvCurrentFilter||'all';
+  const allDv=clData.flatMap(c=>(c.devis||[]).map(d=>({...d,clientNom:c.nom||c.id,clientId:c.id})));
+  allDv.sort((a,b)=>{const da=(a.date||'').split('/').reverse().join('');const db=(b.date||'').split('/').reverse().join('');return db.localeCompare(da);});
+  const filtered=filter==='all'?allDv:allDv.filter(d=>d.statut===filter);
+  const nbAttente=allDv.filter(d=>!d.statut||d.statut==='en attente').length;
+  const nbSigne=allDv.filter(d=>d.statut==='signé').length;
+  const statDv=(label,nb,color)=>`<div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:14px 16px">
+    <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">${label}</div>
+    <div style="font-size:28px;font-weight:800;color:${color}">${nb}</div>
+    <div style="font-size:12px;color:var(--muted)">devis</div>
+  </div>`;
+  const statsEl=document.getElementById('dv-stats');
+  if(statsEl)statsEl.innerHTML=statDv('En attente',nbAttente,'var(--accent)')+statDv('Signés',nbSigne,'#4ade80');
+  const listEl=document.getElementById('dv-global-list');
+  if(!listEl)return;
+  if(filtered.length===0){listEl.innerHTML='<div style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0">Aucun devis</div>';return;}
+  listEl.innerHTML=`<table><thead><tr><th>Client</th><th>Réf</th><th>Date</th><th>Total</th><th>Statut</th><th></th></tr></thead><tbody>`+
+    filtered.map(d=>`<tr>
+      <td style="font-weight:600">${d.clientNom}</td>
+      <td style="color:var(--muted);font-size:12px">${d.ref||'—'}</td>
+      <td style="color:var(--muted)">${d.date||'—'}</td>
+      <td style="color:var(--accent);font-weight:700">${d.totalTxt||'—'}</td>
+      <td><span class="badge ${d.statut==='signé'?'badge-green':d.statut==='refusé'?'badge-red':'badge-blue'}">${d.statut||'en attente'}</span></td>
+      <td style="white-space:nowrap">
+        <button onclick="dvPreviewFromGlobal('${d.id}')" title="Voir PDF" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px">👁</button>
+        <button onclick="dvSendEmailFromGlobal('${d.id}')" title="Email" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px">📧</button>
+        ${d.statut!=='signé'?`<button onclick="dvSignFromGlobal('${d.id}')" title="Marquer signé" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:#4ade80;font-size:14px;font-weight:700">✓</button>`:''}
+        <button onclick="dvDelFromGlobal('${d.id}')" title="Supprimer" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px;opacity:.5">🗑</button>
+      </td></tr>`).join('')+
+    '</tbody></table>';
+}
+function dvPreviewFromGlobal(did){const c=clData.find(x=>(x.devis||[]).find(d=>d.id===did));if(!c)return;const dv=c.devis.find(d=>d.id===did);if(dv)dvPrintDv(dv);}
+function dvSendEmailFromGlobal(did){const c=clData.find(x=>(x.devis||[]).find(d=>d.id===did));if(!c)return;const old=clCurrentId;clCurrentId=c.id;dvSendEmail(did);clCurrentId=old;}
+function dvSignFromGlobal(did){const c=clData.find(x=>(x.devis||[]).find(d=>d.id===did));if(!c)return;const dv=c.devis.find(d=>d.id===did);if(!dv)return;dv.statut='signé';clSave();renderGlobalDevis();}
+function dvDelFromGlobal(did){const c=clData.find(x=>(x.devis||[]).find(d=>d.id===did));if(!c)return;c.devis=(c.devis||[]).filter(d=>d.id!==did);clSave();renderGlobalDevis();}
+
+// ─── FACTURE PDF ──────────────────────────────────────────
+function faPrintFa(fa) {
+  const d=fa.data||{};
+  const cPrix={'1x':'990,00 €','2x':'2 × 495,00 €','3x':'3 × 330,00 €','4x':'4 × 247,50 €'};
+  const cDesc={'1x':'Conception, développement et mise en ligne. Site multi-pages, responsive, SEO local, boutons d\'action (appel, WhatsApp), formulaire de contact.','2x':'Idem — règlement en 2 versements de 495,00 € espacés de 30 jours.','3x':'Idem — règlement en 3 versements de 330,00 € espacés de 30 jours.','4x':'Idem — règlement en 4 versements de 247,50 € espacés de 30 jours.'};
+  const aPrix={'20':'20,00 €/mois','49':'49,00 €/mois'};
+  const aDesc={'20':'Hébergement inclus, support WhatsApp, modifications de contenu illimitées sous 48 h.','49':'Hébergement, sécurité SSL, support VIP WhatsApp, modifications illimitées sous 48 h, sauvegardes automatiques, surveillance technique.'};
+  const reglMap={virement:'Virement bancaire',stripe:'Paiement en ligne (Stripe)',especes:'Espèces',cheque:'Chèque'};
+  let lignes='';
+  if(d.creation)lignes+=`<tr><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0"><div style="font-weight:700;font-size:14px;color:#111;margin-bottom:4px">Création de site web</div><div style="font-size:12px;color:#777;line-height:1.6">${cDesc[d.creation]||''}</div></td><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0;text-align:right;vertical-align:top;white-space:nowrap"><span style="font-size:16px;font-weight:800;color:#f4926a">${cPrix[d.creation]}</span></td></tr>`;
+  if(d.abo)lignes+=`<tr><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0"><div style="font-weight:700;font-size:14px;color:#111;margin-bottom:4px">Abonnement mensuel — ${d.abo==='49'?'Gestion & Tranquillité':'Assistant Digital'}</div><div style="font-size:12px;color:#777;line-height:1.6">${aDesc[d.abo]||''}</div></td><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0;text-align:right;vertical-align:top;white-space:nowrap"><span style="font-size:16px;font-weight:800;color:#f4926a">${aPrix[d.abo]}</span></td></tr>`;
+  const totalCell=`${d.creation?(cPrix[d.creation]||''):''}${d.creation&&d.abo?' + ':''}${d.abo?(aPrix[d.abo]||''):''}`;
+  const idLine=d.idNum?`<br><span style="font-size:11px;color:#aaa">${d.idType||'SIRET'} : ${d.idNum}</span>`:'';
+  const today=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+  // Conditions de règlement
+  let cond='';
+  const reglTxt=reglMap[d.reglement||'virement']||'Virement bancaire';
+  cond+=`<div class="cond-item"><span class="cond-dot"></span>Mode de règlement : <strong>${reglTxt}</strong>.</div>`;
+  if(d.creation){
+    const n={'1x':1,'2x':2,'3x':3,'4x':4}[d.creation]||1;
+    const amt={'1x':'990,00','2x':'495,00','3x':'330,00','4x':'247,50'}[d.creation];
+    if(n===1)cond+=`<div class="cond-item"><span class="cond-dot"></span>Paiement intégral de <strong>${amt} €</strong> à réception de cette facture.</div>`;
+    else cond+=`<div class="cond-item"><span class="cond-dot"></span>Règlement en <strong>${n} versements de ${amt} €</strong> espacés de 30 jours — 1er versement à réception.</div>`;
+  }
+  if(d.abo){
+    const aboTxt=d.creation
+      ?`Abonnement de <strong>${aPrix[d.abo]}</strong> — démarre automatiquement le 7 du mois suivant le dernier versement de création. Les mois de création sont offerts.`
+      :`Abonnement de <strong>${aPrix[d.abo]}</strong> — premier prélèvement à réception de cette facture. Résiliable à tout moment par simple message.`;
+    cond+=`<div class="cond-item"><span class="cond-dot"></span>${aboTxt}</div>`;
+  }
+  cond+=`<div class="cond-item"><span class="cond-dot" style="background:#999"></span>Tout retard de paiement entraîne des pénalités de retard au taux légal en vigueur (art. L441-10 C.com.).</div>`;
+  cond+=`<div class="cond-item"><span class="cond-dot" style="background:#999"></span>TVA non applicable — art. 293B du CGI (micro-entreprise). Pas de TVA à récupérer.</div>`;
+
+  const html=`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Facture ${fa.ref} — Potentieel</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:11px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff;color:#111;padding:0;max-width:820px;margin:0 auto}
+@media print{.no-print{display:none!important}body{max-width:100%;font-size:10px}@page{margin:0;size:A4}.content{padding:16px 28px}.topbar{padding:12px 28px}}
+.topbar{background:#111;color:#fff;padding:14px 32px;display:flex;justify-content:space-between;align-items:center}
+.logo{display:flex;align-items:center;gap:8px}
+.logo-icon{width:28px;height:28px;background:#f4926a;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-name{font-size:14px;font-weight:800;letter-spacing:2px;color:#fff}
+.fa-tag{color:#fff;font-size:22px;font-weight:900;letter-spacing:4px;text-transform:uppercase}
+.meta-top{text-align:right;font-size:11px;color:#aaa;line-height:1.7}
+.meta-top strong{color:#fff}
+.content{padding:20px 32px 16px}
+.parties{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
+.party-card{border-radius:9px;padding:14px 16px}
+.party-card.prest{background:#fff8f5;border:1.5px solid #f4926a}
+.party-card.client{background:#f8f8f8;border:1.5px solid #e0e0e0}
+.party-label{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:7px}
+.prest .party-label{color:#f4926a}.client .party-label{color:#999}
+.party-name{font-size:13px;font-weight:800;color:#111;margin-bottom:4px}
+.party-detail{font-size:11px;color:#666;line-height:1.8}
+.table-wrap{border:1.5px solid #e8e8e8;border-radius:10px;overflow:hidden;margin-bottom:16px}
+table{width:100%;border-collapse:collapse}
+thead tr{background:#f4926a}
+thead th{color:#fff;padding:9px 12px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+thead th:last-child{text-align:right}
+tbody tr:last-child td{border-bottom:none}
+.total-row{background:#111}
+.total-row td{padding:10px 12px;font-weight:800;font-size:12px;color:#fff}
+.total-row td:last-child{color:#f4926a;font-size:14px;text-align:right}
+.cond-box{background:#f8f8f8;border:1px solid #e8e8e8;border-radius:9px;padding:14px 16px;margin-bottom:14px}
+.cond-title{font-size:10px;font-weight:800;color:#111;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid #f4926a;display:inline-block}
+.cond-item{display:block;position:relative;padding-left:14px;font-size:11px;color:#444;line-height:1.65;margin-bottom:8px}
+.cond-dot{position:absolute;left:1px;top:5px;width:5px;height:5px;border-radius:50%;background:#f4926a;display:inline-block}
+.btn{background:#f4926a;color:#fff;border:none;padding:10px 24px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;margin:14px 32px}
+</style></head><body>
+<button class="btn no-print" onclick="window.print()">🖨 Imprimer / Enregistrer en PDF</button>
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
+    <div class="logo-name">POTENTIEEL</div>
+  </div>
+  <div class="fa-tag">FACTURE</div>
+  <div class="meta-top"><strong>Réf. ${fa.ref}</strong><br>Émise le ${fa.date||today}${fa.echeance?`<br>Échéance : <strong style="color:#f4926a">${fa.echeance}</strong>`:''}</div>
+</div>
+<div class="content">
+<div class="parties">
+  <div class="party-card prest">
+    <div class="party-label">Prestataire</div>
+    <div class="party-name">Potentieel</div>
+    <div class="party-detail">PERILLIAT EMRICK — Entrepreneur individuel<br>SIREN : 990 572 117 · SIRET : 990 572 117 00010<br>RCS Chambéry · TVA non applicable (art. 293B CGI)<br>contact@potentieel.fr · potentieel.fr</div>
+  </div>
+  <div class="party-card client">
+    <div class="party-label">Client</div>
+    <div class="party-name">${d.entreprise||'—'}</div>
+    <div class="party-detail">${d.email||''}${d.email?'<br>':''}${d.tel||''}${d.tel?'<br>':''}${d.adresse||''}${d.adresse?'<br>':''}${idLine}</div>
+  </div>
+</div>
+<div class="table-wrap">
+<table>
+  <thead><tr><th style="text-align:left">Prestation</th><th style="width:150px">Montant</th></tr></thead>
+  <tbody>
+    ${lignes}
+    <tr class="total-row"><td>Total</td><td style="text-align:right">${totalCell||'—'}</td></tr>
+  </tbody>
+</table>
+</div>
+<div class="cond-box">
+  <div class="cond-title">Conditions de règlement</div>
+  ${cond}
+</div>
+</div>
+</body></html>`;
+  const w=window.open('','_blank');if(w){w.document.write(html);w.document.close();}
 }
 
 function clRenderMessages(c) {
