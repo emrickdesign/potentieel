@@ -218,6 +218,10 @@
     .ld-badge-scraping{background:rgba(244,146,106,.12);color:var(--accent)}
     .ld-badge-manuel{background:rgba(255,255,255,.08);color:var(--muted)}
 
+    /* Formulaire analytics period buttons */
+    .fm-period{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:7px;padding:6px 12px;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+    .fm-period.active,.fm-period:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+
     /* Filtre factures/devis */
     .fa-filter,.dv-filter{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:7px;padding:6px 14px;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
     .fa-filter.active,.dv-filter.active,.fa-filter:hover,.dv-filter:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
@@ -1422,8 +1426,63 @@
 
         <!-- ── FORMULAIRE ── -->
         <div id="page-formulaire" class="page">
-          <div style="margin-bottom:18px"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">BUSINESS</div><div style="font-size:22px;font-weight:800;margin-top:2px">Formulaire</div></div>
-          <div class="empty"><div class="ei">📋</div>Envoie-moi le screenshot de cette page pour que je la recrée.</div>
+          <!-- Header -->
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+            <div>
+              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">BUSINESS</div>
+              <div style="font-size:26px;font-weight:800;margin:2px 0 6px">Statistiques Formulaire</div>
+              <div style="font-size:13px;color:var(--muted)" id="fm-last-update">Comportement des visiteurs sur la page /formulaire</div>
+              <div style="display:flex;align-items:center;gap:10px;margin-top:6px">
+                <a href="https://potentieel.fr/formulaire" target="_blank" style="color:var(--accent);font-size:12px;text-decoration:none;display:flex;align-items:center;gap:4px">↗ potentieel.fr/formulaire</a>
+                <button onclick="navigator.clipboard.writeText('https://potentieel.fr/formulaire')" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0">⎘ Copier</button>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+              <button onclick="fmLoad()" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;color:#fff;cursor:pointer;display:flex;align-items:center;gap:6px">↺ Actualiser</button>
+              <div style="display:flex;gap:4px">
+                <button class="fm-period active" data-p="1" onclick="fmSetPeriod(1,this)">24 h</button>
+                <button class="fm-period" data-p="7" onclick="fmSetPeriod(7,this)">7 jours</button>
+                <button class="fm-period" data-p="30" onclick="fmSetPeriod(30,this)">30 jours</button>
+                <button class="fm-period" data-p="0" onclick="fmSetPeriod(0,this)">Tout</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- KPI cards -->
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:20px" id="fm-kpi"></div>
+
+          <!-- Charts row 1: Funnel + Field fill -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+            <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:14px;padding:20px">
+              <div style="font-size:14px;font-weight:700;margin-bottom:4px">Entonnoir de conversion</div>
+              <div id="fm-funnel"></div>
+            </div>
+            <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:14px;padding:20px">
+              <div style="font-size:14px;font-weight:700;margin-bottom:4px">Remplissage par champ</div>
+              <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Sessions ayant rempli chaque champ</div>
+              <canvas id="fm-chart-fields" height="160"></canvas>
+            </div>
+          </div>
+
+          <!-- Charts row 2: Daily + Fields per session -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+            <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:14px;padding:20px">
+              <div style="font-size:14px;font-weight:700;margin-bottom:4px">Trafic &amp; leads par jour</div>
+              <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Évolution sur la période</div>
+              <canvas id="fm-chart-daily" height="160"></canvas>
+            </div>
+            <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:14px;padding:20px">
+              <div style="font-size:14px;font-weight:700;margin-bottom:4px">Nombre de champs remplis par session</div>
+              <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Pour détecter les abandons</div>
+              <canvas id="fm-chart-abandon" height="160"></canvas>
+            </div>
+          </div>
+
+          <!-- Recent submissions -->
+          <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:14px;padding:20px">
+            <div style="font-size:14px;font-weight:700;margin-bottom:14px">Dernières soumissions</div>
+            <div id="fm-recent"></div>
+          </div>
         </div>
 
         <!-- ── APPELS ── -->
@@ -1518,6 +1577,7 @@ function nav(el) {
   if(p==='facturation') renderGlobalFactures();
   if(p==='devis') renderGlobalDevis();
   if(p==='leads') ldRender();
+  if(p==='formulaire') fmLoad();
 }
 
 function toggleTask(cb) {
@@ -3466,6 +3526,198 @@ function ldAddManual() {
   ldSave();
   ldRender();
   ldCloseAdd();
+}
+
+/* ═════════════════════════════════════════════════════════ */
+
+// ── FORMULAIRE ANALYTICS ──────────────────────────────────
+let fmPeriodDays = 1;
+let fmChartFields = null, fmChartDaily = null, fmChartAbandon = null;
+
+function fmSetPeriod(days, btn) {
+  fmPeriodDays = days;
+  document.querySelectorAll('.fm-period').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  fmLoad();
+}
+
+async function fmLoad() {
+  const el = document.getElementById('fm-kpi');
+  if (!el) return;
+  el.innerHTML = `<div style="grid-column:1/-1;color:var(--muted);font-size:13px;padding:8px 0">Chargement...</div>`;
+
+  let visitsQ = sb.from('form_visits').select('*');
+  let subsQ   = sb.from('form_submissions').select('*');
+
+  if (fmPeriodDays > 0) {
+    const since = new Date(Date.now() - fmPeriodDays * 86400000).toISOString();
+    visitsQ = visitsQ.gte('visited_at', since);
+    subsQ   = subsQ.gte('submitted_at', since);
+  }
+
+  const [{ data: visits }, { data: subs }] = await Promise.all([visitsQ, subsQ]);
+  const V = visits || [], S = subs || [];
+
+  const now = new Date();
+  const nowStr = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const lastUpEl = document.getElementById('fm-last-update');
+  if (lastUpEl) lastUpEl.textContent = `Comportement des visiteurs sur la page /formulaire · Mis à jour à ${nowStr}`;
+
+  // KPI
+  const unique = new Set(V.map(v => v.session_id)).size;
+  const views  = V.length;
+  const avgTime = V.length ? Math.round(V.reduce((a,v)=>a+(v.time_on_page||0),0)/V.length) : 0;
+  const convRate = views > 0 ? ((S.length / views) * 100).toFixed(1) : '0.0';
+
+  el.innerHTML = `
+    <div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:18px 20px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--muted);text-transform:uppercase;margin-bottom:8px">👤 Visiteurs uniques</div>
+      <div style="font-size:32px;font-weight:900;color:#fff">${unique}</div>
+    </div>
+    <div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:18px 20px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--muted);text-transform:uppercase;margin-bottom:8px">👁 Vues de page</div>
+      <div style="font-size:32px;font-weight:900;color:#fff">${views}</div>
+    </div>
+    <div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:18px 20px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--muted);text-transform:uppercase;margin-bottom:8px">⏱ Temps moyen</div>
+      <div style="font-size:32px;font-weight:900;color:#fff">${avgTime}s</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">Temps passé sur la page</div>
+    </div>
+    <div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:18px 20px;border-color:var(--accent)">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--muted);text-transform:uppercase;margin-bottom:8px">📨 Conversions</div>
+      <div style="font-size:32px;font-weight:900;color:#fff">${convRate}%</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">${S.length} leads</div>
+    </div>`;
+
+  fmRenderFunnel(V, S);
+  fmRenderFieldsChart(S);
+  fmRenderDailyChart(V, S);
+  fmRenderAbandonChart(V);
+  fmRenderRecent(S);
+}
+
+function fmRenderFunnel(V, S) {
+  const el = document.getElementById('fm-funnel');
+  if (!el) return;
+  const visits   = V.length || 0;
+  const filled1  = V.filter(v => v.fields_filled >= 1).length;
+  const clicked  = V.filter(v => v.clicked_submit).length;
+  const converted= S.length;
+  const steps = [
+    { label: 'Visites',         val: visits,    color: '#f4926a' },
+    { label: 'Remplit 1+ champ',val: filled1,   color: '#b5d0f7' },
+    { label: 'Clique envoyer',  val: clicked,   color: '#d4f07a' },
+    { label: 'Lead créé',       val: converted, color: '#f4926a' },
+  ];
+  const max = steps[0].val || 1;
+  el.innerHTML = `<div style="margin-top:10px">` + steps.map((s,i) => {
+    const pct = Math.max(8, Math.round((s.val / max) * 100));
+    return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <div style="flex:1;background:rgba(255,255,255,.05);border-radius:6px;overflow:hidden;height:28px;position:relative">
+        <div style="width:${pct}%;background:${s.color};height:100%;border-radius:6px;display:flex;align-items:center;justify-content:center">
+          <span style="font-size:12px;font-weight:700;color:#111;padding:0 8px">${s.val}</span>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);min-width:110px">${s.label}</div>
+    </div>`;
+  }).join('') + '</div>';
+}
+
+function fmRenderFieldsChart(S) {
+  const ctx = document.getElementById('fm-chart-fields');
+  if (!ctx) return;
+  const counts = { prenom: 0, entreprise: 0, domaine: 0, telephone: 0 };
+  S.forEach(s => {
+    if (s.prenom)    counts.prenom++;
+    if (s.entreprise)counts.entreprise++;
+    if (s.domaine)   counts.domaine++;
+    if (s.telephone) counts.telephone++;
+  });
+  if (fmChartFields) fmChartFields.destroy();
+  fmChartFields = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Prénom','Entreprise','Domaine','Téléphone'],
+      datasets: [{ data: [counts.prenom, counts.entreprise, counts.domaine, counts.telephone],
+        backgroundColor: ['#f4926a','#d4f07a','#b5d0f7','#f4926a'], borderRadius: 6, borderSkipped: false }]
+    },
+    options: { plugins: { legend: { display: false } }, scales: {
+      x: { ticks: { color: '#888', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,.05)' } },
+      y: { ticks: { color: '#888', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,.05)' } }
+    }, responsive: true, maintainAspectRatio: true }
+  });
+}
+
+function fmRenderDailyChart(V, S) {
+  const ctx = document.getElementById('fm-chart-daily');
+  if (!ctx) return;
+  const days = fmPeriodDays > 0 ? fmPeriodDays : 30;
+  const labels = [], visitCounts = [], leadCounts = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const ds = d.toISOString().slice(0, 10);
+    labels.push(ds.slice(5));
+    visitCounts.push(V.filter(v => (v.visited_at||'').slice(0,10) === ds).length);
+    leadCounts.push(S.filter(s => (s.submitted_at||'').slice(0,10) === ds).length);
+  }
+  if (fmChartDaily) fmChartDaily.destroy();
+  fmChartDaily = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Visites', data: visitCounts, borderColor: '#f4926a', backgroundColor: 'rgba(244,146,106,.1)', tension: .4, fill: true, pointRadius: 2 },
+        { label: 'Leads',   data: leadCounts,  borderColor: '#d4f07a', backgroundColor: 'rgba(212,240,122,.1)', tension: .4, fill: true, pointRadius: 2 }
+      ]
+    },
+    options: { plugins: { legend: { labels: { color: '#888', font: { size: 11 } } } }, scales: {
+      x: { ticks: { color: '#888', font: { size: 10 }, maxTicksLimit: 8 }, grid: { color: 'rgba(255,255,255,.04)' } },
+      y: { ticks: { color: '#888', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,.04)' } }
+    }, responsive: true, maintainAspectRatio: true }
+  });
+}
+
+function fmRenderAbandonChart(V) {
+  const ctx = document.getElementById('fm-chart-abandon');
+  if (!ctx) return;
+  const dist = [0, 0, 0, 0, 0];
+  V.forEach(v => { const n = Math.min(v.fields_filled || 0, 4); dist[n]++; });
+  if (fmChartAbandon) fmChartAbandon.destroy();
+  fmChartAbandon = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['0 champ','1 champ','2 champs','3 champs','4 champs'],
+      datasets: [{ data: dist, backgroundColor: ['rgba(181,208,247,.7)','rgba(181,208,247,.7)','rgba(181,208,247,.7)','rgba(181,208,247,.7)','rgba(181,208,247,.7)'], borderRadius: 6, borderSkipped: false }]
+    },
+    options: { plugins: { legend: { display: false } }, scales: {
+      x: { ticks: { color: '#888', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,.05)' } },
+      y: { ticks: { color: '#888', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,.05)' } }
+    }, responsive: true, maintainAspectRatio: true }
+  });
+}
+
+function fmRenderRecent(S) {
+  const el = document.getElementById('fm-recent');
+  if (!el) return;
+  if (!S.length) { el.innerHTML = `<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">Aucune soumission sur cette période.</div>`; return; }
+  const recent = [...S].sort((a,b) => new Date(b.submitted_at)-new Date(a.submitted_at)).slice(0,10);
+  el.innerHTML = `<table style="width:100%;border-collapse:collapse">
+    <thead><tr style="border-bottom:1px solid var(--border)">
+      <th style="text-align:left;font-size:11px;color:var(--muted);font-weight:700;padding:8px 12px;text-transform:uppercase;letter-spacing:.5px">Prénom</th>
+      <th style="text-align:left;font-size:11px;color:var(--muted);font-weight:700;padding:8px 12px;text-transform:uppercase;letter-spacing:.5px">Entreprise</th>
+      <th style="text-align:left;font-size:11px;color:var(--muted);font-weight:700;padding:8px 12px;text-transform:uppercase;letter-spacing:.5px">Domaine</th>
+      <th style="text-align:left;font-size:11px;color:var(--muted);font-weight:700;padding:8px 12px;text-transform:uppercase;letter-spacing:.5px">Téléphone</th>
+      <th style="text-align:left;font-size:11px;color:var(--muted);font-weight:700;padding:8px 12px;text-transform:uppercase;letter-spacing:.5px">Date</th>
+    </tr></thead>
+    <tbody>` +
+  recent.map(s => `<tr style="border-bottom:1px solid rgba(255,255,255,.04)">
+    <td style="padding:10px 12px;font-size:13px;font-weight:600;color:#fff">${s.prenom||'—'}</td>
+    <td style="padding:10px 12px;font-size:13px;color:var(--muted)">${s.entreprise||'—'}</td>
+    <td style="padding:10px 12px;font-size:13px;color:var(--muted)">${s.domaine||'—'}</td>
+    <td style="padding:10px 12px;font-size:13px;color:var(--muted)">${s.telephone||'—'}</td>
+    <td style="padding:10px 12px;font-size:12px;color:var(--muted)">${new Date(s.submitted_at).toLocaleDateString('fr-FR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</td>
+  </tr>`).join('') +
+  `</tbody></table>`;
 }
 
 /* ═════════════════════════════════════════════════════════ */

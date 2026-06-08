@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Obtenez votre première version — Potentieel</title>
+  <meta name="description" content="Obtenez votre première version de site offerte et sans engagement. On vous rappelle sous 24h.">
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #fdf7f4;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 560px;
+      text-align: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: #f4926a;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-icon svg { width: 18px; height: 18px; }
+    .logo-name {
+      font-size: 16px; font-weight: 800;
+      letter-spacing: 2px; color: #111;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: clamp(26px, 5vw, 36px);
+      font-weight: 700;
+      color: #111;
+      line-height: 1.15;
+      margin-bottom: 8px;
+    }
+    h1 em {
+      font-style: italic;
+      font-weight: 900;
+      color: #f4926a;
+      display: block;
+      font-size: clamp(30px, 6vw, 44px);
+    }
+    .subtitle-italic {
+      font-size: 16px;
+      font-style: italic;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 10px;
+    }
+    .subtitle-desc {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 28px;
+      line-height: 1.6;
+    }
+
+    .form-card {
+      background: #fff;
+      border: 1.5px solid #f4ddd3;
+      border-radius: 20px;
+      padding: 28px 28px 24px;
+      text-align: left;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+    .field label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+    }
+    .field label span {
+      color: #f4926a;
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 13px;
+      letter-spacing: .3px;
+    }
+    .field input {
+      width: 100%;
+      border: 1.5px solid #e8e0dc;
+      border-radius: 10px;
+      padding: 13px 16px;
+      font-size: 14px;
+      color: #111;
+      background: #fff;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .field input::placeholder { color: #bbb; }
+    .field input:focus { border-color: #f4926a; }
+
+    .btn-submit {
+      width: 100%;
+      background: #f4926a;
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 16px;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: .5px;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background .2s, transform .1s;
+    }
+    .btn-submit:hover { background: #e87d54; }
+    .btn-submit:active { transform: scale(.99); }
+    .btn-submit:disabled { background: #ccc; cursor: default; }
+
+    .legal {
+      font-size: 12px;
+      color: #aaa;
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    /* Success state */
+    .success-screen {
+      display: none;
+      text-align: center;
+      padding: 40px 0;
+    }
+    .success-icon {
+      width: 64px; height: 64px;
+      background: rgba(244,146,106,.15);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 28px;
+    }
+    .success-screen h2 {
+      font-size: 22px; font-weight: 800; color: #111; margin-bottom: 8px;
+    }
+    .success-screen p {
+      font-size: 14px; color: #888; line-height: 1.7;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 3L17 7V13L10 17L3 13V7L10 3Z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/>
+        <circle cx="10" cy="10" r="2.5" fill="#fff"/>
+      </svg>
+    </div>
+    <span class="logo-name">Potentieel</span>
+  </div>
+
+  <h1>Obtenez votre<em>PREMIÈRE VERSION</em></h1>
+  <p class="subtitle-italic">offerte et sans engagement.</p>
+  <p class="subtitle-desc">On vous rappelle sous 24 h pour comprendre votre activité<br>et vous présenter votre V1 en 7 jours.</p>
+
+  <div class="form-card">
+
+    <!-- Formulaire -->
+    <div id="form-content">
+      <div class="field">
+        <label>Votre <span>Prénom</span></label>
+        <input id="f-prenom" type="text" placeholder="ex : Thomas" autocomplete="given-name" oninput="trackField('prenom')">
+      </div>
+      <div class="field">
+        <label>Nom de votre <span>Entreprise</span></label>
+        <input id="f-entreprise" type="text" placeholder="ex : Martin BTP" autocomplete="organization" oninput="trackField('entreprise')">
+      </div>
+      <div class="field">
+        <label>Domaine d'activité</label>
+        <input id="f-domaine" type="text" placeholder="ex : travaux, sport, événementiel..." oninput="trackField('domaine')">
+      </div>
+      <div class="field">
+        <label>Numéro de <span>Téléphone</span></label>
+        <input id="f-telephone" type="tel" placeholder="ex : 06 12 34 56 78" autocomplete="tel" oninput="trackField('telephone')">
+      </div>
+      <button class="btn-submit" id="submit-btn" onclick="submitForm()">JE VEUX MA PREMIÈRE VERSION GRATUITE</button>
+      <p class="legal">Aucune carte bancaire demandée. Vos données restent confidentielles.</p>
+    </div>
+
+    <!-- Succès -->
+    <div class="success-screen" id="success-screen">
+      <div class="success-icon">🎉</div>
+      <h2>C'est enregistré !</h2>
+      <p>On vous rappelle <strong>sous 24 h</strong>.<br>En attendant, gardez votre téléphone à portée 😊</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://alpzagoprkpzirgtrdup.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFscHphZ29wcmtwemlyZ3RyZHVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3OTg2MDEsImV4cCI6MjA5MjM3NDYwMX0.R7R6esDFce1W4k_wK-aBtAG20oUtK2SmSNCVKENS91g';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Session tracking
+const sessionId = 'sess_' + Math.random().toString(36).slice(2) + '_' + Date.now();
+const startTime = Date.now();
+const filledFields = new Set();
+let visitId = null;
+let clickedSubmit = false;
+
+// Enregistrer la visite
+async function trackVisit() {
+  const { data } = await sb.from('form_visits').insert({
+    session_id: sessionId,
+    fields_filled: 0,
+    clicked_submit: false,
+    converted: false
+  }).select().single();
+  if (data) visitId = data.id;
+}
+
+// Tracker remplissage champ
+function trackField(field) {
+  const val = document.getElementById('f-' + field)?.value?.trim();
+  if (val) filledFields.add(field);
+  else filledFields.delete(field);
+  updateVisit();
+}
+
+// Mettre à jour la visite en cours
+async function updateVisit() {
+  if (!visitId) return;
+  await sb.from('form_visits').update({
+    fields_filled: filledFields.size,
+    clicked_submit: clickedSubmit,
+    time_on_page: Math.round((Date.now() - startTime) / 1000)
+  }).eq('id', visitId);
+}
+
+// Soumettre le formulaire
+async function submitForm() {
+  const prenom = document.getElementById('f-prenom').value.trim();
+  const entreprise = document.getElementById('f-entreprise').value.trim();
+  const domaine = document.getElementById('f-domaine').value.trim();
+  const telephone = document.getElementById('f-telephone').value.trim();
+
+  if (!prenom) { document.getElementById('f-prenom').focus(); return; }
+  if (!telephone) { document.getElementById('f-telephone').focus(); return; }
+
+  clickedSubmit = true;
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Envoi en cours...';
+
+  await sb.from('form_submissions').insert({
+    prenom, entreprise, domaine, telephone,
+    fields_filled: filledFields.size,
+    source: new URLSearchParams(window.location.search).get('src') || 'formulaire'
+  });
+
+  if (visitId) {
+    await sb.from('form_visits').update({
+      converted: true,
+      clicked_submit: true,
+      fields_filled: filledFields.size,
+      time_on_page: Math.round((Date.now() - startTime) / 1000)
+    }).eq('id', visitId);
+  }
+
+  document.getElementById('form-content').style.display = 'none';
+  document.getElementById('success-screen').style.display = 'block';
+}
+
+// Temps sur page à la fermeture
+window.addEventListener('beforeunload', () => {
+  if (!visitId) return;
+  const payload = JSON.stringify({
+    fields_filled: filledFields.size,
+    clicked_submit: clickedSubmit,
+    time_on_page: Math.round((Date.now() - startTime) / 1000)
+  });
+  navigator.sendBeacon(`${SUPABASE_URL}/rest/v1/form_visits?id=eq.${visitId}`,
+    new Blob([payload], { type: 'application/json' }));
+});
+
+trackVisit();
+</script>
+</body>
+</html>
