@@ -1064,13 +1064,22 @@
           <div id="dv-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1100;align-items:center;justify-content:center;padding:16px;overflow-y:auto" onclick="if(event.target.id==='dv-modal')dvCloseModal()">
             <div style="background:#18181f;border:1px solid var(--border);border-radius:18px;padding:28px 30px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;position:relative">
               <button onclick="dvCloseModal()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">×</button>
-              <h3 style="font-size:18px;font-weight:800;margin:0 0 22px">Nouveau devis</h3>
+              <h3 id="dv-modal-title" style="font-size:18px;font-weight:800;margin:0 0 18px">Nouveau devis</h3>
 
-              <!-- Client existant -->
+              <!-- Bannière client auto (fiche client) -->
+              <div id="dv-client-banner" style="display:none;background:rgba(244,146,106,.1);border:1px solid rgba(244,146,106,.3);border-radius:10px;padding:10px 14px;margin-bottom:16px">
+                <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">Client sélectionné</div>
+                <div id="dv-client-name-display" style="font-size:14px;font-weight:700;color:#fff"></div>
+                <div id="dv-client-email-display" style="font-size:12px;color:var(--muted)"></div>
+              </div>
+
+              <!-- Client existant (page globale) -->
+              <div id="dv-cl-section">
               <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Client existant <span style="font-weight:400">(optionnel — pré-remplit le formulaire)</span></label>
               <select id="dv-cl-select" onchange="dvPrefill()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:16px;outline:none">
                 <option value="">— Aucun client sélectionné —</option>
               </select>
+              </div>
 
               <!-- Entreprise + Contact -->
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
@@ -1197,6 +1206,51 @@
               <div style="display:flex;gap:10px">
                 <button onclick="faCloseModal()" style="flex:1;padding:12px;border-radius:8px;border:none;background:rgba(255,255,255,.07);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer">Annuler</button>
                 <button onclick="faCreate()" style="flex:2;padding:12px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:700;cursor:pointer">+ Créer la facture</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- FACTURE ABONNEMENT MODAL (depuis fiche client) -->
+          <div id="fa-abo-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1100;align-items:center;justify-content:center;padding:16px" onclick="if(event.target.id==='fa-abo-modal')faAboCloseModal()">
+            <div style="background:#18181f;border:1px solid var(--border);border-radius:18px;padding:28px 30px;width:100%;max-width:420px;position:relative">
+              <button onclick="faAboCloseModal()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">×</button>
+              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Nouvelle facture</div>
+              <h3 style="font-size:18px;font-weight:800;margin:0 0 20px">Abonnement mensuel</h3>
+
+              <!-- Client info (auto) -->
+              <div id="fa-abo-client-card" style="background:rgba(244,146,106,.08);border:1px solid rgba(244,146,106,.25);border-radius:10px;padding:12px 14px;margin-bottom:18px">
+                <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Client</div>
+                <div id="fa-abo-nom" style="font-size:15px;font-weight:800;color:#fff"></div>
+                <div id="fa-abo-email" style="font-size:12px;color:var(--muted);margin-top:2px"></div>
+              </div>
+
+              <!-- Période -->
+              <div style="margin-bottom:18px">
+                <div style="font-size:12px;color:var(--muted);margin-bottom:5px">Période couverte</div>
+                <div id="fa-abo-periode-display" style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:13px;font-weight:600;color:#fff"></div>
+              </div>
+
+              <!-- Montant -->
+              <div style="margin-bottom:18px">
+                <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Montant de l'abonnement</label>
+                <select id="fa-abo-montant" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
+                  <option value="49">Gestion & Tranquillité — 49 €/mois</option>
+                  <option value="20">Assistant Digital — 20 €/mois</option>
+                </select>
+              </div>
+
+              <!-- Paiement -->
+              <div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:20px">
+                <span style="font-size:16px">💳</span>
+                <div>
+                  <div style="font-size:12px;font-weight:600;color:#fff">Paiement via Stripe</div>
+                  <div style="font-size:11px;color:var(--muted)">Prélèvement automatique mensuel</div>
+                </div>
+              </div>
+
+              <div style="display:flex;gap:10px">
+                <button onclick="faAboCloseModal()" style="flex:1;padding:12px;border-radius:8px;border:none;background:rgba(255,255,255,.07);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer">Annuler</button>
+                <button onclick="faCreateAbo()" style="flex:2;padding:12px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:700;cursor:pointer">+ Créer la facture</button>
               </div>
             </div>
           </div>
@@ -2239,14 +2293,31 @@ function clDelDevis(did) {
 /* ══════════════════════  DEVIS  ═══════════════════════ */
 
 function dvOpenModal(clientId) {
+  const cid = clientId || clCurrentId;
+  const fromClient = !!cid;
   const sel = document.getElementById('dv-cl-select');
+  const banner = document.getElementById('dv-client-banner');
+  const clSection = document.getElementById('dv-cl-section');
+  // Remplir le sélecteur
   sel.innerHTML = '<option value="">— Aucun client sélectionné —</option>' +
-    clData.map(c => `<option value="${c.id}" ${c.id===(clientId||clCurrentId)?'selected':''}>${c.nom||c.id}</option>`).join('');
+    clData.map(c => `<option value="${c.id}" ${c.id===cid?'selected':''}>${c.nom||c.id}</option>`).join('');
   ['dv-entreprise','dv-tel','dv-email','dv-adresse','dv-id-num'].forEach(id => { const el=document.getElementById(id);if(el)el.value=''; });
   document.getElementById('dv-id-type').value='SIRET';
   document.getElementById('dv-creation').value='';
   document.getElementById('dv-abo').value='';
-  if (clientId||clCurrentId) { sel.value=clientId||clCurrentId; dvPrefill(); }
+  if (fromClient) {
+    // Depuis fiche client : bannière + champs auto, masquer le sélecteur
+    const c = clData.find(x=>x.id===cid);
+    if(c){ sel.value=cid; dvPrefill();
+      document.getElementById('dv-client-name-display').textContent=c.nom||cid;
+      document.getElementById('dv-client-email-display').textContent=c.email||'';
+    }
+    banner.style.display='block'; clSection.style.display='none';
+    document.getElementById('dv-modal-title').textContent='Nouveau devis';
+  } else {
+    banner.style.display='none'; clSection.style.display='block';
+    document.getElementById('dv-modal-title').textContent='Nouveau devis';
+  }
   document.getElementById('dv-modal').style.display='flex';
 }
 
@@ -2461,18 +2532,36 @@ function faDelFacture(fid) {
 
 // ─── FACTURES ───────────────────────────────────────────────
 function faOpenModal(clientId) {
-  const sel = document.getElementById('fa-cl-select');
-  sel.innerHTML = '<option value="">— Aucun client sélectionné —</option>' +
-    clData.map(c => `<option value="${c.id}" ${c.id===(clientId||clCurrentId)?'selected':''}>${c.nom||c.id}</option>`).join('');
-  ['fa-entreprise','fa-tel','fa-email','fa-adresse','fa-id-num'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  document.getElementById('fa-id-type').value='SIRET';
-  document.getElementById('fa-creation').value='';
-  document.getElementById('fa-abo').value='';
-  document.getElementById('fa-reglement').value='virement';
-  const ech=new Date();ech.setDate(ech.getDate()+30);
-  document.getElementById('fa-echeance').value=ech.toISOString().split('T')[0];
-  if(clientId||clCurrentId){sel.value=clientId||clCurrentId;faPrefill();}
-  document.getElementById('fa-modal').style.display='flex';
+  if (clientId || clCurrentId) {
+    // Depuis fiche client : modale abonnement simplifiée
+    const cid = clientId || clCurrentId;
+    const c = clData.find(x=>x.id===cid);
+    if (!c) return;
+    document.getElementById('fa-abo-modal')._clientId = cid;
+    document.getElementById('fa-abo-nom').textContent = c.nom || cid;
+    document.getElementById('fa-abo-email').textContent = c.email || '';
+    document.getElementById('fa-abo-montant').value = '49';
+    // Période 7 du mois actuel → 7 du mois suivant
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), 7);
+    const end   = new Date(now.getFullYear(), now.getMonth()+1, 7);
+    const fmt = d => d.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
+    document.getElementById('fa-abo-periode-display').textContent = `Du ${fmt(start)} au ${fmt(end)}`;
+    document.getElementById('fa-abo-modal').style.display = 'flex';
+  } else {
+    // Depuis page Facturation : modale complète
+    const sel = document.getElementById('fa-cl-select');
+    sel.innerHTML = '<option value="">— Aucun client sélectionné —</option>' +
+      clData.map(c => `<option value="${c.id}">${c.nom||c.id}</option>`).join('');
+    ['fa-entreprise','fa-tel','fa-email','fa-adresse','fa-id-num'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    document.getElementById('fa-id-type').value='SIRET';
+    document.getElementById('fa-creation').value='';
+    document.getElementById('fa-abo').value='';
+    document.getElementById('fa-reglement').value='virement';
+    const ech=new Date();ech.setDate(ech.getDate()+30);
+    document.getElementById('fa-echeance').value=ech.toISOString().split('T')[0];
+    document.getElementById('fa-modal').style.display='flex';
+  }
 }
 function faCloseModal(){document.getElementById('fa-modal').style.display='none';}
 function faPrefill(){
@@ -2509,6 +2598,29 @@ function faCreate(){
       idNum:document.getElementById('fa-id-num').value.trim(),creation,abo,reglement:document.getElementById('fa-reglement').value}};
   if(c){if(!c.factures)c.factures=[];c.factures.unshift(fa);clSave();clRenderFactures(c);}
   faCloseModal();faPrintFa(fa);
+}
+function faAboCloseModal(){document.getElementById('fa-abo-modal').style.display='none';}
+function faCreateAbo(){
+  const modalEl=document.getElementById('fa-abo-modal');
+  const cid=modalEl._clientId;
+  const c=clData.find(x=>x.id===cid);if(!c)return;
+  const aboVal=document.getElementById('fa-abo-montant').value;
+  const aPrix={'20':'20,00 €/mois','49':'49,00 €/mois'};
+  const now=new Date();
+  const start=new Date(now.getFullYear(),now.getMonth(),7);
+  const end=new Date(now.getFullYear(),now.getMonth()+1,7);
+  const fmt=d=>d.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
+  const periode=`Du ${fmt(start)} au ${fmt(end)}`;
+  const allFa=clData.flatMap(x=>x.factures||[]);
+  const ref='FA-'+String(allFa.length+1).padStart(3,'0')+'-'+now.getFullYear();
+  const fa={id:'fa'+Date.now(),ref,date:now.toLocaleDateString('fr-FR'),echeance:fmt(end),statut:'attente',
+    totalTxt:aPrix[aboVal],montantNum:parseInt(aboVal),
+    data:{entreprise:c.nom||'',email:c.email||'',tel:c.tel||'',adresse:c.adresse||'',
+      idType:c.siret?'SIRET':c.siren?'SIREN':'',idNum:c.siret||c.siren||'',
+      abo:aboVal,reglement:'stripe',periode}};
+  if(!c.factures)c.factures=[];
+  c.factures.unshift(fa);clSave();clRenderFactures(c);
+  faAboCloseModal();faPrintFa(fa);
 }
 function faMarkPaid(fid){
   const c=clData.find(x=>(x.factures||[]).find(f=>f.id===fid));if(!c)return;
@@ -2662,14 +2774,18 @@ function faPrintFa(fa) {
   const reglMap={virement:'Virement bancaire',stripe:'Paiement en ligne (Stripe)',especes:'Espèces',cheque:'Chèque'};
   let lignes='';
   if(d.creation)lignes+=`<tr><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0"><div style="font-weight:700;font-size:14px;color:#111;margin-bottom:4px">Création de site web</div><div style="font-size:12px;color:#777;line-height:1.6">${cDesc[d.creation]||''}</div></td><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0;text-align:right;vertical-align:top;white-space:nowrap"><span style="font-size:16px;font-weight:800;color:#f4926a">${cPrix[d.creation]}</span></td></tr>`;
-  if(d.abo)lignes+=`<tr><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0"><div style="font-weight:700;font-size:14px;color:#111;margin-bottom:4px">Abonnement mensuel — ${d.abo==='49'?'Gestion & Tranquillité':'Assistant Digital'}</div><div style="font-size:12px;color:#777;line-height:1.6">${aDesc[d.abo]||''}</div></td><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0;text-align:right;vertical-align:top;white-space:nowrap"><span style="font-size:16px;font-weight:800;color:#f4926a">${aPrix[d.abo]}</span></td></tr>`;
+  if(d.abo)lignes+=`<tr><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0"><div style="font-weight:700;font-size:14px;color:#111;margin-bottom:4px">Abonnement mensuel — ${d.abo==='49'?'Gestion & Tranquillité':'Assistant Digital'}</div>${d.periode?`<div style="font-size:12px;font-weight:600;color:#f4926a;margin:3px 0">Période : ${d.periode}</div>`:''}<div style="font-size:12px;color:#777;line-height:1.6">${aDesc[d.abo]||''}</div></td><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0;text-align:right;vertical-align:top;white-space:nowrap"><span style="font-size:16px;font-weight:800;color:#f4926a">${aPrix[d.abo]}</span></td></tr>`;
   const totalCell=`${d.creation?(cPrix[d.creation]||''):''}${d.creation&&d.abo?' + ':''}${d.abo?(aPrix[d.abo]||''):''}`;
   const idLine=d.idNum?`<br><span style="font-size:11px;color:#aaa">${d.idType||'SIRET'} : ${d.idNum}</span>`:'';
   const today=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
   // Conditions de règlement
   let cond='';
-  const reglTxt=reglMap[d.reglement||'virement']||'Virement bancaire';
-  cond+=`<div class="cond-item"><span class="cond-dot"></span>Mode de règlement : <strong>${reglTxt}</strong>.</div>`;
+  if(d.reglement==='stripe'){
+    cond+=`<div class="cond-item"><span class="cond-dot"></span>Règlement par <strong>prélèvement automatique Stripe</strong>. Aucune action requise de votre part.</div>`;
+  } else {
+    const reglTxt=reglMap[d.reglement||'virement']||'Virement bancaire';
+    cond+=`<div class="cond-item"><span class="cond-dot"></span>Mode de règlement : <strong>${reglTxt}</strong>.</div>`;
+  }
   if(d.creation){
     const n={'1x':1,'2x':2,'3x':3,'4x':4}[d.creation]||1;
     const amt={'1x':'990,00','2x':'495,00','3x':'330,00','4x':'247,50'}[d.creation];
