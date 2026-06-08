@@ -2098,6 +2098,7 @@ function clDocIcon(type) {
 
 function clRenderDocs(c) {
   const el = document.getElementById('cl-docs-list');
+  if (!el) return;
   if (!c.docs || c.docs.length === 0) { el.innerHTML = ''; return; }
   el.innerHTML = c.docs.map(d => `
     <div class="cl-doc-row">
@@ -2146,6 +2147,7 @@ function clDelDoc(did) {
 
 function clRenderAssets(c) {
   const grid = document.getElementById('cl-assets-list');
+  if (!grid) return;
   const drop = document.getElementById('cl-asset-drop');
   const assets = c.assets || [];
   if (assets.length === 0) {
@@ -2230,6 +2232,7 @@ function clDelAsset(aid) {
 
 function clRenderPaiements(c) {
   const el = document.getElementById('cl-paiement-list');
+  if (!el) return;
   if (!c.paiements || c.paiements.length === 0) {
     el.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0">Aucun paiement enregistré</div>'; return;
   }
@@ -2264,6 +2267,7 @@ function clDelPaiement(pid) {
 
 function clRenderDevis(c) {
   const el = document.getElementById('cl-devis-list');
+  if (!el) return; // fiche client non visible, données déjà sauvées
   if (!c.devis || c.devis.length === 0) {
     el.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0">Aucun devis</div>'; return;
   }
@@ -2504,6 +2508,7 @@ tbody tr:last-child td{border-bottom:none}
 
 function clRenderFactures(c) {
   const el = document.getElementById('cl-factures-list');
+  if (!el) return; // fiche client non visible, données déjà sauvées
   if (!c.factures || c.factures.length === 0) {
     el.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0">Aucune facture</div>'; return;
   }
@@ -2880,6 +2885,7 @@ tbody tr:last-child td{border-bottom:none}
 
 function clRenderMessages(c) {
   const el = document.getElementById('cl-messages-list');
+  if (!el) return;
   if (!c.messages || c.messages.length === 0) {
     el.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0">Aucun message</div>'; return;
   }
