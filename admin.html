@@ -3843,6 +3843,8 @@ let _apDebriefPending = false;
 async function apInit() {
   await apLoadCalls();
   apRenderList();
+  // Sync Calendly en arrière-plan à chaque ouverture
+  apRefreshCalendly();
 }
 
 async function apLoadCalls() {
