@@ -1855,8 +1855,22 @@
 
         <!-- ── DOCUMENTS ── -->
         <div id="page-documents" class="page">
-          <div style="margin-bottom:18px"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">OPÉRATIONS</div><div style="font-size:22px;font-weight:800;margin-top:2px">Documents</div></div>
-          <div class="empty"><div class="ei">📄</div>Envoie-moi le screenshot de cette page pour que je la recrée.</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+            <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">OPÉRATIONS</div><div style="font-size:22px;font-weight:800;margin-top:2px">Documents</div></div>
+            <button class="ph-action" onclick="document.getElementById('dc-file-input').click()" style="background:var(--accent);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">+ Importer des documents</button>
+          </div>
+          <input type="file" id="dc-file-input" multiple accept="*/*" style="display:none" onchange="dcHandleFiles(this.files)">
+          <div class="panel">
+            <div id="dc-drop-zone"
+              style="margin:16px;border:2px dashed rgba(255,255,255,.12);border-radius:12px;padding:32px;text-align:center;color:var(--muted);font-size:13px;transition:border-color .2s;cursor:pointer"
+              onclick="document.getElementById('dc-file-input').click()"
+              ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
+              ondragleave="this.style.borderColor='rgba(255,255,255,.12)'"
+              ondrop="event.preventDefault();this.style.borderColor='rgba(255,255,255,.12)';dcHandleFiles(event.dataTransfer.files)">
+              📄 Glissez vos fichiers ici ou cliquez pour choisir des fichiers sur votre ordinateur
+            </div>
+            <div id="dc-docs-list" style="padding:0 16px 16px;min-height:40px"></div>
+          </div>
         </div>
 
         <!-- ── FACTURATION ── -->
@@ -1912,6 +1926,7 @@ function bootApp(email) {
   tcLoad(); tcRender();
   plLoad(); renderPipeline();
   clLoad(); clRenderGrid();
+  dcLoad();
   ldInit();
 }
 
@@ -2626,6 +2641,67 @@ function clSaveNotes() {
   if (!clCurrentId) return;
   const c = clData.find(x=>x.id===clCurrentId);
   if (c) { c.notes = document.getElementById('cl-notes-area').value; clSave(); }
+}
+
+// ── Documents (page globale, indépendante des fiches clients) ──
+const DC_KEY = 'dc_docs_v1';
+let dcData = [];
+
+function dcLoad() {
+  try { const raw = JSON.parse(localStorage.getItem(DC_KEY)); dcData = Array.isArray(raw) ? raw : []; }
+  catch(e) { dcData = []; }
+  dcRender();
+}
+function dcSave() { localStorage.setItem(DC_KEY, JSON.stringify(dcData)); }
+
+function dcHandleFiles(files) {
+  if (!files || !files.length) return;
+  let remaining = files.length;
+  Array.from(files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      dcData.unshift({
+        id: 'dc'+Date.now()+Math.random().toString(36).slice(2),
+        nom: file.name,
+        type: file.type,
+        taille: file.size,
+        date: new Date().toLocaleDateString('fr-FR'),
+        data: e.target.result
+      });
+      remaining--;
+      if (remaining === 0) { dcSave(); dcRender(); }
+    };
+    reader.readAsDataURL(file);
+  });
+  const inp = document.getElementById('dc-file-input');
+  if (inp) inp.value = '';
+}
+
+function dcDelDoc(did) {
+  dcData = dcData.filter(d=>d.id!==did);
+  dcSave(); dcRender();
+}
+
+function dcSizeTxt(bytes) {
+  if (!bytes && bytes !== 0) return '';
+  if (bytes < 1024) return bytes + ' o';
+  if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' Ko';
+  return (bytes/(1024*1024)).toFixed(1) + ' Mo';
+}
+
+function dcRender() {
+  const el = document.getElementById('dc-docs-list');
+  if (!el) return;
+  if (!dcData.length) { el.innerHTML = '<div class="empty"><div class="ei">📄</div>Aucun document importé pour l\'instant.</div>'; return; }
+  el.innerHTML = dcData.map(d => `
+    <div class="cl-doc-row">
+      <span class="cl-doc-icon">${clDocIcon(d.type)}</span>
+      <span class="cl-doc-name" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.nom}</span>
+      <span class="cl-doc-date" style="flex-shrink:0">${dcSizeTxt(d.taille)}</span>
+      <span class="cl-doc-date" style="flex-shrink:0">${d.date||''}</span>
+      ${d.data ? `<a href="${d.data}" download="${d.nom}" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;opacity:.7;text-decoration:none" title="Télécharger">⬇️</a>` : ''}
+      <button onclick="dcDelDoc('${d.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;opacity:.5;margin-left:4px" title="Supprimer">🗑</button>
+    </div>`).join('');
 }
 
 function clDocIcon(type) {
