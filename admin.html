@@ -497,6 +497,8 @@
         <div class="nav-item active" data-page="dashboard" onclick="nav(this)"><span class="ni-icon">⊞</span> Dashboard</div>
         <div class="nav-item" data-page="pipeline" onclick="nav(this)"><span class="ni-icon">⇄</span> Pipeline</div>
         <div class="nav-item" data-page="taches" onclick="nav(this)"><span class="ni-icon">✓</span> Tâches <span class="ni-badge" id="badge-taches">3</span></div>
+        <div class="nav-item" data-page="objectifs" onclick="nav(this)"><span class="ni-icon">🎯</span> Objectifs</div>
+        <div class="nav-item" data-page="planning" onclick="nav(this)"><span class="ni-icon">📅</span> Planning</div>
 
         <div class="sb-section">Business</div>
         <div class="nav-item" data-page="clients" onclick="nav(this)"><span class="ni-icon">👥</span> Clients</div>
@@ -508,6 +510,7 @@
         <div class="nav-item" data-page="documents" onclick="nav(this)"><span class="ni-icon">📄</span> Documents</div>
         <div class="nav-item" data-page="facturation" onclick="nav(this)"><span class="ni-icon">💶</span> Facturation</div>
         <div class="nav-item" data-page="devis" onclick="nav(this)"><span class="ni-icon">📝</span> Devis</div>
+        <div class="nav-item" data-page="tresorerie" onclick="nav(this)"><span class="ni-icon">💰</span> Trésorerie</div>
       </nav>
       <div class="sb-bottom">
         <div class="sb-user">
@@ -1593,6 +1596,236 @@
           </div>
         </div>
 
+        <!-- ── OBJECTIFS ── -->
+        <div id="page-objectifs" class="page">
+          <style>
+            .ob-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:20px}
+            .ob-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;position:relative}
+            .ob-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+            .ob-name{font-size:14px;font-weight:700;color:#fff}
+            .ob-cat{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+            .ob-values{font-size:13px;color:var(--muted);margin-bottom:10px}
+            .ob-values strong{color:#fff;font-size:18px;font-weight:800}
+            .ob-bar-bg{background:rgba(255,255,255,.07);border-radius:20px;height:6px;overflow:hidden;margin-bottom:10px}
+            .ob-bar{height:100%;border-radius:20px;transition:width .4s}
+            .ob-footer{display:flex;justify-content:space-between;align-items:center}
+            .ob-pct{font-size:13px;font-weight:700}
+            .ob-badge-ok{background:rgba(34,197,94,.12);color:#4ade80;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700}
+            .ob-badge-nok{background:rgba(239,68,68,.12);color:#f87171;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700}
+            .ob-badge-prog{background:rgba(251,191,36,.1);color:#fbbf24;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700}
+            .ob-edit-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:4px}
+            .ob-edit-btn:hover{color:#fff;background:rgba(255,255,255,.07)}
+            .ob-auto-tag{font-size:10px;color:var(--accent);margin-top:6px}
+          </style>
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">
+            <div>
+              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">PILOTAGE</div>
+              <div style="font-size:24px;font-weight:800;margin:2px 0 3px">Objectifs</div>
+              <div style="font-size:12px;color:var(--muted)">Suis tes objectifs CA, devis, affiliation et réseaux.</div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button onclick="obRefreshAuto()" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;color:#fff;cursor:pointer">↺ Sync auto</button>
+              <button onclick="obOpenAdd()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer">+ Objectif</button>
+            </div>
+          </div>
+          <div class="ob-grid" id="ob-grid"></div>
+
+          <!-- Modal -->
+          <div id="ob-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1100;align-items:center;justify-content:center;padding:16px" onclick="if(event.target.id==='ob-modal')obCloseModal()">
+            <div style="background:#18181f;border:1px solid var(--border);border-radius:18px;padding:26px 28px;width:100%;max-width:460px;position:relative;max-height:90vh;overflow-y:auto">
+              <button onclick="obCloseModal()" style="position:absolute;top:14px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">×</button>
+              <h3 id="ob-modal-title" style="font-size:17px;font-weight:800;margin:0 0 18px">Nouvel objectif</h3>
+              <input type="hidden" id="ob-id">
+              <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Nom *</label>
+              <input id="ob-name" placeholder="Ex : 10 000€ CA ce mois" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:12px;outline:none;box-sizing:border-box">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+                <div>
+                  <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Catégorie</label>
+                  <select id="ob-cat" onchange="obCatChange()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
+                    <option value="ca">💶 Chiffre d'affaires</option>
+                    <option value="devis">📝 Devis signés</option>
+                    <option value="affiliation">🤝 Affiliations</option>
+                    <option value="tiktok">🎵 Abonnés TikTok</option>
+                    <option value="instagram">📸 Abonnés Instagram</option>
+                    <option value="autre">📌 Autre</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Unité</label>
+                  <input id="ob-unit" placeholder="€, contrats, abonnés…" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+                <div>
+                  <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Objectif cible *</label>
+                  <input id="ob-target" type="number" placeholder="10000" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                </div>
+                <div id="ob-current-wrap">
+                  <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Valeur actuelle</label>
+                  <input id="ob-current" type="number" placeholder="0" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                </div>
+              </div>
+              <div style="margin-bottom:12px">
+                <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Date limite</label>
+                <input id="ob-date" type="date" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+              </div>
+              <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Notes</label>
+              <textarea id="ob-notes" rows="2" placeholder="Contexte…" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;resize:vertical;box-sizing:border-box;margin-bottom:16px"></textarea>
+              <div style="display:flex;gap:10px">
+                <button id="ob-delete-btn" onclick="obDelete()" style="flex:1;padding:11px;border-radius:8px;border:none;background:rgba(239,68,68,.12);color:#f87171;font-size:13px;font-weight:700;cursor:pointer;display:none">Supprimer</button>
+                <button onclick="obSave()" style="flex:2;padding:11px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:700;cursor:pointer">Enregistrer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── PLANNING ── -->
+        <div id="page-planning" class="page">
+          <style>
+            .pl-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-top:12px}
+            .pl-day-hd{text-align:center;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:8px 0}
+            .pl-day{background:var(--card);border:1px solid var(--border);border-radius:8px;min-height:90px;padding:6px;cursor:pointer;transition:border-color .15s}
+            .pl-day:hover{border-color:var(--accent)}
+            .pl-day.today{border-color:var(--accent);background:rgba(244,146,106,.06)}
+            .pl-day-num{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:4px}
+            .pl-day.today .pl-day-num{color:var(--accent)}
+            .pl-task-pill{font-size:10px;background:rgba(244,146,106,.15);color:var(--accent);border-radius:4px;padding:2px 5px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+            .pl-task-pill.done{background:rgba(34,197,94,.1);color:#4ade80;text-decoration:line-through}
+            .pl-task-pill.other{background:rgba(96,165,250,.1);color:var(--blue)}
+            .pl-nav{display:flex;align-items:center;gap:12px}
+            .pl-nav button{background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;color:#fff;cursor:pointer}
+            .pl-month-title{font-size:16px;font-weight:800;min-width:160px;text-align:center}
+            .pl-list{display:none}
+          </style>
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:16px">
+            <div>
+              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">PILOTAGE</div>
+              <div style="font-size:24px;font-weight:800;margin:2px 0 3px">Planning</div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <div class="pl-nav">
+                <button onclick="plPrev()">‹</button>
+                <div class="pl-month-title" id="pl-month-title"></div>
+                <button onclick="plNext()">›</button>
+              </div>
+              <button onclick="plOpenAdd(null)" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer">+ Tâche</button>
+            </div>
+          </div>
+          <!-- Days header -->
+          <div class="pl-grid" id="pl-header"></div>
+          <!-- Calendar -->
+          <div class="pl-grid" id="pl-calendar" style="margin-top:4px"></div>
+
+          <!-- Modal ajout tâche -->
+          <div id="pl-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1100;align-items:center;justify-content:center;padding:16px" onclick="if(event.target.id==='pl-modal')plCloseModal()">
+            <div style="background:#18181f;border:1px solid var(--border);border-radius:18px;padding:26px 28px;width:100%;max-width:420px;position:relative">
+              <button onclick="plCloseModal()" style="position:absolute;top:14px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">×</button>
+              <h3 style="font-size:17px;font-weight:800;margin:0 0 16px">Nouvelle tâche</h3>
+              <input type="hidden" id="pl-task-id">
+              <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Titre *</label>
+              <input id="pl-task-title" placeholder="Ex : Appel Cédric" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:12px;outline:none;box-sizing:border-box">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+                <div>
+                  <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Date</label>
+                  <input id="pl-task-date" type="date" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                </div>
+                <div>
+                  <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Statut</label>
+                  <select id="pl-task-status" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
+                    <option value="todo">À faire</option>
+                    <option value="done">Fait ✓</option>
+                  </select>
+                </div>
+              </div>
+              <div style="display:flex;gap:10px">
+                <button id="pl-delete-btn" onclick="plDeleteTask()" style="flex:1;padding:11px;border-radius:8px;border:none;background:rgba(239,68,68,.12);color:#f87171;font-size:13px;font-weight:700;cursor:pointer;display:none">Supprimer</button>
+                <button onclick="plSaveTask()" style="flex:2;padding:11px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:700;cursor:pointer">Enregistrer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── TRÉSORERIE ── -->
+        <div id="page-tresorerie" class="page">
+          <style>
+            .tr-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+            .tr-stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}
+            .tr-stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+            .tr-stat-val{font-size:24px;font-weight:900}
+            .tr-row{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.04);gap:10px}
+            .tr-row:hover{background:rgba(255,255,255,.02)}
+            .tr-row-desc{font-size:13px;font-weight:600;color:#fff}
+            .tr-row-meta{font-size:11px;color:var(--muted);margin-top:2px}
+            .tr-row-amt{font-size:15px;font-weight:800;white-space:nowrap}
+            .tr-entree{color:#4ade80}
+            .tr-sortie{color:#f87171}
+            .tr-cats{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+            .tr-cat-btn{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);transition:.15s}
+            .tr-cat-btn.active{background:rgba(244,146,106,.15);color:var(--accent);border-color:rgba(244,146,106,.3)}
+          </style>
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:20px">
+            <div>
+              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">OPÉRATIONS</div>
+              <div style="font-size:24px;font-weight:800;margin:2px 0 3px">Trésorerie</div>
+              <div style="font-size:12px;color:var(--muted)">Entrées et sorties d'argent.</div>
+            </div>
+            <button onclick="trOpenAdd()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer">+ Transaction</button>
+          </div>
+          <div class="tr-stats" id="tr-stats"></div>
+          <div class="tr-cats">
+            <button class="tr-cat-btn active" data-f="all" onclick="trFilter('all',this)">Tout</button>
+            <button class="tr-cat-btn" data-f="entree" onclick="trFilter('entree',this)">↑ Entrées</button>
+            <button class="tr-cat-btn" data-f="sortie" onclick="trFilter('sortie',this)">↓ Sorties</button>
+          </div>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+            <div id="tr-list"></div>
+          </div>
+
+          <!-- Modal -->
+          <div id="tr-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1100;align-items:center;justify-content:center;padding:16px" onclick="if(event.target.id==='tr-modal')trCloseModal()">
+            <div style="background:#18181f;border:1px solid var(--border);border-radius:18px;padding:26px 28px;width:100%;max-width:440px;position:relative">
+              <button onclick="trCloseModal()" style="position:absolute;top:14px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">×</button>
+              <h3 style="font-size:17px;font-weight:800;margin:0 0 16px">Transaction</h3>
+              <input type="hidden" id="tr-id">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+                <div>
+                  <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Type</label>
+                  <select id="tr-type" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
+                    <option value="entree">↑ Entrée</option>
+                    <option value="sortie">↓ Sortie</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Montant (€) *</label>
+                  <input id="tr-amount" type="number" step="0.01" placeholder="990" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+                <div>
+                  <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Catégorie</label>
+                  <select id="tr-cat" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
+                    <option value="ca">Chiffre d'affaires</option>
+                    <option value="pub">Publicité</option>
+                    <option value="outil">Outils / Abos</option>
+                    <option value="salaire">Salaire</option>
+                    <option value="autre">Autre</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Date</label>
+                  <input id="tr-date" type="date" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                </div>
+              </div>
+              <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Description</label>
+              <input id="tr-desc" placeholder="Client, raison…" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:16px;outline:none;box-sizing:border-box">
+              <div style="display:flex;gap:10px">
+                <button id="tr-delete-btn" onclick="trDelete()" style="flex:1;padding:11px;border-radius:8px;border:none;background:rgba(239,68,68,.12);color:#f87171;font-size:13px;font-weight:700;cursor:pointer;display:none">Supprimer</button>
+                <button onclick="trSave()" style="flex:2;padding:11px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:700;cursor:pointer">Enregistrer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- ── DOCUMENTS ── -->
         <div id="page-documents" class="page">
           <div style="margin-bottom:18px"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">OPÉRATIONS</div><div style="font-size:22px;font-weight:800;margin-top:2px">Documents</div></div>
@@ -1658,15 +1891,17 @@ function bootApp(email) {
 // Navigation
 const sections = {
   dashboard:'VUE D\'ENSEMBLE', pipeline:'BUSINESS', taches:'PILOTAGE',
+  objectifs:'PILOTAGE', planning:'PILOTAGE',
   clients:'BUSINESS', leads:'BUSINESS',
   formulaire:'BUSINESS', appels:'BUSINESS',
-  documents:'OPÉRATIONS', facturation:'OPÉRATIONS', devis:'OPÉRATIONS'
+  documents:'OPÉRATIONS', facturation:'OPÉRATIONS', devis:'OPÉRATIONS', tresorerie:'OPÉRATIONS'
 };
 const titles = {
   dashboard:'Dashboard', pipeline:'Pipeline', taches:'Tâches',
+  objectifs:'Objectifs', planning:'Planning',
   clients:'Clients', leads:'Leads',
   formulaire:'Formulaire', appels:'Appels',
-  documents:'Documents', facturation:'Facturation', devis:'Devis'
+  documents:'Documents', facturation:'Facturation', devis:'Devis', tresorerie:'Trésorerie'
 };
 function nav(el) {
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
@@ -1681,6 +1916,9 @@ function nav(el) {
   if(p==='leads') ldRender();
   if(p==='formulaire') fmLoad();
   if(p==='appels') apInit();
+  if(p==='objectifs') obInit();
+  if(p==='planning') plInit();
+  if(p==='tresorerie') trInit();
 }
 
 function toggleTask(cb) {
@@ -4131,6 +4369,363 @@ async function apSaveApiKey() {
   localStorage.setItem('ap_anthropic_key',key);
   document.getElementById('ap-apikey-modal').style.display='none';
   if(_apDebriefPending){_apDebriefPending=false;apGenerateDebrief();}
+}
+
+/* ═══════════════════════════════════════════════
+   OBJECTIFS
+═══════════════════════════════════════════════ */
+let obData = [];
+let obEditId = null;
+
+async function obInit() {
+  const { data } = await sb.from('objectives').select('*').order('created_at', { ascending: false });
+  if (data) obData = data;
+  obRender();
+}
+
+function obRender() {
+  const grid = document.getElementById('ob-grid');
+  if (!obData.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);font-size:13px">Aucun objectif. Clique sur "+ Objectif" pour commencer.</div>';
+    return;
+  }
+  const catLabels = { ca:'💶 CA', devis:'📝 Devis', affiliation:'🤝 Affiliations', tiktok:'🎵 TikTok', instagram:'📸 Instagram', autre:'📌 Autre' };
+  grid.innerHTML = obData.map(o => {
+    const pct = o.target > 0 ? Math.min(100, Math.round((o.current_value||0) / o.target * 100)) : 0;
+    const barCol = pct >= 100 ? '#4ade80' : pct >= 60 ? '#fbbf24' : 'var(--accent)';
+    const badge = pct >= 100
+      ? '<span class="ob-badge-ok">✓ Atteint</span>'
+      : pct >= 60
+        ? `<span class="ob-badge-prog">${pct}%</span>`
+        : `<span class="ob-badge-nok">${pct}%</span>`;
+    const dl = o.deadline ? ` · Échéance ${new Date(o.deadline).toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}` : '';
+    return `<div class="ob-card">
+      <div class="ob-card-top">
+        <div>
+          <div class="ob-name">${o.name}</div>
+          <div class="ob-cat">${catLabels[o.category]||o.category}${dl}</div>
+        </div>
+        <button class="ob-edit-btn" onclick="obOpenAdd('${o.id}')">✏</button>
+      </div>
+      <div class="ob-values"><strong>${(o.current_value||0).toLocaleString('fr-FR')}</strong> / ${(o.target||0).toLocaleString('fr-FR')} ${o.unit||''}</div>
+      <div class="ob-bar-bg"><div class="ob-bar" style="width:${pct}%;background:${barCol}"></div></div>
+      <div class="ob-footer">${badge}${o.notes?`<span style="font-size:10px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px">${o.notes}</span>`:''}</div>
+    </div>`;
+  }).join('');
+}
+
+async function obRefreshAuto() {
+  // CA : somme des factures payées
+  const { data: factures } = await sb.from('factures').select('montant_ttc,status').eq('status','payee');
+  const totalCA = (factures||[]).reduce((s,f)=>s+(f.montant_ttc||0),0);
+  // Devis signés
+  const { data: devis } = await sb.from('devis').select('id').eq('status','signé');
+  const totalDevis = (devis||[]).length;
+
+  for (const o of obData) {
+    let val = null;
+    if (o.category === 'ca') val = totalCA;
+    else if (o.category === 'devis') val = totalDevis;
+    if (val !== null) {
+      await sb.from('objectives').update({ current_value: val }).eq('id', o.id);
+      o.current_value = val;
+    }
+  }
+  obRender();
+}
+
+function obCatChange() {
+  const cat = document.getElementById('ob-cat').value;
+  const units = { ca:'€', devis:'contrats', affiliation:'partenaires', tiktok:'abonnés', instagram:'abonnés', autre:'' };
+  document.getElementById('ob-unit').value = units[cat] || '';
+  const autoWrap = document.getElementById('ob-current-wrap');
+  if (autoWrap) autoWrap.style.display = ['ca','devis'].includes(cat) ? 'none' : '';
+}
+
+function obOpenAdd(id) {
+  obEditId = id || null;
+  const modal = document.getElementById('ob-modal');
+  if (id) {
+    const o = obData.find(x=>x.id===id);
+    if (!o) return;
+    document.getElementById('ob-modal-title').textContent = 'Modifier l\'objectif';
+    document.getElementById('ob-id').value = o.id;
+    document.getElementById('ob-name').value = o.name;
+    document.getElementById('ob-cat').value = o.category;
+    document.getElementById('ob-unit').value = o.unit || '';
+    document.getElementById('ob-target').value = o.target || '';
+    document.getElementById('ob-current').value = o.current_value || '';
+    document.getElementById('ob-date').value = o.deadline || '';
+    document.getElementById('ob-notes').value = o.notes || '';
+    document.getElementById('ob-delete-btn').style.display = '';
+  } else {
+    document.getElementById('ob-modal-title').textContent = 'Nouvel objectif';
+    document.getElementById('ob-id').value = '';
+    document.getElementById('ob-name').value = '';
+    document.getElementById('ob-cat').value = 'ca';
+    document.getElementById('ob-unit').value = '€';
+    document.getElementById('ob-target').value = '';
+    document.getElementById('ob-current').value = '';
+    document.getElementById('ob-date').value = '';
+    document.getElementById('ob-notes').value = '';
+    document.getElementById('ob-delete-btn').style.display = 'none';
+  }
+  obCatChange();
+  modal.style.display = 'flex';
+  setTimeout(() => document.getElementById('ob-name').focus(), 100);
+}
+
+async function obSave() {
+  const name = document.getElementById('ob-name').value.trim();
+  if (!name) { document.getElementById('ob-name').focus(); return; }
+  const payload = {
+    name,
+    category: document.getElementById('ob-cat').value,
+    unit: document.getElementById('ob-unit').value.trim(),
+    target: parseFloat(document.getElementById('ob-target').value) || 0,
+    current_value: parseFloat(document.getElementById('ob-current').value) || 0,
+    deadline: document.getElementById('ob-date').value || null,
+    notes: document.getElementById('ob-notes').value.trim() || null
+  };
+  if (obEditId) {
+    await sb.from('objectives').update(payload).eq('id', obEditId);
+  } else {
+    await sb.from('objectives').insert(payload);
+  }
+  obCloseModal();
+  await obInit();
+}
+
+async function obDelete() {
+  if (!obEditId) return;
+  if (!confirm('Supprimer cet objectif ?')) return;
+  await sb.from('objectives').delete().eq('id', obEditId);
+  obCloseModal();
+  obData = obData.filter(o => o.id !== obEditId);
+  obEditId = null;
+  obRender();
+}
+
+function obCloseModal() {
+  document.getElementById('ob-modal').style.display = 'none';
+}
+
+/* ═══════════════════════════════════════════════
+   PLANNING
+═══════════════════════════════════════════════ */
+let plTasks = [];
+let plYear = new Date().getFullYear();
+let plMonth = new Date().getMonth();
+let plEditTaskId = null;
+
+async function plInit() {
+  const { data } = await sb.from('planning_tasks').select('*');
+  if (data) plTasks = data;
+  plRender();
+}
+
+function plRender() {
+  const months = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  const days = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+  document.getElementById('pl-month-title').textContent = `${months[plMonth]} ${plYear}`;
+
+  // Header
+  document.getElementById('pl-header').innerHTML = days.map(d => `<div class="pl-day-hd">${d}</div>`).join('');
+
+  // First day of month (ISO: Mon=1)
+  const first = new Date(plYear, plMonth, 1);
+  let startDow = first.getDay(); // 0=Sun
+  startDow = startDow === 0 ? 6 : startDow - 1; // Mon=0
+  const daysInMonth = new Date(plYear, plMonth + 1, 0).getDate();
+  const today = new Date();
+
+  let cells = '';
+  // Empty cells before
+  for (let i = 0; i < startDow; i++) cells += '<div></div>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${plYear}-${String(plMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday = today.getFullYear()===plYear && today.getMonth()===plMonth && today.getDate()===d;
+    const dayTasks = plTasks.filter(t => t.date === dateStr);
+    const pills = dayTasks.map(t =>
+      `<div class="pl-task-pill${t.status==='done'?' done':''}" title="${t.title}" onclick="event.stopPropagation();plOpenAdd('${t.id}')">${t.title}</div>`
+    ).join('');
+    cells += `<div class="pl-day${isToday?' today':''}" onclick="plOpenAdd(null,'${dateStr}')">
+      <div class="pl-day-num">${d}</div>
+      ${pills}
+    </div>`;
+  }
+  document.getElementById('pl-calendar').innerHTML = cells;
+}
+
+function plPrev() { if (plMonth === 0) { plMonth=11; plYear--; } else plMonth--; plRender(); }
+function plNext() { if (plMonth === 11) { plMonth=0; plYear++; } else plMonth++; plRender(); }
+
+function plOpenAdd(id, prefillDate) {
+  plEditTaskId = id || null;
+  if (id) {
+    const t = plTasks.find(x => x.id === id);
+    if (!t) return;
+    document.getElementById('pl-task-id').value = t.id;
+    document.getElementById('pl-task-title').value = t.title;
+    document.getElementById('pl-task-date').value = t.date || '';
+    document.getElementById('pl-task-status').value = t.status || 'todo';
+    document.getElementById('pl-delete-btn').style.display = '';
+  } else {
+    document.getElementById('pl-task-id').value = '';
+    document.getElementById('pl-task-title').value = '';
+    document.getElementById('pl-task-date').value = prefillDate || '';
+    document.getElementById('pl-task-status').value = 'todo';
+    document.getElementById('pl-delete-btn').style.display = 'none';
+  }
+  document.getElementById('pl-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('pl-task-title').focus(), 100);
+}
+
+async function plSaveTask() {
+  const title = document.getElementById('pl-task-title').value.trim();
+  if (!title) { document.getElementById('pl-task-title').focus(); return; }
+  const payload = {
+    title,
+    date: document.getElementById('pl-task-date').value || null,
+    status: document.getElementById('pl-task-status').value
+  };
+  if (plEditTaskId) {
+    await sb.from('planning_tasks').update(payload).eq('id', plEditTaskId);
+  } else {
+    await sb.from('planning_tasks').insert(payload);
+  }
+  plCloseModal();
+  const { data } = await sb.from('planning_tasks').select('*');
+  if (data) plTasks = data;
+  plRender();
+}
+
+async function plDeleteTask() {
+  if (!plEditTaskId) return;
+  if (!confirm('Supprimer cette tâche ?')) return;
+  await sb.from('planning_tasks').delete().eq('id', plEditTaskId);
+  plTasks = plTasks.filter(t => t.id !== plEditTaskId);
+  plCloseModal();
+  plRender();
+}
+
+function plCloseModal() {
+  document.getElementById('pl-modal').style.display = 'none';
+  plEditTaskId = null;
+}
+
+/* ═══════════════════════════════════════════════
+   TRÉSORERIE
+═══════════════════════════════════════════════ */
+let trData = [];
+let trCurrentFilter = 'all';
+let trEditId = null;
+
+async function trInit() {
+  const { data } = await sb.from('transactions').select('*').order('date', { ascending: false });
+  if (data) trData = data;
+  trRender();
+}
+
+function trRender() {
+  const entries = trData.filter(t => t.type === 'entree');
+  const exits   = trData.filter(t => t.type === 'sortie');
+  const totalIn  = entries.reduce((s,t) => s + (t.amount||0), 0);
+  const totalOut = exits.reduce((s,t) => s + (t.amount||0), 0);
+  const balance  = totalIn - totalOut;
+  const balCol   = balance >= 0 ? '#4ade80' : '#f87171';
+
+  document.getElementById('tr-stats').innerHTML = `
+    <div class="tr-stat"><div class="tr-stat-label">Entrées</div><div class="tr-stat-val tr-entree">+${totalIn.toLocaleString('fr-FR',{minimumFractionDigits:0,maximumFractionDigits:2})} €</div></div>
+    <div class="tr-stat"><div class="tr-stat-label">Sorties</div><div class="tr-stat-val tr-sortie">-${totalOut.toLocaleString('fr-FR',{minimumFractionDigits:0,maximumFractionDigits:2})} €</div></div>
+    <div class="tr-stat"><div class="tr-stat-label">Solde</div><div class="tr-stat-val" style="color:${balCol}">${balance>=0?'+':''}${balance.toLocaleString('fr-FR',{minimumFractionDigits:0,maximumFractionDigits:2})} €</div></div>
+  `;
+
+  const filtered = trCurrentFilter === 'all' ? trData : trData.filter(t => t.type === trCurrentFilter);
+  const catLabels = { ca:'CA', pub:'Publicité', outil:'Outils/Abos', salaire:'Salaire', autre:'Autre' };
+  if (!filtered.length) {
+    document.getElementById('tr-list').innerHTML = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:12px">Aucune transaction.</div>';
+    return;
+  }
+  document.getElementById('tr-list').innerHTML = filtered.map(t => {
+    const sign = t.type === 'entree' ? '+' : '-';
+    const cls  = t.type === 'entree' ? 'tr-entree' : 'tr-sortie';
+    const ds   = t.date ? new Date(t.date).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'}) : '';
+    return `<div class="tr-row" style="cursor:pointer" onclick="trOpenEdit('${t.id}')">
+      <div style="flex:1;min-width:0">
+        <div class="tr-row-desc">${t.description||'—'}</div>
+        <div class="tr-row-meta">${catLabels[t.category]||t.category}${ds?' · '+ds:''}</div>
+      </div>
+      <div class="tr-row-amt ${cls}">${sign}${(t.amount||0).toLocaleString('fr-FR',{minimumFractionDigits:0,maximumFractionDigits:2})} €</div>
+    </div>`;
+  }).join('');
+}
+
+function trFilter(f, btn) {
+  trCurrentFilter = f;
+  document.querySelectorAll('.tr-cat-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  trRender();
+}
+
+function trOpenAdd() {
+  trEditId = null;
+  document.getElementById('tr-id').value = '';
+  document.getElementById('tr-type').value = 'entree';
+  document.getElementById('tr-amount').value = '';
+  document.getElementById('tr-cat').value = 'ca';
+  document.getElementById('tr-date').value = new Date().toISOString().slice(0,10);
+  document.getElementById('tr-desc').value = '';
+  document.getElementById('tr-delete-btn').style.display = 'none';
+  document.getElementById('tr-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('tr-amount').focus(), 100);
+}
+
+function trOpenEdit(id) {
+  trEditId = id;
+  const t = trData.find(x => x.id === id);
+  if (!t) return;
+  document.getElementById('tr-id').value = t.id;
+  document.getElementById('tr-type').value = t.type;
+  document.getElementById('tr-amount').value = t.amount || '';
+  document.getElementById('tr-cat').value = t.category || 'autre';
+  document.getElementById('tr-date').value = t.date || '';
+  document.getElementById('tr-desc').value = t.description || '';
+  document.getElementById('tr-delete-btn').style.display = '';
+  document.getElementById('tr-modal').style.display = 'flex';
+}
+
+async function trSave() {
+  const amount = parseFloat(document.getElementById('tr-amount').value);
+  if (!amount || isNaN(amount)) { document.getElementById('tr-amount').focus(); return; }
+  const payload = {
+    type: document.getElementById('tr-type').value,
+    amount,
+    category: document.getElementById('tr-cat').value,
+    date: document.getElementById('tr-date').value || null,
+    description: document.getElementById('tr-desc').value.trim() || null
+  };
+  if (trEditId) {
+    await sb.from('transactions').update(payload).eq('id', trEditId);
+  } else {
+    await sb.from('transactions').insert(payload);
+  }
+  trCloseModal();
+  await trInit();
+}
+
+async function trDelete() {
+  if (!trEditId) return;
+  if (!confirm('Supprimer cette transaction ?')) return;
+  await sb.from('transactions').delete().eq('id', trEditId);
+  trData = trData.filter(t => t.id !== trEditId);
+  trCloseModal();
+  trRender();
+}
+
+function trCloseModal() {
+  document.getElementById('tr-modal').style.display = 'none';
+  trEditId = null;
 }
 
 // Session — si pas connecté ou pas admin, retour auth.html
