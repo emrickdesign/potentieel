@@ -1030,7 +1030,7 @@
             <!-- Tab: Devis -->
             <div id="cl-tab-devis" class="cl-tab-pane" style="display:none">
               <div class="panel">
-                <div class="panel-head"><h3>Devis</h3><button class="ph-action" onclick="clAddDevis()">+ Nouveau</button></div>
+                <div class="panel-head"><h3>Devis</h3><button class="ph-action" onclick="dvOpenModal()">+ Nouveau devis</button></div>
                 <div id="cl-devis-list" style="padding:16px;min-height:80px"></div>
               </div>
             </div>
@@ -1052,6 +1052,86 @@
                   <input id="cl-msg-input" placeholder="Écrire un message…" style="flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:13px;outline:none" onkeydown="if(event.key==='Enter')clSendMsg()">
                   <button onclick="clSendMsg()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer">Envoyer</button>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- DEVIS MODAL -->
+          <div id="dv-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1100;align-items:center;justify-content:center;padding:16px;overflow-y:auto" onclick="if(event.target.id==='dv-modal')dvCloseModal()">
+            <div style="background:#18181f;border:1px solid var(--border);border-radius:18px;padding:28px 30px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;position:relative">
+              <button onclick="dvCloseModal()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">×</button>
+              <h3 style="font-size:18px;font-weight:800;margin:0 0 22px">Nouveau devis</h3>
+
+              <!-- Client existant -->
+              <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Client existant <span style="font-weight:400">(optionnel — pré-remplit le formulaire)</span></label>
+              <select id="dv-cl-select" onchange="dvPrefill()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:16px;outline:none">
+                <option value="">— Aucun client sélectionné —</option>
+              </select>
+
+              <!-- Entreprise + Contact -->
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+                <div>
+                  <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Entreprise *</label>
+                  <input id="dv-entreprise" placeholder="Nom entreprise" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                </div>
+                <div>
+                  <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Contact</label>
+                  <input id="dv-tel" placeholder="0600000000" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                </div>
+              </div>
+
+              <!-- Email -->
+              <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Email *</label>
+              <input id="dv-email" type="email" placeholder="client@exemple.fr" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:14px;outline:none;box-sizing:border-box">
+
+              <!-- Adresse -->
+              <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Adresse</label>
+              <input id="dv-adresse" placeholder="12 rue des Exemples, 73000 Chambéry" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:14px;outline:none;box-sizing:border-box">
+
+              <!-- Type identifiant + numéro -->
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+                <div>
+                  <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Type d'identifiant</label>
+                  <select id="dv-id-type" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
+                    <option value="SIRET">SIRET (14 chiffres)</option>
+                    <option value="SIREN">SIREN (9 chiffres)</option>
+                    <option value="">Non applicable</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Numéro</label>
+                  <input id="dv-id-num" placeholder="85005018800026" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                </div>
+              </div>
+
+              <!-- Création + Abonnement -->
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+                <div>
+                  <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Création (paiement unique)</label>
+                  <select id="dv-creation" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
+                    <option value="">Aucun</option>
+                    <option value="1x">Création site web — 990 €</option>
+                    <option value="2x">Création site web — 2 × 495 €</option>
+                    <option value="3x">Création site web — 3 × 330 €</option>
+                    <option value="4x">Création site web — 4 × 247,50 €</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Abonnement mensuel</label>
+                  <select id="dv-abo" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
+                    <option value="">Aucun abonnement</option>
+                    <option value="20">Assistant Digital — 20 €/mois</option>
+                    <option value="49">Gestion complète — 49 €/mois</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Note -->
+              <p style="font-size:11px;color:var(--muted);margin:0 0 20px;background:rgba(255,255,255,.03);padding:10px;border-radius:8px">Si abonnement combiné : aucun prélèvement d'abonnement tant que la création n'est pas intégralement réglée (mois d'abonnement offerts).</p>
+
+              <div style="display:flex;gap:10px">
+                <button onclick="dvCloseModal()" style="flex:1;padding:12px;border-radius:8px;border:none;background:rgba(255,255,255,.07);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer">Annuler</button>
+                <button onclick="dvCreate()" style="flex:2;padding:12px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:700;cursor:pointer">+ Créer le devis</button>
               </div>
             </div>
           </div>
@@ -2047,25 +2127,17 @@ function clRenderDevis(c) {
   if (!c.devis || c.devis.length === 0) {
     el.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0">Aucun devis</div>'; return;
   }
-  el.innerHTML = `<table><thead><tr><th>Réf</th><th>Date</th><th>Montant</th><th>Statut</th><th></th></tr></thead><tbody>` +
-    c.devis.map(d => `<tr>
-      <td style="font-weight:600">${d.ref||'—'}</td>
-      <td style="color:var(--muted)">${d.date||'—'}</td>
-      <td style="color:var(--accent);font-weight:700">${d.montant||'—'}</td>
-      <td><span class="badge ${d.statut==='accepte'?'badge-green':d.statut==='refuse'?'badge-red':'badge-orange'}">${d.statut||'En attente'}</span></td>
-      <td><button onclick="clDelDevis('${d.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;opacity:.5">🗑</button></td>
-    </tr>`).join('') + '</tbody></table>';
-}
-
-function clAddDevis() {
-  const montant = prompt('Montant du devis :');
-  if (!montant) return;
-  const c = clData.find(x=>x.id===clCurrentId);
-  if (!c) return;
-  if (!c.devis) c.devis = [];
-  const ref = 'DEV-' + String(c.devis.length+1).padStart(3,'0');
-  c.devis.push({ id:'dv'+Date.now(), ref, date: new Date().toLocaleDateString('fr-FR'), montant, statut:'attente' });
-  clSave(); clRenderDevis(c);
+  el.innerHTML = c.devis.map(d => `
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.05)">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:700;color:var(--text)">${d.ref||'DEV'}</div>
+        <div style="font-size:12px;color:var(--muted)">${d.date||''} · ${d.totalTxt||d.montant||''}</div>
+      </div>
+      <span class="badge ${d.statut==='accepté'?'badge-green':d.statut==='refusé'?'badge-red':'badge-blue'}">${d.statut||'en attente'}</span>
+      <button onclick="dvPreview('${d.id}')" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:6px;padding:6px 12px;color:var(--muted);font-size:12px;cursor:pointer">👁 Voir</button>
+      <button onclick="dvPrint('${d.id}')" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:6px;padding:6px 12px;color:var(--muted);font-size:12px;cursor:pointer">🖨 PDF</button>
+      <button onclick="clDelDevis('${d.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;opacity:.5;font-size:13px">🗑</button>
+    </div>`).join('');
 }
 
 function clDelDevis(did) {
@@ -2073,6 +2145,90 @@ function clDelDevis(did) {
   if (!c) return;
   c.devis = (c.devis||[]).filter(d=>d.id!==did);
   clSave(); clRenderDevis(c);
+}
+
+/* ══════════════════════  DEVIS  ═══════════════════════ */
+
+function dvOpenModal(clientId) {
+  const sel = document.getElementById('dv-cl-select');
+  sel.innerHTML = '<option value="">— Aucun client sélectionné —</option>' +
+    clData.map(c => `<option value="${c.id}" ${c.id===(clientId||clCurrentId)?'selected':''}>${c.nom||c.id}</option>`).join('');
+  ['dv-entreprise','dv-tel','dv-email','dv-adresse','dv-id-num'].forEach(id => { const el=document.getElementById(id);if(el)el.value=''; });
+  document.getElementById('dv-id-type').value='SIRET';
+  document.getElementById('dv-creation').value='';
+  document.getElementById('dv-abo').value='';
+  if (clientId||clCurrentId) { sel.value=clientId||clCurrentId; dvPrefill(); }
+  document.getElementById('dv-modal').style.display='flex';
+}
+
+function dvCloseModal() { document.getElementById('dv-modal').style.display='none'; }
+
+function dvPrefill() {
+  const cid=document.getElementById('dv-cl-select').value; if(!cid)return;
+  const c=clData.find(x=>x.id===cid); if(!c)return;
+  const set=(id,val)=>{const el=document.getElementById(id);if(el&&val)el.value=val;};
+  set('dv-entreprise',c.nom); set('dv-tel',c.tel); set('dv-email',c.email);
+  set('dv-adresse',c.adresse); set('dv-id-num',c.siret||c.siren);
+  if(c.siret)document.getElementById('dv-id-type').value='SIRET';
+  else if(c.siren)document.getElementById('dv-id-type').value='SIREN';
+}
+
+function dvCreate() {
+  const entreprise=document.getElementById('dv-entreprise').value.trim();
+  if(!entreprise){alert('Le nom d\'entreprise est requis.');return;}
+  const creation=document.getElementById('dv-creation').value;
+  const abo=document.getElementById('dv-abo').value;
+  const creationMap={'1x':'Création site — 990 €','2x':'Création site — 2×495 €','3x':'Création site — 3×330 €','4x':'Création site — 4×247,50 €'};
+  const aboMap={'20':'Abonnement 20 €/m','49':'Abonnement 49 €/m'};
+  const creationAmt={'1x':990,'2x':990,'3x':990,'4x':990}[creation]||0;
+  const parts=[];
+  if(creation)parts.push(creationMap[creation]);
+  if(abo)parts.push(aboMap[abo]);
+  const totalTxt=parts.join(' + ')||'—';
+  const cid=document.getElementById('dv-cl-select').value||clCurrentId;
+  const c=clData.find(x=>x.id===cid);
+  const allDevis=clData.flatMap(x=>x.devis||[]);
+  const ref='DEV-'+String(allDevis.length+1).padStart(3,'0')+'-'+new Date().getFullYear();
+  const dv={id:'dv'+Date.now(),ref,date:new Date().toLocaleDateString('fr-FR'),statut:'en attente',totalTxt,
+    data:{entreprise,tel:document.getElementById('dv-tel').value.trim(),email:document.getElementById('dv-email').value.trim(),
+      adresse:document.getElementById('dv-adresse').value.trim(),idType:document.getElementById('dv-id-type').value,
+      idNum:document.getElementById('dv-id-num').value.trim(),creation,abo,creationAmt,aboAmt:parseInt(abo)||0}};
+  if(c){if(!c.devis)c.devis=[];c.devis.unshift(dv);clSave();clRenderDevis(c);}
+  dvCloseModal(); dvPrintDv(dv);
+}
+
+function clAddDevis(){dvOpenModal(clCurrentId);}
+function dvPreview(did){const c=clData.find(x=>(x.devis||[]).find(d=>d.id===did));if(!c)return;const dv=c.devis.find(d=>d.id===did);if(dv)dvPrintDv(dv);}
+function dvPrint(did){dvPreview(did);}
+
+function dvPrintDv(dv) {
+  const d=dv.data||{};
+  const cPrix={'1x':'990,00 €','2x':'2 × 495,00 €','3x':'3 × 330,00 €','4x':'4 × 247,50 €'};
+  const cLbl={'1x':'Création de site web','2x':'Création de site web (2 versements)','3x':'Création de site web (3 versements)','4x':'Création de site web (4 versements)'};
+  const aLbl={'20':'Abonnement mensuel — Assistant Digital','49':'Abonnement mensuel — Gestion complète'};
+  const aPrix={'20':'20,00 €/mois','49':'49,00 €/mois'};
+  let lignes='';
+  if(d.creation)lignes+=`<tr><td style="padding:12px 8px;border-bottom:1px solid #eee;font-size:13px"><strong>${cLbl[d.creation]||'Création'}</strong><br><span style="color:#888;font-size:12px">Conception, développement, mise en ligne, formation</span></td><td style="padding:12px 8px;border-bottom:1px solid #eee;font-size:13px;text-align:right;font-weight:700;white-space:nowrap">${cPrix[d.creation]||''}</td></tr>`;
+  if(d.abo)lignes+=`<tr><td style="padding:12px 8px;border-bottom:1px solid #eee;font-size:13px"><strong>${aLbl[d.abo]||'Abonnement'}</strong><br><span style="color:#888;font-size:12px">Gestion mensuelle, mises à jour, support</span></td><td style="padding:12px 8px;border-bottom:1px solid #eee;font-size:13px;text-align:right;font-weight:700;white-space:nowrap">${aPrix[d.abo]||''}</td></tr>`;
+  if(!lignes)lignes=`<tr><td colspan="2" style="padding:20px;color:#888;text-align:center;font-size:13px">Aucune prestation sélectionnée</td></tr>`;
+  const idLine=d.idNum?`<br>${d.idType||'SIRET'} : ${d.idNum}`:'';
+  const valid=new Date();valid.setDate(valid.getDate()+30);
+  const validTxt=valid.toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+  const today=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+  const totalCell=`${d.creation?(cPrix[d.creation]||''):''}${d.creation&&d.abo?' + ':''}${d.abo?(aPrix[d.abo]||''):''}`;
+  const condCreation=d.creation?`• Création : ${cPrix[d.creation]||''} — premier versement à la signature.<br>`:'';
+  const condAbo=d.abo?`• Abonnement : ${aPrix[d.abo]||''} — ${d.creation?'démarre le 7 du mois suivant le dernier versement de création.':'premier prélèvement à la signature.'}<br>`:'';
+  const condCombo=d.creation&&d.abo?`• Aucun prélèvement d'abonnement tant que la création n'est pas intégralement réglée.<br>`:'';
+
+  const html=`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Devis ${dv.ref} — Potentieel</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff;color:#111;padding:40px;max-width:800px;margin:0 auto}@media print{body{padding:0}.no-print{display:none!important}}.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px}.logo{display:flex;align-items:center;gap:10px}.logo-icon{width:36px;height:36px;background:#f4926a;border-radius:8px;display:flex;align-items:center;justify-content:center}.logo-name{font-size:18px;font-weight:800;letter-spacing:1px;color:#111}.info{font-size:12px;color:#666;margin-top:8px;line-height:1.7}.badge{background:#f4926a;color:#fff;font-size:11px;font-weight:700;letter-spacing:1px;padding:4px 10px;border-radius:20px}.meta{text-align:right;font-size:13px;color:#444;margin-top:6px}.parties{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:36px;padding:24px;background:#f9f9f9;border-radius:12px}.plabel{font-size:10px;font-weight:700;color:#f4926a;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}.pname{font-size:15px;font-weight:700;color:#111;margin-bottom:4px}.pdetail{font-size:12px;color:#666;line-height:1.8}table{width:100%;border-collapse:collapse;margin-bottom:24px}thead th{background:#111;color:#fff;padding:10px 8px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}thead th:last-child{text-align:right}.total-row td{padding:14px 8px;font-weight:700;font-size:14px;border-top:2px solid #111}.total-val{color:#f4926a;font-size:15px;text-align:right}.cond{background:#f9f9f9;border-radius:10px;padding:16px;font-size:12px;color:#666;line-height:1.9;margin-bottom:24px}.sigs{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:32px}.sig{border:1px dashed #ddd;border-radius:8px;padding:16px;min-height:80px}.slabel{font-size:11px;color:#888;margin-bottom:8px}.btn{background:#f4926a;color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:24px}</style></head><body>
+<button class="btn no-print" onclick="window.print()">🖨 Imprimer / Enregistrer en PDF</button>
+<div class="header"><div><div class="logo"><div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div><div class="logo-name">POTENTIEEL</div></div><div class="info">PERILLIAT EMRICK — Entrepreneur individuel · Micro-entreprise<br>SIREN : 990 572 117 · SIRET : 990 572 117 00010<br>TVA non applicable — art. 293B du CGI<br>RCS Chambéry : 990 572 117 R.C.S. Chambery</div></div><div style="text-align:right"><div class="badge">DEVIS</div><div class="meta"><strong>Réf.</strong> ${dv.ref}<br><strong>Date :</strong> ${today}<br><strong>Valable jusqu'au :</strong> ${validTxt}</div></div></div>
+<div class="parties"><div><div class="plabel">Prestataire</div><div class="pname">Potentieel</div><div class="pdetail">PERILLIAT EMRICK<br>contact@potentieel.fr<br>potentieel.fr</div></div><div><div class="plabel">Client</div><div class="pname">${d.entreprise||'—'}</div><div class="pdetail">${d.email||''}${d.email?'<br>':''}${d.tel||''}${d.tel?'<br>':''}${d.adresse||''}${idLine}</div></div></div>
+<table><thead><tr><th style="text-align:left">Prestation</th><th>Montant HT</th></tr></thead><tbody>${lignes}<tr class="total-row"><td>Total</td><td class="total-val">${totalCell||'—'}</td></tr></tbody></table>
+<div class="cond"><strong style="color:#111;display:block;margin-bottom:6px">Conditions de paiement</strong>${condCreation}${condAbo}${condCombo}• Devis valable 30 jours à compter de la date d'émission.<br>• TVA non applicable — art. 293B du CGI (micro-entreprise).</div>
+<div class="sigs"><div class="sig"><div class="slabel">Bon pour accord — Client</div><div style="font-size:12px;color:#bbb;margin-top:8px">Date et signature :</div></div><div class="sig"><div class="slabel">Émetteur — Potentieel</div><div style="font-size:12px;color:#bbb;margin-top:8px">PERILLIAT EMRICK</div></div></div>
+</body></html>`;
+  const w=window.open('','_blank');if(w){w.document.write(html);w.document.close();}
 }
 
 function clRenderFactures(c) {
