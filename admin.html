@@ -5371,11 +5371,11 @@ const PR_DV_STATUT = {
 const PR_DEFAULT = [
   { id:'pr_cl3', nom:'Chakir', entreprise:'Transpro Chakir', metier:'Transport / VTC',
     tel:'0624872333', email:'chakirben33@gmail.com', adresse:'à renseigner', siret:'à voir', siren:'à voir',
-    budget:'', url:'', statut:'reflexion', notes:'Devis en attente. À relancer.', devis:[], source:'manuel',
+    budget:'', url:'', statut:'reflexion', notes:'Devis en attente. À relancer.', devis:[], assets:[], source:'manuel',
     createdAt:'2026-05-15T00:00:00.000Z' },
   { id:'pr_cl4', nom:'MONSIEUR CLAUDE SONGUE', entreprise:'Channel 3 Zones', metier:'Services de nettoyage et installation événementiel',
     tel:'0637079160', email:'', adresse:'6 allée des hauts bois 93160', siret:'52005409900012', siren:'520054099',
-    budget:'', url:'', statut:'reflexion', notes:'', devis:[], source:'manuel',
+    budget:'', url:'', statut:'reflexion', notes:'', devis:[], assets:[], source:'manuel',
     createdAt:'2026-04-20T00:00:00.000Z' },
 ];
 
@@ -5488,6 +5488,16 @@ function prCardHTML(p) {
     <div style="margin-bottom:14px">
       <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Notes & avancement</div>
       <textarea id="pr-notes-${p.id}" rows="2" placeholder="Où en est le projet, ce qui a été dit, prochaine étape..." onblur="prSaveNotes('${p.id}')" style="width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:10px;color:#fff;font-size:12px;resize:vertical;outline:none;box-sizing:border-box;font-family:inherit">${p.notes||''}</textarea>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Assets & Documents</div>
+        <button onclick="prTriggerAssetPick('${p.id}')" style="background:rgba(244,146,106,.12);border:1px solid rgba(244,146,106,.2);color:#f4926a;border-radius:6px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer">↑ Importer</button>
+      </div>
+      <div id="pr-assets-${p.id}">
+        ${prAssetsHTML(p)}
+      </div>
     </div>
 
     <div style="margin-bottom:14px">
@@ -5619,10 +5629,72 @@ function prSaveAdd() {
     notes:      document.getElementById('pr-add-notes').value.trim(),
     statut:     document.getElementById('pr-add-statut').value,
     devis:      [],
+    assets:     [],
     source:     'manuel',
     createdAt:  new Date().toISOString()
   });
   prSave(); prCloseAdd(); prRender();
+}
+
+/* ── Assets projet ── */
+function prAssetsHTML(p) {
+  const assets = p.assets || [];
+  if (!assets.length) {
+    return '<div style="font-size:12px;color:var(--muted);font-style:italic">Aucun asset. Cliquez sur "↑ Importer" pour ajouter des photos, vidéos ou un devis PDF.</div>';
+  }
+  return '<div style="display:flex;flex-direction:column;gap:6px">' + assets.map(a => {
+    const isPdf = a.type === 'application/pdf';
+    const isImg = a.type && a.type.startsWith('image/');
+    const icon = isPdf ? '📄' : (isImg ? '🖼' : '📎');
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(255,255,255,.03);border-radius:8px">
+      <span style="font-size:16px">${icon}</span>
+      <span style="flex:1;font-size:12px;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${a.nom}">${a.nom}</span>
+      <span style="font-size:11px;color:var(--muted);white-space:nowrap">${a.date||''}</span>
+      <a href="${a.data||''}" download="${a.nom}" style="background:rgba(255,255,255,.06);border-radius:6px;padding:4px 8px;font-size:11px;color:#fff;text-decoration:none;white-space:nowrap">↓</a>
+      <button onclick="prDelAsset('${p.id}','${a.id}')" style="background:none;border:none;color:#f87171;font-size:14px;cursor:pointer;padding:0 2px">×</button>
+    </div>`;
+  }).join('') + '</div>';
+}
+
+function prTriggerAssetPick(projId) {
+  const inp = document.createElement('input');
+  inp.type = 'file'; inp.multiple = true; inp.accept = 'image/*,video/*,application/pdf';
+  Object.assign(inp.style, {position:'fixed',opacity:'0',pointerEvents:'none',top:'0',left:'0'});
+  inp.addEventListener('change', () => { prHandleAssets(projId, inp.files); document.body.removeChild(inp); });
+  document.body.appendChild(inp);
+  setTimeout(() => inp.click(), 10);
+}
+
+function prHandleAssets(projId, files) {
+  if (!files || !files.length) return;
+  const p = prData.find(x=>x.id===projId); if (!p) return;
+  if (!p.assets) p.assets = [];
+  Promise.all(Array.from(files).map(file => new Promise(res => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const idbKey = 'pr_asset_'+Date.now()+Math.random().toString(36).slice(2);
+      idbPut(idbKey, e.target.result).catch(()=>{});
+      p.assets.push({ id:'pa'+Date.now()+Math.random().toString(36).slice(2),
+        nom:file.name, type:file.type, date:new Date().toLocaleDateString('fr-FR'),
+        idbKey, data:e.target.result });
+      res();
+    };
+    reader.readAsDataURL(file);
+  }))).then(() => {
+    prSave();
+    const el = document.getElementById('pr-assets-'+projId);
+    if (el) el.innerHTML = prAssetsHTML(p);
+  });
+}
+
+function prDelAsset(projId, assetId) {
+  const p = prData.find(x=>x.id===projId); if (!p||!p.assets) return;
+  const a = p.assets.find(x=>x.id===assetId);
+  if (a && a.idbKey) idbDel(a.idbKey).catch(()=>{});
+  p.assets = p.assets.filter(x=>x.id!==assetId);
+  prSave();
+  const el = document.getElementById('pr-assets-'+projId);
+  if (el) el.innerHTML = prAssetsHTML(p);
 }
 
 /* ── Basculer vers client ── */
@@ -5651,7 +5723,7 @@ function prConvertToClient(id) {
     siren:   '',
     notes:   'Converti depuis Projets. '+(p.notes||''),
     docs:    [],
-    assets:  [],
+    assets:  (p.assets||[]).map(a=>({...a})),
     paiements:[],
     devis:   dvs,
     factures:[],
