@@ -4738,14 +4738,14 @@ function obRender() {
   }
   const catLabels = { ca:'💶 CA', devis:'📝 Devis', affiliation:'🤝 Affiliations', tiktok:'🎵 TikTok', instagram:'📸 Instagram', autre:'📌 Autre' };
   grid.innerHTML = obData.map(o => {
-    const pct = o.target > 0 ? Math.min(100, Math.round((o.current_value||0) / o.target * 100)) : 0;
+    const pct = o.target_value > 0 ? Math.min(100, Math.round((o.current_value||0) / o.target_value * 100)) : 0;
     const barCol = pct >= 100 ? '#4ade80' : pct >= 60 ? '#fbbf24' : 'var(--accent)';
     const badge = pct >= 100
       ? '<span class="ob-badge-ok">✓ Atteint</span>'
       : pct >= 60
         ? `<span class="ob-badge-prog">${pct}%</span>`
         : `<span class="ob-badge-nok">${pct}%</span>`;
-    const dl = o.deadline ? ` · Échéance ${new Date(o.deadline).toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}` : '';
+    const dl = o.target_date ? ` · Échéance ${new Date(o.target_date).toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}` : '';
     return `<div class="ob-card">
       <div class="ob-card-top">
         <div>
@@ -4754,7 +4754,7 @@ function obRender() {
         </div>
         <button class="ob-edit-btn" onclick="obOpenAdd('${o.id}')">✏</button>
       </div>
-      <div class="ob-values"><strong>${(o.current_value||0).toLocaleString('fr-FR')}</strong> / ${(o.target||0).toLocaleString('fr-FR')} ${o.unit||''}</div>
+      <div class="ob-values"><strong>${(o.current_value||0).toLocaleString('fr-FR')}</strong> / ${(o.target_value||0).toLocaleString('fr-FR')} ${o.unit||''}</div>
       <div class="ob-bar-bg"><div class="ob-bar" style="width:${pct}%;background:${barCol}"></div></div>
       <div class="ob-footer">${badge}${o.notes?`<span style="font-size:10px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px">${o.notes}</span>`:''}</div>
     </div>`;
@@ -4800,9 +4800,9 @@ function obOpenAdd(id) {
     document.getElementById('ob-name').value = o.name;
     document.getElementById('ob-cat').value = o.category;
     document.getElementById('ob-unit').value = o.unit || '';
-    document.getElementById('ob-target').value = o.target || '';
+    document.getElementById('ob-target').value = o.target_value || '';
     document.getElementById('ob-current').value = o.current_value || '';
-    document.getElementById('ob-date').value = o.deadline || '';
+    document.getElementById('ob-date').value = o.target_date || '';
     document.getElementById('ob-notes').value = o.notes || '';
     document.getElementById('ob-delete-btn').style.display = '';
   } else {
@@ -4829,9 +4829,9 @@ async function obSave() {
     name,
     category: document.getElementById('ob-cat').value,
     unit: document.getElementById('ob-unit').value.trim(),
-    target: parseFloat(document.getElementById('ob-target').value) || 0,
+    target_value: parseFloat(document.getElementById('ob-target').value) || 0,
     current_value: parseFloat(document.getElementById('ob-current').value) || 0,
-    deadline: document.getElementById('ob-date').value || null,
+    target_date: document.getElementById('ob-date').value || null,
     notes: document.getElementById('ob-notes').value.trim() || null
   };
   if (obEditId) {
