@@ -2694,7 +2694,7 @@ function clRenderGrid() {
   // KPIs
   const actifs = clData.filter(c=>c.statut==='actif').length;
   const encours = clData.filter(c=>c.statut==='encours').length;
-  const mrr = clData.reduce((s,c) => s + (parseInt(c.mrr)||0), 0);
+  const mrr = clData.filter(c => c.statut === 'actif').reduce((s,c) => s + (parseInt(c.mrr)||0), 0);
   document.getElementById('cl-kpi-total').textContent = clData.length;
   document.getElementById('cl-kpi-actifs').textContent = actifs;
   document.getElementById('cl-kpi-encours').textContent = encours;
