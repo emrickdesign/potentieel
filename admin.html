@@ -3465,7 +3465,13 @@ function dvPrintDv(dv) {
   cond+=`<div class="cond-item"><span class="cond-dot" style="background:#f4926a"></span>Devis valable <strong>5 jours</strong> à compter de la date d'émission (jusqu'au ${validTxt}).</div>`;
   cond+=`<div class="cond-item"><span class="cond-dot" style="background:#999"></span>TVA non applicable — art. 293B du CGI (micro-entreprise). Pas de TVA à récupérer.</div>`;
 
-  const html=`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Devis ${dv.ref} — Potentieel</title>
+  const html=`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#f4926a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Potentieel">
+  <link rel="apple-touch-icon" href="/assets/icon-192.png"><title>Devis ${dv.ref} — Potentieel</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html{font-size:11px}
@@ -3567,6 +3573,11 @@ tbody tr:last-child td{border-bottom:none}
   </div>
 </div>
 </div>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(()=>{});
+    }
+  </script>
 </body></html>`;
   const w=window.open('','_blank');if(w){w.document.write(html);w.document.close();}
 }
