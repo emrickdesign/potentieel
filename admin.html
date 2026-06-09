@@ -2764,6 +2764,12 @@ function clLoad() {
       clSave();
     }
   });
+  // Migration : toutes les factures passent a "payee" (justificatifs deja regles)
+  let faMig = false;
+  clData.forEach(c => (c.factures||[]).forEach(f => {
+    if (f.statut !== 'payee') { f.statut = 'payee'; faMig = true; }
+  }));
+  if (faMig) clSave();
 }
 function clSave() {
   // On retire les data base64 volumineux avant de sauver dans localStorage
@@ -3581,7 +3587,7 @@ function faCreate(){
   const c=clData.find(x=>x.id===cid);
   const allFa=clData.flatMap(x=>x.factures||[]);
   const ref='FA-'+String(allFa.length+1).padStart(3,'0')+'-'+new Date().getFullYear();
-  const fa={id:'fa'+Date.now(),ref,date:new Date().toLocaleDateString('fr-FR'),echeance:echDate,statut:'attente',totalTxt,montantNum,
+  const fa={id:'fa'+Date.now(),ref,date:new Date().toLocaleDateString('fr-FR'),echeance:echDate,statut:'payee',totalTxt,montantNum,
     data:{entreprise,tel:document.getElementById('fa-tel').value.trim(),email:document.getElementById('fa-email').value.trim(),
       adresse:document.getElementById('fa-adresse').value.trim(),idType:document.getElementById('fa-id-type').value,
       idNum:document.getElementById('fa-id-num').value.trim(),creation,abo,reglement:document.getElementById('fa-reglement').value}};
@@ -3602,7 +3608,7 @@ function faCreateAbo(){
   const periode=`Du ${fmt(start)} au ${fmt(end)}`;
   const allFa=clData.flatMap(x=>x.factures||[]);
   const ref='FA-'+String(allFa.length+1).padStart(3,'0')+'-'+now.getFullYear();
-  const fa={id:'fa'+Date.now(),ref,date:now.toLocaleDateString('fr-FR'),echeance:fmt(end),statut:'attente',
+  const fa={id:'fa'+Date.now(),ref,date:now.toLocaleDateString('fr-FR'),echeance:fmt(end),statut:'payee',
     totalTxt:aPrix[aboVal],montantNum:parseInt(aboVal),
     data:{entreprise:c.nom||'',email:c.email||'',tel:c.tel||'',adresse:c.adresse||'',
       idType:c.siret?'SIRET':c.siren?'SIREN':'',idNum:c.siret||c.siren||'',
