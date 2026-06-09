@@ -2804,7 +2804,7 @@ function clRenderGrid() {
   document.getElementById('cl-kpi-mrr').textContent = mrr+'€';
 }
 
-function clOpenDetail(id) {
+async function clOpenDetail(id) {
   clCurrentId = id;
   const c = clData.find(x=>x.id===id);
   if (!c) return;
@@ -2935,7 +2935,7 @@ function dcRender() {
       <span class="cl-doc-name" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.nom}</span>
       <span class="cl-doc-date" style="flex-shrink:0">${dcSizeTxt(d.taille)}</span>
       <span class="cl-doc-date" style="flex-shrink:0">${d.date||''}</span>
-      ${(d._url||d.data) ? `<a href="${d._url||d.data}" download="${d.nom}" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;opacity:.7;text-decoration:none" title="Télécharger">⬇️</a>` : ''}
+      ${d.data ? `<a href="${d.data}" download="${d.nom}" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;opacity:.7;text-decoration:none" title="Télécharger">⬇️</a>` : ''}
       <button onclick="dcDelDoc('${d.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;opacity:.5;margin-left:4px" title="Supprimer">🗑</button>
     </div>`).join('');
 }
@@ -2965,6 +2965,62 @@ function clRenderDocs(c) {
     </div>`).join('');
 }
 
+// ══ IndexedDB — stockage fichiers sans limite de taille ══
+const _IDB_NAME = 'potentieel_files_v1';
+const _IDB_STORE = 'blobs';
+let _idb = null;
+function _idbOpen() {
+  return new Promise((res, rej) => {
+    if (_idb) { res(_idb); return; }
+    const r = indexedDB.open(_IDB_NAME, 1);
+    r.onupgradeneeded = e => e.target.result.createObjectStore(_IDB_STORE);
+    r.onsuccess = e => { _idb = e.target.result; res(_idb); };
+    r.onerror = () => rej(r.error);
+  });
+}
+async function idbPut(key, val) {
+  const db = await _idbOpen();
+  return new Promise((res, rej) => {
+    const tx = db.transaction(_IDB_STORE, 'readwrite');
+    tx.objectStore(_IDB_STORE).put(val, key);
+    tx.oncomplete = () => res(); tx.onerror = () => rej(tx.error);
+  });
+}
+async function idbGet(key) {
+  const db = await _idbOpen();
+  return new Promise((res, rej) => {
+    const tx = db.transaction(_IDB_STORE, 'readonly');
+    const req = tx.objectStore(_IDB_STORE).get(key);
+    req.onsuccess = () => res(req.result); req.onerror = () => rej(req.error);
+  });
+}
+async function idbDel(key) {
+  if (!key) return;
+  const db = await _idbOpen();
+  return new Promise((res, rej) => {
+    const tx = db.transaction(_IDB_STORE, 'readwrite');
+    tx.objectStore(_IDB_STORE).delete(key);
+    tx.oncomplete = () => res(); tx.onerror = () => rej(tx.error);
+  });
+}
+// Recharge les data depuis IDB pour un client (appelé à l'ouverture de la fiche)
+async function clLoadFilesFromIDB(c) {
+  const all = [
+    ...(c.assets||[]), ...(c.docs||[]),
+    ...(c.devis||[]).filter(d=>d.type==='import'),
+    ...(c.factures||[]).filter(f=>f.type==='import'),
+  ];
+  await Promise.all(all.map(async item => {
+    if (item.idbKey && !item.data) {
+      try {
+        const b64 = await idbGet(item.idbKey);
+        if (b64) item.data = b64;
+      } catch {}
+    }
+  }));
+}
+// ══════════════════════════════════════════════════════════
+
 function clTriggerFilePick(accept, handler) {
   // Crée l'input au niveau body pour contourner le bug WebKit (display:none parent)
   const inp = document.createElement('input');
@@ -2977,19 +3033,20 @@ function clTriggerFilePick(accept, handler) {
 
 function clHandleFiles(files) {
   if (!files || !files.length) return;
-  const c = clData.find(x=>x.id===clCurrentId);
-  if (!c) return;
+  const c = clData.find(x=>x.id===clCurrentId); if (!c) return;
   if (!c.docs) c.docs = [];
-  let remaining = files.length;
-  Array.from(files).forEach(async file => {
-    const idbKey = 'doc_'+Date.now()+Math.random().toString(36).slice(2);
-    await idbPut(idbKey, file);
-    const _url = URL.createObjectURL(file);
-    c.docs.push({ id:'d'+Date.now()+Math.random().toString(36).slice(2),
-      nom:file.name, type:file.type, date:new Date().toLocaleDateString('fr-FR'), idbKey, _url });
-    remaining--;
-    if (remaining === 0) { clSave(); clRenderDocs(c); }
-  });
+  Promise.all(Array.from(files).map(file => new Promise(res => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const idbKey = 'doc_'+Date.now()+Math.random().toString(36).slice(2);
+      idbPut(idbKey, e.target.result).catch(()=>{});
+      c.docs.push({ id:'d'+Date.now()+Math.random().toString(36).slice(2),
+        nom:file.name, type:file.type, date:new Date().toLocaleDateString('fr-FR'),
+        idbKey, data:e.target.result });
+      res();
+    };
+    reader.readAsDataURL(file);
+  }))).then(() => { clSave(); clRenderDocs(c); });
 }
 
 function clAddDoc() { clTriggerFilePick('*/*', clHandleFiles); }
@@ -3018,11 +3075,11 @@ function clRenderAssets(c) {
     const isVideo = a.type && a.type.startsWith('video/');
     const thumb = isVideo
       ? `<div style="width:100%;height:140px;background:#111;display:flex;align-items:center;justify-content:center;font-size:36px">▶️</div>`
-      : `<img src="${a._url||a.data||''}" alt="${a.nom}" style="width:100%;height:140px;object-fit:cover;display:block">`;
+      : `<img src="${a.data||''}" alt="${a.nom}" style="width:100%;height:140px;object-fit:cover;display:block">`;
     return `<div style="background:rgba(255,255,255,.04);border-radius:10px;overflow:hidden;position:relative;cursor:pointer" onclick="clOpenLightbox('${a.id}')">
       ${thumb}
       <div style="position:absolute;top:6px;right:6px;display:flex;gap:4px;opacity:0;transition:opacity .2s" class="cl-asset-actions">
-        <a href="${a._url||a.data||''}" download="${a.nom}" onclick="event.stopPropagation()" style="background:rgba(0,0,0,.6);border-radius:6px;padding:5px;color:#fff;display:flex;align-items:center;justify-content:center;text-decoration:none" title="Télécharger">
+        <a href="${a.data||''}" download="${a.nom}" onclick="event.stopPropagation()" style="background:rgba(0,0,0,.6);border-radius:6px;padding:5px;color:#fff;display:flex;align-items:center;justify-content:center;text-decoration:none" title="Télécharger">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         </a>
         <button onclick="event.stopPropagation();clDelAsset('${a.id}')" style="background:rgba(0,0,0,.6);border:none;border-radius:6px;padding:5px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center" title="Supprimer">
@@ -3052,26 +3109,27 @@ function clOpenLightbox(aid) {
   const isVideo = a.type && a.type.startsWith('video/');
   img.style.display = isVideo ? 'none' : 'block';
   vid.style.display = isVideo ? 'block' : 'none';
-  if (isVideo) { vid.src = a.data; vid.play(); } else { img.src = a.data; vid.pause(); vid.src=''; }
+  if (isVideo) { vid.src = a.data||''; vid.play(); } else { img.src = a.data||''; vid.pause(); vid.src=''; }
   nm.textContent = a.nom;
   lb.style.display = 'flex';
 }
 
 function clHandleAssets(files) {
   if (!files || !files.length) return;
-  const c = clData.find(x=>x.id===clCurrentId);
-  if (!c) return;
+  const c = clData.find(x=>x.id===clCurrentId); if (!c) return;
   if (!c.assets) c.assets = [];
-  let remaining = files.length;
-  Array.from(files).forEach(async file => {
-    const idbKey = 'asset_'+Date.now()+Math.random().toString(36).slice(2);
-    await idbPut(idbKey, file);
-    const _url = URL.createObjectURL(file);
-    c.assets.push({ id:'a'+Date.now()+Math.random().toString(36).slice(2),
-      nom:file.name, type:file.type, date:new Date().toLocaleDateString('fr-FR'), idbKey, _url });
-    remaining--;
-    if (remaining === 0) { clSave(); clRenderAssets(c); }
-  });
+  Promise.all(Array.from(files).map(file => new Promise(res => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const idbKey = 'asset_'+Date.now()+Math.random().toString(36).slice(2);
+      idbPut(idbKey, e.target.result).catch(()=>{});
+      c.assets.push({ id:'a'+Date.now()+Math.random().toString(36).slice(2),
+        nom:file.name, type:file.type, date:new Date().toLocaleDateString('fr-FR'),
+        idbKey, data:e.target.result });
+      res();
+    };
+    reader.readAsDataURL(file);
+  }))).then(() => { clSave(); clRenderAssets(c); });
 }
 
 function clDelAsset(aid) {
@@ -3128,7 +3186,7 @@ function clRenderDevis(c) {
     const isImport = d.type === 'import';
     const badge = d.statut==='signé'?'badge-green':d.statut==='refusé'?'badge-red':isImport?'badge-gray':'badge-blue';
     const actions = isImport
-      ? `<a href="${d._url||d.fileData||''}" download="${d.fileName||d.ref+'.pdf'}" title="Télécharger" style="background:rgba(255,255,255,.07);border-radius:6px;padding:5px 8px;color:#fff;font-size:13px;text-decoration:none">⬇</a>`
+      ? `<a href="${d.data||''}" download="${d.fileName||d.ref+'.pdf'}" title="Télécharger" style="background:rgba(255,255,255,.07);border-radius:6px;padding:5px 8px;color:#fff;font-size:13px;text-decoration:none">⬇</a>`
       : `<button onclick="dvPreview('${d.id}')" title="Voir" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">👁</button>
          <button onclick="dvSendEmail('${d.id}')" title="Email" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">📧</button>
          ${d.statut!=='signé'?'<button onclick="dvSign(\''+d.id+'\')" title="Signé" style="background:rgba(74,222,128,.15);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#4ade80;font-size:13px;font-weight:700">✓</button>':''}`;
@@ -3150,34 +3208,38 @@ function clImportDevis(files) {
   if (!files || !files.length) return;
   const c = clData.find(x=>x.id===clCurrentId); if (!c) return;
   if (!c.devis) c.devis = [];
-  let done = 0;
-  Array.from(files).forEach(async file => {
-    const idbKey = 'dv_'+Date.now()+Math.random().toString(36).slice(2);
-    await idbPut(idbKey, file);
-    const _url = URL.createObjectURL(file);
-    c.devis.unshift({ id:'dvi'+Date.now()+Math.random().toString(36).slice(2),
-      ref:file.name.replace(/\.pdf$/i,'').replace(/\.jpg$/i,'').replace(/\.png$/i,''),
-      date:new Date().toLocaleDateString('fr-FR'), montant:'—', totalTxt:'—', statut:'importé',
-      type:'import', fileName:file.name, fileType:file.type, idbKey, _url });
-    if (++done === files.length) { clSave(); clRenderDevis(c); }
-  });
+  Promise.all(Array.from(files).map(file => new Promise(res => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const idbKey = 'dv_'+Date.now()+Math.random().toString(36).slice(2);
+      idbPut(idbKey, e.target.result).catch(()=>{});
+      c.devis.unshift({ id:'dvi'+Date.now()+Math.random().toString(36).slice(2),
+        ref:file.name.replace(/\.pdf$/i,'').replace(/\.jpg$/i,'').replace(/\.png$/i,''),
+        date:new Date().toLocaleDateString('fr-FR'), montant:'—', totalTxt:'—', statut:'importé',
+        type:'import', fileName:file.name, fileType:file.type, idbKey, data:e.target.result });
+      res();
+    };
+    reader.readAsDataURL(file);
+  }))).then(() => { clSave(); clRenderDevis(c); });
 }
 
 function clImportFacture(files) {
   if (!files || !files.length) return;
   const c = clData.find(x=>x.id===clCurrentId); if (!c) return;
   if (!c.factures) c.factures = [];
-  let done = 0;
-  Array.from(files).forEach(async file => {
-    const idbKey = 'fa_'+Date.now()+Math.random().toString(36).slice(2);
-    await idbPut(idbKey, file);
-    const _url = URL.createObjectURL(file);
-    c.factures.unshift({ id:'fai'+Date.now()+Math.random().toString(36).slice(2),
-      ref:file.name.replace(/\.pdf$/i,'').replace(/\.jpg$/i,'').replace(/\.png$/i,''),
-      date:new Date().toLocaleDateString('fr-FR'), montant:'—', totalTxt:'—', statut:'importée',
-      type:'import', fileName:file.name, fileType:file.type, idbKey, _url });
-    if (++done === files.length) { clSave(); clRenderFactures(c); }
-  });
+  Promise.all(Array.from(files).map(file => new Promise(res => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const idbKey = 'fa_'+Date.now()+Math.random().toString(36).slice(2);
+      idbPut(idbKey, e.target.result).catch(()=>{});
+      c.factures.unshift({ id:'fai'+Date.now()+Math.random().toString(36).slice(2),
+        ref:file.name.replace(/\.pdf$/i,'').replace(/\.jpg$/i,'').replace(/\.png$/i,''),
+        date:new Date().toLocaleDateString('fr-FR'), montant:'—', totalTxt:'—', statut:'importée',
+        type:'import', fileName:file.name, fileType:file.type, idbKey, data:e.target.result });
+      res();
+    };
+    reader.readAsDataURL(file);
+  }))).then(() => { clSave(); clRenderFactures(c); });
 }
 
 function clDelDevis(did) {
@@ -3410,7 +3472,7 @@ function clRenderFactures(c) {
     const badge = f.statut==='payee'?'badge-green':f.statut==='retard'?'badge-red':isImport?'badge-gray':'badge-orange';
     const label = f.statut==='payee'?'Payée':f.statut==='retard'?'Retard':isImport?'Importée':'En attente';
     const actions = isImport
-      ? `<a href="${f._url||f.fileData||''}" download="${f.fileName||f.ref+'.pdf'}" title="Télécharger" style="background:rgba(255,255,255,.07);border-radius:6px;padding:5px 8px;color:#fff;font-size:13px;text-decoration:none">⬇</a>`
+      ? `<a href="${f.data||''}" download="${f.fileName||f.ref+'.pdf'}" title="Télécharger" style="background:rgba(255,255,255,.07);border-radius:6px;padding:5px 8px;color:#fff;font-size:13px;text-decoration:none">⬇</a>`
       : `<button onclick="faView('${f.id}')" title="Voir" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">👁</button>
          <button onclick="faSendEmail('${f.id}')" title="Email" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">📧</button>
          ${f.statut!=='payee'?'<button onclick="faMarkPaid(\''+f.id+'\')" title="Payée" style="background:rgba(74,222,128,.15);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#4ade80;font-size:13px;font-weight:700">✓</button>':''}`;
