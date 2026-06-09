@@ -2092,6 +2092,7 @@
             <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Statut du devis</label>
             <select id="dv-import-statut" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:#fff;font-size:13px;margin-bottom:18px;outline:none;box-sizing:border-box">
               <option value="en attente">En attente</option>
+              <option value="envoyé">Envoyé</option>
               <option value="signé">Signé</option>
               <option value="refusé">Refusé</option>
             </select>
@@ -2112,7 +2113,9 @@
           <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
             <button class="dv-filter active" data-f="all" onclick="dvFilter('all',this)">Tous</button>
             <button class="dv-filter" data-f="en attente" onclick="dvFilter('en attente',this)">En attente</button>
+            <button class="dv-filter" data-f="envoyé" onclick="dvFilter('envoyé',this)">Envoyés</button>
             <button class="dv-filter" data-f="signé" onclick="dvFilter('signé',this)">Signés</button>
+            <button class="dv-filter" data-f="refusé" onclick="dvFilter('refusé',this)">Refusés</button>
           </div>
           <div id="dv-global-list"></div>
         </div>
@@ -3832,14 +3835,16 @@ function renderGlobalDevis(filter){
   allDv.sort((a,b)=>{const da=(a.date||'').split('/').reverse().join('');const db=(b.date||'').split('/').reverse().join('');return db.localeCompare(da);});
   const filtered=filter==='all'?allDv:allDv.filter(d=>d.statut===filter);
   const nbAttente=allDv.filter(d=>!d.statut||d.statut==='en attente').length;
+  const nbEnvoye=allDv.filter(d=>d.statut==='envoyé').length;
   const nbSigne=allDv.filter(d=>d.statut==='signé').length;
+  const nbRefuse=allDv.filter(d=>d.statut==='refusé').length;
   const statDv=(label,nb,color)=>`<div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:14px 16px">
     <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">${label}</div>
     <div style="font-size:28px;font-weight:800;color:${color}">${nb}</div>
     <div style="font-size:12px;color:var(--muted)">devis</div>
   </div>`;
   const statsEl=document.getElementById('dv-stats');
-  if(statsEl)statsEl.innerHTML=statDv('En attente',nbAttente,'var(--accent)')+statDv('Signés',nbSigne,'#4ade80');
+  if(statsEl){ statsEl.style.gridTemplateColumns='repeat(4,1fr)'; statsEl.innerHTML=statDv('En attente',nbAttente,'var(--accent)')+statDv('Envoyés',nbEnvoye,'#60a5fa')+statDv('Signés',nbSigne,'#4ade80')+statDv('Refusés',nbRefuse,'#f87171'); }
   const listEl=document.getElementById('dv-global-list');
   if(!listEl)return;
   if(filtered.length===0){listEl.innerHTML='<div style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0">Aucun devis</div>';return;}
@@ -3849,12 +3854,13 @@ function renderGlobalDevis(filter){
       <td style="color:var(--muted);font-size:12px">${d.ref||'—'}</td>
       <td style="color:var(--muted)">${d.date||'—'}</td>
       <td style="color:var(--accent);font-weight:700">${d.totalTxt||'—'}</td>
-      <td><span class="badge ${d.statut==='signé'?'badge-green':d.statut==='refusé'?'badge-red':'badge-blue'}">${d.statut||'en attente'}</span></td>
+      <td><span class="badge ${d.statut==='signé'?'badge-green':d.statut==='refusé'?'badge-red':d.statut==='envoyé'?'badge-blue':'badge-orange'}">${d.statut==='envoyé'?'Envoyé':d.statut==='signé'?'Signé':d.statut==='refusé'?'Refusé':d.statut||'En attente'}</span></td>
       <td style="white-space:nowrap">
         <button onclick="dvPreviewFromGlobal('${d.id}')" title="Voir PDF" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px">👁</button>
         <button onclick="dvSendEmailFromGlobal('${d.id}')" title="Email" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px">📧</button>
         <select onchange="dvChangeStatutGlobal('${d.id}',this.value)" style="background:#1a1a22;border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:#fff;font-size:11px;outline:none;cursor:pointer;margin-right:2px">
           <option value="en attente" ${d.statut==='en attente'||!d.statut?'selected':''}>En attente</option>
+          <option value="envoyé" ${d.statut==='envoyé'?'selected':''}>Envoyé</option>
           <option value="signé" ${d.statut==='signé'?'selected':''}>Signé</option>
           <option value="refusé" ${d.statut==='refusé'?'selected':''}>Refusé</option>
         </select>
