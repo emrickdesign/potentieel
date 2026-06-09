@@ -1751,11 +1751,14 @@
             .pln-tl-col:last-child{border-right:none}
             .pln-tl-day-hd{text-align:center;font-size:11px;font-weight:700;color:var(--muted);padding:8px 4px;text-transform:uppercase;border-bottom:1px solid var(--border);height:34px;box-sizing:border-box}
             .pln-tl-day-hd.today{color:var(--accent)}
-            .pln-tl-cell{height:52px;border-bottom:1px solid rgba(255,255,255,.03);cursor:pointer}
-            .pln-tl-cell:hover{background:rgba(244,146,106,.05)}
-            .pln-tl-block{position:absolute;left:3px;right:3px;background:rgba(244,146,106,.18);border-left:3px solid var(--accent);border-radius:6px;padding:4px 7px;font-size:11px;font-weight:600;color:#fff;overflow:hidden;cursor:pointer;z-index:2;box-sizing:border-box}
+            .pln-tl-cell{height:52px;border-bottom:1px solid rgba(255,255,255,.03)}
+            
+            .pln-tl-block{position:absolute;left:3px;right:3px;background:rgba(244,146,106,.18);border-left:3px solid var(--accent);border-radius:6px;padding:4px 7px 12px;font-size:11px;font-weight:600;color:#fff;overflow:hidden;cursor:pointer;z-index:2;box-sizing:border-box}
             .pln-tl-block.done{background:rgba(34,197,94,.13);border-left-color:#4ade80;text-decoration:line-through;opacity:.75}
             .pln-tl-block .tm{font-size:9px;font-weight:500;opacity:.75;display:block}
+            .pl-resize-handle{position:absolute;bottom:0;left:0;right:0;height:10px;cursor:ns-resize;display:flex;align-items:center;justify-content:center;border-radius:0 0 5px 5px}
+            .pl-resize-handle::after{content:'';width:22px;height:3px;background:rgba(255,255,255,.35);border-radius:2px;transition:background .15s}
+            .pln-tl-block:hover .pl-resize-handle::after{background:rgba(255,255,255,.65)}
           </style>
           <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:16px">
             <div>
@@ -4947,7 +4950,7 @@ function plRenderMonth() {
     const pills = dayTasks.map(t =>
       `<div class="pl-task-pill${t.status==='done'?' done':''}" title="${t.title}" onclick="event.stopPropagation();plOpenAdd('${t.id}')">${t.title}</div>`
     ).join('');
-    cells += `<div class="pl-day${isToday?' today':''}" onclick="plOpenAdd(null,'${dateStr}')">
+    cells += `<div class="pl-day${isToday?' today':''}" onclick="plGoToDay('${dateStr}')">
       <div class="pl-day-num">${d}</div>
       ${pills}
     </div>`;
@@ -4985,7 +4988,7 @@ function plRenderTimeline() {
     const isToday = plSameDay(d, today);
     let cellsHtml = '';
     for (let h = PL_HOUR_START; h < PL_HOUR_END; h++) {
-      cellsHtml += `<div class="pln-tl-cell" onclick="plOpenAdd(null,'${dateStr}','${String(h).padStart(2,'0')}:00')"></div>`;
+      cellsHtml += `<div class="pln-tl-cell"></div>`;
     }
     const dayTasks = plTasks.filter(t => t.date === dateStr && t.start_time);
     let blocksHtml = '';
@@ -4997,8 +5000,9 @@ function plRenderTimeline() {
       const top = 34 + (startMin / 60) * PL_ROW_H;
       const height = Math.max(20, (dur / 60) * PL_ROW_H - 2);
       const endH = Math.floor((hh*60+mm+dur)/60), endM = (hh*60+mm+dur)%60;
-      blocksHtml += `<div class="pln-tl-block${t.status==='done'?' done':''}" style="top:${top}px;height:${height}px" title="${t.title}" onclick="event.stopPropagation();plOpenAdd('${t.id}')">
+      blocksHtml += `<div class="pln-tl-block${t.status==='done'?' done':''}" data-taskid="${t.id}" style="top:${top}px;height:${height}px" title="${t.title}" onclick="event.stopPropagation();plOpenAdd('${t.id}')">
         <span class="tm">${t.start_time.slice(0,5)}–${String(endH).padStart(2,'0')}:${String(endM).padStart(2,'0')}</span>${t.title}
+        <div class="pl-resize-handle" onmousedown="event.stopPropagation();event.preventDefault();plResizeStart(event,'${t.id}')"></div>
       </div>`;
     });
     colsHtml += `<div class="pln-tl-col">
@@ -5072,6 +5076,65 @@ async function plDeleteTask() {
 function plCloseModal() {
   document.getElementById('pln-modal').style.display = 'none';
   plEditTaskId = null;
+}
+
+function plGoToDay(dateStr) {
+  plCursor = new Date(dateStr + 'T12:00:00');
+  const btn = document.querySelector('.pl-view-btn[data-v="day"]');
+  plSetView('day', btn);
+}
+
+/* ── Resize drag (Notion-style) ── */
+let _plResizing = null;
+
+function plResizeStart(e, taskId) {
+  const block = e.target.closest('.pln-tl-block');
+  if (!block) return;
+  _plResizing = {
+    taskId,
+    block,
+    startY: e.clientY,
+    startH: block.offsetHeight,
+    origDur: (plTasks.find(t => t.id === taskId) || {}).duration_min || 60
+  };
+  document.addEventListener('mousemove', plResizeMove);
+  document.addEventListener('mouseup', plResizeEnd);
+  document.body.style.userSelect = 'none';
+  document.body.style.cursor = 'ns-resize';
+}
+
+function plResizeMove(e) {
+  if (!_plResizing) return;
+  const dy = e.clientY - _plResizing.startY;
+  const newH = Math.max(PL_ROW_H / 4, _plResizing.startH + dy);
+  _plResizing.block.style.height = newH + 'px';
+  // Update time label live
+  const t = plTasks.find(x => x.id === _plResizing.taskId);
+  if (t && t.start_time) {
+    const newDur = Math.max(15, Math.round((newH / PL_ROW_H) * 60 / 15) * 15);
+    const [hh, mm] = t.start_time.split(':').map(Number);
+    const endMin = hh * 60 + mm + newDur;
+    const endH = Math.floor(endMin / 60), endM = endMin % 60;
+    const tmEl = _plResizing.block.querySelector('.tm');
+    if (tmEl) tmEl.textContent = `${t.start_time.slice(0,5)}–${String(endH).padStart(2,'0')}:${String(endM).padStart(2,'0')}`;
+  }
+}
+
+async function plResizeEnd(e) {
+  if (!_plResizing) return;
+  document.removeEventListener('mousemove', plResizeMove);
+  document.removeEventListener('mouseup', plResizeEnd);
+  document.body.style.userSelect = '';
+  document.body.style.cursor = '';
+  const dy = e.clientY - _plResizing.startY;
+  const newH = Math.max(PL_ROW_H / 4, _plResizing.startH + dy);
+  const newDur = Math.max(15, Math.round((newH / PL_ROW_H) * 60 / 15) * 15);
+  const taskId = _plResizing.taskId;
+  _plResizing = null;
+  await sb.from('planning_tasks').update({ duration_min: newDur }).eq('id', taskId);
+  const t = plTasks.find(x => x.id === taskId);
+  if (t) t.duration_min = newDur;
+  plRender();
 }
 
 /* ═══════════════════════════════════════════════
