@@ -4089,7 +4089,10 @@ function ldInit() {
       ldData.unshift({...def}); // en tête de liste
     }
   });
-  ldSave();
+  // Nettoyer les leads déjà convertis (avant la nouvelle logique de suppression)
+  const _before = ldData.length;
+  ldData = ldData.filter(l => l.statut !== 'converti');
+  if (ldData.length !== _before) ldSave();
   ldRender();
 }
 
@@ -5530,7 +5533,7 @@ function ldAddToClient(id) {
     notes:'Converti depuis Leads. Campagne : '+(l.campagne||'—')+'. '+(l.notes||''),
     docs:[], assets:[], paiements:[], devis:[], factures:[], messages:[] });
   clSave();
-  ldSetStatus(id, 'converti');
+  ldData = ldData.filter(x=>x.id!==id); ldSave(); ldRender();
   alert('Client créé ✓');
   nav(document.querySelector('[data-page="clients"]'));
 }
@@ -5540,7 +5543,7 @@ function ldAddToProject(id) {
     tel:l.tel||'', email:l.email||'', statut:'reflexion', notes:'', source:'leads', campagne:l.campagne||'',
     createdAt: new Date().toISOString() });
   prSave();
-  ldSetStatus(id, 'converti');
+  ldData = ldData.filter(x=>x.id!==id); ldSave(); ldRender();
   alert('Ajouté aux Projets ✓');
   nav(document.querySelector('[data-page="projets"]'));
 }
