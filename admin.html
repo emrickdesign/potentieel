@@ -3234,7 +3234,7 @@ function clRenderDevis(c) {
     const isImport = d.type === 'import';
     const badge = d.statut==='signé'?'badge-green':d.statut==='refusé'?'badge-red':isImport?'badge-gray':'badge-blue';
     const actions = isImport
-      ? `<a href="${d.data||''}" download="${d.fileName||d.ref+'.pdf'}" title="Télécharger" style="background:rgba(255,255,255,.07);border-radius:6px;padding:5px 8px;color:#fff;font-size:13px;text-decoration:none">⬇</a>`
+      ? `<button onclick="dvPreview('${d.id}')" title="Ouvrir" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">👁</button>`
       : `<button onclick="dvPreview('${d.id}')" title="Voir" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">👁</button>
          <button onclick="dvSendEmail('${d.id}')" title="Email" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">📧</button>
          ${d.statut!=='signé'?'<button onclick="dvSign(\''+d.id+'\')" title="Signé" style="background:rgba(74,222,128,.15);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#4ade80;font-size:13px;font-weight:700">✓</button>':''}`;
@@ -3365,8 +3365,34 @@ function dvCreate() {
 }
 
 function clAddDevis(){dvOpenModal(clCurrentId);}
-function dvPreview(did){const c=clData.find(x=>(x.devis||[]).find(d=>d.id===did));if(!c)return;const dv=c.devis.find(d=>d.id===did);if(dv)dvPrintDv(dv);}
+async function dvPreview(did){
+  const c=clData.find(x=>(x.devis||[]).find(d=>d.id===did)); if(!c)return;
+  const dv=c.devis.find(d=>d.id===did); if(!dv)return;
+  if(dv.type==='import'){
+    let data=dv.data;
+    if(!data && dv.idbKey){ try{ data=await idbGet(dv.idbKey); }catch{} }
+    if(data) openImportedFile(data, dv.fileName||dv.ref||'document');
+    return;
+  }
+  dvPrintDv(dv);
+}
 function dvPrint(did){dvPreview(did);}
+
+function openImportedFile(data, fileName) {
+  // Convertir base64 en Blob et ouvrir dans un nouvel onglet
+  const [header, b64] = data.split(',');
+  const mime = (header.match(/:(.*?);/)||[])[1] || 'application/pdf';
+  const bytes = atob(b64);
+  const arr = new Uint8Array(bytes.length);
+  for(let i=0;i<bytes.length;i++) arr[i]=bytes.charCodeAt(i);
+  const blob = new Blob([arr], {type:mime});
+  const url = URL.createObjectURL(blob);
+  const win = window.open(url, '_blank');
+  if(!win) { // fallback si popup bloqué
+    const a=document.createElement('a'); a.href=url; a.download=fileName; a.click();
+  }
+  setTimeout(()=>URL.revokeObjectURL(url), 10000);
+}
 
 function dvPrintDv(dv) {
   const d=dv.data||{};
@@ -3837,7 +3863,17 @@ function renderGlobalDevis(filter){
       </td></tr>`).join('')+
     '</tbody></table>';
 }
-function dvPreviewFromGlobal(did){const c=clData.find(x=>(x.devis||[]).find(d=>d.id===did));if(!c)return;const dv=c.devis.find(d=>d.id===did);if(dv)dvPrintDv(dv);}
+async function dvPreviewFromGlobal(did){
+  const c=clData.find(x=>(x.devis||[]).find(d=>d.id===did)); if(!c)return;
+  const dv=c.devis.find(d=>d.id===did); if(!dv)return;
+  if(dv.type==='import'){
+    let data=dv.data;
+    if(!data && dv.idbKey){ try{ data=await idbGet(dv.idbKey); }catch{} }
+    if(data) openImportedFile(data, dv.fileName||dv.ref||'document');
+    return;
+  }
+  dvPrintDv(dv);
+}
 function dvSendEmailFromGlobal(did){const c=clData.find(x=>(x.devis||[]).find(d=>d.id===did));if(!c)return;const old=clCurrentId;clCurrentId=c.id;dvSendEmail(did);clCurrentId=old;}
 function dvSignFromGlobal(did){const c=clData.find(x=>(x.devis||[]).find(d=>d.id===did));if(!c)return;const dv=c.devis.find(d=>d.id===did);if(!dv)return;dv.statut='signé';clSave();renderGlobalDevis();}
 function dvDelFromGlobal(did){const c=clData.find(x=>(x.devis||[]).find(d=>d.id===did));if(!c)return;c.devis=(c.devis||[]).filter(d=>d.id!==did);clSave();renderGlobalDevis();}
