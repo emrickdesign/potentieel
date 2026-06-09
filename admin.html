@@ -1313,6 +1313,7 @@
                   <select id="cl-m-statut" style="width:100%;background:#1a1a22;border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
                     <option value="actif">Actif</option>
                     <option value="encours">En cours</option>
+                    <option value="retard">⚠ Retard paiement</option>
                     <option value="pause">En pause</option>
                     <option value="termine">Terminé</option>
                   </select>
@@ -2621,6 +2622,15 @@ const CL_DEFAULT = [
     statut:'actif', mrr:20, setup:0, depuis:'2026-05-20', url:'',
     notes:'Cartes de visite + flyers à commander. Compte Google Ads à créer. Images site en attente réponse.',
     docs:[], assets:[], paiements:[], devis:[], factures:[], messages:[]
+  },
+  {
+    id:'cl7', nom:'WIS Marc (1.2.3 RENOVE SERVICE)', secteur:'Rénovation',
+    tel:'0636099389', email:'riffelmarc@gmail.com',
+    statut:'retard', mrr:20, setup:0, depuis:'', url:'https://123renov.com',
+    adresse:'47 ALLEE s Marines 64100 Bayonne',
+    siret:'901383778', siren:'',
+    notes:'Contact : Marc Riffel. Offre : Assistant Digital 20€/mois. ID Stripe : cus_USZSuVxiRDetz1. En retard de paiement.',
+    docs:[], assets:[], paiements:[], devis:[], factures:[], messages:[]
   }
 ];
 
@@ -2633,11 +2643,18 @@ function clLoad() {
     const raw = JSON.parse(localStorage.getItem(CL_KEY));
     clData = Array.isArray(raw) && raw.length > 0 ? raw : CL_DEFAULT.map(c=>({...c, docs:[...(c.docs||[])], assets:[...(c.assets||[])], paiements:[...(c.paiements||[])], devis:[...(c.devis||[])], factures:[...(c.factures||[])], messages:[...(c.messages||[])]}));
   } catch { clData = CL_DEFAULT.map(c=>({...c})); }
+  // Migration : injecter les clients manquants depuis CL_DEFAULT
+  CL_DEFAULT.forEach(def => {
+    if (!clData.find(c => c.id === def.id)) {
+      clData.push({...def, docs:[...(def.docs||[])], assets:[...(def.assets||[])], paiements:[...(def.paiements||[])], devis:[...(def.devis||[])], factures:[...(def.factures||[])], messages:[...(def.messages||[])]});
+      clSave();
+    }
+  });
 }
 function clSave() { localStorage.setItem(CL_KEY, JSON.stringify(clData)); }
 
-const CL_STATUT_LABELS = { actif:'Actif', encours:'En cours', pause:'En pause', termine:'Terminé' };
-const CL_STATUT_BADGE  = { actif:'badge-green', encours:'badge-orange', pause:'badge-blue', termine:'badge-gray' };
+const CL_STATUT_LABELS = { actif:'Actif', encours:'En cours', pause:'En pause', termine:'Terminé', retard:'Retard paiement' };
+const CL_STATUT_BADGE  = { actif:'badge-green', encours:'badge-orange', pause:'badge-blue', termine:'badge-gray', retard:'badge-red' };
 
 function clInitials(nom) {
   const parts = nom.trim().split(/\s+/);
