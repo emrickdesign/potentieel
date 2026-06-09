@@ -703,6 +703,39 @@
             </div>
           </div>
 
+          <!-- Modal édition carte pipeline -->
+          <div id="pl-edit-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1100;align-items:center;justify-content:center;padding:16px" onclick="if(event.target.id==='pl-edit-modal')plCloseEditCard()">
+            <div style="background:#18181f;border:1px solid var(--border);border-radius:18px;padding:28px 30px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;position:relative">
+              <button onclick="plCloseEditCard()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">×</button>
+              <h3 style="font-size:18px;font-weight:800;margin:0 0 20px">Modifier le prospect</h3>
+              <input type="hidden" id="pl-edit-id">
+              <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Prénom / Nom *</label>
+              <input id="pl-edit-name" placeholder="Jean Dupont" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:12px;outline:none;box-sizing:border-box">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+                <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Nom de l'entreprise</label>
+                <input id="pl-edit-entreprise" placeholder="Plomberie du Nord..." style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
+                <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Secteur d'activité</label>
+                <input id="pl-edit-secteur" placeholder="BTP, Hôtellerie..." style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+                <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Téléphone</label>
+                <input id="pl-edit-tel" placeholder="0600000000" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
+                <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Email</label>
+                <input id="pl-edit-email" type="email" placeholder="email@ex.fr" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+                <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Prix setup</label>
+                <input id="pl-edit-prix" placeholder="990€" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
+                <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Maintenance / mois</label>
+                <input id="pl-edit-maint" placeholder="49€/m" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
+              </div>
+              <div style="display:flex;gap:10px">
+                <button onclick="plCloseEditCard()" style="flex:1;padding:12px;border-radius:8px;border:none;background:rgba(255,255,255,.07);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer">Annuler</button>
+                <button onclick="plSaveEditCard()" style="flex:2;padding:12px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:700;cursor:pointer">💾 Enregistrer</button>
+              </div>
+            </div>
+          </div>
+
         </div>
 
         <!-- ── TÂCHES ── -->
@@ -2408,28 +2441,76 @@ function renderBoard(containerId, cols, board) {
 }
 
 function cardHTML(c) {
+  const sub = [c.entreprise, c.secteur].filter(Boolean).join(' · ');
+  const contact = [c.tel ? '📞 '+c.tel : '', c.email ? '✉ '+c.email : ''].filter(Boolean).join('  ');
   return `<div class="kc" id="kc-${c.id}" draggable="true"
-    ondragstart="onDragStart(event,'${c.id}')"
-    ondragend="onDragEnd(event)">
+    ondragstart="plCardDragStart(event,'${c.id}')"
+    ondragend="plCardDragEnd(event)"
+    onclick="if(!plJustDragged)plOpenEditCard('${c.id}')"
+    style="cursor:pointer" title="Cliquer pour modifier">
     <div class="kc-row">
       <div class="kc-name" title="${c.name}">${c.name}</div>
       <div class="kc-price">${c.prix}</div>
     </div>
+    ${sub ? `<div style="font-size:11px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${sub}</div>` : ''}
     <div class="kc-maint">${c.maint}</div>
+    ${contact ? `<div style="font-size:11px;color:var(--muted);margin-top:4px">${contact}</div>` : ''}
     <div class="kc-actions">
-      <button class="kc-del" onclick="delCard('${c.id}')" title="Supprimer">🗑</button>
+      <button class="kc-del" onclick="event.stopPropagation();delCard('${c.id}')" title="Supprimer">🗑</button>
     </div>
   </div>`;
 }
 
-function onDragStart(e, id) {
+let plJustDragged = false;
+function plCardDragStart(e, id) {
   dragId = id;
+  plJustDragged = false;
   e.dataTransfer.effectAllowed = 'move';
   setTimeout(() => { const el = document.getElementById('kc-'+id); if(el) el.classList.add('dragging'); }, 0);
 }
-function onDragEnd(e) {
+function plCardDragEnd(e) {
   if (dragId) { const el = document.getElementById('kc-'+dragId); if(el) el.classList.remove('dragging'); }
+  plJustDragged = true;
+  setTimeout(() => { plJustDragged = false; }, 200);
   dragId = null;
+}
+// aliases pour compatibilité ancienne syntaxe
+function onDragStart(e, id) { plCardDragStart(e, id); }
+function onDragEnd(e) { plCardDragEnd(e); }
+
+function plOpenEditCard(id) {
+  const c = plData.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('pl-edit-id').value = c.id;
+  document.getElementById('pl-edit-name').value = c.name || '';
+  document.getElementById('pl-edit-entreprise').value = c.entreprise || '';
+  document.getElementById('pl-edit-secteur').value = c.secteur || '';
+  document.getElementById('pl-edit-tel').value = c.tel || '';
+  document.getElementById('pl-edit-email').value = c.email || '';
+  document.getElementById('pl-edit-prix').value = c.prix || '';
+  document.getElementById('pl-edit-maint').value = c.maint || '';
+  document.getElementById('pl-edit-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('pl-edit-name').focus(), 50);
+}
+
+function plCloseEditCard() {
+  document.getElementById('pl-edit-modal').style.display = 'none';
+}
+
+function plSaveEditCard() {
+  const id = document.getElementById('pl-edit-id').value;
+  const c = plData.find(x => x.id === id);
+  if (!c) return;
+  const name = document.getElementById('pl-edit-name').value.trim();
+  if (!name) { document.getElementById('pl-edit-name').focus(); return; }
+  c.name = name;
+  c.entreprise = document.getElementById('pl-edit-entreprise').value.trim();
+  c.secteur = document.getElementById('pl-edit-secteur').value.trim();
+  c.tel = document.getElementById('pl-edit-tel').value.trim();
+  c.email = document.getElementById('pl-edit-email').value.trim();
+  c.prix = document.getElementById('pl-edit-prix').value.trim() || c.prix;
+  c.maint = document.getElementById('pl-edit-maint').value.trim() || c.maint;
+  plSave(); renderPipeline(); plCloseEditCard();
 }
 
 function delCard(id) {
