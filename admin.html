@@ -2105,14 +2105,35 @@
             <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">OPÉRATIONS</div><div style="font-size:22px;font-weight:800;margin-top:2px">Facturation</div></div>
             <button onclick="faOpenModal()" style="background:var(--accent);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">+ Nouvelle facture</button>
           </div>
-          <div id="fa-stats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px"></div>
-          <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
-            <button class="fa-filter active" data-f="all" onclick="faFilter('all',this)">Toutes</button>
-            <button class="fa-filter" data-f="attente" onclick="faFilter('attente',this)">En attente</button>
-            <button class="fa-filter" data-f="payee" onclick="faFilter('payee',this)">Payées</button>
-            <button class="fa-filter" data-f="retard" onclick="faFilter('retard',this)">Retard</button>
+          <!-- Navigateur mensuel -->
+          <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;flex-wrap:wrap">
+            <button onclick="faNavMonth(-1)" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:8px 14px;color:#fff;font-size:16px;cursor:pointer;line-height:1">‹</button>
+            <div id="fa-month-display" style="font-size:17px;font-weight:800;min-width:140px;text-align:center"></div>
+            <button onclick="faNavMonth(1)" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:8px 14px;color:#fff;font-size:16px;cursor:pointer;line-height:1">›</button>
           </div>
+          <!-- Stats -->
+          <div id="fa-stats" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px"></div>
+          <!-- Payées -->
+          <div style="font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px">💶 Factures payées</div>
           <div id="fa-global-list"></div>
+          <!-- Retards -->
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:32px;margin-bottom:12px">
+            <div style="font-size:12px;font-weight:800;color:#f87171;text-transform:uppercase;letter-spacing:.6px">⚠ Retards de paiement</div>
+            <button onclick="faOpenRetardModal()" style="background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.3);color:#f87171;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer">+ Retard</button>
+          </div>
+          <div id="fa-retards-list"></div>
+
+          <!-- Modale retard de paiement -->
+          <div id="fa-retard-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1300;align-items:center;justify-content:center;padding:16px" onclick="if(event.target.id==='fa-retard-modal')faCloseRetardModal()">
+            <div style="background:#18181f;border:1px solid var(--border);border-radius:16px;padding:24px;width:100%;max-width:400px;position:relative">
+              <button onclick="faCloseRetardModal()" style="position:absolute;top:14px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">×</button>
+              <h3 style="font-size:16px;font-weight:800;margin:0 0 18px;color:#f87171">⚠ Retard de paiement</h3>
+              <input id="fa-ret-client" placeholder="Nom du client" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:12px;outline:none;box-sizing:border-box">
+              <input id="fa-ret-montant" placeholder="Montant dû (ex: 490 €)" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:12px;outline:none;box-sizing:border-box">
+              <textarea id="fa-ret-notes" rows="3" placeholder="Informations (date de relance, contact, etc.)" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:16px;outline:none;box-sizing:border-box;resize:vertical;font-family:inherit"></textarea>
+              <button onclick="faSaveRetard()" style="width:100%;padding:12px;border-radius:8px;border:none;background:#f87171;color:#fff;font-size:14px;font-weight:700;cursor:pointer">Enregistrer</button>
+            </div>
+          </div>
         </div>
 
         <!-- Modale import devis global -->
@@ -2202,7 +2223,7 @@ function nav(el) {
   document.getElementById('page-'+p).classList.add('active');
   document.getElementById('tb-section').textContent = sections[p]||'';
   document.getElementById('tb-title').textContent   = titles[p]||p;
-  if(p==='facturation') renderGlobalFactures();
+  if(p==='facturation') { faInitRetards(); renderGlobalFactures(); }
   if(p==='devis') renderGlobalDevis();
   if(p==='leads') ldRender();
   if(p==='projets') { prLoad(); prRender(); prLoadAllAssetsFromIDB(); }
@@ -3679,7 +3700,8 @@ function faCreate(){
   const cid=document.getElementById('fa-cl-select').value||clCurrentId;
   const c=clData.find(x=>x.id===cid);
   const allFa=clData.flatMap(x=>x.factures||[]);
-  const ref='FA-'+String(allFa.length+1).padStart(3,'0')+'-'+new Date().getFullYear();
+  const _now=new Date();
+  const ref='FA-'+String(_now.getMonth()+1).padStart(2,'0')+'-'+_now.getFullYear()+'-'+String(allFa.length+1).padStart(3,'0');
   const fa={id:'fa'+Date.now(),ref,date:new Date().toLocaleDateString('fr-FR'),echeance:echDate,statut:'payee',totalTxt,montantNum,
     data:{entreprise,tel:document.getElementById('fa-tel').value.trim(),email:document.getElementById('fa-email').value.trim(),
       adresse:document.getElementById('fa-adresse').value.trim(),idType:document.getElementById('fa-id-type').value,
@@ -3700,7 +3722,7 @@ function faCreateAbo(){
   const fmt=d=>d.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
   const periode=`Du ${fmt(start)} au ${fmt(end)}`;
   const allFa=clData.flatMap(x=>x.factures||[]);
-  const ref='FA-'+String(allFa.length+1).padStart(3,'0')+'-'+now.getFullYear();
+  const ref='FA-'+String(now.getMonth()+1).padStart(2,'0')+'-'+now.getFullYear()+'-'+String(allFa.length+1).padStart(3,'0');
   const fa={id:'fa'+Date.now(),ref,date:now.toLocaleDateString('fr-FR'),echeance:fmt(end),statut:'payee',
     totalTxt:aPrix[aboVal],montantNum:parseInt(aboVal),
     data:{entreprise:c.nom||'',email:c.email||'',tel:c.tel||'',adresse:c.adresse||'',
@@ -3793,12 +3815,12 @@ function faSendEmailFromGlobal(fid){faSendEmail(fid);}
 function faMarkPaidFromGlobal(fid){
   const c=clData.find(x=>(x.factures||[]).find(f=>f.id===fid));if(!c)return;
   const fa=c.factures.find(f=>f.id===fid);if(!fa)return;
-  fa.statut='payee';clSave();renderGlobalFactures(document.querySelector('.fa-filter.active')?.dataset?.f||'all');
+  fa.statut='payee';clSave();renderGlobalFactures();
 }
 function faDelFromGlobal(fid){
   const c=clData.find(x=>(x.factures||[]).find(f=>f.id===fid));if(!c)return;
   c.factures=(c.factures||[]).filter(f=>f.id!==fid);
-  clSave();renderGlobalFactures(document.querySelector('.fa-filter.active')?.dataset?.f||'all');
+  clSave();renderGlobalFactures();
 }
 
 // ─── DEVIS email + signer ─────────────────────────────────
@@ -3819,15 +3841,8 @@ function dvSendEmail(did){
 }
 
 // ─── VUES GLOBALES ───────────────────────────────────────
-let _faCurrentFilter='all';
 let _dvCurrentFilter='all';
 
-function faFilter(f,el){
-  _faCurrentFilter=f;
-  document.querySelectorAll('.fa-filter').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');
-  renderGlobalFactures(f);
-}
 function dvFilter(f,el){
   _dvCurrentFilter=f;
   document.querySelectorAll('.dv-filter').forEach(b=>b.classList.remove('active'));
@@ -3835,42 +3850,109 @@ function dvFilter(f,el){
   renderGlobalDevis(f);
 }
 
-function renderGlobalFactures(filter){
-  filter=filter||_faCurrentFilter||'all';
+// ── Facturation mensuelle ─────────────────────────────────────────────
+const FA_RETARDS_KEY = 'fa_retards_v1';
+let faRetards = [];
+let faYear = new Date().getFullYear();
+let faMonth = new Date().getMonth(); // 0-indexed
+
+function faInitRetards() {
+  try { faRetards = JSON.parse(localStorage.getItem(FA_RETARDS_KEY)) || []; } catch { faRetards = []; }
+}
+function faSaveRetardsData() { localStorage.setItem(FA_RETARDS_KEY, JSON.stringify(faRetards)); }
+
+function faNavMonth(delta) {
+  faMonth += delta;
+  if (faMonth > 11) { faMonth = 0; faYear++; }
+  if (faMonth < 0)  { faMonth = 11; faYear--; }
+  renderGlobalFactures();
+}
+
+function faOpenRetardModal() { document.getElementById('fa-retard-modal').style.display='flex'; }
+function faCloseRetardModal() {
+  document.getElementById('fa-retard-modal').style.display='none';
+  ['fa-ret-client','fa-ret-montant','fa-ret-notes'].forEach(id=>{ const el=document.getElementById(id); if(el)el.value=''; });
+}
+function faSaveRetard() {
+  const client = document.getElementById('fa-ret-client').value.trim();
+  if (!client) { alert('Nom du client requis.'); return; }
+  faRetards.unshift({ id:'ret'+Date.now(), client, montant:document.getElementById('fa-ret-montant').value.trim(), notes:document.getElementById('fa-ret-notes').value.trim(), date:new Date().toLocaleDateString('fr-FR') });
+  faSaveRetardsData();
+  faCloseRetardModal();
+  faRenderRetards();
+}
+function faDelRetard(id) {
+  faRetards = faRetards.filter(r=>r.id!==id);
+  faSaveRetardsData();
+  faRenderRetards();
+}
+function faRenderRetards() {
+  const el = document.getElementById('fa-retards-list'); if (!el) return;
+  if (!faRetards.length) { el.innerHTML='<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0">Aucun retard enregistré ✓</div>'; return; }
+  el.innerHTML = faRetards.map(r=>`<div style="background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.2);border-left:3px solid #f87171;border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+    <div style="flex:1">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+        <span style="font-size:15px;font-weight:800;color:#fff">${r.client}</span>
+        ${r.montant?`<span style="font-size:13px;font-weight:700;color:#f87171">${r.montant}</span>`:''}
+        <span style="font-size:11px;color:var(--muted);margin-left:auto">${r.date}</span>
+      </div>
+      ${r.notes?`<div style="font-size:12px;color:var(--muted);font-style:italic">${r.notes}</div>`:''}
+    </div>
+    <button onclick="faDelRetard('${r.id}')" style="background:none;border:none;color:#f87171;font-size:16px;cursor:pointer;padding:0 4px;flex-shrink:0">×</button>
+  </div>`).join('');
+}
+
+function renderGlobalFactures(){
+  // Update month display
+  const MOIS=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  const dispEl=document.getElementById('fa-month-display');
+  if(dispEl) dispEl.textContent=MOIS[faMonth]+' '+faYear;
+
+  // Collect all invoices and filter by selected month
   const allFa=clData.flatMap(c=>(c.factures||[]).map(f=>({...f,clientNom:c.nom||c.id,clientId:c.id})));
   allFa.sort((a,b)=>{const da=(a.date||'').split('/').reverse().join('');const db=(b.date||'').split('/').reverse().join('');return db.localeCompare(da);});
-  const filtered=filter==='all'?allFa:allFa.filter(f=>f.statut===filter);
-  const totAttente=allFa.filter(f=>f.statut==='attente').reduce((s,f)=>s+(f.montantNum||0),0);
-  const totPayee=allFa.filter(f=>f.statut==='payee').reduce((s,f)=>s+(f.montantNum||0),0);
-  const totRetard=allFa.filter(f=>f.statut==='retard').reduce((s,f)=>s+(f.montantNum||0),0);
-  const stat=(label,val,nb,color)=>`<div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:14px 16px">
+
+  // Parse date DD/MM/YYYY — filter to selected month/year
+  function faDateMatch(f){
+    if(!f.date) return false;
+    const parts=f.date.split('/');
+    if(parts.length<3) return false;
+    return parseInt(parts[1],10)-1===faMonth && parseInt(parts[2],10)===faYear;
+  }
+  const monthFa=allFa.filter(faDateMatch);
+
+  // Stats
+  const totPayee=monthFa.reduce((s,f)=>s+(f.montantNum||0),0);
+  const nbPayee=monthFa.length;
+  const stat=(label,val,nb,color,sub)=>`<div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:14px 16px">
     <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">${label}</div>
-    <div style="font-size:22px;font-weight:800;color:${color}">${val.toLocaleString('fr-FR')} €</div>
-    <div style="font-size:12px;color:var(--muted)">${nb} facture${nb!==1?'s':''}</div>
+    <div style="font-size:22px;font-weight:800;color:${color}">${val}</div>
+    <div style="font-size:12px;color:var(--muted)">${sub}</div>
   </div>`;
   const statsEl=document.getElementById('fa-stats');
   if(statsEl)statsEl.innerHTML=
-    stat('En attente',totAttente,allFa.filter(f=>f.statut==='attente').length,'var(--accent)')+
-    stat('Payées',totPayee,allFa.filter(f=>f.statut==='payee').length,'#4ade80')+
-    stat('Retard',totRetard,allFa.filter(f=>f.statut==='retard').length,'#f87171');
+    stat('Payées ce mois',totPayee.toLocaleString('fr-FR')+' €',0,'#4ade80',nbPayee+' facture'+(nbPayee!==1?'s':''))+
+    stat('Retards en cours',faRetards.length,0,'#f87171',faRetards.length+' alerte'+(faRetards.length!==1?'s':''));
+
+  // Render invoices list
   const listEl=document.getElementById('fa-global-list');
   if(!listEl)return;
-  if(filtered.length===0){listEl.innerHTML='<div style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0">Aucune facture</div>';return;}
-  listEl.innerHTML=`<table><thead><tr><th>Client</th><th>Réf</th><th>Émise le</th><th>Échéance</th><th>Montant</th><th>Statut</th><th></th></tr></thead><tbody>`+
-    filtered.map(f=>`<tr>
-      <td style="font-weight:600">${f.clientNom}</td>
-      <td style="color:var(--muted);font-size:12px">${f.ref||'—'}</td>
-      <td style="color:var(--muted)">${f.date||'—'}</td>
-      <td style="color:${f.statut==='retard'?'#f87171':'var(--muted)'}">${f.echeance||'—'}</td>
-      <td style="color:var(--accent);font-weight:700">${f.totalTxt||f.montant||'—'}</td>
-      <td><span class="badge ${f.statut==='payee'?'badge-green':f.statut==='retard'?'badge-red':'badge-orange'}">${f.statut==='payee'?'Payée':f.statut==='retard'?'Retard':'En attente'}</span></td>
-      <td style="white-space:nowrap">
-        <button onclick="faViewFromGlobal('${f.id}')" title="Voir PDF" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px">👁</button>
-        <button onclick="faSendEmailFromGlobal('${f.id}')" title="Email" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px">📧</button>
-        ${f.statut!=='payee'?`<button onclick="faMarkPaidFromGlobal('${f.id}')" title="Marquer payée" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:#4ade80;font-size:14px;font-weight:700">✓</button>`:''}
-        <button onclick="faDelFromGlobal('${f.id}')" title="Supprimer" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px;opacity:.5">🗑</button>
-      </td></tr>`).join('')+
-    '</tbody></table>';
+  if(monthFa.length===0){listEl.innerHTML='<div style="color:var(--muted);font-size:13px;text-align:center;padding:30px 0">Aucune facture pour ce mois</div>';
+  } else {
+    listEl.innerHTML=`<table><thead><tr><th>Client</th><th>Réf</th><th>Émise le</th><th>Montant</th><th></th></tr></thead><tbody>`+
+      monthFa.map(f=>`<tr>
+        <td style="font-weight:600">${f.clientNom}</td>
+        <td style="color:var(--muted);font-size:12px">${f.ref||'—'}</td>
+        <td style="color:var(--muted)">${f.date||'—'}</td>
+        <td style="color:#4ade80;font-weight:700">${f.totalTxt||f.montant||'—'}</td>
+        <td style="white-space:nowrap">
+          <button onclick="faViewFromGlobal('${f.id}')" title="Voir" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px">👁</button>
+          <button onclick="faSendEmailFromGlobal('${f.id}')" title="Email" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px">📧</button>
+          <button onclick="faDelFromGlobal('${f.id}')" title="Supprimer" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px;opacity:.5">🗑</button>
+        </td></tr>`).join('')+
+      '</tbody></table>';
+  }
+  faRenderRetards();
 }
 
 function renderGlobalDevis(filter){
