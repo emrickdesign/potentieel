@@ -2082,11 +2082,31 @@
           <div id="fa-global-list"></div>
         </div>
 
+        <!-- Modale import devis global -->
+        <div id="dv-import-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1300;align-items:center;justify-content:center;padding:16px" onclick="if(event.target.id==='dv-import-modal')dvImportClose()">
+          <div style="background:#18181f;border:1px solid var(--border);border-radius:16px;padding:24px;width:100%;max-width:440px;position:relative">
+            <button onclick="dvImportClose()" style="position:absolute;top:14px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">×</button>
+            <h3 style="font-size:16px;font-weight:800;margin:0 0 18px">Importer un devis</h3>
+            <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Client</label>
+            <select id="dv-import-client" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:#fff;font-size:13px;margin-bottom:12px;outline:none;box-sizing:border-box"></select>
+            <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Statut du devis</label>
+            <select id="dv-import-statut" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:#fff;font-size:13px;margin-bottom:18px;outline:none;box-sizing:border-box">
+              <option value="en attente">En attente</option>
+              <option value="signé">Signé</option>
+              <option value="refusé">Refusé</option>
+            </select>
+            <button onclick="dvImportPickFile()" style="width:100%;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:11px;font-size:13px;font-weight:700;cursor:pointer">↑ Choisir un fichier (PDF, image…)</button>
+          </div>
+        </div>
+
         <!-- ── DEVIS ── -->
         <div id="page-devis" class="page">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">
             <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">OPÉRATIONS</div><div style="font-size:22px;font-weight:800;margin-top:2px">Devis</div></div>
-            <button onclick="dvOpenModal()" style="background:var(--accent);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">+ Nouveau devis</button>
+            <div style="display:flex;gap:8px">
+              <button onclick="dvImportOpen()" style="background:rgba(255,255,255,.07);border:1px solid var(--border);color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">↑ Importer</button>
+              <button onclick="dvOpenModal()" style="background:var(--accent);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">+ Nouveau devis</button>
+            </div>
           </div>
           <div id="dv-stats" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px"></div>
           <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
@@ -3807,7 +3827,12 @@ function renderGlobalDevis(filter){
       <td style="white-space:nowrap">
         <button onclick="dvPreviewFromGlobal('${d.id}')" title="Voir PDF" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px">👁</button>
         <button onclick="dvSendEmailFromGlobal('${d.id}')" title="Email" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px">📧</button>
-        ${d.statut!=='signé'?`<button onclick="dvSignFromGlobal('${d.id}')" title="Marquer signé" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:#4ade80;font-size:14px;font-weight:700">✓</button>`:''}
+        <select onchange="dvChangeStatutGlobal('${d.id}',this.value)" style="background:#1a1a22;border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:#fff;font-size:11px;outline:none;cursor:pointer;margin-right:2px">
+          <option value="en attente" ${d.statut==='en attente'||!d.statut?'selected':''}>En attente</option>
+          <option value="signé" ${d.statut==='signé'?'selected':''}>Signé</option>
+          <option value="refusé" ${d.statut==='refusé'?'selected':''}>Refusé</option>
+        </select>
+        <button onclick="dvPreviewFromGlobal('${d.id}')" title="Voir" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px">👁</button>
         <button onclick="dvDelFromGlobal('${d.id}')" title="Supprimer" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px;opacity:.5">🗑</button>
       </td></tr>`).join('')+
     '</tbody></table>';
@@ -3816,6 +3841,48 @@ function dvPreviewFromGlobal(did){const c=clData.find(x=>(x.devis||[]).find(d=>d
 function dvSendEmailFromGlobal(did){const c=clData.find(x=>(x.devis||[]).find(d=>d.id===did));if(!c)return;const old=clCurrentId;clCurrentId=c.id;dvSendEmail(did);clCurrentId=old;}
 function dvSignFromGlobal(did){const c=clData.find(x=>(x.devis||[]).find(d=>d.id===did));if(!c)return;const dv=c.devis.find(d=>d.id===did);if(!dv)return;dv.statut='signé';clSave();renderGlobalDevis();}
 function dvDelFromGlobal(did){const c=clData.find(x=>(x.devis||[]).find(d=>d.id===did));if(!c)return;c.devis=(c.devis||[]).filter(d=>d.id!==did);clSave();renderGlobalDevis();}
+
+function dvChangeStatutGlobal(did, newStatut) {
+  const c = clData.find(x=>(x.devis||[]).find(d=>d.id===did)); if (!c) return;
+  const dv = c.devis.find(d=>d.id===did); if (!dv) return;
+  dv.statut = newStatut; clSave(); renderGlobalDevis();
+}
+
+function dvImportOpen() {
+  // Remplir le select client
+  const sel = document.getElementById('dv-import-client');
+  sel.innerHTML = clData.map(c=>`<option value="${c.id}">${c.nom||c.id}</option>`).join('');
+  document.getElementById('dv-import-statut').value = 'signé';
+  document.getElementById('dv-import-modal').style.display = 'flex';
+}
+function dvImportClose() {
+  document.getElementById('dv-import-modal').style.display = 'none';
+}
+function dvImportPickFile() {
+  const clientId = document.getElementById('dv-import-client').value;
+  const statut   = document.getElementById('dv-import-statut').value;
+  if (!clientId) return;
+  clTriggerFilePick('application/pdf,image/*', (files) => dvImportExec(clientId, statut, files));
+}
+function dvImportExec(clientId, statut, files) {
+  if (!files || !files.length) return;
+  const c = clData.find(x=>x.id===clientId); if (!c) return;
+  if (!c.devis) c.devis = [];
+  Promise.all(Array.from(files).map(file => new Promise(res => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const idbKey = 'dv_'+Date.now()+Math.random().toString(36).slice(2);
+      idbPut(idbKey, e.target.result).catch(()=>{});
+      c.devis.unshift({ id:'dvi'+Date.now()+Math.random().toString(36).slice(2),
+        ref: file.name.replace(/\.(pdf|jpg|jpeg|png)$/i,''),
+        date: new Date().toLocaleDateString('fr-FR'), montant:'—', totalTxt:'—',
+        statut, type:'import', fileName:file.name, fileType:file.type,
+        idbKey, data:e.target.result });
+      res();
+    };
+    reader.readAsDataURL(file);
+  }))).then(() => { clSave(); dvImportClose(); renderGlobalDevis(); });
+}
 
 // ─── FACTURE PDF ──────────────────────────────────────────
 function faPrintFa(fa) {
