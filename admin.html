@@ -1358,8 +1358,24 @@
 
         <!-- ── PROJETS ── -->
         <div id="page-projets" class="page">
-          <div style="margin-bottom:18px"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">BUSINESS</div><div style="font-size:22px;font-weight:800;margin-top:2px">Projets</div></div>
-          <div class="empty"><div class="ei">📁</div>Envoie-moi le screenshot de cette page pour que je la recrée.</div>
+          <style>
+            .pr-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin-bottom:12px;transition:border-color .15s}
+            .pr-card:hover{border-color:rgba(96,165,250,.35)}
+            .pr-badge{font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px}
+            .pr-s-reflexion{background:rgba(250,204,21,.1);color:#fbbf24}
+            .pr-s-version{background:rgba(96,165,250,.12);color:#60a5fa}
+            .pr-s-attente{background:rgba(244,146,106,.12);color:var(--accent)}
+            .pr-s-valide{background:rgba(74,222,128,.1);color:#4ade80}
+          </style>
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+            <div>
+              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">CRM — PRODUCTION</div>
+              <div style="font-size:26px;font-weight:800;margin:2px 0 4px">Projets</div>
+              <div style="font-size:13px;color:var(--muted)">Leads intéressés — première version à présenter ou en réflexion.</div>
+            </div>
+            <div id="pr-kpi-bar" style="display:flex;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;align-self:flex-start"></div>
+          </div>
+          <div id="pr-list"></div>
         </div>
 
         <!-- ── LEADS ── -->
@@ -1996,7 +2012,7 @@ function bootApp(email) {
   plLoad(); renderPipeline();
   clLoad(); clRenderGrid();
   dcLoad();
-  ldInit();
+  ldInit(); prLoad();
 }
 
 // Navigation
@@ -2025,6 +2041,7 @@ function nav(el) {
   if(p==='facturation') renderGlobalFactures();
   if(p==='devis') renderGlobalDevis();
   if(p==='leads') ldRender();
+  if(p==='projets') { prLoad(); prRender(); }
   if(p==='formulaire') fmLoad();
   if(p==='appels') apInit();
   if(p==='objectifs') obInit();
@@ -3955,13 +3972,33 @@ const LD_SOURCE_LABELS = {
   manuel:    {label:'Manuel',     cls:'ld-badge-manuel'},
 };
 
-const LD_DEFAULT = [];
+const LD_DEFAULT = [
+  { id:'ld_h01', nom:'Tsifaria',    tel:'0651734072', email:'', metier:'Hôtellerie',                    entreprise:'Hotel Mevabeah',               source:'formulaire', campagne:'META ADS — V1 GRATUITE', statut:'nouveau',  notes:'', createdAt:'2026-06-02T23:01:00.000Z', url:'https://potentieel.fr/formulaire?fbclid=IwZXh0bgNhZW0BMABhZGlkAasyHrDr8BhzcnRjBmFwcF9pZAwzNTA2ODU1M...' },
+  { id:'ld_h02', nom:'Tahar',       tel:'0676925350', email:'', metier:'',                              entreprise:'Parisnacking',                 source:'formulaire', campagne:'META ADS — V1 GRATUITE', statut:'nouveau',  notes:'', createdAt:'2026-05-31T16:19:00.000Z', url:'' },
+  { id:'ld_h03', nom:'Cédric',      tel:'0698418398', email:'', metier:'',                              entreprise:'Groupe renovasun energy',      source:'formulaire', campagne:'META ADS — V1 GRATUITE', statut:'qualifie', notes:'', createdAt:'2026-05-31T09:40:00.000Z', url:'' },
+  { id:'ld_h04', nom:'Nicolas',     tel:'0614540302', email:'', metier:'',                              entreprise:'Saome shop',                   source:'formulaire', campagne:'META ADS — V1 GRATUITE', statut:'qualifie', notes:'', createdAt:'2026-05-30T22:19:00.000Z', url:'' },
+  { id:'ld_h05', nom:'Noé',         tel:'+33632707182',email:'',metier:'Plateforme web',               entreprise:'Commerciaux',                  source:'formulaire', campagne:'META ADS — V1 GRATUITE', statut:'nouveau',  notes:'', createdAt:'2026-05-29T03:04:00.000Z', url:'https://potentieel.fr/formulaire?utm_medium=paid&utm_id=12024429761...' },
+  { id:'ld_h06', nom:'Grigore',     tel:'0667823377', email:'', metier:'Travaux de rénovation bâtiment',entreprise:'Midan Construction',           source:'formulaire', campagne:'META ADS — V1 GRATUITE', statut:'qualifie', notes:'', createdAt:'2026-05-27T22:11:00.000Z', url:'https://potentieel.fr/formulaire?fbclid=IwZXh0bgNhZW0BMABhZGlkAasxjitixEhzcnRjBmFwcF9pZAwzNTA2ODU1MzE...' },
+  { id:'ld_h07', nom:'Jean Claude', tel:'+33683291943',email:'',metier:'Gîte',                         entreprise:'La grange de saint quantin',    source:'formulaire', campagne:'META ADS — V1 GRATUITE', statut:'contacte', notes:'', createdAt:'2026-05-26T14:02:00.000Z', url:'https://potentieel.fr/formulaire?fbclid=IwZXh0bgNhZW0BMABhZGlkAasyHrDr8BhzcnRjBmFwcF9pZAwzNTA2ODU1M...' },
+  { id:'ld_h08', nom:'Nicolas',     tel:'0687203804', email:'', metier:'Vente produit artisanale de Madagascar', entreprise:'Tendance Raphia',    source:'formulaire', campagne:'META ADS — V1 GRATUITE', statut:'contacte', notes:'', createdAt:'2026-05-25T11:47:00.000Z', url:'https://potentieel.fr/formulaire?fbclid=IwZXh0bgNhZW0BMABhZGlkAasxjitixEhzcnRjBmFwcF9pZAwzNTA2ODU1MzE...' },
+  { id:'ld_h09', nom:'Guy',         tel:'0662763213', email:'', metier:'Propreté',                      entreprise:'Nkg services',                 source:'formulaire', campagne:'META ADS — V1 GRATUITE', statut:'contacte', notes:'', createdAt:'2026-05-25T04:34:00.000Z', url:'https://potentieel.fr/formulaire?fbclid=IwZXh0bgNhZW0BMABhZGlkAasxjitixEhzcnRjBmFwcF9pZAwzNTA2ODU1MzE...' },
+  { id:'ld_h10', nom:'Jean',        tel:'0743356542', email:'', metier:'Plomberie',                     entreprise:'Atlantique Chauffage Energie',  source:'formulaire', campagne:'META ADS — V1 GRATUITE', statut:'contacte', notes:'', createdAt:'2026-05-20T11:01:00.000Z', url:'https://potentieel.fr/formulaire?fbclid=IwY2xjawR6V19leHRuA2FlbQIxMABicmlkETEzNFdoeEFmWkVzYWROODI3c3J0...' },
+  { id:'ld_h11', nom:'Claude',      tel:'0637079160', email:'', metier:'Chaîne Tv Musicale',            entreprise:'Channel 3 Zones',              source:'formulaire', campagne:'META ADS — V1 GRATUITE', statut:'contacte', notes:'', createdAt:'2026-05-19T15:37:00.000Z', url:'https://potentieel.fr/formulaire?fbclid=IwY2xjawR5RjRleHRuA2FlbQIxMQBzcnRjBmFwcF9pZAwzNTA2ODU1MzE3Mjg...' },
+  { id:'ld_h12', nom:'Chakir',      tel:'0624872333', email:'', metier:'Transport de personnes',        entreprise:'En cours de création',         source:'formulaire', campagne:'META ADS — V1 GRATUITE', statut:'contacte', notes:'', createdAt:'2026-05-18T17:37:00.000Z', url:'https://potentieel.fr/formulaire?fbclid=IwZXh0bgNhZW0BMABhZGlkAasxjiseaEhzcnRjBmFwcF9pZAwzNTA2ODU1Mz...' },
+];
 
 function ldInit() {
   try {
     const raw = JSON.parse(localStorage.getItem(LD_KEY));
     ldData = Array.isArray(raw) ? raw : [];
   } catch { ldData = []; }
+  // Migration : injecter leads historiques manquants
+  LD_DEFAULT.forEach(def => {
+    if (!ldData.find(l => l.id === def.id)) {
+      ldData.unshift({...def}); // en tête de liste
+    }
+  });
+  ldSave();
   ldRender();
 }
 
@@ -4012,44 +4049,44 @@ function ldRender() {
 function ldCardHTML(l) {
   const s = LD_STATUT_LABELS[l.statut] || LD_STATUT_LABELS.nouveau;
   const src = LD_SOURCE_LABELS[l.source] || LD_SOURCE_LABELS.manuel;
-  const date = l.createdAt ? new Date(l.createdAt).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'}) : '';
-  const tel = l.tel ? `<a href="tel:${l.tel}" onclick="event.stopPropagation()" style="color:var(--muted);text-decoration:none;font-size:12px">📞 ${l.tel}</a>` : '';
-  const email = l.email ? `<a href="mailto:${l.email}" onclick="event.stopPropagation()" style="color:var(--muted);text-decoration:none;font-size:12px">✉ ${l.email}</a>` : '';
-  const wa = l.tel ? `<button onclick="event.stopPropagation();ldWhatsApp('${l.id}')" style="background:rgba(37,211,102,.15);color:#25d366;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer">WhatsApp</button>` : '';
-  const metierStr = [l.metier,l.entreprise].filter(Boolean).join(' · ');
-  const notesBtnLabel = l._notesOpen ? 'Masquer notes' : 'Notes';
+  const dt = l.createdAt ? (() => { const d=new Date(l.createdAt); return d.getDate()+' '+['jan','fév','mar','avr','mai','juin','juil','août','sep','oct','nov','déc'][d.getMonth()]+' '+String(d.getFullYear()).slice(2)+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); })() : '';
   const notesArea = l._notesOpen
-    ? `<div style="margin-top:12px" onclick="event.stopPropagation()"><textarea id="ld-notes-${l.id}" rows="3" placeholder="Notes internes..." onblur="ldSaveNotes('${l.id}')" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px;color:#fff;font-size:12px;resize:vertical;outline:none;box-sizing:border-box">${l.notes||''}</textarea></div>`
+    ? `<div style="margin-top:12px" onclick="event.stopPropagation()"><textarea id="ld-notes-${l.id}" rows="3" placeholder="Notes de suivi..." onblur="ldSaveNotes('${l.id}')" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px;color:#fff;font-size:12px;resize:vertical;outline:none;box-sizing:border-box">${l.notes||''}</textarea></div>`
     : '';
+  const statusOpts = Object.entries(LD_STATUT_LABELS).map(([v,o])=>`<option value="${v}"${l.statut===v?' selected':''}>${o.label}</option>`).join('');
 
-  return `<div class="ld-card" id="ld-card-${l.id}" onclick="ldOpenDetail('${l.id}')" style="cursor:pointer" title="Cliquer pour voir / modifier les infos du lead">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap">
+  return `<div class="ld-card" id="ld-card-${l.id}">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap">
       <div style="flex:1;min-width:0">
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px">
-          <span style="font-size:15px;font-weight:800;color:#fff">${l.nom||'(sans nom)'}</span>
+        <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:8px">
+          <span style="font-size:16px;font-weight:800;color:#fff">${l.nom||'(sans nom)'}</span>
           <span class="ld-badge ${src.cls}" style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px">${src.label}</span>
-          ${l.campagne ? `<span style="font-size:10px;color:var(--muted);background:rgba(255,255,255,.06);padding:2px 7px;border-radius:20px">${l.campagne}</span>` : ''}
+          <span class="ld-badge ${s.cls}" style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px">${s.label}</span>
+          ${l.campagne ? `<span style="font-size:10px;color:var(--muted);background:rgba(255,255,255,.06);padding:2px 8px;border-radius:20px">${l.campagne}</span>` : ''}
+          <span style="margin-left:auto;font-size:11px;color:var(--muted);white-space:nowrap">${dt}</span>
         </div>
-        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:6px">
-          ${metierStr ? `<span style="font-size:12px;color:var(--muted)">${metierStr}</span>` : ''}
-          ${tel}${email}
+        <div style="display:flex;gap:14px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
+          ${l.tel ? `<a href="tel:${l.tel}" onclick="event.stopPropagation()" style="color:var(--muted);text-decoration:none;font-size:13px;display:flex;align-items:center;gap:4px">📞 ${l.tel}</a>` : ''}
+          ${l.tel ? `<button onclick="event.stopPropagation();ldWhatsApp('${l.id}')" style="background:rgba(37,211,102,.13);color:#25d366;border:1px solid rgba(37,211,102,.2);border-radius:20px;padding:3px 12px;font-size:12px;font-weight:600;cursor:pointer">💬 WhatsApp</button>` : ''}
+          ${l.email ? `<a href="mailto:${l.email}" onclick="event.stopPropagation()" style="color:var(--muted);text-decoration:none;font-size:12px">✉ ${l.email}</a>` : ''}
         </div>
-        ${l.message ? `<div style="font-size:12px;color:var(--muted);font-style:italic;margin-top:4px;white-space:pre-wrap">${l.message}</div>` : ''}
-        ${notesArea}
+        ${l.metier ? `<div style="font-size:13px;color:#ccc;margin-bottom:4px"><strong>Métier/Projet :</strong> <span style="color:var(--muted)">${l.metier}</span></div>` : ''}
+        ${l.entreprise ? `<div style="font-size:13px;color:#ccc;margin-bottom:4px"><strong>Entreprise :</strong> ${l.entreprise}</div>` : ''}
+        ${l.url ? `<div style="font-size:11px;color:var(--muted);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:400px">↳ ${l.url}</div>` : ''}
+        ${l.message ? `<div style="font-size:12px;color:var(--muted);font-style:italic;margin-top:6px">${l.message}</div>` : ''}
+        <div style="margin-top:10px">
+          <button onclick="event.stopPropagation();ldToggleNotes('${l.id}')" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;display:flex;align-items:center;gap:5px">
+            📄 Notes de suivi ${l._notesOpen?'▲':'▼'}
+          </button>
+          ${notesArea}
+        </div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0" onclick="event.stopPropagation()">
-        <div style="display:flex;align-items:center;gap:6px">
-          <span class="ld-badge ${s.cls}" style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;cursor:pointer" onclick="ldCycleStatus('${l.id}')">${s.label}</span>
-          <button onclick="ldToggleMenu('${l.id}')" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;padding:2px 6px;line-height:1">⋯</button>
-        </div>
-        <div style="font-size:11px;color:var(--muted)">${date}</div>
-        <div id="ld-menu-${l.id}" style="display:none;background:#222;border:1px solid var(--border);border-radius:10px;padding:6px 0;min-width:150px;box-shadow:0 8px 24px rgba(0,0,0,.5);position:relative;z-index:100">
-          <div onclick="ldOpenDetail('${l.id}')" style="padding:9px 16px;font-size:13px;cursor:pointer" onmouseover="this.style.background='rgba(255,255,255,.05)'" onmouseout="this.style.background='none'">✏️ Voir / Modifier</div>
-          ${wa ? `<div onclick="ldWhatsApp('${l.id}')" style="padding:9px 16px;font-size:13px;cursor:pointer;color:#25d366" onmouseover="this.style.background='rgba(255,255,255,.05)'" onmouseout="this.style.background='none'">💬 WhatsApp</div>` : ''}
-          <div onclick="ldToggleNotes('${l.id}')" style="padding:9px 16px;font-size:13px;cursor:pointer" onmouseover="this.style.background='rgba(255,255,255,.05)'" onmouseout="this.style.background='none'">${notesBtnLabel}</div>
-          <div onclick="ldSetStatus('${l.id}','converti')" style="padding:9px 16px;font-size:13px;cursor:pointer;color:#4ade80" onmouseover="this.style.background='rgba(255,255,255,.05)'" onmouseout="this.style.background='none'">✓ Converti</div>
-          <div onclick="ldSetStatus('${l.id}','perdu')" style="padding:9px 16px;font-size:13px;cursor:pointer;color:#f87171" onmouseover="this.style.background='rgba(255,255,255,.05)'" onmouseout="this.style.background='none'">✗ Perdu</div>
-          <div onclick="ldDelete('${l.id}')" style="padding:9px 16px;font-size:13px;cursor:pointer;color:#f87171;border-top:1px solid var(--border);margin-top:4px" onmouseover="this.style.background='rgba(255,255,255,.05)'" onmouseout="this.style.background='none'">🗑 Supprimer</div>
+        <select onchange="ldSetStatus('${l.id}',this.value)" style="background:#1a1a22;border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:#fff;font-size:13px;outline:none;cursor:pointer;min-width:130px">${statusOpts}</select>
+        <button onclick="ldDelete('${l.id}')" style="background:none;border:none;color:#f87171;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:5px;padding:4px 0">🗑 Supprimer</button>
+        <div style="display:flex;gap:6px;margin-top:4px">
+          <button onclick="ldAddToClient('${l.id}')" style="background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.2);color:#4ade80;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer">+ Client</button>
+          <button onclick="ldAddToProject('${l.id}')" style="background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.2);color:#60a5fa;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer">+ Projet</button>
         </div>
       </div>
     </div>
@@ -5099,6 +5136,129 @@ function plGoToDay(dateStr) {
   plCursor = new Date(dateStr + 'T12:00:00');
   const btn = document.querySelector('.pl-view-btn[data-v="day"]');
   plSetView('day', btn);
+}
+
+/* ═══════════════════════════════════════════════
+   PROJETS
+═══════════════════════════════════════════════ */
+const PR_KEY = 'pr_v1';
+let prData = [];
+
+const PR_STATUT = {
+  reflexion: { label:'En réflexion',    cls:'pr-s-reflexion' },
+  version:   { label:'Première version',cls:'pr-s-version' },
+  attente:   { label:'En attente',      cls:'pr-s-attente' },
+  valide:    { label:'Validé ✓',        cls:'pr-s-valide' },
+};
+
+function prLoad() {
+  try { const r = JSON.parse(localStorage.getItem(PR_KEY)); prData = Array.isArray(r) ? r : []; }
+  catch { prData = []; }
+}
+function prSave() { localStorage.setItem(PR_KEY, JSON.stringify(prData)); }
+
+function prRender() {
+  const el = document.getElementById('pr-list');
+  const kpi = document.getElementById('pr-kpi-bar');
+  if (!el) return;
+  const total = prData.length;
+  const byS = Object.fromEntries(Object.keys(PR_STATUT).map(k=>[k, prData.filter(p=>p.statut===k).length]));
+  if (kpi) kpi.innerHTML = Object.entries(PR_STATUT).map(([k,o])=>
+    `<div style="padding:10px 16px;border-right:1px solid var(--border);font-size:11px;text-align:center">
+      <div style="font-weight:700;font-size:15px">${byS[k]||0}</div>
+      <div style="color:var(--muted);margin-top:2px">${o.label}</div>
+    </div>`).join('') + `<div style="padding:10px 16px;font-size:11px;text-align:center"><div style="font-weight:700;font-size:15px">${total}</div><div style="color:var(--muted);margin-top:2px">Total</div></div>`;
+
+  if (!prData.length) {
+    el.innerHTML = `<div class="empty" style="padding:60px 20px"><div class="ei">📁</div>Aucun projet. Transfère un lead depuis la section Leads.</div>`;
+    return;
+  }
+  el.innerHTML = prData.map(p => prCardHTML(p)).join('');
+}
+
+function prCardHTML(p) {
+  const s = PR_STATUT[p.statut] || PR_STATUT.reflexion;
+  const dt = p.createdAt ? new Date(p.createdAt).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'}) : '';
+  const statusOpts = Object.entries(PR_STATUT).map(([v,o])=>`<option value="${v}"${p.statut===v?' selected':''}>${o.label}</option>`).join('');
+  return `<div class="pr-card" id="pr-card-${p.id}">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap">
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+          <span style="font-size:16px;font-weight:800">${p.nom||'(sans nom)'}</span>
+          <span class="pr-badge ${s.cls}">${s.label}</span>
+          ${p.source==='leads'?`<span style="font-size:10px;color:var(--muted);background:rgba(255,255,255,.06);padding:2px 8px;border-radius:20px">Depuis Leads</span>`:''}
+          <span style="margin-left:auto;font-size:11px;color:var(--muted)">${dt}</span>
+        </div>
+        <div style="display:flex;gap:14px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
+          ${p.tel ? `<a href="tel:${p.tel}" style="color:var(--muted);text-decoration:none;font-size:13px">📞 ${p.tel}</a>` : ''}
+          ${p.tel ? `<button onclick="prWhatsApp('${p.id}')" style="background:rgba(37,211,102,.13);color:#25d366;border:1px solid rgba(37,211,102,.2);border-radius:20px;padding:3px 12px;font-size:12px;font-weight:600;cursor:pointer">💬 WhatsApp</button>` : ''}
+          ${p.email ? `<a href="mailto:${p.email}" style="color:var(--muted);text-decoration:none;font-size:12px">✉ ${p.email}</a>` : ''}
+        </div>
+        ${p.metier ? `<div style="font-size:13px;margin-bottom:4px"><strong>Secteur :</strong> <span style="color:var(--muted)">${p.metier}</span></div>` : ''}
+        ${p.entreprise ? `<div style="font-size:13px;margin-bottom:10px"><strong>Entreprise :</strong> ${p.entreprise}</div>` : ''}
+        <div>
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Notes</div>
+          <textarea id="pr-notes-${p.id}" rows="3" placeholder="Où en est le projet, ce qui a été dit, prochaine étape..." onblur="prSaveNotes('${p.id}')" style="width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:10px;color:#fff;font-size:12px;resize:vertical;outline:none;box-sizing:border-box;font-family:inherit">${p.notes||''}</textarea>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0">
+        <select onchange="prSetStatus('${p.id}',this.value)" style="background:#1a1a22;border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:#fff;font-size:13px;outline:none;cursor:pointer;min-width:160px">${statusOpts}</select>
+        <button onclick="prAddToClient('${p.id}')" style="background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.2);color:#4ade80;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;width:100%">+ Ajouter au client</button>
+        <button onclick="prDelete('${p.id}')" style="background:none;border:none;color:#f87171;font-size:13px;cursor:pointer;padding:4px 0">🗑 Supprimer</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function prSetStatus(id, val) {
+  const p = prData.find(x=>x.id===id); if (!p) return;
+  p.statut = val; prSave(); prRender();
+}
+function prSaveNotes(id) {
+  const p = prData.find(x=>x.id===id);
+  const ta = document.getElementById('pr-notes-'+id);
+  if (!p || !ta) return; p.notes = ta.value; prSave();
+}
+function prWhatsApp(id) {
+  const p = prData.find(x=>x.id===id); if (!p||!p.tel) return;
+  const t = p.tel.replace(/\D/g,''); window.open('https://wa.me/'+(t.startsWith('0')?'33'+t.slice(1):t),'_blank');
+}
+function prDelete(id) {
+  if (!confirm('Supprimer ce projet ?')) return;
+  prData = prData.filter(x=>x.id!==id); prSave(); prRender();
+}
+function prAddToClient(id) {
+  const p = prData.find(x=>x.id===id); if (!p) return;
+  clData.push({ id:'cl'+Date.now(), nom:p.entreprise||p.nom, secteur:p.metier||'', tel:p.tel||'', email:p.email||'',
+    statut:'encours', mrr:0, setup:990, depuis:'', url:'', adresse:'', siret:'', siren:'',
+    notes:'Converti depuis Projets. '+( p.notes||''), docs:[], assets:[], paiements:[], devis:[], factures:[], messages:[] });
+  clSave();
+  prData = prData.filter(x=>x.id!==id); prSave(); prRender();
+  alert('Client créé avec succès !');
+  nav(document.querySelector('[data-page="clients"]'));
+}
+
+/* ── Fonctions leads → client / projet ── */
+function ldAddToClient(id) {
+  const l = ldData.find(x=>x.id===id); if (!l) return;
+  clData.push({ id:'cl'+Date.now(), nom:l.entreprise||l.nom, secteur:l.metier||'', tel:l.tel||'', email:l.email||'',
+    statut:'encours', mrr:0, setup:990, depuis:'', url:'', adresse:'', siret:'', siren:'',
+    notes:'Converti depuis Leads. Campagne : '+(l.campagne||'—')+'. '+(l.notes||''),
+    docs:[], assets:[], paiements:[], devis:[], factures:[], messages:[] });
+  clSave();
+  ldSetStatus(id, 'converti');
+  alert('Client créé ✓');
+  nav(document.querySelector('[data-page="clients"]'));
+}
+function ldAddToProject(id) {
+  const l = ldData.find(x=>x.id===id); if (!l) return;
+  prData.push({ id:'pr'+Date.now(), nom:l.nom, entreprise:l.entreprise||'', metier:l.metier||'',
+    tel:l.tel||'', email:l.email||'', statut:'reflexion', notes:'', source:'leads', campagne:l.campagne||'',
+    createdAt: new Date().toISOString() });
+  prSave();
+  ldSetStatus(id, 'converti');
+  alert('Ajouté aux Projets ✓');
+  nav(document.querySelector('[data-page="projets"]'));
 }
 
 /* ── Resize drag (Notion-style) ── */
