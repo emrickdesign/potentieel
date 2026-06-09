@@ -956,11 +956,11 @@
             <!-- Tab: Documents -->
             <div id="cl-tab-docs" class="cl-tab-pane" style="display:none">
               <div class="panel">
-                <div class="panel-head"><h3>Documents</h3><button class="ph-action" onclick="document.getElementById('cl-file-input').click()">+ Ajouter</button></div>
+                <div class="panel-head"><h3>Documents</h3><button class="ph-action" onclick="clTriggerFilePick('*/*', clHandleFiles)">+ Ajouter</button></div>
                 <input type="file" id="cl-file-input" multiple accept="*/*" style="display:none" onchange="clHandleFiles(this.files)">
                 <div id="cl-drop-zone"
                   style="margin:12px 16px;border:2px dashed rgba(255,255,255,.12);border-radius:12px;padding:24px;text-align:center;color:var(--muted);font-size:13px;transition:border-color .2s;cursor:pointer"
-                  onclick="document.getElementById('cl-file-input').click()"
+                  onclick="clTriggerFilePick('*/*', clHandleFiles)"
                   ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
                   ondragleave="this.style.borderColor='rgba(255,255,255,.12)'"
                   ondrop="event.preventDefault();this.style.borderColor='rgba(255,255,255,.12)';clHandleFiles(event.dataTransfer.files)">
@@ -978,7 +978,7 @@
                     <h3 style="margin:0 0 2px">Photos &amp; vidéos du client</h3>
                     <p style="margin:0;font-size:12px;color:var(--muted)">Réutilisables sur le site, les réseaux, les supports.</p>
                   </div>
-                  <button class="ph-action" onclick="document.getElementById('cl-asset-input').click()" style="display:flex;align-items:center;gap:6px">
+                  <button class="ph-action" onclick="clTriggerFilePick('image/*,video/*,application/pdf', clHandleAssets)" style="display:flex;align-items:center;gap:6px">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                     Ajouter des fichiers
                   </button>
@@ -987,7 +987,7 @@
                 <!-- Drop zone (hidden when assets exist) -->
                 <div id="cl-asset-drop"
                   style="margin:16px;border:2px dashed rgba(255,255,255,.12);border-radius:12px;padding:40px;text-align:center;color:var(--muted);font-size:13px;cursor:pointer;transition:border-color .2s"
-                  onclick="document.getElementById('cl-asset-input').click()"
+                  onclick="clTriggerFilePick('image/*,video/*,application/pdf', clHandleAssets)"
                   ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
                   ondragleave="this.style.borderColor='rgba(255,255,255,.12)'"
                   ondrop="event.preventDefault();this.style.borderColor='rgba(255,255,255,.12)';clHandleAssets(event.dataTransfer.files)">
@@ -1079,7 +1079,10 @@
             <!-- Tab: Devis -->
             <div id="cl-tab-devis" class="cl-tab-pane" style="display:none">
               <div class="panel">
-                <div class="panel-head"><h3>Devis</h3><button class="ph-action" onclick="dvOpenModal()">+ Nouveau devis</button></div>
+                <div class="panel-head"><h3>Devis</h3><div style="display:flex;gap:6px">
+                  <button class="ph-action" onclick="clTriggerFilePick('application/pdf,image/*', clImportDevis)" style="background:rgba(255,255,255,.06);border:1px solid var(--border)">↑ Importer</button>
+                  <button class="ph-action" onclick="dvOpenModal()">+ Nouveau devis</button>
+                </div></div>
                 <div id="cl-devis-list" style="padding:16px;min-height:80px"></div>
               </div>
             </div>
@@ -1087,7 +1090,10 @@
             <!-- Tab: Factures -->
             <div id="cl-tab-factures" class="cl-tab-pane" style="display:none">
               <div class="panel">
-                <div class="panel-head"><h3>Factures</h3><button class="ph-action" onclick="faOpenModal(clCurrentId)">+ Nouvelle</button></div>
+                <div class="panel-head"><h3>Factures</h3><div style="display:flex;gap:6px">
+                  <button class="ph-action" onclick="clTriggerFilePick('application/pdf,image/*', clImportFacture)" style="background:rgba(255,255,255,.06);border:1px solid var(--border)">↑ Importer</button>
+                  <button class="ph-action" onclick="faOpenModal(clCurrentId)">+ Nouvelle</button>
+                </div></div>
                 <div id="cl-factures-list" style="padding:16px;min-height:80px"></div>
               </div>
             </div>
@@ -2033,13 +2039,13 @@
         <div id="page-documents" class="page">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">
             <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">OPÉRATIONS</div><div style="font-size:22px;font-weight:800;margin-top:2px">Documents</div></div>
-            <button class="ph-action" onclick="document.getElementById('dc-file-input').click()" style="background:var(--accent);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">+ Importer des documents</button>
+            <button class="ph-action" onclick="clTriggerFilePick('*/*', dcHandleFiles)" style="background:var(--accent);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">+ Importer des documents</button>
           </div>
           <input type="file" id="dc-file-input" multiple accept="*/*" style="display:none" onchange="dcHandleFiles(this.files)">
           <div class="panel">
             <div id="dc-drop-zone"
               style="margin:16px;border:2px dashed rgba(255,255,255,.12);border-radius:12px;padding:32px;text-align:center;color:var(--muted);font-size:13px;transition:border-color .2s;cursor:pointer"
-              onclick="document.getElementById('dc-file-input').click()"
+              onclick="clTriggerFilePick('*/*', dcHandleFiles)"
               ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
               ondragleave="this.style.borderColor='rgba(255,255,255,.12)'"
               ondrop="event.preventDefault();this.style.borderColor='rgba(255,255,255,.12)';dcHandleFiles(event.dataTransfer.files)">
@@ -2959,6 +2965,16 @@ function clRenderDocs(c) {
     </div>`).join('');
 }
 
+function clTriggerFilePick(accept, handler) {
+  // Crée l'input au niveau body pour contourner le bug WebKit (display:none parent)
+  const inp = document.createElement('input');
+  inp.type = 'file'; inp.multiple = true; inp.accept = accept || '*/*';
+  Object.assign(inp.style, {position:'fixed',opacity:'0',pointerEvents:'none',top:'0',left:'0'});
+  inp.addEventListener('change', () => { handler(inp.files); document.body.removeChild(inp); });
+  document.body.appendChild(inp);
+  setTimeout(() => inp.click(), 10);
+}
+
 function clHandleFiles(files) {
   if (!files || !files.length) return;
   const c = clData.find(x=>x.id===clCurrentId);
@@ -2983,9 +2999,7 @@ function clHandleFiles(files) {
   document.getElementById('cl-file-input').value = '';
 }
 
-function clAddDoc() {
-  document.getElementById('cl-file-input').click();
-}
+function clAddDoc() { clTriggerFilePick('*/*', clHandleFiles); }
 
 function clDelDoc(did) {
   const c = clData.find(x=>x.id===clCurrentId);
@@ -3065,11 +3079,16 @@ function clHandleAssets(files) {
         data: e.target.result
       });
       remaining--;
-      if (remaining === 0) { clSave(); clRenderAssets(c); }
+      if (remaining === 0) {
+        try { clSave(); } catch(e) {
+          alert('Fichier trop volumineux pour le stockage local. Essaie avec un fichier plus petit.');
+          c.assets.pop(); return;
+        }
+        clRenderAssets(c);
+      }
     };
     reader.readAsDataURL(file);
   });
-  document.getElementById('cl-asset-input').value = '';
 }
 
 function clDelAsset(aid) {
@@ -3120,20 +3139,74 @@ function clRenderDevis(c) {
   if (!c.devis || c.devis.length === 0) {
     el.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0">Aucun devis</div>'; return;
   }
-  el.innerHTML = c.devis.map(d => `
-    <div style="display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--border)">
+  el.innerHTML = c.devis.map(d => {
+    const isImport = d.type === 'import';
+    const badge = d.statut==='signé'?'badge-green':d.statut==='refusé'?'badge-red':isImport?'badge-gray':'badge-blue';
+    const actions = isImport
+      ? `<a href="${d.fileData}" download="${d.fileName||d.ref+'.pdf'}" title="Télécharger" style="background:rgba(255,255,255,.07);border-radius:6px;padding:5px 8px;color:#fff;font-size:13px;text-decoration:none">⬇</a>`
+      : `<button onclick="dvPreview('${d.id}')" title="Voir" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">👁</button>
+         <button onclick="dvSendEmail('${d.id}')" title="Email" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">📧</button>
+         ${d.statut!=='signé'?'<button onclick="dvSign(\''+d.id+'\')" title="Signé" style="background:rgba(74,222,128,.15);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#4ade80;font-size:13px;font-weight:700">✓</button>':''}`;
+    return `<div style="display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--border)">
       <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:700;color:var(--text)">${d.ref||'DEV'}</div>
+        <div style="font-size:13px;font-weight:700;color:var(--text)">${d.ref||'DEV'}${isImport?' <span style="font-size:10px;color:var(--muted)">(importé)</span>':''}</div>
         <div style="font-size:12px;color:var(--muted)">${d.date||''} · ${d.totalTxt||d.montant||''}</div>
       </div>
-      <span class="badge ${d.statut==='signé'?'badge-green':d.statut==='refusé'?'badge-red':'badge-blue'}">${d.statut||'en attente'}</span>
-      <div style="display:flex;gap:4px;flex-shrink:0">
-        <button onclick="dvPreview('${d.id}')" title="Voir PDF" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">👁</button>
-        <button onclick="dvSendEmail('${d.id}')" title="Envoyer par email" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">📧</button>
-        ${d.statut!=='signé'?`<button onclick="dvSign('${d.id}')" title="Marquer signé" style="background:rgba(74,222,128,.15);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#4ade80;font-size:13px;font-weight:700">✓</button>`:''}
+      <span class="badge ${badge}">${d.statut||'en attente'}</span>
+      <div style="display:flex;gap:4px;flex-shrink:0;align-items:center">
+        ${actions}
         <button onclick="clDelDevis('${d.id}')" title="Supprimer" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:13px;opacity:.5">🗑</button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
+}
+
+function clImportDevis(files) {
+  if (!files || !files.length) return;
+  const c = clData.find(x=>x.id===clCurrentId); if (!c) return;
+  if (!c.devis) c.devis = [];
+  let done = 0;
+  Array.from(files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      c.devis.unshift({
+        id: 'dvi'+Date.now()+Math.random().toString(36).slice(2),
+        ref: file.name.replace(/\.pdf$/i,'').replace(/\.jpg$/i,'').replace(/\.png$/i,''),
+        date: new Date().toLocaleDateString('fr-FR'),
+        montant: '—', totalTxt: '—', statut: 'importé',
+        type: 'import', fileData: e.target.result, fileName: file.name, fileType: file.type
+      });
+      if (++done === files.length) {
+        try { clSave(); } catch(e) { alert('Fichier trop volumineux.'); c.devis.shift(); return; }
+        clRenderDevis(c);
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function clImportFacture(files) {
+  if (!files || !files.length) return;
+  const c = clData.find(x=>x.id===clCurrentId); if (!c) return;
+  if (!c.factures) c.factures = [];
+  let done = 0;
+  Array.from(files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      c.factures.unshift({
+        id: 'fai'+Date.now()+Math.random().toString(36).slice(2),
+        ref: file.name.replace(/\.pdf$/i,'').replace(/\.jpg$/i,'').replace(/\.png$/i,''),
+        date: new Date().toLocaleDateString('fr-FR'),
+        montant: '—', totalTxt: '—', statut: 'importée',
+        type: 'import', fileData: e.target.result, fileName: file.name, fileType: file.type
+      });
+      if (++done === files.length) {
+        try { clSave(); } catch(e) { alert('Fichier trop volumineux.'); c.factures.shift(); return; }
+        clRenderFactures(c);
+      }
+    };
+    reader.readAsDataURL(file);
+  });
 }
 
 function clDelDevis(did) {
@@ -3361,20 +3434,27 @@ function clRenderFactures(c) {
   if (!c.factures || c.factures.length === 0) {
     el.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0">Aucune facture</div>'; return;
   }
-  el.innerHTML = c.factures.map(f => `
-    <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+  el.innerHTML = c.factures.map(f => {
+    const isImport = f.type === 'import';
+    const badge = f.statut==='payee'?'badge-green':f.statut==='retard'?'badge-red':isImport?'badge-gray':'badge-orange';
+    const label = f.statut==='payee'?'Payée':f.statut==='retard'?'Retard':isImport?'Importée':'En attente';
+    const actions = isImport
+      ? `<a href="${f.fileData}" download="${f.fileName||f.ref+'.pdf'}" title="Télécharger" style="background:rgba(255,255,255,.07);border-radius:6px;padding:5px 8px;color:#fff;font-size:13px;text-decoration:none">⬇</a>`
+      : `<button onclick="faView('${f.id}')" title="Voir" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">👁</button>
+         <button onclick="faSendEmail('${f.id}')" title="Email" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">📧</button>
+         ${f.statut!=='payee'?'<button onclick="faMarkPaid(\''+f.id+'\')" title="Payée" style="background:rgba(74,222,128,.15);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#4ade80;font-size:13px;font-weight:700">✓</button>':''}`;
+    return `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
       <div style="flex:1;min-width:0">
-        <div style="font-weight:700;font-size:13px">${f.ref||'—'} <span style="font-size:11px;color:var(--muted);font-weight:400">· ${f.date||''}</span></div>
-        <div style="font-size:12px;color:var(--accent);font-weight:600">${f.totalTxt||f.montant||'—'}${f.echeance?` <span style="color:var(--muted);font-weight:400">— échéance ${f.echeance}</span>`:''}</div>
+        <div style="font-weight:700;font-size:13px">${f.ref||'—'}${isImport?' <span style="font-size:10px;color:var(--muted)">(importé)</span>':''} <span style="font-size:11px;color:var(--muted);font-weight:400">· ${f.date||''}</span></div>
+        <div style="font-size:12px;color:var(--accent);font-weight:600">${f.totalTxt||f.montant||'—'}${f.echeance?' <span style="color:var(--muted);font-weight:400">— échéance '+f.echeance+'</span>':''}</div>
       </div>
-      <span class="badge ${f.statut==='payee'?'badge-green':f.statut==='retard'?'badge-red':'badge-orange'}" style="flex-shrink:0">${f.statut==='payee'?'Payée':f.statut==='retard'?'Retard':'En attente'}</span>
-      <div style="display:flex;gap:4px;flex-shrink:0">
-        <button onclick="faView('${f.id}')" title="Voir PDF" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">👁</button>
-        <button onclick="faSendEmail('${f.id}')" title="Envoyer par email" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">📧</button>
-        ${f.statut!=='payee'?`<button onclick="faMarkPaid('${f.id}')" title="Marquer payée" style="background:rgba(74,222,128,.15);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#4ade80;font-size:13px;font-weight:700">✓</button>`:''}
+      <span class="badge ${badge}" style="flex-shrink:0">${label}</span>
+      <div style="display:flex;gap:4px;flex-shrink:0;align-items:center">
+        ${actions}
         <button onclick="faDelFacture('${f.id}')" title="Supprimer" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:13px;opacity:.5">🗑</button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function faDelFacture(fid) {
