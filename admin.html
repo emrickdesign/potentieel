@@ -1987,9 +1987,16 @@
             <div>
               <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">OPÉRATIONS</div>
               <div style="font-size:24px;font-weight:800;margin:2px 0 3px">Trésorerie</div>
-              <div style="font-size:12px;color:var(--muted)">Entrées et sorties d'argent.</div>
             </div>
             <button onclick="trOpenAdd()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer">+ Transaction</button>
+          </div>
+          <!-- Sélecteur de mois -->
+          <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:20px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 20px">
+            <button onclick="trPrevMonth()" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:6px 14px;color:#fff;font-size:16px;cursor:pointer;line-height:1">‹</button>
+            <div style="text-align:center;min-width:140px">
+              <div id="tr-month-label" style="font-size:16px;font-weight:800;color:#fff"></div>
+            </div>
+            <button onclick="trNextMonth()" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:6px 14px;color:#fff;font-size:16px;cursor:pointer;line-height:1">›</button>
           </div>
           <div class="tr-stats" id="tr-stats"></div>
           <div class="tr-cats">
@@ -2017,7 +2024,7 @@
                 </div>
                 <div>
                   <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Montant (€) *</label>
-                  <input id="tr-amount" type="number" step="0.01" placeholder="990" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                  <input id="tr-amount" type="number" step="0.01" placeholder="990" oninput="trUpdateSplitPreview()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
                 </div>
               </div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
@@ -2033,11 +2040,37 @@
                 </div>
                 <div>
                   <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Date</label>
-                  <input id="tr-date" type="date" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                  <input id="tr-date" type="date" oninput="trUpdateSplitPreview()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
                 </div>
               </div>
               <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Description</label>
-              <input id="tr-desc" placeholder="Client, raison…" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:16px;outline:none;box-sizing:border-box">
+              <input id="tr-desc" placeholder="Client, raison…" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:12px;outline:none;box-sizing:border-box">
+              <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Notes</label>
+              <input id="tr-notes" placeholder="Détails, contexte…" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:14px;outline:none;box-sizing:border-box">
+              <!-- Fractionnement -->
+              <div id="tr-split-section" style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:16px">
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;font-weight:600;color:var(--muted)">
+                  <input type="checkbox" id="tr-split-check" onchange="trToggleSplit()" style="accent-color:var(--accent);width:15px;height:15px">
+                  Paiement fractionné (plusieurs versements)
+                </label>
+                <div id="tr-split-opts" style="display:none;margin-top:12px">
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                    <div>
+                      <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Nombre de versements</label>
+                      <input id="tr-split-n" type="number" min="2" max="24" value="4" oninput="trUpdateSplitPreview()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                    </div>
+                    <div>
+                      <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Intervalle</label>
+                      <select id="tr-split-interval" onchange="trUpdateSplitPreview()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:#fff;font-size:13px;outline:none">
+                        <option value="month">Mensuel</option>
+                        <option value="2weeks">Toutes les 2 sem.</option>
+                        <option value="week">Hebdomadaire</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div id="tr-split-preview" style="margin-top:10px;font-size:11px;color:var(--muted)"></div>
+                </div>
+              </div>
               <div style="display:flex;gap:10px">
                 <button id="tr-delete-btn" onclick="trDelete()" style="flex:1;padding:11px;border-radius:8px;border:none;background:rgba(239,68,68,.12);color:#f87171;font-size:13px;font-weight:700;cursor:pointer;display:none">Supprimer</button>
                 <button onclick="trSave()" style="flex:2;padding:11px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:700;cursor:pointer">Enregistrer</button>
@@ -6008,8 +6041,38 @@ let trData = [];
 let trCurrentFilter = 'all';
 let trEditId = null;
 
+// Mois courant (YYYY-MM)
+const _trNow = new Date();
+let trCurrentMonth = `${_trNow.getFullYear()}-${String(_trNow.getMonth()+1).padStart(2,'0')}`;
+
+const TR_MOIS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+
+function trMonthLabel(ym) {
+  const [y,m] = ym.split('-');
+  return TR_MOIS_FR[parseInt(m)-1] + ' ' + y;
+}
+function trPrevMonth() {
+  const [y,m] = trCurrentMonth.split('-').map(Number);
+  const d = new Date(y, m-2, 1);
+  trCurrentMonth = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+  trInit();
+}
+function trNextMonth() {
+  const [y,m] = trCurrentMonth.split('-').map(Number);
+  const d = new Date(y, m, 1);
+  trCurrentMonth = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+  trInit();
+}
+
 async function trInit() {
-  const { data } = await sb.from('transactions').select('*').order('date', { ascending: false });
+  const [y,m] = trCurrentMonth.split('-').map(Number);
+  const from = `${trCurrentMonth}-01`;
+  const last = new Date(y, m, 0).getDate();
+  const to   = `${trCurrentMonth}-${String(last).padStart(2,'0')}`;
+  const lbl = document.getElementById('tr-month-label');
+  if (lbl) lbl.textContent = trMonthLabel(trCurrentMonth);
+  const { data } = await sb.from('transactions').select('*')
+    .gte('date', from).lte('date', to).order('date', { ascending: false });
   if (data) trData = data;
   trRender();
 }
@@ -6023,27 +6086,30 @@ function trRender() {
   const balCol   = balance >= 0 ? '#4ade80' : '#f87171';
 
   document.getElementById('tr-stats').innerHTML = `
-    <div class="tr-stat"><div class="tr-stat-label">Entrées</div><div class="tr-stat-val tr-entree">+${totalIn.toLocaleString('fr-FR',{minimumFractionDigits:0,maximumFractionDigits:2})} €</div></div>
-    <div class="tr-stat"><div class="tr-stat-label">Sorties</div><div class="tr-stat-val tr-sortie">-${totalOut.toLocaleString('fr-FR',{minimumFractionDigits:0,maximumFractionDigits:2})} €</div></div>
-    <div class="tr-stat"><div class="tr-stat-label">Solde</div><div class="tr-stat-val" style="color:${balCol}">${balance>=0?'+':''}${balance.toLocaleString('fr-FR',{minimumFractionDigits:0,maximumFractionDigits:2})} €</div></div>
+    <div class="tr-stat"><div class="tr-stat-label">↑ Entrées</div><div class="tr-stat-val tr-entree">+${totalIn.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})} €</div></div>
+    <div class="tr-stat"><div class="tr-stat-label">↓ Sorties</div><div class="tr-stat-val tr-sortie">-${totalOut.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})} €</div></div>
+    <div class="tr-stat"><div class="tr-stat-label">Solde</div><div class="tr-stat-val" style="color:${balCol}">${balance>=0?'+':''}${balance.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})} €</div></div>
   `;
 
   const filtered = trCurrentFilter === 'all' ? trData : trData.filter(t => t.type === trCurrentFilter);
   const catLabels = { ca:'CA', pub:'Publicité', outil:'Outils/Abos', salaire:'Salaire', autre:'Autre' };
   if (!filtered.length) {
-    document.getElementById('tr-list').innerHTML = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:12px">Aucune transaction.</div>';
+    document.getElementById('tr-list').innerHTML = '<div style="padding:40px;text-align:center;color:var(--muted);font-size:13px">Aucune transaction pour ce mois.</div>';
     return;
   }
-  document.getElementById('tr-list').innerHTML = filtered.map(t => {
+  // Trier par date décroissante
+  const sorted = [...filtered].sort((a,b) => (b.date||'').localeCompare(a.date||''));
+  document.getElementById('tr-list').innerHTML = sorted.map(t => {
     const sign = t.type === 'entree' ? '+' : '-';
     const cls  = t.type === 'entree' ? 'tr-entree' : 'tr-sortie';
-    const ds   = t.date ? new Date(t.date).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'}) : '';
+    const ds   = t.date ? new Date(t.date+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'}) : '';
+    const notes = t.notes ? `<span style="color:var(--muted);font-size:11px"> — ${t.notes}</span>` : '';
     return `<div class="tr-row" style="cursor:pointer" onclick="trOpenEdit('${t.id}')">
       <div style="flex:1;min-width:0">
-        <div class="tr-row-desc">${t.description||'—'}</div>
-        <div class="tr-row-meta">${catLabels[t.category]||t.category}${ds?' · '+ds:''}</div>
+        <div class="tr-row-desc">${t.description||'—'}${notes}</div>
+        <div class="tr-row-meta">${catLabels[t.category]||t.category||''}${ds?' · '+ds:''}</div>
       </div>
-      <div class="tr-row-amt ${cls}">${sign}${(t.amount||0).toLocaleString('fr-FR',{minimumFractionDigits:0,maximumFractionDigits:2})} €</div>
+      <div class="tr-row-amt ${cls}">${sign}${(t.amount||0).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})} €</div>
     </div>`;
   }).join('');
 }
@@ -6055,14 +6121,45 @@ function trFilter(f, btn) {
   trRender();
 }
 
+function trToggleSplit() {
+  const on = document.getElementById('tr-split-check').checked;
+  document.getElementById('tr-split-opts').style.display = on ? 'block' : 'none';
+  if (on) trUpdateSplitPreview();
+}
+
+function trUpdateSplitPreview() {
+  const amount  = parseFloat(document.getElementById('tr-amount').value) || 0;
+  const n       = parseInt(document.getElementById('tr-split-n').value) || 4;
+  const date    = document.getElementById('tr-date').value;
+  const interv  = document.getElementById('tr-split-interval').value;
+  if (!amount || !date) { document.getElementById('tr-split-preview').textContent = ''; return; }
+  const each = (amount / n).toFixed(2);
+  const lines = [];
+  for (let i = 0; i < n; i++) {
+    const d = new Date(date+'T12:00:00');
+    if (interv === 'month') d.setMonth(d.getMonth() + i);
+    else if (interv === '2weeks') d.setDate(d.getDate() + i*14);
+    else d.setDate(d.getDate() + i*7);
+    lines.push(`${i+1}/${n} · ${each} € · ${d.toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'})}`);
+  }
+  document.getElementById('tr-split-preview').innerHTML = lines.map(l=>`<div style="padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)">${l}</div>`).join('');
+}
+
 function trOpenAdd() {
   trEditId = null;
   document.getElementById('tr-id').value = '';
   document.getElementById('tr-type').value = 'entree';
   document.getElementById('tr-amount').value = '';
   document.getElementById('tr-cat').value = 'ca';
-  document.getElementById('tr-date').value = new Date().toISOString().slice(0,10);
+  // date par défaut = 1er du mois courant
+  const [y,m] = trCurrentMonth.split('-');
+  document.getElementById('tr-date').value = `${y}-${m}-01`;
   document.getElementById('tr-desc').value = '';
+  document.getElementById('tr-notes').value = '';
+  document.getElementById('tr-split-check').checked = false;
+  document.getElementById('tr-split-opts').style.display = 'none';
+  document.getElementById('tr-split-preview').innerHTML = '';
+  document.getElementById('tr-split-n').value = '4';
   document.getElementById('tr-delete-btn').style.display = 'none';
   document.getElementById('tr-modal').style.display = 'flex';
   setTimeout(() => document.getElementById('tr-amount').focus(), 100);
@@ -6078,6 +6175,10 @@ function trOpenEdit(id) {
   document.getElementById('tr-cat').value = t.category || 'autre';
   document.getElementById('tr-date').value = t.date || '';
   document.getElementById('tr-desc').value = t.description || '';
+  document.getElementById('tr-notes').value = t.notes || '';
+  document.getElementById('tr-split-check').checked = false;
+  document.getElementById('tr-split-opts').style.display = 'none';
+  document.getElementById('tr-split-section').style.display = 'none'; // pas de split en édition
   document.getElementById('tr-delete-btn').style.display = '';
   document.getElementById('tr-modal').style.display = 'flex';
 }
@@ -6085,17 +6186,29 @@ function trOpenEdit(id) {
 async function trSave() {
   const amount = parseFloat(document.getElementById('tr-amount').value);
   if (!amount || isNaN(amount)) { document.getElementById('tr-amount').focus(); return; }
-  const payload = {
-    type: document.getElementById('tr-type').value,
-    amount,
-    category: document.getElementById('tr-cat').value,
-    date: document.getElementById('tr-date').value || null,
-    description: document.getElementById('tr-desc').value.trim() || null
-  };
+  const type     = document.getElementById('tr-type').value;
+  const category = document.getElementById('tr-cat').value;
+  const date     = document.getElementById('tr-date').value || null;
+  const desc     = document.getElementById('tr-desc').value.trim() || null;
+  const notes    = document.getElementById('tr-notes').value.trim() || null;
+  const split    = document.getElementById('tr-split-check').checked && !trEditId;
+  const n        = split ? (parseInt(document.getElementById('tr-split-n').value)||4) : 1;
+  const interv   = split ? document.getElementById('tr-split-interval').value : 'month';
+
   if (trEditId) {
-    await sb.from('transactions').update(payload).eq('id', trEditId);
+    await sb.from('transactions').update({ type, amount, category, date, description: desc, notes }).eq('id', trEditId);
   } else {
-    await sb.from('transactions').insert(payload);
+    const rows = [];
+    for (let i = 0; i < n; i++) {
+      let d = date ? new Date(date+'T12:00:00') : new Date();
+      if (interv === 'month') d.setMonth(d.getMonth() + i);
+      else if (interv === '2weeks') d.setDate(d.getDate() + i*14);
+      else d.setDate(d.getDate() + i*7);
+      const isoDate = d.toISOString().slice(0,10);
+      const rowNotes = n > 1 ? `Versement ${i+1}/${n}${notes?' — '+notes:''}` : (notes||null);
+      rows.push({ type, amount: parseFloat((amount/n).toFixed(2)), category, date: isoDate, description: desc, notes: rowNotes });
+    }
+    await sb.from('transactions').insert(rows);
   }
   trCloseModal();
   await trInit();
@@ -6112,6 +6225,7 @@ async function trDelete() {
 
 function trCloseModal() {
   document.getElementById('tr-modal').style.display = 'none';
+  document.getElementById('tr-split-section').style.display = '';
   trEditId = null;
 }
 
