@@ -4328,6 +4328,8 @@ async function clGenerateAds() {
 
 // ── LEADS ─────────────────────────────────────────────────
 const LD_KEY = 'ld_v1';
+const LD_DELETED_KEY = 'ld_deleted_v1';
+let ldDeleted = new Set();
 let ldData = [];
 let ldCurrentSource = 'all';
 
@@ -4366,20 +4368,29 @@ function ldInit() {
     const raw = JSON.parse(localStorage.getItem(LD_KEY));
     ldData = Array.isArray(raw) ? raw : [];
   } catch { ldData = []; }
-  // Migration : injecter leads historiques manquants
+  try {
+    const del = JSON.parse(localStorage.getItem(LD_DELETED_KEY));
+    ldDeleted = new Set(Array.isArray(del) ? del : []);
+  } catch { ldDeleted = new Set(); }
+  // Migration : injecter leads historiques manquants (sauf ceux supprimés/convertis)
   LD_DEFAULT.forEach(def => {
-    if (!ldData.find(l => l.id === def.id)) {
-      ldData.unshift({...def}); // en tête de liste
+    if (!ldDeleted.has(def.id) && !ldData.find(l => l.id === def.id)) {
+      ldData.unshift({...def});
     }
   });
-  // Nettoyer les leads déjà convertis (avant la nouvelle logique de suppression)
-  const _before = ldData.length;
-  ldData = ldData.filter(l => l.statut !== 'converti');
-  if (ldData.length !== _before) ldSave();
+  // Supprimer les leads qui sont aussi dans prData (basculés en projet)
+  const prNames = new Set((typeof prData !== 'undefined' ? prData : []).filter(p=>p.source==='leads').map(p=>p.tel||p.nom));
+  ldData = ldData.filter(l => {
+    if (prNames.has(l.tel||l.nom)) { ldDeleted.add(l.id); return false; }
+    return true;
+  });
+  ldSaveDeleted();
+  ldSave();
   ldRender();
 }
 
 function ldSave() { localStorage.setItem(LD_KEY, JSON.stringify(ldData)); }
+function ldSaveDeleted() { localStorage.setItem(LD_DELETED_KEY, JSON.stringify([...ldDeleted])); }
 
 function ldRender() {
   const listEl = document.getElementById('ld-list');
@@ -4460,12 +4471,8 @@ function ldCardHTML(l) {
         </div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0" onclick="event.stopPropagation()">
-        <select onchange="ldSetStatus('${l.id}',this.value)" style="background:#1a1a22;border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:#fff;font-size:13px;outline:none;cursor:pointer;min-width:130px">${statusOpts}</select>
         <button onclick="ldDelete('${l.id}')" style="background:none;border:none;color:#f87171;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:5px;padding:4px 0">🗑 Supprimer</button>
-        <div style="display:flex;gap:6px;margin-top:4px">
-          <button onclick="ldAddToClient('${l.id}')" style="background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.2);color:#4ade80;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer">+ Client</button>
-          <button onclick="ldAddToProject('${l.id}')" style="background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.2);color:#60a5fa;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer">+ Projet</button>
-        </div>
+        <button onclick="ldAddToProject('${l.id}')" style="background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.2);color:#60a5fa;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer">+ Projet</button>
       </div>
     </div>
   </div>`;
@@ -4539,6 +4546,8 @@ function ldSetStatus(id, statut) {
 
 function ldDelete(id) {
   if (!confirm('Supprimer ce lead ?')) return;
+  ldDeleted.add(id);
+  ldSaveDeleted();
   ldData = ldData.filter(x => x.id !== id);
   ldSave();
   ldRender();
@@ -5886,14 +5895,22 @@ function prRenderAssetsModal(p) {
     const isImg = a.type && a.type.startsWith('image/');
     const icon  = isPdf ? '📄' : (isImg ? '🖼' : '📎');
     const dlHref = a.data ? `href="${a.data}" download="${a.nom}"` : '';
+    const previewBtn = a.data ? `<button onclick="prPreviewAsset('${a.id}','${p.id}')" style="background:rgba(255,255,255,.07);border-radius:6px;padding:5px 10px;font-size:14px;cursor:pointer;border:none;color:#fff" title="Prévisualiser">👁</button>` : '';
     return `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.04);border-radius:8px;margin-bottom:6px">
       <span style="font-size:20px">${icon}</span>
       <span style="flex:1;font-size:13px;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.nom}</span>
       <span style="font-size:11px;color:var(--muted);white-space:nowrap;margin-right:4px">${a.date||''}</span>
+      ${previewBtn}
       ${a.data ? `<a ${dlHref} style="background:rgba(255,255,255,.07);border-radius:6px;padding:5px 10px;font-size:12px;color:#fff;text-decoration:none">↓</a>` : ''}
       <button onclick="prDelAssetModal('${p.id}','${a.id}')" style="background:none;border:none;color:#f87171;font-size:16px;cursor:pointer;padding:0 4px;line-height:1">×</button>
     </div>`;
   }).join('');
+}
+
+function prPreviewAsset(assetId, projId) {
+  const p = prData.find(x=>x.id===projId); if (!p) return;
+  const a = (p.assets||[]).find(x=>x.id===assetId); if (!a||!a.data) return;
+  openImportedFile(a.data, a.nom);
 }
 
 function prModalImport() {
@@ -5977,6 +5994,7 @@ function ldAddToClient(id) {
     notes:'Converti depuis Leads. Campagne : '+(l.campagne||'—')+'. '+(l.notes||''),
     docs:[], assets:[], paiements:[], devis:[], factures:[], messages:[] });
   clSave();
+  ldDeleted.add(id); ldSaveDeleted();
   ldData = ldData.filter(x=>x.id!==id); ldSave(); ldRender();
   alert('Client créé ✓');
   nav(document.querySelector('[data-page="clients"]'));
@@ -5987,6 +6005,7 @@ function ldAddToProject(id) {
     tel:l.tel||'', email:l.email||'', statut:'reflexion', notes:'', source:'leads', campagne:l.campagne||'',
     createdAt: new Date().toISOString() });
   prSave();
+  ldDeleted.add(id); ldSaveDeleted();
   ldData = ldData.filter(x=>x.id!==id); ldSave(); ldRender();
   alert('Ajouté aux Projets ✓');
   nav(document.querySelector('[data-page="projets"]'));
