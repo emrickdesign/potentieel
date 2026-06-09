@@ -2707,18 +2707,7 @@ const CL_DEFAULT = [
     notes:'Appel avant Visio. Demander infos pour pouvoir faire le site.',
     docs:[], assets:[], paiements:[], devis:[], factures:[], messages:[]
   },
-  {
-    id:'cl3', nom:'Chakir VTC', secteur:'Transport / VTC', tel:'', email:'',
-    statut:'encours', mrr:0, setup:990, depuis:'2026-05-15', url:'',
-    notes:'Devis en attente. À relancer.',
-    docs:[], assets:[], paiements:[], devis:[], factures:[], messages:[]
-  },
-  {
-    id:'cl4', nom:'MONSIEUR CLAUDE SONGUE', secteur:'Services', tel:'', email:'',
-    statut:'actif', mrr:49, setup:990, depuis:'2026-04-20', url:'',
-    notes:'',
-    docs:[], assets:[], paiements:[], devis:[], factures:[], messages:[]
-  },
+
   {
     id:'cl5', nom:'SJM Rénovation', secteur:'Rénovation', tel:'', email:'',
     statut:'actif', mrr:49, setup:990, depuis:'2026-04-10', url:'',
@@ -5255,9 +5244,34 @@ const PR_DV_STATUT = {
   refuse:    { label:'Refusé',    cls:'pr-dv-refuse' },
 };
 
+const PR_DEFAULT = [
+  { id:'pr_cl3', nom:'Chakir', entreprise:'Transpro Chakir', metier:'Transport / VTC',
+    tel:'0624872333', email:'chakirben33@gmail.com', adresse:'à renseigner', siret:'à voir', siren:'à voir',
+    budget:'', url:'', statut:'reflexion', notes:'Devis en attente. À relancer.', devis:[], source:'manuel',
+    createdAt:'2026-05-15T00:00:00.000Z' },
+  { id:'pr_cl4', nom:'MONSIEUR CLAUDE SONGUE', entreprise:'Channel 3 Zones', metier:'Services de nettoyage et installation événementiel',
+    tel:'0637079160', email:'', adresse:'6 allée des hauts bois 93160', siret:'52005409900012', siren:'520054099',
+    budget:'', url:'', statut:'reflexion', notes:'', devis:[], source:'manuel',
+    createdAt:'2026-04-20T00:00:00.000Z' },
+];
+
 function prLoad() {
   try { const r = JSON.parse(localStorage.getItem(PR_KEY)); prData = Array.isArray(r) ? r : []; }
   catch { prData = []; }
+  // Migration : injecter projets par défaut manquants
+  let changed = false;
+  PR_DEFAULT.forEach(def => {
+    if (!prData.find(p => p.id === def.id)) { prData.push({...def}); changed = true; }
+  });
+  if (changed) prSave();
+  // Supprimer cl3 et cl4 du localStorage clients si présents
+  try {
+    const raw = JSON.parse(localStorage.getItem('cl_crm_v1'));
+    if (Array.isArray(raw)) {
+      const cleaned = raw.filter(c => c.id !== 'cl3' && c.id !== 'cl4');
+      if (cleaned.length !== raw.length) { localStorage.setItem('cl_crm_v1', JSON.stringify(cleaned)); if(typeof clLoad==='function'){clLoad();} }
+    }
+  } catch {}
 }
 function prSave() { localStorage.setItem(PR_KEY, JSON.stringify(prData)); }
 
