@@ -3630,7 +3630,7 @@ function clRenderFactures(c) {
     const badge = f.statut==='payee'?'badge-green':f.statut==='retard'?'badge-red':isImport?'badge-gray':'badge-orange';
     const label = f.statut==='payee'?'Payée':f.statut==='retard'?'Retard':isImport?'Importée':'En attente';
     const actions = isImport
-      ? `<a href="${f.data||''}" download="${f.fileName||f.ref+'.pdf'}" title="Télécharger" style="background:rgba(255,255,255,.07);border-radius:6px;padding:5px 8px;color:#fff;font-size:13px;text-decoration:none">⬇</a>`
+      ? `<button onclick="faViewFromGlobal('${f.id}')" title="Prévisualiser" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">👁</button><button onclick="faRenameFromGlobal('${f.id}')" title="Renommer" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">✏️</button>`
       : `<button onclick="faView('${f.id}')" title="Voir" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">👁</button>
          <button onclick="faSendEmail('${f.id}')" title="Email" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">📧</button>
          ${f.statut!=='payee'?'<button onclick="faMarkPaid(\''+f.id+'\')" title="Payée" style="background:rgba(74,222,128,.15);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#4ade80;font-size:13px;font-weight:700">✓</button>':''}`;
@@ -3753,9 +3753,16 @@ function faMarkPaid(fid){
   const fa=c.factures.find(f=>f.id===fid);if(!fa)return;
   fa.statut='payee';clSave();clRenderFactures(c);
 }
-function faView(fid){
+async function faView(fid){
   const c=clData.find(x=>(x.factures||[]).find(f=>f.id===fid));if(!c)return;
-  const fa=c.factures.find(f=>f.id===fid);if(fa)faPrintFa(fa);
+  const fa=c.factures.find(f=>f.id===fid);if(!fa)return;
+  if(fa.type==='import'){
+    let data=fa.data;
+    if(!data && fa.idbKey){ try{data=await idbGet(fa.idbKey);}catch{} }
+    if(data) openImportedFile(data, fa.fileName||fa.ref||'facture');
+    return;
+  }
+  faPrintFa(fa);
 }
 const FA_EMAIL_FN_URL = 'https://alpzagoprkpzirgtrdup.supabase.co/functions/v1/send-invoice-email';
 
