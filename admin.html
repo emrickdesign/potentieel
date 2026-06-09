@@ -4752,7 +4752,10 @@ function obRender() {
           <div class="ob-name">${o.name}</div>
           <div class="ob-cat">${catLabels[o.category]||o.category}${dl}</div>
         </div>
-        <button class="ob-edit-btn" onclick="obOpenAdd('${o.id}')">✏</button>
+        <div style="display:flex;gap:6px">
+          <button class="ob-edit-btn" onclick="obOpenAdd('${o.id}')">✏</button>
+          <button onclick="obDeleteDirect('${o.id}')" style="background:rgba(239,68,68,.12);border:none;border-radius:8px;padding:6px 9px;color:#f87171;font-size:13px;cursor:pointer">🗑</button>
+        </div>
       </div>
       <div class="ob-values"><strong>${(o.current_value||0).toLocaleString('fr-FR')}</strong> / ${(o.target_value||0).toLocaleString('fr-FR')} ${o.unit||''}</div>
       <div class="ob-bar-bg"><div class="ob-bar" style="width:${pct}%;background:${barCol}"></div></div>
@@ -4850,6 +4853,13 @@ async function obDelete() {
   obCloseModal();
   obData = obData.filter(o => o.id !== obEditId);
   obEditId = null;
+  obRender();
+}
+
+async function obDeleteDirect(id) {
+  if (!confirm('Supprimer cet objectif ?')) return;
+  await sb.from('objectives').delete().eq('id', id);
+  obData = obData.filter(o => o.id !== id);
   obRender();
 }
 
