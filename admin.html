@@ -1360,23 +1360,113 @@
         <!-- ── PROJETS ── -->
         <div id="page-projets" class="page">
           <style>
-            .pr-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin-bottom:12px;transition:border-color .15s}
+            .pr-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:12px;transition:border-color .15s}
             .pr-card:hover{border-color:rgba(96,165,250,.35)}
-            .pr-badge{font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px}
+            .pr-badge{font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;white-space:nowrap}
             .pr-s-reflexion{background:rgba(250,204,21,.1);color:#fbbf24}
             .pr-s-version{background:rgba(96,165,250,.12);color:#60a5fa}
             .pr-s-attente{background:rgba(244,146,106,.12);color:var(--accent)}
             .pr-s-valide{background:rgba(74,222,128,.1);color:#4ade80}
+            .pr-dv-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
+            .pr-dv-brouillon{background:rgba(255,255,255,.07);color:var(--muted)}
+            .pr-dv-envoye{background:rgba(96,165,250,.12);color:#60a5fa}
+            .pr-dv-signe{background:rgba(74,222,128,.1);color:#4ade80}
+            .pr-dv-refuse{background:rgba(248,113,113,.1);color:#f87171}
           </style>
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:12px">
             <div>
               <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">CRM — PRODUCTION</div>
               <div style="font-size:26px;font-weight:800;margin:2px 0 4px">Projets</div>
-              <div style="font-size:13px;color:var(--muted)">Leads intéressés — première version à présenter ou en réflexion.</div>
+              <div style="font-size:13px;color:var(--muted)">Leads intéressés — en réflexion, en cours de version, ou à valider.</div>
             </div>
-            <div id="pr-kpi-bar" style="display:flex;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;align-self:flex-start"></div>
+            <div style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap">
+              <div id="pr-kpi-bar" style="display:flex;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;align-self:flex-start"></div>
+              <button onclick="prOpenAdd()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer">+ Projet</button>
+            </div>
           </div>
           <div id="pr-list"></div>
+        </div>
+
+        <!-- Modale devis projet -->
+        <div id="pr-devis-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1200;align-items:center;justify-content:center;padding:16px" onclick="if(event.target.id==='pr-devis-modal')prCloseDevis()">
+          <div style="background:#18181f;border:1px solid var(--border);border-radius:18px;padding:28px 30px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;position:relative">
+            <button onclick="prCloseDevis()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer">×</button>
+            <h3 id="pr-devis-title" style="font-size:18px;font-weight:800;margin:0 0 4px">Créer un devis</h3>
+            <div id="pr-devis-subtitle" style="font-size:13px;color:var(--muted);margin-bottom:20px"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+              <div>
+                <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Référence</label>
+                <input id="pr-dv-ref" placeholder="DEV-2026-001" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+              </div>
+              <div>
+                <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">TVA (%)</label>
+                <input id="pr-dv-tva" type="number" value="20" min="0" max="100" oninput="prDvCalc()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+              </div>
+            </div>
+            <!-- Lignes -->
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Lignes du devis</div>
+            <div style="display:grid;grid-template-columns:1fr 60px 90px 32px;gap:6px;margin-bottom:6px">
+              <div style="font-size:10px;color:var(--muted)">Description</div>
+              <div style="font-size:10px;color:var(--muted);text-align:center">Qté</div>
+              <div style="font-size:10px;color:var(--muted);text-align:right">P.U. HT (€)</div>
+              <div></div>
+            </div>
+            <div id="pr-dv-lines"></div>
+            <button onclick="prDvAddLine()" style="background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:12px;color:#fff;cursor:pointer;width:100%;margin-top:8px">+ Ajouter une ligne</button>
+            <!-- Totaux -->
+            <div style="margin-top:16px;background:rgba(255,255,255,.03);border-radius:10px;padding:14px 16px">
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px"><span style="color:var(--muted)">Total HT</span><span id="pr-dv-ht">0 €</span></div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px"><span style="color:var(--muted)">TVA (<span id="pr-dv-tva-label">20</span>%)</span><span id="pr-dv-tva-amt">0 €</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:800;border-top:1px solid var(--border);padding-top:10px;margin-top:4px"><span>Total TTC</span><span id="pr-dv-ttc" style="color:#4ade80">0 €</span></div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:20px;justify-content:flex-end">
+              <button onclick="prCloseDevis()" style="background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;padding:10px 20px;font-size:13px;color:#fff;cursor:pointer">Annuler</button>
+              <button onclick="prSaveDevis()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:13px;font-weight:700;cursor:pointer">Enregistrer le devis</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modale ajout projet -->
+        <div id="pr-add-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1200;align-items:center;justify-content:center;padding:16px" onclick="if(event.target.id==='pr-add-modal')prCloseAdd()">
+          <div style="background:#18181f;border:1px solid var(--border);border-radius:18px;padding:28px 30px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;position:relative">
+            <button onclick="prCloseAdd()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer">×</button>
+            <h3 style="font-size:18px;font-weight:800;margin:0 0 20px">Nouveau projet</h3>
+            <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Nom du contact *</label>
+            <input id="pr-add-nom" placeholder="Prénom Nom" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:12px;outline:none;box-sizing:border-box">
+            <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Entreprise</label>
+            <input id="pr-add-entreprise" placeholder="Nom de l'entreprise" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:12px;outline:none;box-sizing:border-box">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+              <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Téléphone</label>
+              <input id="pr-add-tel" placeholder="06 00 00 00 00" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
+              <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Email</label>
+              <input id="pr-add-email" type="email" placeholder="email@ex.fr" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+              <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Secteur / Métier</label>
+              <input id="pr-add-metier" placeholder="Hôtellerie, Resto..." style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
+              <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Budget estimé (€ HT)</label>
+              <input id="pr-add-budget" type="number" placeholder="1500" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+              <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">URL souhaitée</label>
+              <input id="pr-add-url" placeholder="www.client.fr" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
+              <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Statut</label>
+              <select id="pr-add-statut" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                <option value="reflexion">En réflexion</option>
+                <option value="version">Première version</option>
+                <option value="attente">En attente</option>
+                <option value="valide">Validé</option>
+              </select></div>
+            </div>
+            <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Adresse</label>
+            <input id="pr-add-adresse" placeholder="12 rue de la Paix, Paris" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:12px;outline:none;box-sizing:border-box">
+            <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Notes</label>
+            <textarea id="pr-add-notes" rows="3" placeholder="Contexte, besoin exprimé, prochaine étape..." style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:20px;outline:none;box-sizing:border-box;font-family:inherit;resize:vertical"></textarea>
+            <div style="display:flex;gap:10px;justify-content:flex-end">
+              <button onclick="prCloseAdd()" style="background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;padding:10px 20px;font-size:13px;color:#fff;cursor:pointer">Annuler</button>
+              <button onclick="prSaveAdd()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:13px;font-weight:700;cursor:pointer">Créer le projet</button>
+            </div>
+          </div>
         </div>
 
         <!-- ── LEADS ── -->
@@ -5145,12 +5235,21 @@ function plGoToDay(dateStr) {
 ═══════════════════════════════════════════════ */
 const PR_KEY = 'pr_v1';
 let prData = [];
+let _prDevisProjectId = null;
+let _prDvLines = [];
 
 const PR_STATUT = {
   reflexion: { label:'En réflexion',    cls:'pr-s-reflexion' },
   version:   { label:'Première version',cls:'pr-s-version' },
   attente:   { label:'En attente',      cls:'pr-s-attente' },
   valide:    { label:'Validé ✓',        cls:'pr-s-valide' },
+};
+
+const PR_DV_STATUT = {
+  brouillon: { label:'Brouillon', cls:'pr-dv-brouillon' },
+  envoye:    { label:'Envoyé',    cls:'pr-dv-envoye' },
+  signe:     { label:'Signé ✓',   cls:'pr-dv-signe' },
+  refuse:    { label:'Refusé',    cls:'pr-dv-refuse' },
 };
 
 function prLoad() {
@@ -5172,7 +5271,7 @@ function prRender() {
     </div>`).join('') + `<div style="padding:10px 16px;font-size:11px;text-align:center"><div style="font-weight:700;font-size:15px">${total}</div><div style="color:var(--muted);margin-top:2px">Total</div></div>`;
 
   if (!prData.length) {
-    el.innerHTML = `<div class="empty" style="padding:60px 20px"><div class="ei">📁</div>Aucun projet. Transfère un lead depuis la section Leads.</div>`;
+    el.innerHTML = `<div class="empty" style="padding:60px 20px"><div class="ei">📁</div>Aucun projet. Transfère un lead ou clique sur "+ Projet".</div>`;
     return;
   }
   el.innerHTML = prData.map(p => prCardHTML(p)).join('');
@@ -5182,32 +5281,85 @@ function prCardHTML(p) {
   const s = PR_STATUT[p.statut] || PR_STATUT.reflexion;
   const dt = p.createdAt ? new Date(p.createdAt).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'}) : '';
   const statusOpts = Object.entries(PR_STATUT).map(([v,o])=>`<option value="${v}"${p.statut===v?' selected':''}>${o.label}</option>`).join('');
+  const devis = p.devis || [];
+  const dvHtml = devis.length ? devis.map(dv => {
+    const ds = PR_DV_STATUT[dv.statut]||PR_DV_STATUT.brouillon;
+    const ht = (dv.lignes||[]).reduce((s,l)=>s+(parseFloat(l.qty)||0)*(parseFloat(l.pu)||0),0);
+    const ttc = ht * (1+(parseFloat(dv.tvaRate)||0)/100);
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(255,255,255,.03);border-radius:8px;margin-bottom:6px;flex-wrap:wrap">
+      <span style="font-size:12px;font-weight:700">${dv.ref||'DEV'}</span>
+      <span class="pr-dv-badge ${ds.cls}">${ds.label}</span>
+      <span style="font-size:12px;color:var(--muted)">HT : <strong style="color:#fff">${ht.toFixed(0)} €</strong></span>
+      <span style="font-size:12px;color:var(--muted)">TTC : <strong style="color:#4ade80">${ttc.toFixed(0)} €</strong></span>
+      <div style="margin-left:auto;display:flex;gap:6px;align-items:center">
+        <select onchange="prDvSetStatut('${p.id}','${dv.id}',this.value)" style="background:#1a1a22;border:1px solid var(--border);border-radius:6px;padding:3px 8px;color:#fff;font-size:11px;outline:none">
+          ${Object.entries(PR_DV_STATUT).map(([v,o])=>`<option value="${v}"${dv.statut===v?' selected':''}>${o.label}</option>`).join('')}
+        </select>
+        <button onclick="prDvDelete('${p.id}','${dv.id}')" style="background:none;border:none;color:#f87171;font-size:13px;cursor:pointer;padding:0 4px">🗑</button>
+      </div>
+    </div>`;
+  }).join('') : '<div style="font-size:12px;color:var(--muted);font-style:italic">Aucun devis pour ce projet.</div>';
+
   return `<div class="pr-card" id="pr-card-${p.id}">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:14px;flex-wrap:wrap">
       <div style="flex:1;min-width:0">
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
-          <span style="font-size:16px;font-weight:800">${p.nom||'(sans nom)'}</span>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span style="font-size:17px;font-weight:800">${p.nom||'(sans nom)'}</span>
+          ${p.entreprise?`<span style="font-size:13px;color:var(--muted)">— ${p.entreprise}</span>`:''}
           <span class="pr-badge ${s.cls}">${s.label}</span>
           ${p.source==='leads'?`<span style="font-size:10px;color:var(--muted);background:rgba(255,255,255,.06);padding:2px 8px;border-radius:20px">Depuis Leads</span>`:''}
-          <span style="margin-left:auto;font-size:11px;color:var(--muted)">${dt}</span>
-        </div>
-        <div style="display:flex;gap:14px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
-          ${p.tel ? `<a href="tel:${p.tel}" style="color:var(--muted);text-decoration:none;font-size:13px">📞 ${p.tel}</a>` : ''}
-          ${p.tel ? `<button onclick="prWhatsApp('${p.id}')" style="background:rgba(37,211,102,.13);color:#25d366;border:1px solid rgba(37,211,102,.2);border-radius:20px;padding:3px 12px;font-size:12px;font-weight:600;cursor:pointer">💬 WhatsApp</button>` : ''}
-          ${p.email ? `<a href="mailto:${p.email}" style="color:var(--muted);text-decoration:none;font-size:12px">✉ ${p.email}</a>` : ''}
-        </div>
-        ${p.metier ? `<div style="font-size:13px;margin-bottom:4px"><strong>Secteur :</strong> <span style="color:var(--muted)">${p.metier}</span></div>` : ''}
-        ${p.entreprise ? `<div style="font-size:13px;margin-bottom:10px"><strong>Entreprise :</strong> ${p.entreprise}</div>` : ''}
-        <div>
-          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Notes</div>
-          <textarea id="pr-notes-${p.id}" rows="3" placeholder="Où en est le projet, ce qui a été dit, prochaine étape..." onblur="prSaveNotes('${p.id}')" style="width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:10px;color:#fff;font-size:12px;resize:vertical;outline:none;box-sizing:border-box;font-family:inherit">${p.notes||''}</textarea>
+          <span style="margin-left:auto;font-size:11px;color:var(--muted);white-space:nowrap">${dt}</span>
         </div>
       </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0">
-        <select onchange="prSetStatus('${p.id}',this.value)" style="background:#1a1a22;border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:#fff;font-size:13px;outline:none;cursor:pointer;min-width:160px">${statusOpts}</select>
-        <button onclick="prAddToClient('${p.id}')" style="background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.2);color:#4ade80;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;width:100%">+ Ajouter au client</button>
-        <button onclick="prDelete('${p.id}')" style="background:none;border:none;color:#f87171;font-size:13px;cursor:pointer;padding:4px 0">🗑 Supprimer</button>
+      <select onchange="prSetStatus('${p.id}',this.value)" style="background:#1a1a22;border:1px solid var(--border);border-radius:8px;padding:7px 12px;color:#fff;font-size:12px;outline:none;cursor:pointer;flex-shrink:0">${statusOpts}</select>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;margin-bottom:14px">
+      ${p.tel?`<div style="background:rgba(255,255,255,.04);border-radius:8px;padding:10px 12px">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px">Téléphone</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <a href="tel:${p.tel}" style="color:#fff;text-decoration:none;font-size:13px;font-weight:600">${p.tel}</a>
+          <button onclick="prWhatsApp('${p.id}')" style="background:rgba(37,211,102,.13);color:#25d366;border:1px solid rgba(37,211,102,.2);border-radius:20px;padding:2px 8px;font-size:10px;font-weight:700;cursor:pointer">WA</button>
+        </div>
+      </div>`:''}
+      ${p.email?`<div style="background:rgba(255,255,255,.04);border-radius:8px;padding:10px 12px">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px">Email</div>
+        <a href="mailto:${p.email}" style="color:#fff;text-decoration:none;font-size:13px;font-weight:600;word-break:break-all">${p.email}</a>
+      </div>`:''}
+      ${p.metier?`<div style="background:rgba(255,255,255,.04);border-radius:8px;padding:10px 12px">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px">Secteur</div>
+        <div style="font-size:13px;font-weight:600">${p.metier}</div>
+      </div>`:''}
+      ${p.budget?`<div style="background:rgba(255,255,255,.04);border-radius:8px;padding:10px 12px">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px">Budget estimé</div>
+        <div style="font-size:13px;font-weight:700;color:#4ade80">${parseInt(p.budget).toLocaleString('fr-FR')} € HT</div>
+      </div>`:''}
+      ${p.url?`<div style="background:rgba(255,255,255,.04);border-radius:8px;padding:10px 12px">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px">URL souhaitée</div>
+        <div style="font-size:13px;font-weight:600">${p.url}</div>
+      </div>`:''}
+      ${p.adresse?`<div style="background:rgba(255,255,255,.04);border-radius:8px;padding:10px 12px">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px">Adresse</div>
+        <div style="font-size:13px">${p.adresse}</div>
+      </div>`:''}
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Notes & avancement</div>
+      <textarea id="pr-notes-${p.id}" rows="2" placeholder="Où en est le projet, ce qui a été dit, prochaine étape..." onblur="prSaveNotes('${p.id}')" style="width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:10px;color:#fff;font-size:12px;resize:vertical;outline:none;box-sizing:border-box;font-family:inherit">${p.notes||''}</textarea>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Devis</div>
+        <button onclick="prOpenDevis('${p.id}')" style="background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.2);color:#60a5fa;border-radius:6px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer">+ Créer un devis</button>
       </div>
+      ${dvHtml}
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;padding-top:12px;border-top:1px solid var(--border)">
+      <button onclick="prDelete('${p.id}')" style="background:none;border:none;color:#f87171;font-size:13px;cursor:pointer;padding:4px 0">🗑 Supprimer</button>
+      <button onclick="prConvertToClient('${p.id}')" style="background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.3);color:#4ade80;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer">🔄 Basculer vers client</button>
     </div>
   </div>`;
 }
@@ -5229,14 +5381,144 @@ function prDelete(id) {
   if (!confirm('Supprimer ce projet ?')) return;
   prData = prData.filter(x=>x.id!==id); prSave(); prRender();
 }
-function prAddToClient(id) {
+
+/* ── Devis ── */
+function prOpenDevis(projId) {
+  _prDevisProjectId = projId;
+  _prDvLines = [{ id:'l1', desc:'', qty:1, pu:'' }];
+  const p = prData.find(x=>x.id===projId);
+  document.getElementById('pr-devis-title').textContent = 'Créer un devis';
+  document.getElementById('pr-devis-subtitle').textContent = p ? (p.entreprise||p.nom||'') : '';
+  // Ref auto
+  const n = ((p&&p.devis)?p.devis.length:0)+1;
+  const yr = new Date().getFullYear();
+  document.getElementById('pr-dv-ref').value = `DEV-${yr}-${String(n).padStart(3,'0')}`;
+  document.getElementById('pr-dv-tva').value = '20';
+  prDvRenderLines();
+  prDvCalc();
+  const m = document.getElementById('pr-devis-modal');
+  m.style.display = 'flex';
+}
+function prCloseDevis() {
+  document.getElementById('pr-devis-modal').style.display = 'none';
+  _prDevisProjectId = null; _prDvLines = [];
+}
+function prDvRenderLines() {
+  const cont = document.getElementById('pr-dv-lines');
+  if (!cont) return;
+  cont.innerHTML = _prDvLines.map((l,i)=>`
+    <div style="display:grid;grid-template-columns:1fr 60px 90px 32px;gap:6px;margin-bottom:6px;align-items:center">
+      <input value="${l.desc}" placeholder="Description du service..." oninput="_prDvLines[${i}].desc=this.value" style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:9px 10px;color:#fff;font-size:12px;outline:none;box-sizing:border-box;width:100%">
+      <input type="number" value="${l.qty}" min="1" oninput="_prDvLines[${i}].qty=parseFloat(this.value)||1;prDvCalc()" style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:9px 8px;color:#fff;font-size:12px;outline:none;text-align:center;width:100%;box-sizing:border-box">
+      <input type="number" value="${l.pu}" placeholder="0" oninput="_prDvLines[${i}].pu=parseFloat(this.value)||0;prDvCalc()" style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:9px 8px;color:#fff;font-size:12px;outline:none;text-align:right;width:100%;box-sizing:border-box">
+      <button onclick="prDvRemoveLine(${i})" style="background:none;border:none;color:#f87171;font-size:16px;cursor:pointer;padding:0">${_prDvLines.length>1?'×':''}</button>
+    </div>`).join('');
+}
+function prDvAddLine() {
+  _prDvLines.push({ id:'l'+Date.now(), desc:'', qty:1, pu:'' });
+  prDvRenderLines(); prDvCalc();
+}
+function prDvRemoveLine(i) {
+  if (_prDvLines.length <= 1) return;
+  _prDvLines.splice(i,1); prDvRenderLines(); prDvCalc();
+}
+function prDvCalc() {
+  const tva = parseFloat(document.getElementById('pr-dv-tva')?.value)||0;
+  const ht = _prDvLines.reduce((s,l)=>s+(parseFloat(l.qty)||0)*(parseFloat(l.pu)||0),0);
+  const tvaAmt = ht * tva/100;
+  const ttc = ht + tvaAmt;
+  document.getElementById('pr-dv-ht').textContent = ht.toLocaleString('fr-FR',{minimumFractionDigits:2}) + ' €';
+  document.getElementById('pr-dv-tva-amt').textContent = tvaAmt.toLocaleString('fr-FR',{minimumFractionDigits:2}) + ' €';
+  document.getElementById('pr-dv-ttc').textContent = ttc.toLocaleString('fr-FR',{minimumFractionDigits:2}) + ' €';
+  document.getElementById('pr-dv-tva-label').textContent = tva;
+}
+function prSaveDevis() {
+  if (!_prDevisProjectId) return;
+  const p = prData.find(x=>x.id===_prDevisProjectId); if (!p) return;
+  const ref = document.getElementById('pr-dv-ref').value.trim()||'DEV';
+  const tvaRate = parseFloat(document.getElementById('pr-dv-tva').value)||0;
+  if (!p.devis) p.devis = [];
+  p.devis.push({ id:'dv'+Date.now(), ref, createdAt:new Date().toISOString(),
+    lignes: _prDvLines.map(l=>({...l})), tvaRate, statut:'brouillon' });
+  prSave(); prCloseDevis(); prRender();
+}
+function prDvSetStatut(projId, dvId, val) {
+  const p = prData.find(x=>x.id===projId); if (!p||!p.devis) return;
+  const dv = p.devis.find(x=>x.id===dvId); if (!dv) return;
+  dv.statut = val; prSave(); prRender();
+}
+function prDvDelete(projId, dvId) {
+  if (!confirm('Supprimer ce devis ?')) return;
+  const p = prData.find(x=>x.id===projId); if (!p||!p.devis) return;
+  p.devis = p.devis.filter(x=>x.id!==dvId); prSave(); prRender();
+}
+
+/* ── Ajout manuel projet ── */
+function prOpenAdd() {
+  ['nom','entreprise','tel','email','metier','budget','url','adresse','notes'].forEach(f=>{
+    const el = document.getElementById('pr-add-'+f); if(el) el.value='';
+  });
+  document.getElementById('pr-add-statut').value = 'reflexion';
+  document.getElementById('pr-add-modal').style.display = 'flex';
+}
+function prCloseAdd() { document.getElementById('pr-add-modal').style.display = 'none'; }
+function prSaveAdd() {
+  const nom = document.getElementById('pr-add-nom').value.trim();
+  if (!nom) { alert('Le nom est obligatoire.'); return; }
+  prData.unshift({
+    id:'pr'+Date.now(),
+    nom, 
+    entreprise: document.getElementById('pr-add-entreprise').value.trim(),
+    tel:        document.getElementById('pr-add-tel').value.trim(),
+    email:      document.getElementById('pr-add-email').value.trim(),
+    metier:     document.getElementById('pr-add-metier').value.trim(),
+    budget:     document.getElementById('pr-add-budget').value.trim(),
+    url:        document.getElementById('pr-add-url').value.trim(),
+    adresse:    document.getElementById('pr-add-adresse').value.trim(),
+    notes:      document.getElementById('pr-add-notes').value.trim(),
+    statut:     document.getElementById('pr-add-statut').value,
+    devis:      [],
+    source:     'manuel',
+    createdAt:  new Date().toISOString()
+  });
+  prSave(); prCloseAdd(); prRender();
+}
+
+/* ── Basculer vers client ── */
+function prConvertToClient(id) {
   const p = prData.find(x=>x.id===id); if (!p) return;
-  clData.push({ id:'cl'+Date.now(), nom:p.entreprise||p.nom, secteur:p.metier||'', tel:p.tel||'', email:p.email||'',
-    statut:'encours', mrr:0, setup:990, depuis:'', url:'', adresse:'', siret:'', siren:'',
-    notes:'Converti depuis Projets. '+( p.notes||''), docs:[], assets:[], paiements:[], devis:[], factures:[], messages:[] });
+  const dvs = p.devis||[];
+  const bestDv = dvs.find(d=>d.statut==='signe') || dvs[dvs.length-1] || null;
+  let mrr = 0;
+  if (bestDv) {
+    const ht = (bestDv.lignes||[]).reduce((s,l)=>s+(parseFloat(l.qty)||0)*(parseFloat(l.pu)||0),0);
+    mrr = Math.round(ht);
+  }
+  clData.push({
+    id:'cl'+Date.now(),
+    nom:     p.entreprise||p.nom,
+    secteur: p.metier||'',
+    tel:     p.tel||'',
+    email:   p.email||'',
+    statut:  'encours',
+    mrr:     0,
+    setup:   mrr||990,
+    depuis:  '',
+    url:     p.url||'',
+    adresse: p.adresse||'',
+    siret:   '',
+    siren:   '',
+    notes:   'Converti depuis Projets. '+(p.notes||''),
+    docs:    [],
+    assets:  [],
+    paiements:[],
+    devis:   dvs,
+    factures:[],
+    messages:[]
+  });
   clSave();
   prData = prData.filter(x=>x.id!==id); prSave(); prRender();
-  alert('Client créé avec succès !');
+  alert('✓ Client créé avec le devis transféré !');
   nav(document.querySelector('[data-page="clients"]'));
 }
 
