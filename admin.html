@@ -2103,7 +2103,7 @@
         <div id="page-facturation" class="page">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">
             <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">OPÉRATIONS</div><div style="font-size:22px;font-weight:800;margin-top:2px">Facturation</div></div>
-            <button onclick="faOpenModal()" style="background:var(--accent);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">+ Nouvelle facture</button>
+            <button onclick="faGlobalImportOpen()" style="background:var(--accent);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">↑ Importer une facture</button>
           </div>
           <!-- Navigateur mensuel -->
           <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;flex-wrap:wrap">
@@ -2122,6 +2122,22 @@
             <button onclick="faOpenRetardModal()" style="background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.3);color:#f87171;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer">+ Retard</button>
           </div>
           <div id="fa-retards-list"></div>
+
+          <!-- Modale import facture global -->
+          <div id="fa-global-import-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1300;align-items:center;justify-content:center;padding:16px" onclick="if(event.target.id==='fa-global-import-modal')faGlobalImportClose()">
+            <div style="background:#18181f;border:1px solid var(--border);border-radius:16px;padding:24px;width:100%;max-width:420px;position:relative">
+              <button onclick="faGlobalImportClose()" style="position:absolute;top:14px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">×</button>
+              <h3 style="font-size:16px;font-weight:800;margin:0 0 18px">↑ Importer une facture</h3>
+              <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Client</label>
+              <select id="fa-gi-client" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:#fff;font-size:13px;margin-bottom:12px;outline:none;box-sizing:border-box"></select>
+              <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Nom / référence</label>
+              <input id="fa-gi-ref" placeholder="ex: FA-2026-06-001" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:#fff;font-size:13px;margin-bottom:12px;outline:none;box-sizing:border-box">
+              <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Montant (optionnel)</label>
+              <input id="fa-gi-montant" placeholder="ex: 490 €" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:#fff;font-size:13px;margin-bottom:16px;outline:none;box-sizing:border-box">
+              <button onclick="faGlobalImportPickFile()" style="width:100%;padding:12px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:700;cursor:pointer">Choisir le fichier (PDF / image)</button>
+              <input type="file" id="fa-gi-file" accept="application/pdf,image/*" style="display:none" onchange="faGlobalImportExec(this)">
+            </div>
+          </div>
 
           <!-- Modale retard de paiement -->
           <div id="fa-retard-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1300;align-items:center;justify-content:center;padding:16px" onclick="if(event.target.id==='fa-retard-modal')faCloseRetardModal()">
@@ -3810,7 +3826,7 @@ async function faSendEmail(fid){
   }
 }
 // Global actions (since clientId must be found from global list)
-function faViewFromGlobal(fid){faView(fid);}
+// faViewFromGlobal now defined above (async, handles imports)
 function faSendEmailFromGlobal(fid){faSendEmail(fid);}
 function faMarkPaidFromGlobal(fid){
   const c=clData.find(x=>(x.factures||[]).find(f=>f.id===fid));if(!c)return;
@@ -3886,6 +3902,70 @@ function faDelRetard(id) {
   faSaveRetardsData();
   faRenderRetards();
 }
+function faGlobalImportOpen() {
+  // Fill client select
+  const sel = document.getElementById('fa-gi-client');
+  sel.innerHTML = '<option value="">— Sélectionner un client —</option>' + clData.map(cl=>`<option value="${cl.id}">${cl.nom||cl.id}</option>`).join('');
+  // Pre-fill ref with current month
+  const allFa = clData.flatMap(x=>x.factures||[]);
+  const MOIS_SHORT=['01','02','03','04','05','06','07','08','09','10','11','12'];
+  document.getElementById('fa-gi-ref').value = 'FA-'+MOIS_SHORT[faMonth]+'-'+faYear+'-'+String(allFa.length+1).padStart(3,'0');
+  document.getElementById('fa-gi-montant').value = '';
+  document.getElementById('fa-global-import-modal').style.display = 'flex';
+}
+function faGlobalImportClose() {
+  document.getElementById('fa-global-import-modal').style.display = 'none';
+}
+function faGlobalImportPickFile() {
+  const cid = document.getElementById('fa-gi-client').value;
+  if (!cid) { alert('Sélectionne un client.'); return; }
+  document.getElementById('fa-gi-file').click();
+}
+function faGlobalImportExec(input) {
+  const file = input.files[0]; if (!file) return;
+  const cid = document.getElementById('fa-gi-client').value; if (!cid) return;
+  const c = clData.find(x=>x.id===cid); if (!c) return;
+  const ref = document.getElementById('fa-gi-ref').value.trim() || file.name.replace(/\.[^.]+$/,'');
+  const montantTxt = document.getElementById('fa-gi-montant').value.trim();
+  const reader = new FileReader();
+  reader.onload = e => {
+    const idbKey = 'fagi_'+Date.now()+Math.random().toString(36).slice(2);
+    idbPut(idbKey, e.target.result).catch(()=>{});
+    // Use selected faMonth/faYear for the date
+    const d = String(1).padStart(2,'0')+'/'+String(faMonth+1).padStart(2,'0')+'/'+faYear;
+    if (!c.factures) c.factures = [];
+    c.factures.unshift({ id:'fai'+Date.now()+Math.random().toString(36).slice(2),
+      ref, date:d, totalTxt:montantTxt||'—', montant:montantTxt||'—', statut:'payee',
+      type:'import', fileName:file.name, fileType:file.type, idbKey, data:e.target.result });
+    clSave();
+    faGlobalImportClose();
+    renderGlobalFactures();
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+function faRenameFromGlobal(fid) {
+  const c = clData.find(x=>(x.factures||[]).find(f=>f.id===fid)); if (!c) return;
+  const fa = c.factures.find(f=>f.id===fid); if (!fa) return;
+  const newRef = prompt('Nouveau nom / référence :', fa.ref||'');
+  if (newRef === null) return; // cancelled
+  fa.ref = newRef.trim() || fa.ref;
+  clSave(); renderGlobalFactures();
+}
+
+async function faViewFromGlobal(fid) {
+  const c = clData.find(x=>(x.factures||[]).find(f=>f.id===fid)); if (!c) return;
+  const fa = c.factures.find(f=>f.id===fid); if (!fa) return;
+  if (fa.type === 'import') {
+    let data = fa.data;
+    if (!data && fa.idbKey) { try { data = await idbGet(fa.idbKey); } catch {} }
+    if (data) openImportedFile(data, fa.fileName||fa.ref||'facture');
+    return;
+  }
+  faPrintFa(fa);
+}
+
 function faRenderRetards() {
   const el = document.getElementById('fa-retards-list'); if (!el) return;
   if (!faRetards.length) { el.innerHTML='<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0">Aucun retard enregistré ✓</div>'; return; }
@@ -3946,7 +4026,8 @@ function renderGlobalFactures(){
         <td style="color:var(--muted)">${f.date||'—'}</td>
         <td style="color:#4ade80;font-weight:700">${f.totalTxt||f.montant||'—'}</td>
         <td style="white-space:nowrap">
-          <button onclick="faViewFromGlobal('${f.id}')" title="Voir" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px">👁</button>
+          <button onclick="faViewFromGlobal('${f.id}')" title="Prévisualiser" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px">👁</button>
+          <button onclick="faRenameFromGlobal('${f.id}')" title="Renommer" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px">✏️</button>
           <button onclick="faSendEmailFromGlobal('${f.id}')" title="Email" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px">📧</button>
           <button onclick="faDelFromGlobal('${f.id}')" title="Supprimer" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px;opacity:.5">🗑</button>
         </td></tr>`).join('')+
