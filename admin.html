@@ -2754,7 +2754,18 @@ function clLoad() {
     }
   });
 }
-function clSave() { localStorage.setItem(CL_KEY, JSON.stringify(clData)); }
+function clSave() {
+  // On retire les data base64 volumineux avant de sauver dans localStorage
+  // (ils sont déjà dans IDB — on garde juste idbKey comme référence)
+  const slim = clData.map(c => ({
+    ...c,
+    docs:     (c.docs||[]).map(({data,...r})=>r),
+    assets:   (c.assets||[]).map(({data,...r})=>r),
+    devis:    (c.devis||[]).map(d => d.type==='import' ? (({data,...r})=>r)(d) : d),
+    factures: (c.factures||[]).map(f => f.type==='import' ? (({data,...r})=>r)(f) : f),
+  }));
+  localStorage.setItem(CL_KEY, JSON.stringify(slim));
+}
 
 const CL_STATUT_LABELS = { actif:'Actif', encours:'En cours', pause:'En pause', termine:'Terminé', retard:'Retard paiement' };
 const CL_STATUT_BADGE  = { actif:'badge-green', encours:'badge-orange', pause:'badge-blue', termine:'badge-gray', retard:'badge-red' };
