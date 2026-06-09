@@ -1436,7 +1436,7 @@
         <div id="pr-add-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1200;align-items:center;justify-content:center;padding:16px" onclick="if(event.target.id==='pr-add-modal')prCloseAdd()">
           <div style="background:#18181f;border:1px solid var(--border);border-radius:18px;padding:28px 30px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;position:relative">
             <button onclick="prCloseAdd()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer">×</button>
-            <h3 style="font-size:18px;font-weight:800;margin:0 0 20px">Nouveau projet</h3>
+            <h3 id="pr-add-modal-title" style="font-size:18px;font-weight:800;margin:0 0 20px">Nouveau projet</h3>
             <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Nom du contact *</label>
             <input id="pr-add-nom" placeholder="Prénom Nom" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:12px;outline:none;box-sizing:border-box">
             <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Entreprise</label>
@@ -1470,7 +1470,7 @@
             <textarea id="pr-add-notes" rows="3" placeholder="Contexte, besoin exprimé, prochaine étape..." style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:20px;outline:none;box-sizing:border-box;font-family:inherit;resize:vertical"></textarea>
             <div style="display:flex;gap:10px;justify-content:flex-end">
               <button onclick="prCloseAdd()" style="background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;padding:10px 20px;font-size:13px;color:#fff;cursor:pointer">Annuler</button>
-              <button onclick="prSaveAdd()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:13px;font-weight:700;cursor:pointer">Créer le projet</button>
+              <button id="pr-add-save-btn" onclick="prSaveAdd()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:13px;font-weight:700;cursor:pointer">Créer le projet</button>
             </div>
           </div>
         </div>
@@ -5528,7 +5528,10 @@ function prCardHTML(p) {
     </div>
 
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;padding-top:12px;border-top:1px solid var(--border)">
-      <button onclick="prDelete('${p.id}')" style="background:none;border:none;color:#f87171;font-size:13px;cursor:pointer;padding:4px 0">🗑 Supprimer</button>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button onclick="prDelete('${p.id}')" style="background:none;border:none;color:#f87171;font-size:13px;cursor:pointer;padding:4px 0">🗑 Supprimer</button>
+        <button onclick="prOpenEdit('${p.id}')" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;color:#fff">✏️ Modifier</button>
+      </div>
       <div style="display:flex;gap:8px;align-items:center">
         <button onclick="prOpenAssets('${p.id}')" style="background:rgba(244,146,106,.12);border:1px solid rgba(244,146,106,.2);color:#f4926a;border-radius:8px;padding:9px 14px;font-size:13px;font-weight:700;cursor:pointer">📁 Assets${(p.assets||[]).length ? ` (${(p.assets||[]).length})` : ''}</button>
         <button onclick="prConvertToClient('${p.id}')" style="background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.3);color:#4ade80;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer">🔄 Basculer vers client</button>
@@ -5627,35 +5630,68 @@ function prDvDelete(projId, dvId) {
 }
 
 /* ── Ajout manuel projet ── */
+let _prEditId = null;
 function prOpenAdd() {
+  _prEditId = null;
   ['nom','entreprise','tel','email','metier','budget','url','adresse','notes'].forEach(f=>{
     const el = document.getElementById('pr-add-'+f); if(el) el.value='';
   });
   document.getElementById('pr-add-statut').value = 'reflexion';
+  document.getElementById('pr-add-modal-title').textContent = 'Nouveau projet';
+  document.getElementById('pr-add-save-btn').textContent = 'Créer le projet';
   document.getElementById('pr-add-modal').style.display = 'flex';
 }
-function prCloseAdd() { document.getElementById('pr-add-modal').style.display = 'none'; }
+function prCloseAdd() { document.getElementById('pr-add-modal').style.display = 'none'; _prEditId = null; }
 function prSaveAdd() {
   const nom = document.getElementById('pr-add-nom').value.trim();
   if (!nom) { alert('Le nom est obligatoire.'); return; }
-  prData.unshift({
-    id:'pr'+Date.now(),
-    nom, 
-    entreprise: document.getElementById('pr-add-entreprise').value.trim(),
-    tel:        document.getElementById('pr-add-tel').value.trim(),
-    email:      document.getElementById('pr-add-email').value.trim(),
-    metier:     document.getElementById('pr-add-metier').value.trim(),
-    budget:     document.getElementById('pr-add-budget').value.trim(),
-    url:        document.getElementById('pr-add-url').value.trim(),
-    adresse:    document.getElementById('pr-add-adresse').value.trim(),
-    notes:      document.getElementById('pr-add-notes').value.trim(),
-    statut:     document.getElementById('pr-add-statut').value,
-    devis:      [],
-    assets:     [],
-    source:     'manuel',
-    createdAt:  new Date().toISOString()
-  });
+  if (_prEditId) {
+    // Mode édition
+    const p = prData.find(x=>x.id===_prEditId); if (!p) return;
+    p.nom       = nom;
+    p.entreprise= document.getElementById('pr-add-entreprise').value.trim();
+    p.tel       = document.getElementById('pr-add-tel').value.trim();
+    p.email     = document.getElementById('pr-add-email').value.trim();
+    p.metier    = document.getElementById('pr-add-metier').value.trim();
+    p.budget    = document.getElementById('pr-add-budget').value.trim();
+    p.url       = document.getElementById('pr-add-url').value.trim();
+    p.adresse   = document.getElementById('pr-add-adresse').value.trim();
+    p.notes     = document.getElementById('pr-add-notes').value.trim();
+    p.statut    = document.getElementById('pr-add-statut').value;
+  } else {
+    // Mode création
+    prData.unshift({
+      id:'pr'+Date.now(),
+      nom,
+      entreprise: document.getElementById('pr-add-entreprise').value.trim(),
+      tel:        document.getElementById('pr-add-tel').value.trim(),
+      email:      document.getElementById('pr-add-email').value.trim(),
+      metier:     document.getElementById('pr-add-metier').value.trim(),
+      budget:     document.getElementById('pr-add-budget').value.trim(),
+      url:        document.getElementById('pr-add-url').value.trim(),
+      adresse:    document.getElementById('pr-add-adresse').value.trim(),
+      notes:      document.getElementById('pr-add-notes').value.trim(),
+      statut:     document.getElementById('pr-add-statut').value,
+      devis:      [],
+      assets:     [],
+      source:     'manuel',
+      createdAt:  new Date().toISOString()
+    });
+  }
   prSave(); prCloseAdd(); prRender();
+}
+
+function prOpenEdit(projId) {
+  const p = prData.find(x=>x.id===projId); if (!p) return;
+  _prEditId = projId;
+  const fields = ['nom','entreprise','tel','email','metier','budget','url','adresse','notes'];
+  fields.forEach(f => {
+    const el = document.getElementById('pr-add-'+f); if(el) el.value = p[f]||'';
+  });
+  document.getElementById('pr-add-statut').value = p.statut||'reflexion';
+  document.getElementById('pr-add-modal-title').textContent = 'Modifier — ' + (p.entreprise||p.nom||'');
+  document.getElementById('pr-add-save-btn').textContent = 'Enregistrer';
+  document.getElementById('pr-add-modal').style.display = 'flex';
 }
 
 /* ── Assets projet ── */
