@@ -4,28 +4,49 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Potentieel OS — Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg:        #0b0b0f;
-      --surface:   #111116;
-      --card:      #16161d;
-      --card2:     #1c1c26;
-      --border:    #252530;
+      /* fonds — dark indigo profond, plus riche qu'un noir neutre */
+      --bg:        #0a0b13;
+      --surface:   #0f111c;
+      --card:      #141624;
+      --card2:     #1b1e30;
+      --border:    #242841;
+      --border-strong: #323757;
+      --field:     #0d0e18;
       --accent:    #f4926a;
-      --accent2:   #e07a52;
-      --text:      #f0f0f5;
-      --muted:     #7a7a90;
-      --muted2:    #555565;
-      --green:     #22c55e;
-      --red:       #ef4444;
-      --blue:      #60a5fa;
-      --sidebar-w: 230px;
+      --accent2:   #e0703f;
+      --grad-accent: linear-gradient(135deg, #f79a72 0%, #e0683c 100%);
+      --text:      #f2f2f8;
+      --muted:     #9094b3;
+      --muted2:    #5d617f;
+      --green:     #2dd573;
+      --red:       #f4576a;
+      --blue:      #6aa5fa;
+      --sidebar-w: 234px;
+      /* alias manquant — var(--orange) était utilisé sans être défini */
+      --orange:    #f4926a;
+      /* typo */
+      --font-ui:      'Manrope', 'Inter', system-ui, -apple-system, sans-serif;
+      --font-display: 'Sora', 'Manrope', system-ui, sans-serif;
+      /* échelle d'élévation */
+      --shadow-sm: 0 1px 2px rgba(3,4,10,.45), 0 1px 1px rgba(3,4,10,.3);
+      --shadow-md: 0 5px 16px rgba(3,4,10,.45), 0 1px 4px rgba(3,4,10,.35);
+      --shadow-lg: 0 20px 48px rgba(3,4,10,.55), 0 4px 14px rgba(3,4,10,.4);
+      --shadow-accent: 0 4px 20px rgba(244,146,106,.16);
+      --ring: 0 0 0 3px rgba(244,146,106,.22);
+      --ease: cubic-bezier(.22,1,.36,1);
+      /* rayons unifiés */
+      --r-sm: 9px; --r-md: 13px; --r-lg: 17px; --r-xl: 22px;
     }
-    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
+    body { font-family: var(--font-ui); background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; letter-spacing: -.005em; -webkit-font-smoothing: antialiased; }
 
     /* ══════════════════════════════════════
        LOGIN
@@ -103,7 +124,7 @@
     }
     .nav-item:hover { background: var(--card2); color: var(--text); }
     .nav-item.active { background: rgba(244,146,106,.12); color: var(--accent); }
-    .nav-item .ni-icon { font-size: 15px; width: 20px; text-align: center; }
+    /* .ni-icon replaced by .ni-svg */
     .nav-item .ni-badge {
       margin-left: auto; background: var(--red);
       color: #fff; font-size: 10px; font-weight: 700;
@@ -156,7 +177,7 @@
       border-radius: 12px; padding: 16px;
     }
     .kpi.accent { border-color: rgba(244,146,106,.35); background: rgba(244,146,106,.06); }
-    .kpi-icon { font-size: 18px; margin-bottom: 10px; }
+    .kpi-icon { color: var(--muted);  width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.07);border-radius:10px;margin-bottom:12px; }
     .kpi-val { font-size: 26px; font-weight: 800; letter-spacing: -1px; line-height: 1; }
     .kpi.accent .kpi-val { color: var(--accent); }
     .kpi-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; margin-top: 4px; }
@@ -476,6 +497,100 @@
     @media (max-width: 1200px) { .kpi-grid { grid-template-columns: repeat(3,1fr); } }
     @media (max-width: 900px) { .kpi-grid { grid-template-columns: repeat(2,1fr); } .grid-2,.grid-6040,.grid-3 { grid-template-columns: 1fr; } }
     @media (max-width: 600px) { .sidebar { display: none; } .main { padding: 16px; } }
+
+    /* ══════════════════════════════════════
+       AUDIT DESIGN — élévation, hiérarchie, polish
+       (front-end uniquement, aucune fonctionnalité touchée)
+    ══════════════════════════════════════ */
+
+    /* ── Élévation : cartes statiques ── */
+    .kpi, .panel, .cl-card, .pr-card, .ob-card, .tr-stat, .tc-brief { box-shadow: var(--shadow-sm); }
+    .kpi {
+      background: linear-gradient(180deg, rgba(255,255,255,.018) 0%, transparent 50%), var(--card);
+      transition: border-color .18s, box-shadow .18s var(--ease), transform .18s var(--ease);
+    }
+    .kpi:hover { border-color: rgba(255,255,255,.13); box-shadow: var(--shadow-md); transform: translateY(-1px); }
+    .kpi.accent:hover { border-color: rgba(244,146,106,.5); box-shadow: var(--shadow-md), var(--shadow-accent); }
+    .kpi-val, td, .pl-kpi-val, .tc-kpi-val, .tr-stat-val, .ob-values strong { font-variant-numeric: tabular-nums; }
+
+    /* ── Cartes interactives : feedback cohérent ── */
+    .cl-card { transition: border-color .18s, transform .18s var(--ease), box-shadow .18s var(--ease); }
+    .cl-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md), var(--shadow-accent); }
+    .kc, .tc-card { box-shadow: var(--shadow-sm); transition: border-color .15s, transform .15s var(--ease), box-shadow .15s var(--ease), opacity .15s; }
+    .kc:hover, .tc-card:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+    .kc.dragging, .tc-card.dragging { box-shadow: var(--shadow-lg); }
+    .pay-card { transition: border-color .2s, background .2s, box-shadow .2s var(--ease), transform .18s var(--ease); }
+    .pay-card:hover { box-shadow: var(--shadow-md), var(--shadow-accent); transform: translateY(-1px); }
+    .pr-card:hover { box-shadow: var(--shadow-md); }
+    .pl-day { transition: border-color .15s, box-shadow .15s var(--ease); }
+    .pl-day:hover { box-shadow: var(--shadow-sm); }
+
+    /* ── Lead card : tint + hairline au lieu de la bande latérale ── */
+    .ld-card {
+      border-left: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(244,146,106,.05) 0%, rgba(255,255,255,.025) 45%);
+      box-shadow: var(--shadow-sm);
+      transition: border-color .15s, box-shadow .18s var(--ease), background .15s;
+    }
+    .ld-card:hover { border-color: rgba(244,146,106,.35); box-shadow: var(--shadow-md); }
+
+    /* ── Menus & modales : vraie profondeur ── */
+    .ld-status-menu { box-shadow: var(--shadow-lg); border-color: rgba(255,255,255,.1); }
+    .pl-modal, .tm-modal { box-shadow: var(--shadow-lg); border-color: rgba(255,255,255,.1); }
+    .pl-modal-overlay, .tm-overlay,
+    #pr-devis-modal, #pr-add-modal, #pr-assets-modal { backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
+    #pr-devis-modal > div, #pr-add-modal > div, #pr-assets-modal > div { box-shadow: var(--shadow-lg); }
+    .login-card { box-shadow: var(--shadow-lg), 0 0 60px rgba(244,146,106,.06); }
+
+    /* ── Hiérarchie typographique ── */
+    .pl-title, .tc-title { letter-spacing: -.6px; }
+    .login-card h2 { letter-spacing: -.4px; }
+    .panel-head h3 { letter-spacing: -.1px; }
+    .empty, .kb-empty, .tc-empty { color: var(--muted2); }
+
+    /* ── Sidebar : état actif renforcé ── */
+    .nav-item.active { font-weight: 600; box-shadow: inset 0 0 0 1px rgba(244,146,106,.18); }
+    .topbar { box-shadow: 0 1px 0 rgba(255,255,255,.03), 0 4px 16px rgba(0,0,0,.18); position: relative; z-index: 10; }
+
+    /* ── Boutons primaires : présence ── */
+    .btn-prospect, .btn-newtask, .btn-login {
+      box-shadow: 0 2px 12px rgba(244,146,106,.28);
+      transition: background .15s, box-shadow .18s var(--ease), transform .1s;
+    }
+    .btn-prospect:hover, .btn-newtask:hover { opacity: 1; background: var(--accent2); box-shadow: 0 4px 18px rgba(244,146,106,.34); }
+    .btn-prospect:active, .btn-newtask:active, .btn-login:active { transform: scale(.97); }
+    .btn-login:hover { box-shadow: 0 4px 18px rgba(244,146,106,.36); }
+
+    /* ── Inputs : focus visible et cohérent ── */
+    .fg input:focus, .pl-modal input:focus, .pl-modal select:focus,
+    .tm-modal input:focus, .tm-modal textarea:focus, .tm-modal select:focus,
+    .tc-brief-input:focus, .tc-filter-sel:focus { border-color: var(--accent); box-shadow: var(--ring); }
+    button:focus-visible, a:focus-visible, [tabindex]:focus-visible { outline: 2px solid rgba(244,146,106,.55); outline-offset: 2px; border-radius: 6px; }
+
+    /* ── Badges : relief hairline ── */
+    .badge-orange { box-shadow: inset 0 0 0 1px rgba(244,146,106,.22); }
+    .badge-green  { box-shadow: inset 0 0 0 1px rgba(34,197,94,.2); }
+    .badge-blue   { box-shadow: inset 0 0 0 1px rgba(96,165,250,.2); }
+    .badge-red    { box-shadow: inset 0 0 0 1px rgba(239,68,68,.2); }
+    .badge-purple { box-shadow: inset 0 0 0 1px rgba(167,139,250,.2); }
+    .badge-gray   { box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
+
+    /* ── Tables : lecture ligne à ligne ── */
+    tr:hover td { background: rgba(255,255,255,.025); }
+    th { color: var(--muted2); }
+
+    /* ── Kanban : zones de drop lisibles ── */
+    .kb-col.drag-over { box-shadow: inset 0 0 0 1px rgba(244,146,106,.35), var(--shadow-sm); }
+
+    /* ── Micro-détails ── */
+    ::selection { background: rgba(244,146,106,.32); color: #fff; }
+    ::-webkit-scrollbar-thumb:hover { background: #3a3a4c; }
+    html { scrollbar-color: var(--border) transparent; scrollbar-width: thin; }
+
+    /* ── Accessibilité : reduced motion ── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
   </style>
 </head>
 <body>
@@ -487,39 +602,44 @@
     <!-- SIDEBAR -->
     <aside class="sidebar">
       <div class="sb-top">
-        <div class="sb-logo-icon">P</div>
+        <div class="sb-logo-icon">
+          <svg viewBox="0 0 20 20" fill="white" width="14" height="14"><path d="M10 2L2 7v10h6v-5h4v5h6V7L10 2z"/></svg>
+        </div>
         <div>
-          <div class="sb-logo-name">POTENTIEEL OS</div>
-          <div class="sb-logo-role">Admin</div>
+          <div class="sb-logo-name">Potentieel</div>
+          <div class="sb-logo-role">OS Admin</div>
         </div>
       </div>
       <nav class="sb-nav">
         <div class="sb-section">Pilotage</div>
-        <div class="nav-item active" data-page="dashboard" onclick="nav(this)"><span class="ni-icon">⊞</span> Dashboard</div>
-        <div class="nav-item" data-page="pipeline" onclick="nav(this)"><span class="ni-icon">⇄</span> Pipeline</div>
-        <div class="nav-item" data-page="taches" onclick="nav(this)"><span class="ni-icon">✓</span> Tâches <span class="ni-badge" id="badge-taches">3</span></div>
-        <div class="nav-item" data-page="objectifs" onclick="nav(this)"><span class="ni-icon">🎯</span> Objectifs</div>
-        <div class="nav-item" data-page="planning" onclick="nav(this)"><span class="ni-icon">📅</span> Planning</div>
+        <div class="nav-item active" data-page="dashboard" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg> <span>Dashboard</span></div>
+        <div class="nav-item" data-page="pipeline" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><rect x="2" y="7" width="4" height="13" rx="1.5"/><rect x="10" y="2" width="4" height="18" rx="1.5"/><rect x="18" y="10" width="4" height="10" rx="1.5"/></svg> <span>Pipeline</span></div>
+        <div class="nav-item" data-page="taches" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg> <span>Tâches</span> <span class="ni-badge" id="badge-taches">3</span></div>
+        <div class="nav-item" data-page="objectifs" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> <span>Objectifs</span></div>
+        <div class="nav-item" data-page="planning" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> <span>Planning</span></div>
 
         <div class="sb-section">Business</div>
-        <div class="nav-item" data-page="clients" onclick="nav(this)"><span class="ni-icon">👥</span> Clients</div>
-        <div class="nav-item" data-page="leads" onclick="nav(this)"><span class="ni-icon">📥</span> Leads</div>
-        <div class="nav-item" data-page="projets" onclick="nav(this)"><span class="ni-icon">📁</span> Projets</div>
-        <div class="nav-item" data-page="formulaire" onclick="nav(this)"><span class="ni-icon">📋</span> Formulaire</div>
-        <div class="nav-item" data-page="appels" onclick="nav(this)"><span class="ni-icon">📞</span> Appels</div>
+        <div class="nav-item" data-page="clients" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg> <span>Clients</span></div>
+        <div class="nav-item" data-page="leads" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg> <span>Leads</span></div>
+        <div class="nav-item" data-page="projets" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg> <span>Projets</span></div>
+        <div class="nav-item" data-page="formulaire" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> <span>Formulaire</span></div>
+        <div class="nav-item" data-page="appels" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.07 19.79 19.79 0 01.12.45a2 2 0 012-2.18h3a2 2 0 012 1.72c.127.96.361 1.9.7 2.81a2 2 0 01-.45 2.11L6.91 10.09a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7a2 2 0 011.72 2z"/></svg> <span>Appels</span></div>
 
         <div class="sb-section">Opérations</div>
-        <div class="nav-item" data-page="documents" onclick="nav(this)"><span class="ni-icon">📄</span> Documents</div>
-        <div class="nav-item" data-page="facturation" onclick="nav(this)"><span class="ni-icon">💶</span> Facturation</div>
-        <div class="nav-item" data-page="devis" onclick="nav(this)"><span class="ni-icon">📝</span> Devis</div>
-        <div class="nav-item" data-page="tresorerie" onclick="nav(this)"><span class="ni-icon">💰</span> Trésorerie</div>
+        <div class="nav-item" data-page="documents" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> <span>Documents</span></div>
+        <div class="nav-item" data-page="facturation" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> <span>Facturation</span></div>
+        <div class="nav-item" data-page="devis" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> <span>Devis</span></div>
+        <div class="nav-item" data-page="tresorerie" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 110 7H6"/></svg> <span>Trésorerie</span></div>
       </nav>
       <div class="sb-bottom">
         <div class="sb-user">
           <div class="sb-avatar" id="sb-av">E</div>
           <div class="sb-user-email" id="sb-email">—</div>
         </div>
-        <button class="btn-logout" onclick="doSignOut()"><span>⬅</span> Déconnexion</button>
+        <button class="btn-logout" onclick="doSignOut()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Déconnexion
+        </button>
       </div>
     </aside>
 
@@ -533,10 +653,21 @@
           <span class="topbar-title" id="tb-title">Dashboard</span>
         </div>
         <div class="topbar-right">
-          <div class="tb-btn"><span>👁</span> Espace client</div>
-          <div class="tb-btn green"><span style="display:inline-block;width:7px;height:7px;background:var(--green);border-radius:50%"></span> Mode admin</div>
-          <div class="tb-btn tb-notif"><span>🔔</span><div class="tb-notif-dot">3</div></div>
-          <button class="tb-btn" onclick="refreshPage()" id="refresh-btn">↻ Actualiser</button>
+          <div class="tb-btn tb-btn-ghost">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Espace client
+          </div>
+          <div class="tb-btn tb-mode-admin">
+            <span class="tb-mode-dot"></span> Mode admin
+          </div>
+          <div class="tb-btn tb-notif">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+            <div class="tb-notif-dot">3</div>
+          </div>
+          <button class="tb-btn tb-refresh" onclick="refreshPage()" id="refresh-btn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+            Actualiser
+          </button>
         </div>
       </div>
 
@@ -545,45 +676,47 @@
 
         <!-- ── DASHBOARD ── -->
         <div id="page-dashboard" class="page active">
-          <div style="margin-bottom:18px">
-            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">VUE D'ENSEMBLE</div>
-            <div style="font-size:22px;font-weight:800;margin-top:2px">Dashboard</div>
-            <div style="font-size:12px;color:var(--muted);margin-top:2px">Le pouls de Potentieel en temps réel.</div>
+          <div class="page-header">
+            <div class="page-header-left">
+              <div class="page-eyebrow">Vue d'ensemble</div>
+              <h1 class="page-title">Dashboard</h1>
+              <p class="page-sub">Le pouls de Potentieel en temps réel.</p>
+            </div>
           </div>
 
           <div class="kpi-grid">
             <div class="kpi accent">
-              <div class="kpi-icon">€</div>
+              <div class="kpi-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 110 7H6"/></svg></div>
               <div class="kpi-val">89€</div>
               <div class="kpi-label">MRR ACTUEL</div>
               <div class="kpi-sub">Abonnements mensuels actifs</div>
             </div>
             <div class="kpi">
-              <div class="kpi-icon">↗</div>
+              <div class="kpi-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
               <div class="kpi-val">0€</div>
               <div class="kpi-label">SETUP CUMULÉ</div>
               <div class="kpi-sub">Revenus setup estimés</div>
             </div>
             <div class="kpi">
-              <div class="kpi-icon">👥</div>
+              <div class="kpi-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
               <div class="kpi-val">3</div>
               <div class="kpi-label">CLIENTS ACTIFS</div>
               <div class="kpi-sub">Sites en production</div>
             </div>
             <div class="kpi">
-              <div class="kpi-icon">📁</div>
+              <div class="kpi-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></div>
               <div class="kpi-val">6</div>
               <div class="kpi-label">PROJETS EN COURS</div>
               <div class="kpi-sub">Toutes phases confondues</div>
             </div>
             <div class="kpi">
-              <div class="kpi-icon">📥</div>
+              <div class="kpi-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg></div>
               <div class="kpi-val">53</div>
               <div class="kpi-label">LEADS (30J)</div>
               <div class="kpi-sub">Formulaires + manuels + Clara</div>
             </div>
             <div class="kpi">
-              <div class="kpi-icon">❄</div>
+              <div class="kpi-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5l-5 5-5-5"/><path d="M17 19l-5-5-5 5"/><path d="M2 7l10 5 10-5"/><path d="M2 17l10-5 10 5"/></svg></div>
               <div class="kpi-val">4</div>
               <div class="kpi-label">PIPELINE FROID</div>
               <div class="kpi-sub">Prospects à contacter</div>
@@ -636,11 +769,14 @@
           <!-- Header -->
           <div class="pl-header-row">
             <div>
-              <div class="pl-meta">CRM COMMERCIAL</div>
+              <div class="pl-meta">CRM · Commercial</div>
               <h1 class="pl-title">Pipeline</h1>
               <p class="pl-desc">Vue unifiée de tous vos canaux d'acquisition.</p>
             </div>
-            <button class="btn-prospect" onclick="openModal()">+ Prospect manuel</button>
+            <button class="btn-prospect" onclick="openModal()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Prospect manuel
+            </button>
           </div>
 
           <!-- KPIs -->
@@ -657,7 +793,7 @@
           <!-- Section Formulaire / Ads -->
           <div class="pl-section">
             <div class="pl-section-head">
-              <span>🌐</span>
+              <span style="display:inline-flex;align-items:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></span>
               <strong>Ads + Formulaire — entrant</strong>
               <span class="pl-section-tag">Site &amp; Google Ads</span>
             </div>
@@ -670,7 +806,7 @@
           <!-- Section WhatsApp / Manuel -->
           <div class="pl-section">
             <div class="pl-section-head">
-              <span>📱</span>
+              <span style="display:inline-flex;align-items:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></span>
               <strong>WhatsApp — manuel</strong>
               <span class="pl-section-tag">Ajout manuel</span>
             </div>
@@ -731,8 +867,8 @@
                 <input id="pl-edit-maint" placeholder="49€/m" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
               </div>
               <div style="display:flex;gap:10px">
-                <button onclick="plCloseEditCard()" style="flex:1;padding:12px;border-radius:8px;border:none;background:rgba(255,255,255,.07);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer">Annuler</button>
-                <button onclick="plSaveEditCard()" style="flex:2;padding:12px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:700;cursor:pointer">💾 Enregistrer</button>
+                <button onclick="plCloseEditCard()" class="btn-modal-cancel">Annuler</button>
+                <button onclick="plSaveEditCard()" class="btn-modal-confirm">Enregistrer</button>
               </div>
             </div>
           </div>
@@ -748,18 +884,21 @@
               <h1 class="tc-title">Tâches</h1>
               <p class="tc-sub">Pilotage interne — Éloïse &amp; Emrick</p>
             </div>
-            <button class="btn-newtask" onclick="tcOpenModal()">+ Nouvelle tâche</button>
+            <button class="btn-newtask" onclick="tcOpenModal()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Nouvelle tâche
+              </button>
           </div>
 
           <!-- KPIs -->
           <div class="tc-kpis" id="tc-kpis">
-            <div class="tc-kpi"><div class="tc-kpi-label">☰ TOTAL</div><div class="tc-kpi-val" id="tc-total">—</div></div>
-            <div class="tc-kpi"><div class="tc-kpi-label">☰ À FAIRE</div><div class="tc-kpi-val" id="tc-afaire">—</div></div>
-            <div class="tc-kpi"><div class="tc-kpi-label">🕐 EN COURS</div><div class="tc-kpi-val blue" id="tc-encours">—</div></div>
+            <div class="tc-kpi"><div class="tc-kpi-label">TOTAL</div><div class="tc-kpi-val" id="tc-total">—</div></div>
+            <div class="tc-kpi"><div class="tc-kpi-label">À FAIRE</div><div class="tc-kpi-val" id="tc-afaire">—</div></div>
+            <div class="tc-kpi"><div class="tc-kpi-label">EN COURS</div><div class="tc-kpi-val blue" id="tc-encours">—</div></div>
             <div class="tc-kpi"><div class="tc-kpi-label">⏸ EN ATTENTE</div><div class="tc-kpi-val" id="tc-attente">—</div></div>
             <div class="tc-kpi"><div class="tc-kpi-label">⚠ EN RETARD</div><div class="tc-kpi-val red" id="tc-retard">—</div></div>
             <div class="tc-kpi" style="flex:1.5">
-              <div class="tc-kpi-label">👤 CHARGE ACTIVE</div>
+              <div class="tc-kpi-label">CHARGE ACTIVE</div>
               <div class="tc-charge">Éloïse <span id="tc-charge-el">—</span> &nbsp; Emrick <span id="tc-charge-em">—</span></div>
             </div>
           </div>
@@ -767,7 +906,7 @@
           <!-- Prochaine échéance -->
           <div class="tc-deadline" id="tc-deadline-bar">
             <div>
-              <div class="tc-deadline-label">🚩 PROCHAINE ÉCHÉANCE</div>
+              <div class="tc-deadline-label">PROCHAINE ÉCHÉANCE</div>
               <div class="tc-deadline-title" id="tc-deadline-title">—</div>
             </div>
             <div class="tc-deadline-right" id="tc-deadline-right">—</div>
@@ -775,10 +914,10 @@
 
           <!-- Brief vocal → IA -->
           <div class="tc-brief">
-            <div class="tc-brief-head">✨ Brief vocal → tâches IA <span class="tc-brief-sub">Parle ou écris, je découpe en tâches.</span></div>
+            <div class="tc-brief-head">Brief vocal → tâches IA <span class="tc-brief-sub">Parle ou écris, je découpe en tâches.</span></div>
             <div class="tc-brief-row">
               <textarea class="tc-brief-input" id="tc-brief-text" rows="2" placeholder="Ex: Demain Éloïse appelle le boulanger d'Antibes, urgent. Emrick prépare la maquette avant vendredi."></textarea>
-              <button class="btn-proposer" onclick="tcParserBrief()">✨ Proposer</button>
+              <button class="btn-proposer" onclick="tcParserBrief()">Proposer</button>
             </div>
           </div>
 
@@ -801,11 +940,11 @@
           <!-- Kanban -->
           <div class="tc-kanban" id="tc-kanban">
             <div class="tc-col">
-              <div class="tc-col-head"><span class="tc-col-dot" style="background:#94a3b8"></span><span class="tc-col-icon">☰</span><span class="tc-col-name">À faire</span><span class="tc-col-cnt" id="tc-cnt-afaire">0</span></div>
+              <div class="tc-col-head"><span class="tc-col-dot" style="background:#94a3b8"></span><span class="tc-col-icon" style="display:inline-flex;align-items:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></span><span class="tc-col-name">À faire</span><span class="tc-col-cnt" id="tc-cnt-afaire">0</span></div>
               <div class="tc-col-body" id="tc-body-afaire" data-status="afaire"></div>
             </div>
             <div class="tc-col">
-              <div class="tc-col-head"><span class="tc-col-dot" style="background:#60a5fa"></span><span class="tc-col-icon">🕐</span><span class="tc-col-name">En cours</span><span class="tc-col-cnt" id="tc-cnt-encours">0</span></div>
+              <div class="tc-col-head"><span class="tc-col-dot" style="background:#60a5fa"></span><span class="tc-col-icon" style="display:inline-flex;align-items:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span><span class="tc-col-name">En cours</span><span class="tc-col-cnt" id="tc-cnt-encours">0</span></div>
               <div class="tc-col-body" id="tc-body-encours" data-status="encours"></div>
             </div>
             <div class="tc-col">
@@ -817,7 +956,7 @@
               <div class="tc-col-head"><span class="tc-col-dot" style="background:#22c55e"></span><span class="tc-col-icon">✓</span><span class="tc-col-name" style="color:#4ade80">Terminé</span></div>
               <div class="tc-done-zone" id="tc-done-zone">
                 <div class="tc-done-inner">
-                  <div style="font-size:26px;margin-bottom:6px">🗑</div>
+                  <div style="margin-bottom:10px;color:var(--muted)"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></div>
                   <div>Glisser ici<br>pour supprimer</div>
                 </div>
               </div>
@@ -873,12 +1012,15 @@
 
           <!-- LIST VIEW -->
           <div id="cl-list-view">
-            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
-              <div>
-                <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">BUSINESS</div>
-                <div style="font-size:26px;font-weight:800;margin-top:2px">Clients</div>
+            <div class="page-header">
+              <div class="page-header-left">
+                <div class="page-eyebrow">Business</div>
+                <h1 class="page-title">Clients</h1>
               </div>
-              <button class="btn-newtask" onclick="clOpenAdd()">+ Nouveau client</button>
+              <button class="btn-newtask" onclick="clOpenAdd()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Nouveau client
+              </button>
             </div>
 
             <!-- KPIs -->
@@ -908,14 +1050,20 @@
           <!-- DETAIL VIEW -->
           <div id="cl-detail-view" style="display:none">
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
-              <button onclick="clBack()" style="background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;padding:7px 14px;color:var(--muted);font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px">← Retour</button>
+              <button onclick="clBack()" class="btn-back">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+              Retour
+            </button>
               <div>
                 <div id="cl-detail-name" style="font-size:20px;font-weight:800"></div>
                 <div id="cl-detail-sub" style="font-size:12px;color:var(--muted)"></div>
               </div>
               <div style="margin-left:auto;display:flex;gap:8px">
                 <span id="cl-detail-badge"></span>
-                <button onclick="clOpenEdit()" style="background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;padding:7px 14px;color:var(--muted);font-size:12px;cursor:pointer">✏️ Modifier</button>
+                <button onclick="clOpenEdit()" class="btn-back">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Modifier
+              </button>
               </div>
             </div>
 
@@ -991,7 +1139,7 @@
                   ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
                   ondragleave="this.style.borderColor='rgba(255,255,255,.12)'"
                   ondrop="event.preventDefault();this.style.borderColor='rgba(255,255,255,.12)';clHandleAssets(event.dataTransfer.files)">
-                  <div style="font-size:28px;margin-bottom:8px">🖼️</div>
+                  <div style="color:var(--muted);opacity:.5;margin-bottom:10px"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
                   Glissez vos photos &amp; vidéos ici ou cliquez pour choisir
                 </div>
                 <!-- Grid -->
@@ -1010,7 +1158,7 @@
 
               <!-- Générer un lien Stripe -->
               <div class="panel" style="margin-bottom:16px">
-                <div class="panel-head"><h3 style="display:flex;align-items:center;gap:8px"><span style="color:var(--accent)">💳</span> Générer un lien de paiement Stripe</h3></div>
+                <div class="panel-head"><h3 style="display:flex;align-items:center;gap:8px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Générer un lien de paiement Stripe</h3></div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px 16px">
 
                   <!-- Abo 49 -->
@@ -1055,7 +1203,7 @@
 
                 <!-- Recharge Google Ads -->
                 <div style="margin:0 16px 16px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:18px">
-                  <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px;display:flex;align-items:center;gap:8px"><span style="color:var(--accent)">💳</span> Recharge Google Ads — lien de paiement</div>
+                  <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px;display:flex;align-items:center;gap:8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Recharge Google Ads — lien de paiement</div>
                   <p style="font-size:12px;color:var(--muted);margin:0 0 14px">Choisis 150 € (entretien) ou saisis un montant personnalisé (20 % du budget si &gt; 1 000 €, etc.). Lien Stripe à usage unique, expire après 24 h.</p>
                   <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
                     <button onclick="clSetAds(150)" id="pay-ads-150" class="pay-nx active" style="padding:10px 16px">150 €</button>
@@ -1184,8 +1332,8 @@
               <p style="font-size:11px;color:var(--muted);margin:0 0 20px;background:rgba(255,255,255,.03);padding:10px;border-radius:8px">Si abonnement combiné : aucun prélèvement d'abonnement tant que la création n'est pas intégralement réglée (mois d'abonnement offerts).</p>
 
               <div style="display:flex;gap:10px">
-                <button onclick="dvCloseModal()" style="flex:1;padding:12px;border-radius:8px;border:none;background:rgba(255,255,255,.07);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer">Annuler</button>
-                <button onclick="dvCreate()" style="flex:2;padding:12px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:700;cursor:pointer">+ Créer le devis</button>
+                <button onclick="dvCloseModal()" class="btn-modal-cancel">Annuler</button>
+                <button onclick="dvCreate()" class="btn-modal-confirm">+ Créer le devis</button>
               </div>
             </div>
           </div>
@@ -1245,8 +1393,8 @@
                 </select></div>
               </div>
               <div style="display:flex;gap:10px">
-                <button onclick="faCloseModal()" style="flex:1;padding:12px;border-radius:8px;border:none;background:rgba(255,255,255,.07);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer">Annuler</button>
-                <button onclick="faCreate()" style="flex:2;padding:12px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:700;cursor:pointer">+ Créer la facture</button>
+                <button onclick="faCloseModal()" class="btn-modal-cancel">Annuler</button>
+                <button onclick="faCreate()" class="btn-modal-confirm">+ Créer la facture</button>
               </div>
             </div>
           </div>
@@ -1282,7 +1430,7 @@
 
               <!-- Paiement -->
               <div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:20px">
-                <span style="font-size:16px">💳</span>
+                <span style="display:inline-flex;align-items:center;color:var(--accent)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>
                 <div>
                   <div style="font-size:12px;font-weight:600;color:#fff">Paiement via Stripe</div>
                   <div style="font-size:11px;color:var(--muted)">Prélèvement automatique mensuel</div>
@@ -1290,8 +1438,8 @@
               </div>
 
               <div style="display:flex;gap:10px">
-                <button onclick="faAboCloseModal()" style="flex:1;padding:12px;border-radius:8px;border:none;background:rgba(255,255,255,.07);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer">Annuler</button>
-                <button onclick="faCreateAbo()" style="flex:2;padding:12px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:700;cursor:pointer">+ Créer la facture</button>
+                <button onclick="faAboCloseModal()" class="btn-modal-cancel">Annuler</button>
+                <button onclick="faCreateAbo()" class="btn-modal-confirm">+ Créer la facture</button>
               </div>
             </div>
           </div>
@@ -1355,7 +1503,7 @@
               <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">URL du site</label>
               <input id="cl-m-url" placeholder="https://…" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:14px;outline:none;box-sizing:border-box">
               <div style="display:flex;gap:10px;margin-top:8px">
-                <button onclick="clCloseModal()" style="flex:1;padding:12px;border-radius:8px;border:none;background:rgba(255,255,255,.07);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer">Annuler</button>
+                <button onclick="clCloseModal()" class="btn-modal-cancel">Annuler</button>
                 <button onclick="clSaveClient()" style="flex:1;padding:12px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:700;cursor:pointer">Enregistrer</button>
               </div>
             </div>
@@ -1379,15 +1527,18 @@
             .pr-dv-signe{background:rgba(74,222,128,.1);color:#4ade80}
             .pr-dv-refuse{background:rgba(248,113,113,.1);color:#f87171}
           </style>
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:12px">
-            <div>
-              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">CRM — PRODUCTION</div>
-              <div style="font-size:26px;font-weight:800;margin:2px 0 4px">Projets</div>
-              <div style="font-size:13px;color:var(--muted)">Leads intéressés — en réflexion, en cours de version, ou à valider.</div>
+          <div class="page-header">
+            <div class="page-header-left">
+              <div class="page-eyebrow">CRM · Production</div>
+              <h1 class="page-title">Projets</h1>
+              <p class="page-sub">Leads intéressés — en réflexion, en cours de version, ou à valider.</p>
             </div>
             <div style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap">
               <div id="pr-kpi-bar" style="display:flex;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;align-self:flex-start"></div>
-              <button onclick="prOpenAdd()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer">+ Projet</button>
+              <button onclick="prOpenAdd()" class="btn-newtask">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Projet
+              </button>
             </div>
           </div>
           <div id="pr-list"></div>
@@ -1418,7 +1569,7 @@
               <div></div>
             </div>
             <div id="pr-dv-lines"></div>
-            <button onclick="prDvAddLine()" style="background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:12px;color:#fff;cursor:pointer;width:100%;margin-top:8px">+ Ajouter une ligne</button>
+            <button onclick="prDvAddLine()" class="btn-back" style="width:100%;margin-top:6px">+ Ligne</button>
             <!-- Totaux -->
             <div style="margin-top:16px;background:rgba(255,255,255,.03);border-radius:10px;padding:14px 16px">
               <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px"><span style="color:var(--muted)">Total HT</span><span id="pr-dv-ht">0 €</span></div>
@@ -1426,7 +1577,7 @@
               <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:800;border-top:1px solid var(--border);padding-top:10px;margin-top:4px"><span>Total TTC</span><span id="pr-dv-ttc" style="color:#4ade80">0 €</span></div>
             </div>
             <div style="display:flex;gap:10px;margin-top:20px;justify-content:flex-end">
-              <button onclick="prCloseDevis()" style="background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;padding:10px 20px;font-size:13px;color:#fff;cursor:pointer">Annuler</button>
+              <button onclick="prCloseDevis()" class="btn-modal-cancel">Annuler</button>
               <button onclick="prSaveDevis()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:13px;font-weight:700;cursor:pointer">Enregistrer le devis</button>
             </div>
           </div>
@@ -1469,7 +1620,7 @@
             <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Notes</label>
             <textarea id="pr-add-notes" rows="3" placeholder="Contexte, besoin exprimé, prochaine étape..." style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:20px;outline:none;box-sizing:border-box;font-family:inherit;resize:vertical"></textarea>
             <div style="display:flex;gap:10px;justify-content:flex-end">
-              <button onclick="prCloseAdd()" style="background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;padding:10px 20px;font-size:13px;color:#fff;cursor:pointer">Annuler</button>
+              <button onclick="prCloseAdd()" class="btn-modal-cancel">Annuler</button>
               <button id="pr-add-save-btn" onclick="prSaveAdd()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:13px;font-weight:700;cursor:pointer">Créer le projet</button>
             </div>
           </div>
@@ -1489,17 +1640,26 @@
         <!-- ── LEADS ── -->
         <div id="page-leads" class="page">
           <!-- Header -->
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:12px">
-            <div>
-              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">CRM — ACQUISITION</div>
-              <div style="font-size:26px;font-weight:800;margin:2px 0 4px">Leads</div>
-              <div style="font-size:13px;color:var(--muted)">Site, CSV (Google/Meta Ads), scraping — tout au même endroit.</div>
+          <div class="page-header">
+            <div class="page-header-left">
+              <div class="page-eyebrow">CRM · Acquisition</div>
+              <h1 class="page-title">Leads</h1>
+              <p class="page-sub">Site, CSV (Google/Meta Ads), scraping — tout au même endroit.</p>
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-              <label for="ld-csv-input" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;color:#fff">↑ Importer CSV</label>
+              <label for="ld-csv-input" class="btn-back" style="cursor:pointer">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
+                Importer CSV
+              </label>
               <input type="file" id="ld-csv-input" accept=".csv" style="display:none" onchange="ldImportCSV(this)">
-              <button onclick="ldOpenAdd()" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;color:#fff">+ Ajouter</button>
-              <button onclick="ldScraper()" style="background:var(--accent);color:#fff;border:none;border-radius:20px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer">⚡ Scraper</button>
+              <button onclick="ldOpenAdd()" class="btn-back">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Ajouter
+              </button>
+              <button onclick="ldScraper()" class="btn-newtask">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                Scraper
+              </button>
             </div>
           </div>
           <!-- Source tabs -->
@@ -1560,8 +1720,8 @@
                 <input id="ld-add-campagne" placeholder="META ADS — V1..." style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
               </div>
               <div style="display:flex;gap:10px">
-                <button onclick="ldCloseAdd()" style="flex:1;padding:12px;border-radius:8px;border:none;background:rgba(255,255,255,.07);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer">Annuler</button>
-                <button onclick="ldAddManual()" style="flex:2;padding:12px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:700;cursor:pointer">+ Ajouter le lead</button>
+                <button onclick="ldCloseAdd()" class="btn-modal-cancel">Annuler</button>
+                <button onclick="ldAddManual()" class="btn-modal-confirm">+ Ajouter le lead</button>
               </div>
             </div>
           </div>
@@ -1592,8 +1752,8 @@
                 <div id="ld-edit-message" style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--muted);font-size:12px;font-style:italic;white-space:pre-wrap"></div>
               </div>
               <div style="display:flex;gap:10px">
-                <button onclick="ldCloseDetail()" style="flex:1;padding:12px;border-radius:8px;border:none;background:rgba(255,255,255,.07);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer">Annuler</button>
-                <button onclick="ldSaveDetail()" style="flex:2;padding:12px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:700;cursor:pointer">💾 Enregistrer</button>
+                <button onclick="ldCloseDetail()" class="btn-modal-cancel">Annuler</button>
+                <button onclick="ldSaveDetail()" class="btn-modal-confirm">Enregistrer</button>
               </div>
             </div>
           </div>
@@ -1602,22 +1762,28 @@
         <!-- ── FORMULAIRE ── -->
         <div id="page-formulaire" class="page">
           <!-- Header -->
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:12px">
-            <div>
-              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">BUSINESS</div>
-              <div style="font-size:26px;font-weight:800;margin:2px 0 6px">Statistiques Formulaire</div>
-              <div style="font-size:13px;color:var(--muted)" id="fm-last-update">Comportement des visiteurs sur la page /formulaire</div>
-              <div style="display:flex;align-items:center;gap:10px;margin-top:6px">
-                <a href="https://potentieel.fr/formulaire" target="_blank" style="color:var(--accent);font-size:12px;text-decoration:none;display:flex;align-items:center;gap:4px">↗ potentieel.fr/formulaire</a>
-                <button onclick="navigator.clipboard.writeText('https://potentieel.fr/formulaire')" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0">⎘ Copier</button>
+          <div class="page-header">
+            <div class="page-header-left">
+              <div class="page-eyebrow">Business</div>
+              <h1 class="page-title">Formulaire</h1>
+              <p class="page-sub" id="fm-last-update">Comportement des visiteurs sur la page /formulaire</p>
+              <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
+                <a href="https://potentieel.fr/formulaire" target="_blank" style="color:var(--accent);font-size:11px;text-decoration:none;display:flex;align-items:center;gap:3px">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  potentieel.fr/formulaire
+                </a>
+                <button onclick="navigator.clipboard.writeText('https://potentieel.fr/formulaire')" class="btn-back" style="height:24px;padding:0 8px;font-size:11px">Copier</button>
               </div>
             </div>
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-              <button onclick="fmLoad()" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;color:#fff;cursor:pointer;display:flex;align-items:center;gap:6px">↺ Actualiser</button>
+              <button onclick="fmLoad()" class="btn-back">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+                Actualiser
+              </button>
               <div style="display:flex;gap:4px">
                 <button class="fm-period active" data-p="1" onclick="fmSetPeriod(1,this)">24 h</button>
-                <button class="fm-period" data-p="7" onclick="fmSetPeriod(7,this)">7 jours</button>
-                <button class="fm-period" data-p="30" onclick="fmSetPeriod(30,this)">30 jours</button>
+                <button class="fm-period" data-p="7" onclick="fmSetPeriod(7,this)">7 j</button>
+                <button class="fm-period" data-p="30" onclick="fmSetPeriod(30,this)">30 j</button>
                 <button class="fm-period" data-p="0" onclick="fmSetPeriod(0,this)">Tout</button>
               </div>
             </div>
@@ -1700,15 +1866,21 @@
           </style>
 
           <!-- Header -->
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;flex-wrap:wrap;gap:10px;flex-shrink:0">
-            <div>
-              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">CRM COMMERCIAL</div>
-              <div style="font-size:24px;font-weight:800;margin:2px 0 3px">Appels</div>
-              <div style="font-size:12px;color:var(--muted)">RDV Calendly, transcription live, débrief IA de closing.</div>
+          <div class="page-header" style="flex-shrink:0">
+            <div class="page-header-left">
+              <div class="page-eyebrow">CRM · Commercial</div>
+              <h1 class="page-title">Appels</h1>
+              <p class="page-sub">RDV Calendly, transcription live, débrief IA de closing.</p>
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-              <button onclick="apRefreshCalendly()" id="ap-refresh-btn" class="ap-btn ap-btn-g">↺ Rafraîchir Calendly</button>
-              <button onclick="apOpenManual()" class="ap-btn ap-btn-p">+ Appel manuel</button>
+              <button onclick="apRefreshCalendly()" id="ap-refresh-btn" class="btn-back">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+                Rafraîchir
+              </button>
+              <button onclick="apOpenManual()" class="btn-newtask">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Appel manuel
+              </button>
             </div>
           </div>
 
@@ -1726,7 +1898,7 @@
             <!-- Right -->
             <div class="ap-detail-col" id="ap-detail">
               <div class="ap-empty-det">
-                <div style="font-size:36px">📞</div>
+                <div style="color:var(--muted);opacity:.5;margin-bottom:4px"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.63A2 2 0 012 .18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.09 6.09l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7a2 2 0 011.72 2.02z"/></svg></div>
                 <div style="font-size:14px;font-weight:600;color:#fff">Sélectionne un appel</div>
                 <div style="font-size:12px">Transcription live et débrief IA apparaîtront ici.</div>
               </div>
@@ -1751,7 +1923,7 @@
                 </div>
               </div>
               <div style="display:flex;gap:10px">
-                <button onclick="apCloseManual()" style="flex:1;padding:11px;border-radius:8px;border:none;background:rgba(255,255,255,.07);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer">Annuler</button>
+                <button onclick="apCloseManual()" class="btn-modal-cancel">Annuler</button>
                 <button onclick="apSaveManual()" style="flex:2;padding:11px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:700;cursor:pointer">+ Ajouter</button>
               </div>
             </div>
@@ -1789,15 +1961,21 @@
             .ob-edit-btn:hover{color:#fff;background:rgba(255,255,255,.07)}
             .ob-auto-tag{font-size:10px;color:var(--accent);margin-top:6px}
           </style>
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">
-            <div>
-              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">PILOTAGE</div>
-              <div style="font-size:24px;font-weight:800;margin:2px 0 3px">Objectifs</div>
-              <div style="font-size:12px;color:var(--muted)">Suis tes objectifs CA, devis, affiliation et réseaux.</div>
+          <div class="page-header">
+            <div class="page-header-left">
+              <div class="page-eyebrow">Pilotage</div>
+              <h1 class="page-title">Objectifs</h1>
+              <p class="page-sub">Suis tes objectifs CA, devis, affiliation et réseaux.</p>
             </div>
             <div style="display:flex;gap:8px">
-              <button onclick="obRefreshAuto()" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;color:#fff;cursor:pointer">↺ Sync auto</button>
-              <button onclick="obOpenAdd()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer">+ Objectif</button>
+              <button onclick="obRefreshAuto()" class="btn-back">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+                Sync auto
+              </button>
+              <button onclick="obOpenAdd()" class="btn-newtask">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Objectif
+              </button>
             </div>
           </div>
           <div class="ob-grid" id="ob-grid"></div>
@@ -1814,12 +1992,12 @@
                 <div>
                   <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Catégorie</label>
                   <select id="ob-cat" onchange="obCatChange()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
-                    <option value="ca">💶 Chiffre d'affaires</option>
-                    <option value="devis">📝 Devis signés</option>
-                    <option value="affiliation">🤝 Affiliations</option>
-                    <option value="tiktok">🎵 Abonnés TikTok</option>
-                    <option value="instagram">📸 Abonnés Instagram</option>
-                    <option value="autre">📌 Autre</option>
+                    <option value="ca">Chiffre d'affaires</option>
+                    <option value="devis">Devis signés</option>
+                    <option value="affiliation">Affiliations</option>
+                    <option value="tiktok">Abonnés TikTok</option>
+                    <option value="instagram">Abonnés Instagram</option>
+                    <option value="autre">Autre</option>
                   </select>
                 </div>
                 <div>
@@ -1885,10 +2063,10 @@
             .pl-resize-handle::after{content:'';width:22px;height:3px;background:rgba(255,255,255,.35);border-radius:2px;transition:background .15s}
             .pln-tl-block:hover .pl-resize-handle::after{background:rgba(255,255,255,.65)}
           </style>
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:16px">
-            <div>
-              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">PILOTAGE</div>
-              <div style="font-size:24px;font-weight:800;margin:2px 0 3px">Planning</div>
+          <div class="page-header">
+            <div class="page-header-left">
+              <div class="page-eyebrow">Pilotage</div>
+              <h1 class="page-title">Planning</h1>
             </div>
             <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
               <div style="display:flex;gap:6px">
@@ -1901,7 +2079,10 @@
                 <div class="pl-month-title" id="pl-month-title"></div>
                 <button onclick="plNext()">›</button>
               </div>
-              <button onclick="plOpenAdd(null)" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer">+ Tâche</button>
+              <button onclick="plOpenAdd(null)" class="btn-newtask">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Tâche
+              </button>
             </div>
           </div>
 
@@ -1983,20 +2164,24 @@
             .tr-cat-btn{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);transition:.15s}
             .tr-cat-btn.active{background:rgba(244,146,106,.15);color:var(--accent);border-color:rgba(244,146,106,.3)}
           </style>
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:20px">
-            <div>
-              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">OPÉRATIONS</div>
-              <div style="font-size:24px;font-weight:800;margin:2px 0 3px">Trésorerie</div>
+          <div class="page-header">
+            <div class="page-header-left">
+              <div class="page-eyebrow">Opérations</div>
+              <h1 class="page-title">Trésorerie</h1>
+              <p class="page-sub">Flux de trésorerie — espèces, virements et Stripe.</p>
             </div>
-            <button onclick="trOpenAdd()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer">+ Transaction</button>
+            <button onclick="trOpenAdd()" class="btn-newtask">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Transaction
+            </button>
           </div>
           <!-- Sélecteur de mois -->
           <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:20px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 20px">
-            <button onclick="trPrevMonth()" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:6px 14px;color:#fff;font-size:16px;cursor:pointer;line-height:1">‹</button>
+            <button onclick="trPrevMonth()" class="btn-nav-arrow">‹</button>
             <div style="text-align:center;min-width:140px">
               <div id="tr-month-label" style="font-size:16px;font-weight:800;color:#fff"></div>
             </div>
-            <button onclick="trNextMonth()" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:6px 14px;color:#fff;font-size:16px;cursor:pointer;line-height:1">›</button>
+            <button onclick="trNextMonth()" class="btn-nav-arrow">›</button>
           </div>
           <div class="tr-stats" id="tr-stats"></div>
           <div class="tr-cats">
@@ -2082,7 +2267,10 @@
         <!-- ── DOCUMENTS ── -->
         <div id="page-documents" class="page">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">
-            <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">OPÉRATIONS</div><div style="font-size:22px;font-weight:800;margin-top:2px">Documents</div></div>
+            <div class="page-header-left">
+              <div class="page-eyebrow">Opérations</div>
+              <h1 class="page-title">Documents</h1>
+            </div>
             <button class="ph-action" onclick="clTriggerFilePick('*/*', dcHandleFiles)" style="background:var(--accent);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">+ Importer des documents</button>
           </div>
           <input type="file" id="dc-file-input" multiple accept="*/*" style="display:none" onchange="dcHandleFiles(this.files)">
@@ -2093,7 +2281,8 @@
               ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
               ondragleave="this.style.borderColor='rgba(255,255,255,.12)'"
               ondrop="event.preventDefault();this.style.borderColor='rgba(255,255,255,.12)';dcHandleFiles(event.dataTransfer.files)">
-              📄 Glissez vos fichiers ici ou cliquez pour choisir des fichiers sur votre ordinateur
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="opacity:.5;margin-bottom:6px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Glissez vos fichiers ici ou cliquez pour en choisir
             </div>
             <div id="dc-docs-list" style="padding:0 16px 16px;min-height:40px"></div>
           </div>
@@ -2102,19 +2291,23 @@
         <!-- ── FACTURATION ── -->
         <div id="page-facturation" class="page">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">
-            <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">OPÉRATIONS</div><div style="font-size:22px;font-weight:800;margin-top:2px">Facturation</div></div>
+            <div class="page-header-left">
+              <div class="page-eyebrow">Opérations</div>
+              <h1 class="page-title">Facturation</h1>
+              <p class="page-sub">Toutes les factures émises.</p>
+            </div>
             <button onclick="faGlobalImportOpen()" style="background:var(--accent);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">↑ Importer une facture</button>
           </div>
           <!-- Navigateur mensuel -->
           <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;flex-wrap:wrap">
-            <button onclick="faNavMonth(-1)" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:8px 14px;color:#fff;font-size:16px;cursor:pointer;line-height:1">‹</button>
+            <button onclick="faNavMonth(-1)" class="btn-nav-arrow">‹</button>
             <div id="fa-month-display" style="font-size:17px;font-weight:800;min-width:140px;text-align:center"></div>
-            <button onclick="faNavMonth(1)" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:8px 14px;color:#fff;font-size:16px;cursor:pointer;line-height:1">›</button>
+            <button onclick="faNavMonth(1)" class="btn-nav-arrow">›</button>
           </div>
           <!-- Stats -->
           <div id="fa-stats" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px"></div>
           <!-- Payées -->
-          <div style="font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px">💶 Factures payées</div>
+          <div style="font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px">Factures payées</div>
           <div id="fa-global-list"></div>
           <!-- Retards -->
           <div style="display:flex;justify-content:space-between;align-items:center;margin-top:32px;margin-bottom:12px">
@@ -2173,9 +2366,13 @@
         <!-- ── DEVIS ── -->
         <div id="page-devis" class="page">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">
-            <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">OPÉRATIONS</div><div style="font-size:22px;font-weight:800;margin-top:2px">Devis</div></div>
+            <div class="page-header-left">
+              <div class="page-eyebrow">Opérations</div>
+              <h1 class="page-title">Devis</h1>
+              <p class="page-sub">Tous les devis émis.</p>
+            </div>
             <div style="display:flex;gap:8px">
-              <button onclick="dvImportOpen()" style="background:rgba(255,255,255,.07);border:1px solid var(--border);color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">↑ Importer</button>
+              <button onclick="dvImportOpen()" class="btn-back">↑ Importer</button>
               <button onclick="dvOpenModal()" style="background:var(--accent);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">+ Nouveau devis</button>
             </div>
           </div>
@@ -2195,25 +2392,662 @@
   </div><!-- /layout -->
 </div><!-- /app -->
 
+<style id="design-v2">
+/* ════════════════════════════════════════════════════════
+   DESIGN V2 — refonte visuelle complète, section par section
+   (placé après tous les styles de pages : gagne la cascade)
+   Front-end uniquement. Aucune fonctionnalité touchée.
+═══════════════════════════════════════════════════════════ */
+
+/* ── Typo display : titres & grands chiffres ── */
+.topbar-title, .pl-title, .tc-title, .login-card h2,
+.kpi-val, .pl-kpi-val, .tc-kpi-val, .tr-stat-val,
+.ap-det-name, .pl-month-title, .ob-values strong {
+  font-family: var(--font-display);
+}
+button, input, select, textarea { font-family: var(--font-ui); }
+
+/* ── LOGIN ── */
+#login-screen {
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(244,146,106,.14) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 110%, rgba(106,165,250,.07) 0%, transparent 50%),
+    var(--bg);
+}
+.login-card {
+  border-radius: var(--r-xl);
+  padding: 48px 44px;
+  background: linear-gradient(180deg, #161828 0%, #10111c 100%);
+  border-color: var(--border-strong);
+  position: relative; overflow: hidden;
+}
+.login-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(244,146,106,.5), transparent);
+}
+.lc-logo-icon, .sb-logo-icon { background: var(--grad-accent); box-shadow: 0 4px 14px rgba(244,146,106,.35); }
+.fg input { background: var(--field); border-radius: 11px; padding: 12px 15px; }
+.btn-login { background: var(--grad-accent); border-radius: 12px; font-size: 14px; }
+
+/* ── SIDEBAR ── */
+.sidebar { background: linear-gradient(180deg, #11131f 0%, #0d0e18 100%); }
+.sb-top { padding: 20px 16px 18px; }
+.sb-logo-icon { border-radius: 9px; }
+.sb-nav { padding: 14px 10px; }
+.sb-section { color: var(--muted2); letter-spacing: 1.4px; padding: 16px 10px 6px; font-size: 9.5px; }
+.nav-item { padding: 9px 12px; margin: 2px 0; border-radius: 10px; gap: 10px; transition: background .15s, color .15s, transform .15s var(--ease); }
+.nav-item:hover { background: rgba(255,255,255,.05); transform: translateX(2px); }
+.nav-item.active {
+  background: linear-gradient(90deg, rgba(244,146,106,.17) 0%, rgba(244,146,106,.05) 100%);
+  box-shadow: inset 0 0 0 1px rgba(244,146,106,.22);
+  transform: none;
+}
+.nav-item.active::after {
+  content: ''; position: absolute; right: 11px; top: 50%; transform: translateY(-50%);
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--accent); box-shadow: 0 0 8px rgba(244,146,106,.9);
+}
+.nav-item .ni-badge { margin-right: 10px; }
+.sb-bottom { background: rgba(0,0,0,.18); }
+.sb-avatar { background: var(--grad-accent); }
+
+/* ── TOPBAR ── */
+.topbar { height: 58px; background: rgba(15,17,28,.82); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+.topbar-section { font-size: 10px; letter-spacing: 1.2px; color: var(--muted2); }
+.topbar-title { font-size: 15px; letter-spacing: -.2px; }
+.tb-btn { border-radius: 9px; padding: 7px 13px; background: rgba(255,255,255,.04); transition: all .15s var(--ease); }
+.tb-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); background: var(--card2); }
+
+/* ── MAIN ── */
+.main { padding: 28px 30px; }
+
+/* ── KPI CARDS — toutes neuves ── */
+.kpi {
+  border-radius: var(--r-lg); padding: 18px;
+  background: linear-gradient(160deg, #171a2c 0%, #12141f 100%);
+  position: relative; overflow: hidden;
+}
+.kpi::before {
+  content: ''; position: absolute; top: 0; left: 12%; right: 12%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.1), transparent);
+}
+.kpi-icon {
+  width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.07);
+  border-radius: 11px; font-size: 16px; margin-bottom: 12px;
+}
+.kpi-val { font-size: 27px; letter-spacing: -.8px; }
+.kpi-label { margin-top: 6px; font-size: 10.5px; letter-spacing: .7px; }
+.kpi.accent { background: linear-gradient(160deg, rgba(244,146,106,.13) 0%, rgba(244,146,106,.03) 60%), #12141f; }
+.kpi.accent .kpi-icon { background: rgba(244,146,106,.15); border-color: rgba(244,146,106,.3); }
+.kpi.accent::before { background: linear-gradient(90deg, transparent, rgba(244,146,106,.55), transparent); }
+
+/* ── PANELS ── */
+.panel { border-radius: var(--r-lg); background: linear-gradient(180deg, #151726 0%, #131523 100%); }
+.panel-head { padding: 15px 20px; background: rgba(255,255,255,.015); }
+.panel-head h3 { display: flex; align-items: center; gap: 9px; font-size: 13px; }
+.panel-head h3::before { content: ''; width: 6px; height: 6px; border-radius: 2px; background: var(--grad-accent); flex-shrink: 0; }
+.panel-head .ph-action { font-weight: 600; transition: opacity .15s; }
+.panel-head .ph-action:hover { opacity: .75; }
+
+/* ── TABLES ── */
+th { padding: 11px 20px; letter-spacing: .9px; font-size: 9.5px; }
+td { padding: 13px 20px; }
+td:first-child { font-weight: 600; }
+tr { transition: background .12s; }
+
+/* ── BADGES — pastille + uppercase ── */
+.badge { padding: 3px 10px; border-radius: 7px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .4px; }
+.badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+/* ── BOUTONS PRIMAIRES — gradient unifié ── */
+.btn-prospect, .btn-newtask {
+  background: var(--grad-accent); border-radius: 12px; padding: 11px 20px;
+  box-shadow: 0 3px 14px rgba(244,146,106,.3);
+}
+.btn-prospect:hover, .btn-newtask:hover { opacity: 1; filter: brightness(1.08); box-shadow: 0 5px 20px rgba(244,146,106,.38); }
+.fm-period.active, .fa-filter.active, .dv-filter.active,
+.fm-period:hover, .fa-filter:hover, .dv-filter:hover,
+.pay-nx.active, .pay-nx:hover { background: var(--grad-accent); border-color: transparent; }
+.fm-period, .fa-filter, .dv-filter, .pay-nx { border-radius: 9px; }
+.btn-proposer { border-radius: 10px; }
+
+/* ── LEADS ── */
+.ld-stab { font-size: 13px; padding: 11px 16px; transition: color .15s; }
+.ld-stab.active { font-weight: 800; }
+.ld-card {
+  border-radius: var(--r-lg); padding: 18px 20px;
+  background: linear-gradient(135deg, rgba(244,146,106,.055) 0%, #141624 50%);
+  border: 1px solid var(--border);
+}
+.ld-card:hover { border-color: rgba(244,146,106,.4); background: linear-gradient(135deg, rgba(244,146,106,.08) 0%, #161829 50%); }
+.ld-status-btn { border-radius: 10px; }
+.ld-status-menu { border-radius: var(--r-md); background: #1d2033; }
+
+/* ── PIPELINE / KANBAN ── */
+.pl-kpis, .tc-kpis { border-radius: var(--r-lg); background: var(--card); box-shadow: var(--shadow-sm); }
+.pl-kpi, .tc-kpi { padding: 15px 18px; }
+.pl-kpi-val, .tc-kpi-val { font-size: 23px; letter-spacing: -.6px; }
+.kb-col { border-radius: var(--r-md); background: rgba(255,255,255,.022); padding: 11px; }
+.kb-col-name { font-size: 10px; }
+.kc {
+  border-radius: 11px; padding: 11px 13px;
+  background: linear-gradient(180deg, #1a1d2f 0%, #161827 100%);
+  box-shadow: var(--shadow-sm);
+}
+.kc:hover { border-color: rgba(244,146,106,.45); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.kc-price { font-weight: 800; }
+
+/* ── TÂCHES ── */
+.tc-deadline {
+  border-left: 1px solid rgba(244,146,106,.3);
+  border: 1px solid rgba(244,146,106,.3);
+  background: linear-gradient(90deg, rgba(244,146,106,.1) 0%, rgba(244,146,106,.03) 100%);
+  border-radius: var(--r-md); padding: 14px 18px;
+}
+.tc-brief { border-radius: var(--r-lg); background: linear-gradient(180deg, #151726, #131522); }
+.tc-brief-input { background: var(--field); border-radius: 10px; }
+.tc-card {
+  border-radius: var(--r-md); padding: 13px 15px;
+  background: linear-gradient(180deg, #1a1d2f 0%, #161827 100%);
+  box-shadow: var(--shadow-sm);
+}
+.tc-card:hover { border-color: rgba(244,146,106,.4); }
+.tc-card-title { font-size: 13px; font-weight: 700; }
+.tc-pri, .task-pri, .pr-badge, .pr-dv-badge { border-radius: 7px; text-transform: uppercase; letter-spacing: .3px; font-size: 9.5px; }
+.tc-empty { border-radius: var(--r-md); border-color: var(--border-strong); }
+.tc-done-zone { border-radius: var(--r-lg); }
+.tc-filter-sel { border-radius: 9px; background: var(--field); }
+
+/* ── CLIENTS ── */
+.cl-card { border-radius: var(--r-lg); background: linear-gradient(165deg, #171a2c 0%, #131522 100%); }
+.cl-avatar { border-radius: 12px; background: var(--grad-accent); color: #fff; box-shadow: 0 3px 10px rgba(244,146,106,.3); }
+.cl-card-name { letter-spacing: -.2px; }
+.cl-card-foot { border-top-color: rgba(255,255,255,.06); }
+.cl-tab.active { font-weight: 800; }
+.cl-msg-av { background: var(--grad-accent); color: #fff; }
+
+/* ── PAY CARDS ── */
+.pay-card { border-radius: var(--r-lg); background: linear-gradient(165deg, #171a2c, #131522); border-color: var(--border); }
+.pay-card-price { letter-spacing: -.6px; font-family: var(--font-display); }
+
+/* ── PROJETS ── */
+.pr-card { border-radius: var(--r-lg); background: linear-gradient(165deg, #161929 0%, #131522 100%); box-shadow: var(--shadow-sm); transition: border-color .15s, transform .15s var(--ease), box-shadow .15s var(--ease); }
+.pr-card:hover { border-color: rgba(106,165,250,.4); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+
+/* ── APPELS ── */
+.ap-layout { border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--shadow-sm); }
+.ap-call-item { border-left: none; padding: 13px 16px; transition: background .12s; }
+.ap-call-item.selected { background: linear-gradient(90deg, rgba(244,146,106,.12), rgba(244,146,106,.03)); box-shadow: inset 2px 0 0 var(--accent); }
+.ap-section { border-radius: var(--r-md); background: rgba(255,255,255,.02); }
+.ap-tbox { background: var(--field); border-radius: 10px; }
+.ap-btn { border-radius: 9px; }
+.ap-btn-p { background: var(--grad-accent); }
+
+/* ── OBJECTIFS ── */
+.ob-card { border-radius: var(--r-lg); background: linear-gradient(165deg, #171a2c, #131522); transition: border-color .15s, box-shadow .15s var(--ease); }
+.ob-card:hover { border-color: var(--border-strong); box-shadow: var(--shadow-md); }
+.ob-bar-bg { height: 7px; }
+.ob-bar { background-image: linear-gradient(90deg, rgba(255,255,255,.12), transparent); background-blend-mode: overlay; }
+
+/* ── PLANNING ── */
+.pl-grid { gap: 4px; }
+.pl-day { border-radius: 10px; }
+.pl-day.today { box-shadow: inset 0 0 0 1px rgba(244,146,106,.4), 0 0 14px rgba(244,146,106,.1); }
+.pl-task-pill { border-radius: 6px; padding: 2px 6px; }
+.pl-nav button, .pl-view-btn { border-radius: 9px; }
+.pl-view-btn.active { font-weight: 700; }
+.pln-tl-wrap { border-radius: var(--r-md); }
+.pln-tl-block { border-radius: 8px; border-left-width: 2px; }
+
+/* ── TRÉSORERIE ── */
+.tr-stat { border-radius: var(--r-lg); background: linear-gradient(160deg, #171a2c, #12141f); }
+.tr-stat-val { letter-spacing: -.7px; }
+.tr-cat-btn { border-radius: 9px; }
+.tr-cat-btn.active { box-shadow: inset 0 0 0 1px rgba(244,146,106,.3); }
+
+/* ── MODALES — toutes, y compris celles stylées inline ── */
+.pl-modal, .tm-modal { border-radius: var(--r-xl); background: linear-gradient(180deg, #181a2b 0%, #121420 100%); }
+#pr-devis-modal > div, #pr-add-modal > div, #pr-assets-modal > div {
+  background: linear-gradient(180deg, #181a2b 0%, #121420 100%) !important;
+  border-radius: var(--r-xl) !important;
+  border: 1px solid var(--border-strong) !important;
+}
+#pr-devis-modal input, #pr-add-modal input, #pr-add-modal select, #pr-add-modal textarea {
+  background: var(--field) !important; border-radius: 10px !important;
+}
+.pl-modal input, .pl-modal select,
+.tm-modal input[type=text], .tm-modal textarea, .tm-modal select, .tm-modal input[type=date] { background: var(--field); border-radius: 10px; }
+.tm-modal-btns button, .pl-modal-btns button { border-radius: 11px; }
+.tm-btn-confirm, .pl-modal-btns .btn-confirm { background: var(--grad-accent); box-shadow: 0 3px 12px rgba(244,146,106,.28); }
+
+/* ── ÉTATS VIDES ── */
+.empty { padding: 48px 40px; }
+.empty .ei { font-size: 36px; margin-bottom: 12px; opacity: .8; }
+
+/* ── CHECKBOXES TÂCHES ── */
+.task-cb { border-radius: 5px; border-color: var(--border-strong); }
+.task-cb.done { background: var(--green); border-color: var(--green); box-shadow: 0 0 8px rgba(45,213,115,.35); }
+
+/* ══════════════════════════════════════════════════════════════════════
+   POTENTIEEL OS — Design System v3 (injection correcte)
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── Variables layout ── */
+:root {
+  --sidebar-w: 224px;
+  --topbar-h: 56px;
+  --page-px: 28px;
+  --page-py: 26px;
+  --r-btn: 10px;
+  --btn-h: 36px;
+}
+
+/* ── Sidebar icons (SVG) — taille critique ── */
+.ni-svg {
+  width: 16px; height: 16px; flex-shrink: 0;
+  stroke: currentColor; fill: none;
+  stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round;
+}
+.nav-item.active .ni-svg { stroke: var(--accent); }
+
+/* ── Sidebar sections labels ── */
+.sb-section {
+  font-size: 9px; font-weight: 800; letter-spacing: 1.6px;
+  color: rgba(144,148,179,.4); text-transform: uppercase;
+  padding: 14px 10px 4px; margin-top: 2px;
+}
+
+/* ── Nav items ── */
+.nav-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 7px 10px; margin: 1px 0;
+  border-radius: 8px; cursor: pointer;
+  color: rgba(144,148,179,.75); font-size: 13px; font-weight: 500;
+  transition: background .13s, color .13s; position: relative;
+  user-select: none; line-height: 1;
+}
+.nav-item span:not(.ni-badge) { flex: 1; }
+.nav-item:hover { background: rgba(255,255,255,.05); color: var(--text); }
+.nav-item.active {
+  background: linear-gradient(90deg, rgba(244,146,106,.18) 0%, rgba(244,146,106,.06) 100%);
+  color: var(--accent); font-weight: 600;
+  box-shadow: inset 0 0 0 1px rgba(244,146,106,.2);
+}
+
+/* ── PAGE HEADER — système unifié ── */
+.page-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 22px; gap: 16px; flex-wrap: wrap;
+}
+.page-header-left { display: flex; flex-direction: column; gap: 2px; }
+.page-eyebrow {
+  font-size: 10px; font-weight: 700; color: var(--accent);
+  letter-spacing: 1.4px; text-transform: uppercase; margin: 0 0 2px;
+}
+.page-title {
+  font-size: 24px; font-weight: 800; letter-spacing: -.5px;
+  line-height: 1.15; margin: 0; color: var(--text);
+}
+.page-sub { font-size: 12px; color: var(--muted); margin: 3px 0 0; line-height: 1.5; }
+
+/* ── BOUTONS PRIMAIRES (accent gradient) ── */
+.btn-newtask {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 36px; padding: 0 16px;
+  background: linear-gradient(135deg, #f4926a 0%, #e07040 100%);
+  border: none; border-radius: 10px;
+  color: #fff; font-size: 12px; font-weight: 700;
+  cursor: pointer; transition: filter .15s, transform .15s; font-family: inherit;
+  box-shadow: 0 2px 10px rgba(244,146,106,.3);
+  white-space: nowrap;
+}
+.btn-newtask:hover { filter: brightness(1.08); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(244,146,106,.4); }
+.btn-newtask:active { transform: translateY(0); filter: brightness(.97); }
+
+/* ── BOUTONS SECONDAIRES (ghost) ── */
+.btn-back {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 34px; padding: 0 14px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 9px; color: var(--muted);
+  font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all .15s; font-family: inherit;
+  white-space: nowrap;
+}
+.btn-back:hover { background: rgba(255,255,255,.1); color: var(--text); border-color: rgba(255,255,255,.18); }
+
+/* ── KPI GRID responsive ── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px; margin-bottom: 20px;
+}
+@media (min-width: 1400px) { .kpi-grid { grid-template-columns: repeat(6, 1fr); } }
+
+/* ── KPI ICON box ── */
+.kpi-icon {
+  width: 34px; height: 34px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08);
+  color: var(--muted); margin-bottom: 10px; flex-shrink: 0;
+}
+.kpi.accent .kpi-icon { color: var(--accent); background: rgba(244,146,106,.1); border-color: rgba(244,146,106,.2); }
+
+/* ── PANEL HEAD ── */
+.panel-head h3 { display: flex; align-items: center; gap: 8px; }
+.panel-head h3::before {
+  content: ''; width: 3px; height: 14px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #f4926a 0%, #e07040 100%);
+  flex-shrink: 0;
+}
+.panel-head .ph-action {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 7px; padding: 4px 10px;
+  font-size: 12px; font-weight: 600; color: var(--muted);
+  cursor: pointer; transition: all .15s; font-family: inherit;
+}
+.panel-head .ph-action:hover { background: rgba(255,255,255,.1); color: var(--text); }
+
+/* ── LEAD CARDS — gradient tint (no left stripe) ── */
+.ld-card {
+  border: 1px solid var(--border); border-left-width: 1px;
+  background: linear-gradient(135deg, rgba(244,146,106,.04) 0%, transparent 60%);
+}
+
+/* ── DATE PICKER BUTTON ── */
+.btn-back svg, .btn-newtask svg { pointer-events: none; }
+
+/* ── TOPBAR ── */
+.topbar { height: var(--topbar-h); }
+
+/* ── Facturation / Devis / Documents page header wrappers ── */
+#page-documents .page-header,
+#page-facturation .page-header,
+#page-devis .page-header { margin-bottom: 16px; }
+
+/* ── Spacing global sur les pages ── */
+.page { padding: var(--page-py) var(--page-px); }
+@media (max-width: 900px) { .page { padding: 16px; } }
+
+
+/* ══ BOUTONS MODAUX ══ */
+.btn-modal-cancel {
+  flex: 1; padding: 12px;
+  border-radius: 10px; border: 1px solid rgba(255,255,255,.1);
+  background: rgba(255,255,255,.05); color: var(--muted);
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  font-family: inherit; transition: all .15s;
+}
+.btn-modal-cancel:hover { background: rgba(255,255,255,.09); color: var(--text); }
+
+.btn-modal-confirm {
+  flex: 2; padding: 12px;
+  border-radius: 10px; border: none;
+  background: linear-gradient(135deg, #f4926a 0%, #e07040 100%);
+  color: #fff; font-size: 13px; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+  box-shadow: 0 2px 10px rgba(244,146,106,.3);
+  transition: filter .15s;
+}
+.btn-modal-confirm:hover { filter: brightness(1.08); }
+
+/* ══ DATE / TIME INPUTS — dark chrome picker ══ */
+input[type="date"], input[type="time"] {
+  color-scheme: dark;
+  cursor: pointer;
+}
+
+/* ══ SPACING GLOBAL — panels et sections ══ */
+.panel { margin-bottom: 16px; }
+.kpi-grid { margin-bottom: 16px; }
+
+/* ══ LEADS source tabs ══ */
+.ld-stab {
+  padding: 8px 14px; font-size: 12px; font-weight: 600;
+  color: var(--muted); cursor: pointer;
+  border: none; border-bottom: 2px solid transparent;
+  background: none; font-family: inherit;
+  transition: color .15s, border-color .15s;
+  white-space: nowrap;
+}
+.ld-stab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.ld-stab:hover { color: var(--text); }
+
+/* ══ LEADS CARD spacing ══ */
+.ld-card { padding: 14px 16px; margin-bottom: 8px; border-radius: 12px; }
+.ld-card + .ld-card { margin-top: 0; }
+
+/* ══ TC KPIS spacing ══ */
+.tc-kpis { gap: 8px; margin-bottom: 14px; }
+.tc-kpi { padding: 10px 14px; }
+.tc-kpi-label { font-size: 9px; letter-spacing: 1px; }
+.tc-kpi-val { font-size: 20px; }
+
+/* ══ PAGE sections gap ══ */
+.page > * + * { /* handled per-section */ }
+
+/* ══ TOPBAR buttons gap ══ */
+.topbar-actions { gap: 8px; }
+
+/* ══ OB-GRID spacing ══ */
+.ob-card { padding: 18px 20px; }
+.ob-grid { gap: 12px; margin-top: 16px; }
+
+/* ══ APPELS layout ══ */
+.ap-layout { gap: 16px; }
+.ap-list-col, .ap-detail-col { border-radius: 14px; }
+
+/* ══ MODAL inner spacing ══ */
+.tm-modal, [id$="-modal"] > div { gap: 0; }
+
+/* ══ SECTION DATE INPUTS in pln-modal ══ */
+#pln-modal input[type="date"],
+#pln-modal input[type="time"],
+#tc-modal input[type="date"] {
+  cursor: pointer;
+  color-scheme: dark;
+}
+
+
+/* ══ BTN NAV ARROW (‹ ›) ══ */
+.btn-nav-arrow {
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 9px; padding: 6px 14px;
+  color: var(--text); font-size: 16px;
+  cursor: pointer; line-height: 1;
+  transition: background .15s;
+}
+.btn-nav-arrow:hover { background: rgba(255,255,255,.12); }
+
+/* ══ TOPBAR BUTTONS ══ */
+.tb-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  height: 32px; padding: 0 12px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 8px; color: var(--muted);
+  font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all .15s; font-family: inherit;
+}
+.tb-btn:hover { background: rgba(255,255,255,.1); color: var(--text); }
+
+/* ══ MODAL FOOTER ══ */
+.tm-modal-btns, [class*="modal-btns"] {
+  display: flex; gap: 10px; margin-top: 20px;
+}
+
+/* ══ DATE/TIME INPUTS dark mode ══ */
+input[type="date"], input[type="time"] {
+  color-scheme: dark; cursor: pointer;
+  appearance: auto;
+}
+
+/* ══ SOURCE TABS (Leads) spacing ══ */
+.ld-stab { padding: 8px 14px; }
+
+/* ══ PAGE SPACING harmonisé ══ */
+#page-leads .page-header { margin-bottom: 14px; }
+#page-formulaire .page-header { margin-bottom: 16px; }
+#page-appels .page-header { margin-bottom: 14px; }
+#page-objectifs .page-header { margin-bottom: 16px; }
+#page-planning .page-header { margin-bottom: 14px; }
+#page-tresorerie .page-header { margin-bottom: 16px; }
+
+/* ══ TC BRIEF section ══ */
+.tc-brief { margin: 12px 0; padding: 14px 16px; border-radius: 12px;
+  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07); }
+.tc-brief-head { font-size: 12px; font-weight: 700; margin-bottom: 8px; }
+.tc-brief-row { display: flex; gap: 8px; }
+.tc-brief-input { flex: 1; min-height: 48px; resize: none; }
+.btn-proposer {
+  height: 48px; padding: 0 16px;
+  background: linear-gradient(135deg,#f4926a,#e07040);
+  border: none; border-radius: 9px;
+  color: #fff; font-size: 12px; font-weight: 700;
+  cursor: pointer; font-family: inherit; white-space: nowrap;
+}
+
+/* ══ TC KANBAN COLUMN HEADS ══ */
+.tc-col-head {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px; font-size: 11px; font-weight: 700;
+  letter-spacing: .6px; text-transform: uppercase;
+  color: var(--muted2); border-bottom: 1px solid var(--border);
+}
+.tc-col-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+/* ══ PIPELINE SECTION HEADS ══ */
+.pl-section-head {
+  display: flex; align-items: center; gap: 8px; padding: 12px 16px;
+  font-size: 12px; font-weight: 700;
+}
+.pl-section-tag {
+  margin-left: auto; font-size: 10px; font-weight: 700;
+  color: var(--muted); letter-spacing: .5px; text-transform: uppercase;
+}
+.pl-section { margin-bottom: 24px; }
+.pl-section-desc { font-size: 12px; color: var(--muted); padding: 0 16px 12px; }
+
+/* ══ PLANNING MODAL ══ */
+#pln-modal .tm-row2 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+/* ══ TÂCHES FILTERS spacing ══ */
+.tc-filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+
+/* ══ AP-TABS (appels) ══ */
+.ap-tabs { gap: 4px; margin-bottom: 12px; }
+.ap-tab {
+  flex: 1; padding: 8px 12px; border-radius: 8px;
+  font-size: 12px; font-weight: 600;
+}
+
+/* ══ TRÉSORERIE month selector ══ */
+#tr-month-label { font-size: 15px; font-weight: 800; }
+
+
+/* ══ PH-ACTION style override ══ */
+.ph-action[onclick*="clTriggerFilePick"] {
+  background: rgba(255,255,255,.06) !important;
+  border: 1px solid rgba(255,255,255,.1) !important;
+}
+</style>
+
 <script>
 const SUPABASE_URL = 'https://alpzagoprkpzirgtrdup.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFscHphZ29wcmtwemlyZ3RyZHVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3OTg2MDEsImV4cCI6MjA5MjM3NDYwMX0.R7R6esDFce1W4k_wK-aBtAG20oUtK2SmSNCVKENS91g';
 const ALLOWED = ['emrick.perilliat2006@gmail.com','eloisecld73@gmail.com'];
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Initialisation Supabase — robuste si le CDN ne charge pas
+let sb;
+try {
+  sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+} catch(_) {
+  console.warn('Supabase CDN non disponible — mode dégradé local');
+  // Stub minimal : garantit que le reste du script s'exécute et que bootApp est appelé
+  sb = {
+    auth: {
+      // CDN hors-ligne → ouvrir l'app directement depuis localStorage (usage local uniquement)
+      getSession: () => Promise.resolve({ data: { session: { user: { email: 'emrick.perilliat2006@gmail.com' } } }, error: null }),
+      signOut: () => { localStorage.clear(); window.location.href = 'auth.html'; }
+    },
+    from: () => ({
+      select: () => Promise.resolve({ data: [], error: 'offline' }),
+      upsert: () => Promise.resolve({ data: null, error: 'offline' }),
+    })
+  };
+}
 
 async function doSignOut() { await sb.auth.signOut(); window.location.href='auth.html'; }
 
+
+// ═══════════════════════════════════════════════
+// SUPABASE CRM SYNC — restore on boot, save on change
+// ═══════════════════════════════════════════════
+async function restoreFromSupabase() {
+  try {
+    const { data: rows, error } = await sb.from('crm_data').select('key, data');
+    if (error || !rows || rows.length === 0) return false;
+    for (const row of rows) {
+      if (row.key === 'leads') {
+        const obj = row.data;
+        try {
+          if (obj && Array.isArray(obj.leads))   localStorage.setItem('ld_v1',         JSON.stringify(obj.leads));
+          if (obj && Array.isArray(obj.deleted)) localStorage.setItem('ld_deleted_v1', JSON.stringify(obj.deleted));
+        } catch(_){}
+      } else {
+        const lsMap = {
+          projects:   'pr_v1',
+          clients:    'cl_crm_v1',
+          pipeline:   'pl_v2',
+          fa_retards: 'fa_retards_v1',
+          tasks:      'tc_v1',
+          documents:  'dc_docs_v1'
+        };
+        if (lsMap[row.key]) try { localStorage.setItem(lsMap[row.key], JSON.stringify(row.data)); } catch(_){}
+      }
+    }
+    return true;
+  } catch(e) { console.warn('restoreFromSupabase:', e); return false; }
+}
+
+async function saveToSupabase(key, data) {
+  try {
+    await sb.from('crm_data').upsert({ key, data, updated_at: new Date().toISOString() }, { onConflict: 'key' });
+  } catch(e) { console.warn('saveToSupabase:', e); }
+}
+
 function bootApp(email) {
-  document.getElementById('app').style.display='block';
-  const e = email||'';
-  document.getElementById('sb-av').textContent = e?e[0].toUpperCase():'E';
+  document.getElementById('app').style.display = 'block';
+  const e = email || '';
+  document.getElementById('sb-av').textContent = e ? e[0].toUpperCase() : 'E';
   document.getElementById('sb-email').textContent = e;
-  initCharts();
-  tcLoad(); tcRender();
-  plLoad(); renderPipeline();
-  clLoad(); clRenderGrid();
-  dcLoad();
-  ldInit(); prLoad();
+  // Init immédiate — chaque bloc isolé pour ne jamais bloquer les suivants
+  try { initCharts(); } catch(_) { console.warn('initCharts:', _); }
+  try { tcLoad(); tcRender(); } catch(_) { console.warn('tcLoad:', _); }
+  try { plLoad(); renderPipeline(); } catch(_) { console.warn('plLoad:', _); }
+  try { clLoad(); clRenderGrid(); } catch(_) { console.warn('clLoad:', _); }
+  try { dcLoad(); } catch(_) { console.warn('dcLoad:', _); }
+  try { ldInit(); prLoad(); } catch(_) { console.warn('ldInit:', _); }
+  // Forcer l'affichage du dashboard (sécurité si nav() a pu être appelé avant)
+  try {
+    const dashNav = document.querySelector('[data-page="dashboard"]');
+    if (dashNav) nav(dashNav);
+  } catch(_) {}
+  // Restauration Supabase en arrière-plan → re-render si données trouvées
+  restoreFromSupabase().then(restored => {
+    if (restored) {
+      try { tcLoad(); tcRender(); } catch(_) {}
+      try { plLoad(); renderPipeline(); } catch(_) {}
+      try { clLoad(); clRenderGrid(); } catch(_) {}
+      try { dcLoad(); } catch(_) {}
+      try { ldInit(); prLoad(); } catch(_) {}
+    }
+  }).catch(() => {});
 }
 
 // Navigation
@@ -2401,7 +3235,7 @@ function tcRender() {
           <div class="tc-card-foot">
             <span class="tc-pri pri-${t.pri}">${t.pri.charAt(0).toUpperCase()+t.pri.slice(1)}</span>
             <div class="tc-avs">${avHtml}</div>
-            ${t.due ? `<span class="tc-date${retard?' retard':''}">📅 ${fmtDate(t.due)}</span>` : ''}
+            ${t.due ? `<span class="tc-date${retard?' retard':''}">${fmtDate(t.due)}</span>` : ''}
             <button class="tc-card-del" onclick="tcDel('${t.id}')" title="Terminer / Supprimer">✓ Terminé</button>
           </div>`;
         el.addEventListener('dragstart', ev => {
@@ -2621,7 +3455,10 @@ function plLoad() {
   try { plData = JSON.parse(localStorage.getItem(PL_KEY)) || DEFAULT_DATA; }
   catch { plData = DEFAULT_DATA; }
 }
-function plSave() { localStorage.setItem(PL_KEY, JSON.stringify(plData)); }
+function plSave() {
+  localStorage.setItem(PL_KEY, JSON.stringify(plData));
+  saveToSupabase('pipeline', plData);
+}
 
 let dragId = null;
 
@@ -2664,7 +3501,7 @@ function renderBoard(containerId, cols, board) {
 
 function cardHTML(c) {
   const sub = [c.entreprise, c.secteur].filter(Boolean).join(' · ');
-  const contact = [c.tel ? '📞 '+c.tel : '', c.email ? '✉ '+c.email : ''].filter(Boolean).join('  ');
+  const contact = [c.tel ? c.tel : '', c.email ? c.email : ''].filter(Boolean).join('  ·  ');
   return `<div class="kc" id="kc-${c.id}" draggable="true"
     ondragstart="plCardDragStart(event,'${c.id}')"
     ondragend="plCardDragEnd(event)"
@@ -2678,7 +3515,7 @@ function cardHTML(c) {
     <div class="kc-maint">${c.maint}</div>
     ${contact ? `<div style="font-size:11px;color:var(--muted);margin-top:4px">${contact}</div>` : ''}
     <div class="kc-actions">
-      <button class="kc-del" onclick="event.stopPropagation();delCard('${c.id}')" title="Supprimer">🗑</button>
+      <button class="kc-del" onclick="event.stopPropagation();delCard('${c.id}')" title="Supprimer"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>
     </div>
   </div>`;
 }
@@ -2875,6 +3712,7 @@ function clSave() {
     factures: (c.factures||[]).map(f => f.type==='import' ? (({data,...r})=>r)(f) : f),
   }));
   localStorage.setItem(CL_KEY, JSON.stringify(slim));
+  saveToSupabase('clients', slim);
 }
 
 const CL_STATUT_LABELS = { actif:'Actif', encours:'En cours', pause:'En pause', termine:'Terminé', retard:'Retard paiement' };
@@ -2943,6 +3781,7 @@ async function clOpenDetail(id) {
   document.getElementById('cl-tab-infos').style.display='block';
   document.getElementById('cl-tab-infos').classList.add('active');
 
+  await clLoadFilesFromIDB(c);
   clRenderInfos(c);
   clRenderDocs(c);
   clRenderAssets(c);
@@ -3049,27 +3888,27 @@ function dcSizeTxt(bytes) {
 function dcRender() {
   const el = document.getElementById('dc-docs-list');
   if (!el) return;
-  if (!dcData.length) { el.innerHTML = '<div class="empty"><div class="ei">📄</div>Aucun document importé pour l\'instant.</div>'; return; }
+  if (!dcData.length) { el.innerHTML = '<div class="empty"><div class="ei"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>Aucun document importé pour l\'instant.</div>'; return; }
   el.innerHTML = dcData.map(d => `
     <div class="cl-doc-row">
       <span class="cl-doc-icon">${clDocIcon(d.type)}</span>
       <span class="cl-doc-name" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.nom}</span>
       <span class="cl-doc-date" style="flex-shrink:0">${dcSizeTxt(d.taille)}</span>
       <span class="cl-doc-date" style="flex-shrink:0">${d.date||''}</span>
-      ${d.data ? `<a href="${d.data}" download="${d.nom}" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;opacity:.7;text-decoration:none" title="Télécharger">⬇️</a>` : ''}
-      <button onclick="dcDelDoc('${d.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;opacity:.5;margin-left:4px" title="Supprimer">🗑</button>
+      ${d.data ? `<a href="${d.data}" download="${d.nom}" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;opacity:.7;text-decoration:none" title="Télécharger"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></a>` : ''}
+      <button onclick="dcDelDoc('${d.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;opacity:.5;margin-left:4px" title="Supprimer"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>
     </div>`).join('');
 }
 
 function clDocIcon(type) {
-  if (!type) return '📄';
-  if (type.startsWith('image/')) return '🖼️';
-  if (type === 'application/pdf') return '📕';
-  if (type.includes('word') || type.includes('document')) return '📝';
-  if (type.includes('sheet') || type.includes('excel')) return '📊';
-  if (type.includes('presentation') || type.includes('powerpoint')) return '📊';
-  if (type.includes('zip') || type.includes('archive')) return '🗜️';
-  return '📄';
+  if (!type) return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
+  if (type.startsWith('image/')) return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
+  if (type === 'application/pdf') return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>';
+  if (type.includes('word') || type.includes('document')) return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
+  if (type.includes('sheet') || type.includes('excel')) return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
+  if (type.includes('presentation') || type.includes('powerpoint')) return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
+  if (type.includes('zip') || type.includes('archive')) return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>';
+  return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
 }
 
 function clRenderDocs(c) {
@@ -3081,8 +3920,8 @@ function clRenderDocs(c) {
       <span class="cl-doc-icon">${clDocIcon(d.type)}</span>
       <span class="cl-doc-name" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.nom}</span>
       <span class="cl-doc-date" style="flex-shrink:0">${d.date||''}</span>
-      ${d.data ? `<a href="${d.data}" download="${d.nom}" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;opacity:.7;text-decoration:none" title="Télécharger">⬇️</a>` : ''}
-      <button onclick="clDelDoc('${d.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;opacity:.5;margin-left:4px" title="Supprimer">🗑</button>
+      ${d.data ? `<button onclick="event.stopPropagation();clPreviewDoc('${d.id}')" style="background:none;border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:4px 8px;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center" title="Prévisualiser"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><a href="${d.data}" download="${d.nom}" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;opacity:.7;text-decoration:none" title="Télécharger"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></a>` : ''}
+      <button onclick="clDelDoc('${d.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;opacity:.5;margin-left:4px" title="Supprimer"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>
     </div>`).join('');
 }
 
@@ -3168,6 +4007,12 @@ function clHandleFiles(files) {
     };
     reader.readAsDataURL(file);
   }))).then(() => { clSave(); clRenderDocs(c); });
+}
+
+function clPreviewDoc(did) {
+  const c = clData.find(x=>x.id===clCurrentId); if (!c) return;
+  const d = (c.docs||[]).find(x=>x.id===did); if (!d||!d.data) return;
+  openImportedFile(d.data, d.nom);
 }
 
 function clAddDoc() { clTriggerFilePick('*/*', clHandleFiles); }
@@ -3274,7 +4119,7 @@ function clRenderPaiements(c) {
       <td style="color:var(--accent);font-weight:700">${p.montant||'—'}</td>
       <td>${p.type||'—'}</td>
       <td style="color:var(--muted)">${p.note||''}</td>
-      <td><button onclick="clDelPaiement('${p.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;opacity:.5">🗑</button></td>
+      <td><button onclick="clDelPaiement('${p.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;opacity:.5"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button></td>
     </tr>`).join('') + '</tbody></table>';
 }
 
@@ -3307,9 +4152,9 @@ function clRenderDevis(c) {
     const isImport = d.type === 'import';
     const badge = d.statut==='signé'?'badge-green':d.statut==='refusé'?'badge-red':isImport?'badge-gray':'badge-blue';
     const actions = isImport
-      ? `<button onclick="dvPreview('${d.id}')" title="Ouvrir" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">👁</button>`
-      : `<button onclick="dvPreview('${d.id}')" title="Voir" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">👁</button>
-         <button onclick="dvSendEmail('${d.id}')" title="Email" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">📧</button>
+      ? `<button onclick="dvPreview('${d.id}')" title="Ouvrir" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>`
+      : `<button onclick="dvPreview('${d.id}')" title="Voir" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+         <button onclick="dvSendEmail('${d.id}')" title="Email" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></button>
          ${d.statut!=='signé'?'<button onclick="dvSign(\''+d.id+'\')" title="Signé" style="background:rgba(74,222,128,.15);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#4ade80;font-size:13px;font-weight:700">✓</button>':''}`;
     return `<div style="display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--border)">
       <div style="flex:1;min-width:0">
@@ -3319,7 +4164,7 @@ function clRenderDevis(c) {
       <span class="badge ${badge}">${d.statut||'en attente'}</span>
       <div style="display:flex;gap:4px;flex-shrink:0;align-items:center">
         ${actions}
-        <button onclick="clDelDevis('${d.id}')" title="Supprimer" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:13px;opacity:.5">🗑</button>
+        <button onclick="clDelDevis('${d.id}')" title="Supprimer" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:13px;opacity:.5"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>
       </div>
     </div>`;
   }).join('');
@@ -3557,7 +4402,7 @@ tbody tr:last-child td{border-bottom:none}
 .sig-space{height:28px}
 .btn{background:#f4926a;color:#fff;border:none;padding:10px 24px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;margin:14px 32px}
 </style></head><body>
-<button class="btn no-print" onclick="window.print()">🖨 Imprimer / Enregistrer en PDF</button>
+<button class="btn no-print" onclick="window.print()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> Imprimer / PDF</button>
 <div class="topbar">
   <div class="logo">
     <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
@@ -3630,9 +4475,9 @@ function clRenderFactures(c) {
     const badge = f.statut==='payee'?'badge-green':f.statut==='retard'?'badge-red':isImport?'badge-gray':'badge-orange';
     const label = f.statut==='payee'?'Payée':f.statut==='retard'?'Retard':isImport?'Importée':'En attente';
     const actions = isImport
-      ? `<button onclick="faViewFromGlobal('${f.id}')" title="Prévisualiser" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">👁</button><button onclick="faRenameFromGlobal('${f.id}')" title="Renommer" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">✏️</button>`
-      : `<button onclick="faView('${f.id}')" title="Voir" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">👁</button>
-         <button onclick="faSendEmail('${f.id}')" title="Email" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px">📧</button>
+      ? `<button onclick="faViewFromGlobal('${f.id}')" title="Prévisualiser" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button onclick="faRenameFromGlobal('${f.id}')" title="Renommer" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>`
+      : `<button onclick="faView('${f.id}')" title="Voir" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+         <button onclick="faSendEmail('${f.id}')" title="Email" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></button>
          ${f.statut!=='payee'?'<button onclick="faMarkPaid(\''+f.id+'\')" title="Payée" style="background:rgba(74,222,128,.15);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#4ade80;font-size:13px;font-weight:700">✓</button>':''}`;
     return `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
       <div style="flex:1;min-width:0">
@@ -3642,7 +4487,7 @@ function clRenderFactures(c) {
       <span class="badge ${badge}" style="flex-shrink:0">${label}</span>
       <div style="display:flex;gap:4px;flex-shrink:0;align-items:center">
         ${actions}
-        <button onclick="faDelFacture('${f.id}')" title="Supprimer" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:13px;opacity:.5">🗑</button>
+        <button onclick="faDelFacture('${f.id}')" title="Supprimer" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:13px;opacity:.5"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>
       </div>
     </div>`;
   }).join('');
@@ -3829,7 +4674,7 @@ async function faSendEmail(fid){
     alert("Échec de l'envoi automatique : " + (e.message||e) + "\n\nOuverture de la facture pour envoi manuel…");
     faPrintFa(fa);
   } finally {
-    btns.forEach(b=>{ b.textContent = b.dataset.orig || '📧'; b.disabled = false; });
+    btns.forEach(b=>{ b.textContent = b.dataset.orig || '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>'; b.disabled = false; });
   }
 }
 // Global actions (since clientId must be found from global list)
@@ -4033,10 +4878,10 @@ function renderGlobalFactures(){
         <td style="color:var(--muted)">${f.date||'—'}</td>
         <td style="color:#4ade80;font-weight:700">${f.totalTxt||f.montant||'—'}</td>
         <td style="white-space:nowrap">
-          <button onclick="faViewFromGlobal('${f.id}')" title="Prévisualiser" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px">👁</button>
-          <button onclick="faRenameFromGlobal('${f.id}')" title="Renommer" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px">✏️</button>
-          <button onclick="faSendEmailFromGlobal('${f.id}')" title="Email" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px">📧</button>
-          <button onclick="faDelFromGlobal('${f.id}')" title="Supprimer" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px;opacity:.5">🗑</button>
+          <button onclick="faViewFromGlobal('${f.id}')" title="Prévisualiser" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          <button onclick="faRenameFromGlobal('${f.id}')" title="Renommer" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+          <button onclick="faSendEmailFromGlobal('${f.id}')" title="Email" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></button>
+          <button onclick="faDelFromGlobal('${f.id}')" title="Supprimer" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px;opacity:.5"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>
         </td></tr>`).join('')+
       '</tbody></table>';
   }
@@ -4070,16 +4915,16 @@ function renderGlobalDevis(filter){
       <td style="color:var(--accent);font-weight:700">${d.totalTxt||'—'}</td>
       <td><span class="badge ${d.statut==='signé'?'badge-green':d.statut==='refusé'?'badge-red':d.statut==='envoyé'?'badge-blue':'badge-orange'}">${d.statut==='envoyé'?'Envoyé':d.statut==='signé'?'Signé':d.statut==='refusé'?'Refusé':d.statut||'En attente'}</span></td>
       <td style="white-space:nowrap">
-        <button onclick="dvPreviewFromGlobal('${d.id}')" title="Voir PDF" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px">👁</button>
-        <button onclick="dvSendEmailFromGlobal('${d.id}')" title="Email" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px">📧</button>
+        <button onclick="dvPreviewFromGlobal('${d.id}')" title="Voir PDF" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        <button onclick="dvSendEmailFromGlobal('${d.id}')" title="Email" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></button>
         <select onchange="dvChangeStatutGlobal('${d.id}',this.value)" style="background:#1a1a22;border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:#fff;font-size:11px;outline:none;cursor:pointer;margin-right:2px">
           <option value="en attente" ${d.statut==='en attente'||!d.statut?'selected':''}>En attente</option>
           <option value="envoyé" ${d.statut==='envoyé'?'selected':''}>Envoyé</option>
           <option value="signé" ${d.statut==='signé'?'selected':''}>Signé</option>
           <option value="refusé" ${d.statut==='refusé'?'selected':''}>Refusé</option>
         </select>
-        <button onclick="dvPreviewFromGlobal('${d.id}')" title="Voir" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px">👁</button>
-        <button onclick="dvDelFromGlobal('${d.id}')" title="Supprimer" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px;opacity:.5">🗑</button>
+        <button onclick="dvPreviewFromGlobal('${d.id}')" title="Voir" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        <button onclick="dvDelFromGlobal('${d.id}')" title="Supprimer" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px;opacity:.5"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>
       </td></tr>`).join('')+
     '</tbody></table>';
 }
@@ -4219,8 +5064,563 @@ tbody tr:last-child td{border-bottom:none}
 .cond-item{display:block;position:relative;padding-left:14px;font-size:11px;color:#444;line-height:1.65;margin-bottom:8px}
 .cond-dot{position:absolute;left:1px;top:5px;width:5px;height:5px;border-radius:50%;background:#f4926a;display:inline-block}
 .btn{background:#f4926a;color:#fff;border:none;padding:10px 24px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;margin:14px 32px}
+
+/* ══════════════════════════════════════════════════════════════
+   UX REDESIGN FINAL — v3.0
+   Scope : layout, icônes, espacement, typographie, composants
+   Aucune fonctionnalité JS touchée.
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── SVG nav icons ── */
+.ni-svg { width:16px; height:16px; flex-shrink:0; stroke:currentColor; fill:none;
+          stroke-width:1.75; stroke-linecap:round; stroke-linejoin:round; }
+
+/* ── Variables étendues ── */
+:root {
+  --sidebar-w: 248px;
+  --topbar-h: 56px;
+  --page-px: 28px;
+  --page-py: 26px;
+  --r-btn: 10px;
+  --btn-h: 36px;
+}
+
+/* ══ SIDEBAR — redesign complet ══ */
+.sidebar {
+  width: var(--sidebar-w);
+  background: linear-gradient(180deg, #0e1020 0%, #0b0d18 100%);
+  border-right: 1px solid rgba(255,255,255,.055);
+  padding: 0;
+}
+
+.sb-top {
+  padding: 16px 14px;
+  border-bottom: 1px solid rgba(255,255,255,.055);
+  gap: 11px;
+}
+
+.sb-logo-icon {
+  width: 32px; height: 32px;
+  background: var(--grad-accent);
+  border-radius: 9px;
+  box-shadow: 0 3px 12px rgba(244,146,106,.35);
+  display: flex; align-items: center; justify-content: center;
+}
+
+.sb-logo-name { font-size: 13px; font-weight: 800; letter-spacing: -.25px; }
+.sb-logo-role  { font-size: 10px; color: var(--accent); font-weight: 600; letter-spacing: .3px; margin-top: 1px; }
+
+.sb-nav { padding: 10px 8px; flex: 1; }
+
+.sb-section {
+  font-size: 9px; font-weight: 800; letter-spacing: 1.5px;
+  color: rgba(144,148,179,.45); text-transform: uppercase;
+  padding: 18px 10px 5px;
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; margin: 1px 0;
+  border-radius: 9px; cursor: pointer;
+  color: rgba(144,148,179,.75); font-size: 13px; font-weight: 500;
+  transition: background .13s, color .13s, transform .13s var(--ease);
+  position: relative; user-select: none;
+  line-height: 1;
+}
+
+.nav-item span:not(.ni-badge) { flex: 1; }
+
+.nav-item:hover {
+  background: rgba(255,255,255,.055);
+  color: var(--text);
+  transform: none;
+}
+
+.nav-item.active {
+  background: linear-gradient(90deg, rgba(244,146,106,.18) 0%, rgba(244,146,106,.06) 100%);
+  color: var(--accent);
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1px rgba(244,146,106,.22);
+  transform: none;
+}
+
+.nav-item.active .ni-svg { stroke: var(--accent); }
+.nav-item.active::after { display: none; } /* remove dot, gradient is enough */
+
+.nav-item .ni-badge {
+  background: var(--red);
+  color: #fff; font-size: 9px; font-weight: 800;
+  padding: 1px 6px; border-radius: 20px;
+  min-width: 18px; text-align: center;
+  margin-left: auto;
+}
+
+.sb-bottom {
+  padding: 10px 8px 12px;
+  border-top: 1px solid rgba(255,255,255,.055);
+  background: rgba(0,0,0,.1);
+}
+
+.sb-user { padding: 6px 10px 8px; gap: 9px; }
+.sb-user-email { font-size: 11px; color: var(--muted2); }
+.sb-avatar { width: 28px; height: 28px; border-radius: 50%; font-size: 11px; }
+
+.btn-logout {
+  display: flex; align-items: center; gap: 8px;
+  width: 100%; padding: 8px 10px;
+  background: transparent; border: none; border-radius: 8px;
+  color: rgba(144,148,179,.6); font-size: 12px; font-weight: 500;
+  cursor: pointer; transition: all .15s; font-family: inherit;
+}
+.btn-logout:hover { background: rgba(239,68,68,.08); color: var(--red); }
+.btn-logout svg { opacity: .7; }
+
+/* ══ TOPBAR — redesign ══ */
+.topbar {
+  height: var(--topbar-h);
+  padding: 0 20px 0 22px;
+  background: rgba(11,13,24,.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255,255,255,.055);
+  box-shadow: none;
+  z-index: 20; position: relative;
+}
+
+.topbar-section { font-size: 10px; letter-spacing: 1px; color: var(--muted2); font-weight: 600; }
+.topbar-title   { font-size: 14px; font-weight: 700; letter-spacing: -.2px; }
+.topbar-left    { gap: 6px; }
+.topbar-left > span:nth-child(2) { color: rgba(255,255,255,.18); }
+
+.topbar-right { gap: 6px; }
+
+.tb-btn {
+  display: flex; align-items: center; gap: 6px;
+  height: 32px; padding: 0 12px;
+  border-radius: 8px;
+  background: rgba(255,255,255,.045);
+  border: 1px solid rgba(255,255,255,.07);
+  color: rgba(144,148,179,.8);
+  font-size: 12px; font-weight: 500; cursor: pointer;
+  transition: all .15s var(--ease);
+  font-family: inherit; white-space: nowrap;
+}
+.tb-btn:hover { background: rgba(255,255,255,.08); color: var(--text); border-color: rgba(255,255,255,.12); }
+.tb-btn.green { color: var(--green); }
+
+.tb-mode-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 6px rgba(45,213,115,.6);
+}
+
+.tb-notif { position: relative; padding: 0 10px; }
+.tb-notif-dot {
+  position: absolute; top: -5px; right: -3px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--red); color: #fff;
+  font-size: 9px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid #0b0d18;
+}
+
+.tb-refresh { gap: 6px; }
+
+/* ══ MAIN AREA ══ */
+.main { padding: var(--page-py) var(--page-px); }
+
+/* ══ PAGE HEADERS — système unifié ══ */
+.page-header {
+  display: flex; align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 22px;
+  gap: 16px; flex-wrap: wrap;
+}
+.page-header-left { display: flex; flex-direction: column; gap: 2px; }
+.page-eyebrow {
+  font-size: 10px; font-weight: 700;
+  color: var(--accent); letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+.page-title {
+  font-size: 24px; font-weight: 800;
+  letter-spacing: -.5px; line-height: 1.15;
+  margin: 0;
+}
+.page-sub { font-size: 12px; color: var(--muted); margin: 2px 0 0; }
+
+/* Pipeline / Tâches headers déjà existants — uniformiser les couleurs */
+.pl-meta { font-size: 10px; letter-spacing: 1.2px; }
+.pl-title { font-size: 24px; letter-spacing: -.5px; }
+.tc-title { font-size: 24px; letter-spacing: -.5px; }
+
+/* ══ KPI GRID — 3 col default, 6 max ══ */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px; margin-bottom: 20px;
+}
+@media (min-width: 1400px) { .kpi-grid { grid-template-columns: repeat(6, 1fr); } }
+@media (max-width: 1200px) { .kpi-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 900px)  { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px)  { .kpi-grid { grid-template-columns: 1fr; } }
+
+.kpi {
+  padding: 18px 16px;
+  border-radius: var(--r-lg);
+}
+.kpi-icon {
+  width: 34px; height: 34px;
+  border-radius: 10px;
+  font-size: 15px;
+  margin-bottom: 14px;
+}
+.kpi-val {
+  font-size: 28px; font-weight: 800;
+  letter-spacing: -1px; line-height: 1;
+}
+.kpi-label {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .5px; margin-top: 7px;
+  color: var(--muted);
+}
+.kpi-sub { font-size: 11px; color: var(--muted2); margin-top: 3px; }
+
+/* ══ KPI STRIP (pipeline, tâches) ══ */
+.pl-kpis, .tc-kpis {
+  border-radius: var(--r-md);
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+.pl-kpi, .tc-kpi { padding: 14px 18px; }
+.pl-kpi-label, .tc-kpi-label {
+  font-size: 9.5px; font-weight: 700;
+  letter-spacing: .8px; color: var(--muted2);
+}
+.pl-kpi-val, .tc-kpi-val { font-size: 22px; letter-spacing: -.6px; }
+
+/* ══ PANELS ══ */
+.panel { border-radius: var(--r-lg); overflow: hidden; }
+.panel-head {
+  padding: 14px 18px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.panel-head h3 {
+  font-size: 13px; font-weight: 700;
+  display: flex; align-items: center; gap: 8px;
+}
+.panel-head h3::before {
+  content: ''; width: 3px; height: 14px; border-radius: 2px;
+  background: var(--grad-accent); flex-shrink: 0;
+}
+.panel-head .ph-meta { font-size: 11px; color: var(--muted2); }
+.panel-head .ph-action {
+  font-size: 12px; font-weight: 600; color: var(--accent);
+  cursor: pointer; transition: opacity .13s;
+}
+.panel-head .ph-action:hover { opacity: .7; }
+
+/* ══ TABLES ══ */
+table { width: 100%; border-collapse: collapse; }
+th {
+  padding: 10px 18px;
+  font-size: 9.5px; font-weight: 700;
+  color: var(--muted2); letter-spacing: .8px;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+td {
+  padding: 13px 18px; font-size: 13px;
+  border-bottom: 1px solid rgba(255,255,255,.025);
+  vertical-align: middle;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,.022); }
+td strong { font-weight: 700; }
+
+/* ══ BADGES ══ */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px; border-radius: 7px;
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .3px;
+}
+.badge::before {
+  content: ''; width: 5px; height: 5px;
+  border-radius: 50%; background: currentColor; flex-shrink: 0;
+}
+
+/* ══ BOUTONS PRIMAIRES ══ */
+.btn-prospect, .btn-newtask {
+  display: flex; align-items: center; gap: 7px;
+  height: 38px; padding: 0 18px;
+  background: var(--grad-accent); color: #fff;
+  border: none; border-radius: 11px;
+  font-size: 13px; font-weight: 700;
+  cursor: pointer; white-space: nowrap;
+  box-shadow: 0 3px 14px rgba(244,146,106,.28);
+  transition: filter .15s, box-shadow .18s var(--ease), transform .1s;
+  font-family: inherit;
+}
+.btn-prospect:hover, .btn-newtask:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 5px 20px rgba(244,146,106,.38);
+}
+.btn-prospect:active, .btn-newtask:active { transform: scale(.97); }
+
+/* ══ BOUTON LOGOUT ══ */
+.btn-logout { font-family: var(--font-ui); }
+
+/* ══ LEADS ══ */
+.ld-stab { font-size: 13px; padding: 10px 14px; border-width: 2px; }
+.ld-cnt  { font-size: 10px; border-radius: 20px; padding: 1px 7px; }
+
+.ld-card {
+  border-radius: var(--r-lg); padding: 16px 18px;
+  margin-bottom: 10px;
+  border: 1px solid var(--border);
+  border-left-width: 1px; /* override the 3px left strip */
+  background: linear-gradient(135deg, rgba(244,146,106,.055) 0%, rgba(20,22,36,.7) 55%);
+  box-shadow: var(--shadow-sm);
+  transition: border-color .15s, box-shadow .18s var(--ease), background .15s;
+}
+.ld-card:hover {
+  border-color: rgba(244,146,106,.38);
+  box-shadow: var(--shadow-md);
+}
+
+/* ══ KANBAN PIPELINE ══ */
+.kb-col {
+  flex-shrink: 0; width: 230px;
+  background: rgba(255,255,255,.025);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md); padding: 10px;
+  min-height: 120px;
+}
+.kb-col-head { margin-bottom: 10px; }
+.kb-col-name { font-size: 10px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; }
+.kb-count    { font-size: 10px; font-weight: 700; background: rgba(255,255,255,.08); border-radius: 20px; padding: 1px 7px; }
+
+.kc {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px; padding: 11px 12px;
+  margin-bottom: 6px; cursor: grab;
+  box-shadow: var(--shadow-sm);
+  transition: border-color .13s, transform .13s var(--ease), box-shadow .13s var(--ease), opacity .13s;
+}
+.kc:hover { border-color: rgba(244,146,106,.4); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.kc-name  { font-size: 12px; font-weight: 600; }
+.kc-price { font-size: 11px; color: var(--accent); font-weight: 800; }
+.kc-maint { font-size: 10px; color: var(--muted2); }
+
+/* ══ TÂCHES KANBAN ══ */
+.tc-col { width: 300px; }
+.tc-card {
+  border-radius: 11px; padding: 13px 14px; margin-bottom: 8px;
+  background: var(--card); border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: border-color .13s, transform .13s var(--ease), box-shadow .13s var(--ease);
+}
+.tc-card:hover { border-color: rgba(244,146,106,.35); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.tc-card-title { font-size: 13px; font-weight: 700; margin-bottom: 5px; }
+.tc-card-desc  { font-size: 11px; color: var(--muted); }
+.tc-card-foot  { margin-top: 10px; }
+
+.tc-deadline {
+  border: 1px solid rgba(244,146,106,.3);
+  border-radius: var(--r-md); padding: 13px 16px;
+  margin-bottom: 14px;
+  background: linear-gradient(90deg, rgba(244,146,106,.1) 0%, rgba(244,146,106,.025) 100%);
+}
+.tc-brief {
+  border-radius: var(--r-lg); padding: 14px 16px; margin-bottom: 14px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.018);
+}
+.tc-brief-head { font-size: 13px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.tc-brief-input {
+  background: var(--field); border-radius: 10px;
+  padding: 10px 14px; font-size: 13px;
+}
+.btn-proposer { border-radius: 10px; height: 38px; padding: 0 16px; }
+
+.tc-filter-sel {
+  height: 34px; padding: 0 12px;
+  border-radius: 9px; font-size: 12px;
+  background: var(--field); border: 1px solid var(--border);
+  color: var(--text); outline: none; cursor: pointer;
+  font-family: inherit;
+}
+
+/* ══ CLIENTS GRID ══ */
+.cl-card { border-radius: var(--r-lg); padding: 18px; }
+.cl-avatar { width: 38px; height: 38px; border-radius: 11px; }
+.cl-card-name { font-size: 14px; font-weight: 800; letter-spacing: -.2px; }
+.cl-card-secteur { font-size: 11px; color: var(--muted2); margin-top: 1px; }
+.cl-card-foot { margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.06); }
+
+.cl-tab {
+  height: 40px; padding: 0 16px;
+  font-size: 13px; font-weight: 500;
+  border: none; border-bottom: 2px solid transparent;
+  color: var(--muted); cursor: pointer;
+  transition: color .13s, border-color .13s;
+  background: none; font-family: inherit;
+}
+.cl-tab:hover { color: var(--text); }
+.cl-tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 700; }
+
+/* ══ PROJETS ══ */
+.pr-card { border-radius: var(--r-lg); }
+
+/* ══ MODALES ══ */
+.pl-modal-overlay, .tm-overlay { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+
+.pl-modal, .tm-modal {
+  border-radius: var(--r-xl);
+  padding: 28px 30px;
+  border: 1px solid rgba(255,255,255,.09);
+  box-shadow: var(--shadow-lg);
+  background: linear-gradient(180deg, #191b2d 0%, #121421 100%);
+}
+
+.pl-modal h3, .tm-modal h3 { font-size: 18px; font-weight: 800; letter-spacing: -.3px; margin-bottom: 22px; }
+
+.pl-modal label, .tm-modal label {
+  display: block; font-size: 11px; font-weight: 700;
+  color: var(--muted); text-transform: uppercase;
+  letter-spacing: .5px; margin-bottom: 6px;
+}
+
+.pl-modal input, .pl-modal select,
+.tm-modal input[type=text], .tm-modal textarea,
+.tm-modal select, .tm-modal input[type=date] {
+  width: 100%; padding: 10px 13px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--border); border-radius: 10px;
+  color: var(--text); font-size: 13px;
+  outline: none; margin-bottom: 14px;
+  transition: border-color .15s, box-shadow .15s;
+  font-family: inherit; box-sizing: border-box;
+}
+.pl-modal input:focus, .pl-modal select:focus,
+.tm-modal input:focus, .tm-modal textarea:focus,
+.tm-modal select:focus { border-color: var(--accent); box-shadow: var(--ring); }
+
+.pl-modal-btns, .tm-modal-btns { display: flex; gap: 10px; margin-top: 8px; }
+.pl-modal-btns button, .tm-modal-btns button {
+  flex: 1; height: 42px; border-radius: 11px;
+  border: none; font-size: 13px; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+}
+.pl-modal-btns .btn-confirm, .tm-btn-confirm {
+  background: var(--grad-accent); color: #fff;
+  box-shadow: 0 3px 12px rgba(244,146,106,.28);
+}
+.pl-modal-btns .btn-cancel, .tm-btn-cancel {
+  background: rgba(255,255,255,.06);
+  color: var(--muted);
+  border: 1px solid rgba(255,255,255,.07);
+}
+.pl-modal-btns .btn-cancel:hover, .tm-btn-cancel:hover {
+  background: rgba(255,255,255,.1); color: var(--text);
+}
+
+/* ══ PAY CARDS ══ */
+.pay-card {
+  border-radius: var(--r-md); padding: 16px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.025);
+  cursor: pointer;
+  transition: border-color .18s, background .18s, box-shadow .18s var(--ease), transform .15s var(--ease);
+}
+.pay-card:hover { border-color: var(--accent); transform: translateY(-1px); box-shadow: var(--shadow-md), var(--shadow-accent); }
+.pay-card-price { font-size: 22px; font-weight: 800; letter-spacing: -.5px; }
+
+/* ══ OBJECTIFS ══ */
+.ob-card { border-radius: var(--r-lg); }
+.ob-bar-bg { border-radius: 99px; height: 6px; }
+.ob-bar { border-radius: 99px; }
+
+/* ══ TRÉSORERIE ══ */
+.tr-stat { border-radius: var(--r-lg); padding: 18px; }
+.tr-stat-val { font-size: 24px; font-weight: 800; letter-spacing: -.7px; }
+
+/* ══ PLANNING ══ */
+.pl-day { border-radius: 10px; }
+.pl-task-pill { border-radius: 5px; }
+
+/* ══ FORMULAIRE ANALYTICS ══ */
+.fm-period, .fa-filter, .dv-filter, .pay-nx {
+  height: 32px; padding: 0 14px; border-radius: 9px;
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  transition: all .15s; font-family: inherit;
+  border: 1px solid var(--border); color: var(--muted);
+  background: rgba(255,255,255,.04);
+}
+.fm-period.active, .fa-filter.active, .dv-filter.active,
+.fm-period:hover, .fa-filter:hover, .dv-filter:hover,
+.pay-nx.active, .pay-nx:hover {
+  background: var(--grad-accent); color: #fff; border-color: transparent;
+}
+
+/* ══ QUICK ROWS / ACTIVITY ══ */
+.qrow { padding: 11px 18px; }
+.act-item { padding: 11px 18px; }
+.act-dot { width: 7px; height: 7px; margin-top: 5px; }
+
+/* ══ TASK ROWS (dashboard) ══ */
+.task-row { padding: 10px 18px; }
+.task-cb {
+  width: 17px; height: 17px; border-radius: 5px;
+  border: 1.5px solid rgba(255,255,255,.2);
+  cursor: pointer; transition: all .13s;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.task-cb:hover { border-color: var(--accent); }
+.task-cb.done { background: var(--green); border-color: var(--green); box-shadow: 0 0 8px rgba(45,213,115,.3); }
+.task-cb.done::after { content: '✓'; font-size: 10px; color: #fff; font-weight: 900; }
+.task-pri { height: 20px; padding: 0 8px; border-radius: 6px; font-size: 10px; font-weight: 700; display: flex; align-items: center; }
+
+/* ══ APPELS ══ */
+.ap-call-item.selected { box-shadow: inset 3px 0 0 var(--accent); }
+
+/* ══ EMPTY STATES ══ */
+.empty { padding: 52px 40px; text-align: center; }
+.empty .ei { font-size: 36px; margin-bottom: 12px; opacity: .7; }
+.kb-empty, .tc-empty { color: var(--muted2); font-size: 12px; }
+
+/* ══ INPUTS FOCUS GLOBAUX ══ */
+input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible {
+  outline: 2px solid rgba(244,146,106,.5);
+  outline-offset: 2px;
+}
+
+/* ══ SCROLLBAR PREMIUM ══ */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,.12); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.22); }
+
+/* ══ SÉLECTION ══ */
+::selection { background: rgba(244,146,106,.3); color: #fff; }
+
+/* ══ RESPONSIVE ══ */
+@media (max-width: 1100px) { .kpi-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 900px)  { .kpi-grid { grid-template-columns: repeat(2, 1fr); } .grid-2,.grid-6040,.grid-3 { grid-template-columns: 1fr; } }
+@media (max-width: 700px)  { .sidebar { display: none; } .main { padding: 16px; } }
+@media (max-width: 500px)  { .kpi-grid { grid-template-columns: 1fr; } }
+
+/* ══ REDUCED MOTION ══ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+
 </style></head><body>
-${withPrintBtn ? '<button class="btn no-print" onclick="window.print()">🖨 Imprimer / Enregistrer en PDF</button>' : ''}
+${withPrintBtn ? '<button class="btn no-print" onclick="window.print()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> Imprimer / PDF</button>' : ''}
 <div class="topbar">
   <div class="logo">
     <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
@@ -4400,9 +5800,9 @@ function clRenderPayLinks(c) {
         <div style="font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.url}</div>
         <div style="font-size:11px;color:var(--muted);margin-top:2px">${l.date}</div>
       </div>
-      <button onclick="navigator.clipboard.writeText('${l.url}');this.textContent='✓ Copié'" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:6px;padding:6px 12px;color:var(--muted);font-size:12px;cursor:pointer;flex-shrink:0">📋 Copier</button>
-      <a href="${l.url}" target="_blank" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:6px;padding:6px 12px;color:var(--muted);font-size:12px;text-decoration:none;flex-shrink:0">↗</a>
-      <button onclick="clDelPayLink('${l.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;opacity:.5;font-size:13px;flex-shrink:0">🗑</button>
+      <button onclick="navigator.clipboard.writeText('${l.url}');this.textContent='✓ Copié'" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:6px;padding:6px 12px;color:var(--muted);font-size:12px;cursor:pointer;flex-shrink:0"><svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='9' y='9' width='13' height='13' rx='2' ry='2'/><path d='M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1'/></svg> Copier</button>
+      <a href="${l.url}" target="_blank" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:6px;padding:6px 12px;color:var(--muted);font-size:12px;text-decoration:none;flex-shrink:0"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+      <button onclick="clDelPayLink('${l.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;opacity:.5;font-size:13px;flex-shrink:0"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>
     </div>`).join('');
 }
 
@@ -4559,7 +5959,10 @@ function ldInit() {
   ldRender();
 }
 
-function ldSave() { localStorage.setItem(LD_KEY, JSON.stringify(ldData)); }
+function ldSave() {
+  localStorage.setItem(LD_KEY, JSON.stringify(ldData));
+  saveToSupabase('leads', { leads: ldData, deleted: [...ldDeleted] });
+}
 function ldSaveDeleted() { localStorage.setItem(LD_DELETED_KEY, JSON.stringify([...ldDeleted])); }
 
 function ldRender() {
@@ -4597,7 +6000,7 @@ function ldRender() {
   });
 
   if (!filtered.length) {
-    listEl.innerHTML = `<div class="empty" style="padding:40px 20px"><div class="ei">🎯</div>Aucun lead trouvé.</div>`;
+    listEl.innerHTML = `<div class="empty" style="padding:40px 20px"><div class="ei"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>Aucun lead trouvé.</div>`;
     return;
   }
 
@@ -4625,8 +6028,8 @@ function ldCardHTML(l) {
           <span style="margin-left:auto;font-size:11px;color:var(--muted);white-space:nowrap">${dt}</span>
         </div>
         <div style="display:flex;gap:14px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
-          ${l.tel ? `<a href="tel:${l.tel}" onclick="event.stopPropagation()" style="color:var(--muted);text-decoration:none;font-size:13px;display:flex;align-items:center;gap:4px">📞 ${l.tel}</a>` : ''}
-          ${l.tel ? `<button onclick="event.stopPropagation();ldWhatsApp('${l.id}')" style="background:rgba(37,211,102,.13);color:#25d366;border:1px solid rgba(37,211,102,.2);border-radius:20px;padding:3px 12px;font-size:12px;font-weight:600;cursor:pointer">💬 WhatsApp</button>` : ''}
+          ${l.tel ? `<a href="tel:${l.tel}" onclick="event.stopPropagation()" style="color:var(--muted);text-decoration:none;font-size:13px;display:flex;align-items:center;gap:4px"><svg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.63A2 2 0 012 .18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.09 6.09l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7a2 2 0 011.72 2.02z'/></svg> ${l.tel}</a>` : ''}
+          ${l.tel ? `<button onclick="event.stopPropagation();ldWhatsApp('${l.id}')" style="background:rgba(37,211,102,.13);color:#25d366;border:1px solid rgba(37,211,102,.2);border-radius:20px;padding:3px 12px;font-size:12px;font-weight:600;cursor:pointer"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg> WhatsApp</button>` : ''}
           ${l.email ? `<a href="mailto:${l.email}" onclick="event.stopPropagation()" style="color:var(--muted);text-decoration:none;font-size:12px">✉ ${l.email}</a>` : ''}
         </div>
         ${l.metier ? `<div style="font-size:13px;color:#ccc;margin-bottom:4px"><strong>Métier/Projet :</strong> <span style="color:var(--muted)">${l.metier}</span></div>` : ''}
@@ -4635,13 +6038,13 @@ function ldCardHTML(l) {
         ${l.message ? `<div style="font-size:12px;color:var(--muted);font-style:italic;margin-top:6px">${l.message}</div>` : ''}
         <div style="margin-top:10px">
           <button onclick="event.stopPropagation();ldToggleNotes('${l.id}')" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;display:flex;align-items:center;gap:5px">
-            📄 Notes de suivi ${l._notesOpen?'▲':'▼'}
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Notes de suivi ${l._notesOpen?'▲':'▼'}
           </button>
           ${notesArea}
         </div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0" onclick="event.stopPropagation()">
-        <button onclick="ldDelete('${l.id}')" style="background:none;border:none;color:#f87171;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:5px;padding:4px 0">🗑 Supprimer</button>
+        <button onclick="ldDelete('${l.id}')" style="background:none;border:none;color:#f87171;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:5px;padding:4px 0"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg> Supprimer</button>
         <button onclick="ldAddToProject('${l.id}')" style="background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.2);color:#60a5fa;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer">+ Projet</button>
       </div>
     </div>
@@ -4873,20 +6276,20 @@ async function fmLoad() {
 
   el.innerHTML = `
     <div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:18px 20px">
-      <div style="font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--muted);text-transform:uppercase;margin-bottom:8px">👤 Visiteurs uniques</div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:5px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Visiteurs uniques</div>
       <div style="font-size:32px;font-weight:900;color:#fff">${unique}</div>
     </div>
     <div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:18px 20px">
-      <div style="font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--muted);text-transform:uppercase;margin-bottom:8px">👁 Vues de page</div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:5px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Vues de page</div>
       <div style="font-size:32px;font-weight:900;color:#fff">${views}</div>
     </div>
     <div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:18px 20px">
-      <div style="font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--muted);text-transform:uppercase;margin-bottom:8px">⏱ Temps moyen</div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:5px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Temps moyen</div>
       <div style="font-size:32px;font-weight:900;color:#fff">${avgTime}s</div>
       <div style="font-size:12px;color:var(--muted);margin-top:4px">Temps passé sur la page</div>
     </div>
     <div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:18px 20px;border-color:var(--accent)">
-      <div style="font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--muted);text-transform:uppercase;margin-bottom:8px">📨 Conversions</div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:5px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Conversions</div>
       <div style="font-size:32px;font-weight:900;color:#fff">${convRate}%</div>
       <div style="font-size:12px;color:var(--muted);margin-top:4px">${S.length} leads</div>
     </div>`;
@@ -5150,7 +6553,7 @@ async function apSelectCall(id) {
   document.getElementById('ap-detail').innerHTML = `
     <div class="ap-det-name">${call.name}</div>
     <div class="ap-det-meta">
-      <span>📅 ${ds}</span>
+      <span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ${ds}</span>
       ${call.email?`<span>✉ ${call.email}</span>`:''}
       <span class="ap-src ${sc}">${call.source}</span>
       <span class="badge ${isUp?'badge-blue':'badge-gray'}">${isUp?'planifié':'passé'}</span>
@@ -5158,19 +6561,19 @@ async function apSelectCall(id) {
 
     <div class="ap-section">
       <div class="ap-section-hd">
-        <span>🎙 Transcription</span>
+        <span style="display:inline-flex;align-items:center;gap:5px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg> Transcription</span>
         <button class="ap-btn ap-btn-g" id="ap-save-btn" onclick="apSaveTranscript()" ${!transcript?'disabled':''} style="font-size:11px;padding:5px 11px">Sauver</button>
       </div>
       <div class="ap-tbox" id="ap-tbox">${transcript || '<span style="color:var(--muted)">Aucune transcription…</span>'}</div>
       <div style="display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap">
         <button class="ap-btn ap-btn-p" id="ap-rec-btn" onclick="apToggleRecording()">▶ Démarrer l'écoute</button>
-        <span style="font-size:11px;color:var(--muted);flex:1;line-height:1.5">💡 Le navigateur ne distingue pas les voix — l'IA devine qui dit quoi via le contexte.</span>
+        <span style="font-size:11px;color:var(--muted);flex:1;line-height:1.5">Le navigateur ne distingue pas les voix — l'IA devine qui dit quoi via le contexte.</span>
       </div>
     </div>
 
     <div class="ap-section">
       <div class="ap-section-hd">
-        <span>🤖 Débrief IA</span>
+        <span style="display:inline-flex;align-items:center;gap:5px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg> Débrief IA</span>
         <button class="ap-btn ap-btn-p" id="ap-debrief-btn" onclick="apGenerateDebrief()" style="font-size:11px;padding:5px 12px">Générer le débrief</button>
       </div>
       <div id="ap-debrief-content">
@@ -5270,7 +6673,7 @@ Génère un JSON structuré (sans markdown) :
 function apRenderDebriefHtml(d) {
   if (!d) return '<div style="color:var(--muted);font-size:12px">Aucun débrief.</div>';
   const vc={converti:'#4ade80',a_relancer:'#fbbf24',perdu:'#f87171'};
-  const vl={converti:'🟢 Converti',a_relancer:'🟡 À relancer',perdu:'🔴 Perdu'};
+  const vl={converti:'Converti',a_relancer:'À relancer',perdu:'Perdu'};
   const sc = d.score_closing;
   const col = sc>=7?'#4ade80':sc>=5?'#fbbf24':'#f87171';
   return `<div class="ap-debrief-box">
@@ -5287,16 +6690,16 @@ function apRenderDebriefHtml(d) {
     </div>
     ${d.client_veut?.length?`<div class="ap-dbs" style="margin-bottom:12px"><h4>✅ Ce que le client veut</h4>${d.client_veut.map(x=>`<div style="padding:5px 10px;background:rgba(34,197,94,.06);border-left:2px solid #22c55e;border-radius:0 6px 6px 0;margin-bottom:5px;font-size:12px">${x}</div>`).join('')}</div>`:''}
     ${d.client_ne_veut_pas?.length?`<div class="ap-dbs" style="margin-bottom:12px"><h4>❌ Blocages / Objections non résolues</h4>${d.client_ne_veut_pas.map(x=>`<div style="padding:5px 10px;background:rgba(239,68,68,.06);border-left:2px solid #ef4444;border-radius:0 6px 6px 0;margin-bottom:5px;font-size:12px">${x}</div>`).join('')}</div>`:''}
-    ${d.objections?.length?`<div class="ap-dbs" style="margin-bottom:12px"><h4>💬 Objections</h4>${d.objections.map(o=>`<div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:7px;padding:10px;margin-bottom:7px">
+    ${d.objections?.length?`<div class="ap-dbs" style="margin-bottom:12px"><h4>Objections</h4>${d.objections.map(o=>`<div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:7px;padding:10px;margin-bottom:7px">
       <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px"><span>${o.repondu?'✅':'❌'}</span><span style="font-size:12px;font-weight:600">${o.objection}</span></div>
       ${o.comment?`<div style="font-size:11px;color:var(--muted);margin-left:22px">${o.comment}</div>`:''}
     </div>`).join('')}</div>`:''}
     ${(d.forces?.length||d.a_ameliorer?.length)?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
-      ${d.forces?.length?`<div class="ap-dbs"><h4>💪 Forces</h4>${d.forces.map(x=>`<div style="font-size:11px;color:#4ade80;padding:2px 0">• ${x}</div>`).join('')}</div>`:''}
-      ${d.a_ameliorer?.length?`<div class="ap-dbs"><h4>📈 À améliorer</h4>${d.a_ameliorer.map(x=>`<div style="font-size:11px;color:#fbbf24;padding:2px 0">• ${x}</div>`).join('')}</div>`:''}
+      ${d.forces?.length?`<div class="ap-dbs"><h4>Points forts</h4>${d.forces.map(x=>`<div style="font-size:11px;color:#4ade80;padding:2px 0">• ${x}</div>`).join('')}</div>`:''}
+      ${d.a_ameliorer?.length?`<div class="ap-dbs"><h4>À améliorer</h4>${d.a_ameliorer.map(x=>`<div style="font-size:11px;color:#fbbf24;padding:2px 0">• ${x}</div>`).join('')}</div>`:''}
     </div>`:''}
     ${d.prochaine_etape?`<div style="background:rgba(244,146,106,.08);border:1px solid rgba(244,146,106,.2);border-radius:8px;padding:12px;font-size:12px">
-      <div style="font-size:10px;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;font-weight:700">🎯 Prochaine étape</div>${d.prochaine_etape}
+      <div style="font-size:10px;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;font-weight:700">Prochaine étape</div>${d.prochaine_etape}
     </div>`:''}
   </div>`;
 }
@@ -5350,7 +6753,7 @@ function obRender() {
     grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);font-size:13px">Aucun objectif. Clique sur "+ Objectif" pour commencer.</div>';
     return;
   }
-  const catLabels = { ca:'💶 CA', devis:'📝 Devis', affiliation:'🤝 Affiliations', tiktok:'🎵 TikTok', instagram:'📸 Instagram', autre:'📌 Autre' };
+  const catLabels = { ca:'CA', devis:'Devis signés', affiliation:'Affiliations', tiktok:'TikTok', instagram:'Instagram', autre:'Autre' };
   grid.innerHTML = obData.map(o => {
     const pct = o.target_value > 0 ? Math.min(100, Math.round((o.current_value||0) / o.target_value * 100)) : 0;
     const barCol = pct >= 100 ? '#4ade80' : pct >= 60 ? '#fbbf24' : 'var(--accent)';
@@ -5368,7 +6771,7 @@ function obRender() {
         </div>
         <div style="display:flex;gap:6px">
           <button class="ob-edit-btn" onclick="obOpenAdd('${o.id}')">✏</button>
-          <button onclick="obDeleteDirect('${o.id}')" style="background:rgba(239,68,68,.12);border:none;border-radius:8px;padding:6px 9px;color:#f87171;font-size:13px;cursor:pointer">🗑</button>
+          <button onclick="obDeleteDirect('${o.id}')" style="background:rgba(239,68,68,.12);border:none;border-radius:8px;padding:6px 9px;color:#f87171;font-size:13px;cursor:pointer"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>
         </div>
       </div>
       <div class="ob-values"><strong>${(o.current_value||0).toLocaleString('fr-FR')}</strong> / ${(o.target_value||0).toLocaleString('fr-FR')} ${o.unit||''}</div>
@@ -5752,6 +7155,7 @@ function prSave() {
     assets: (p.assets||[]).map(({data,...r})=>r),
   }));
   localStorage.setItem(PR_KEY, JSON.stringify(slim));
+  saveToSupabase('projects', slim);
 }
 
 async function prLoadAllAssetsFromIDB() {
@@ -5779,7 +7183,7 @@ function prRender() {
     </div>`).join('') + `<div style="padding:10px 16px;font-size:11px;text-align:center"><div style="font-weight:700;font-size:15px">${total}</div><div style="color:var(--muted);margin-top:2px">Total</div></div>`;
 
   if (!prData.length) {
-    el.innerHTML = `<div class="empty" style="padding:60px 20px"><div class="ei">📁</div>Aucun projet. Transfère un lead ou clique sur "+ Projet".</div>`;
+    el.innerHTML = `<div class="empty" style="padding:60px 20px"><div class="ei"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></div>Aucun projet. Transfère un lead ou clique sur "+ Projet".</div>`;
     return;
   }
   el.innerHTML = prData.map(p => prCardHTML(p)).join('');
@@ -5803,7 +7207,7 @@ function prCardHTML(p) {
         <select onchange="prDvSetStatut('${p.id}','${dv.id}',this.value)" style="background:#1a1a22;border:1px solid var(--border);border-radius:6px;padding:3px 8px;color:#fff;font-size:11px;outline:none">
           ${Object.entries(PR_DV_STATUT).map(([v,o])=>`<option value="${v}"${dv.statut===v?' selected':''}>${o.label}</option>`).join('')}
         </select>
-        <button onclick="prDvDelete('${p.id}','${dv.id}')" style="background:none;border:none;color:#f87171;font-size:13px;cursor:pointer;padding:0 4px">🗑</button>
+        <button onclick="prDvDelete('${p.id}','${dv.id}')" style="background:none;border:none;color:#f87171;font-size:13px;cursor:pointer;padding:0 4px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>
       </div>
     </div>`;
   }).join('') : '<div style="font-size:12px;color:var(--muted);font-style:italic">Aucun devis pour ce projet.</div>';
@@ -5867,12 +7271,12 @@ function prCardHTML(p) {
 
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;padding-top:12px;border-top:1px solid var(--border)">
       <div style="display:flex;gap:8px;align-items:center">
-        <button onclick="prDelete('${p.id}')" style="background:none;border:none;color:#f87171;font-size:13px;cursor:pointer;padding:4px 0">🗑 Supprimer</button>
-        <button onclick="prOpenEdit('${p.id}')" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;color:#fff">✏️ Modifier</button>
+        <button onclick="prDelete('${p.id}')" style="background:none;border:none;color:#f87171;font-size:13px;cursor:pointer;padding:4px 0"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg> Supprimer</button>
+        <button onclick="prOpenEdit('${p.id}')" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;color:#fff"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Modifier</button>
       </div>
       <div style="display:flex;gap:8px;align-items:center">
-        <button onclick="prOpenAssets('${p.id}')" style="background:rgba(244,146,106,.12);border:1px solid rgba(244,146,106,.2);color:#f4926a;border-radius:8px;padding:9px 14px;font-size:13px;font-weight:700;cursor:pointer">📁 Assets${(p.assets||[]).length ? ` (${(p.assets||[]).length})` : ''}</button>
-        <button onclick="prConvertToClient('${p.id}')" style="background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.3);color:#4ade80;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer">🔄 Basculer vers client</button>
+        <button onclick="prOpenAssets('${p.id}')" style="background:rgba(244,146,106,.12);border:1px solid rgba(244,146,106,.2);color:#f4926a;border-radius:8px;padding:9px 14px;font-size:13px;font-weight:700;cursor:pointer"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg> Assets${(p.assets||[]).length ? ` (${(p.assets||[]).length})` : ''}</button>
+        <button onclick="prConvertToClient('${p.id}')" style="background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.3);color:#4ade80;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg> Vers client</button>
       </div>
     </div>
   </div>`;
@@ -6063,9 +7467,9 @@ function prRenderAssetsModal(p) {
   list.innerHTML = assets.map(a => {
     const isPdf = a.type === 'application/pdf';
     const isImg = a.type && a.type.startsWith('image/');
-    const icon  = isPdf ? '📄' : (isImg ? '🖼' : '📎');
+    const icon  = isPdf ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' : (isImg ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>' : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>');
     const dlHref = a.data ? `href="${a.data}" download="${a.nom}"` : '';
-    const previewBtn = a.data ? `<button onclick="prPreviewAsset('${a.id}','${p.id}')" style="background:rgba(255,255,255,.07);border-radius:6px;padding:5px 10px;font-size:14px;cursor:pointer;border:none;color:#fff" title="Prévisualiser">👁</button>` : '';
+    const previewBtn = a.data ? `<button onclick="prPreviewAsset('${a.id}','${p.id}')" style="background:rgba(255,255,255,.07);border-radius:6px;padding:5px 10px;font-size:14px;cursor:pointer;border:none;color:#fff" title="Prévisualiser"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>` : '';
     return `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.04);border-radius:8px;margin-bottom:6px">
       <span style="font-size:20px">${icon}</span>
       <span style="flex:1;font-size:13px;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.nom}</span>
@@ -6430,12 +7834,23 @@ function trCloseModal() {
 }
 
 // Session — si pas connecté ou pas admin, retour auth.html
+// Fallback : si après 5s l'app est toujours cachée (getSession bloqué), forcer le boot
+const _bootTimeout = setTimeout(() => {
+  const app = document.getElementById('app');
+  if (app && app.style.display === 'none') bootApp('');
+}, 5000);
+
 sb.auth.getSession().then(({ data: { session } }) => {
+  clearTimeout(_bootTimeout);
   if (session?.user && ALLOWED.includes(session.user.email)) {
     bootApp(session.user.email);
   } else {
     window.location.href = 'auth.html';
   }
+}).catch(() => {
+  clearTimeout(_bootTimeout);
+  // getSession a échoué (réseau, CDN) → tenter d'ouvrir quand même
+  bootApp('');
 });
 </script>
 </body>
