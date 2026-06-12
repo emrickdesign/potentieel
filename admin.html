@@ -3022,10 +3022,46 @@ async function restoreFromSupabase() {
   } catch(e) { console.warn('restoreFromSupabase:', e); return false; }
 }
 
+let _sbWriting = false;
+const _origSaveToSupabase = saveToSupabase;
 async function saveToSupabase(key, data) {
+  _sbWriting = true;
   try {
     await sb.from('crm_data').upsert({ key, data, updated_at: new Date().toISOString() }, { onConflict: 'key' });
   } catch(e) { console.warn('saveToSupabase:', e); }
+  setTimeout(() => { _sbWriting = false; }, 1500);
+}
+
+function setupRealtime() {
+  sb.channel('crm_realtime')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'crm_data' }, (payload) => {
+      if (_sbWriting) return; // ignorer notre propre écho
+      const key  = payload.new?.key;
+      const data = payload.new?.data;
+      if (!key || data === undefined) return;
+      switch(key) {
+        case 'tasks':
+          tcData = data; tcRender(); break;
+        case 'pipeline':
+          plData = data; renderPipeline(); break;
+        case 'clients':
+          clData = data; clRenderGrid(); break;
+        case 'documents':
+          dcData = data; break;
+        case 'leads':
+          if (data && data.leads) { ldData = data.leads; ldDeleted = new Set(data.deleted || []); }
+          ldRender(); break;
+        case 'projects':
+          prData = data;
+          if (document.getElementById('page-projets')?.classList.contains('active')) prRender();
+          break;
+        case 'fa_retards':
+          faRetards = data;
+          if (document.getElementById('page-facturation')?.classList.contains('active')) renderGlobalFactures();
+          break;
+      }
+    })
+    .subscribe();
 }
 
 function bootApp(email) {
@@ -3054,7 +3090,10 @@ function bootApp(email) {
       try { dcLoad(); } catch(_) {}
       try { ldInit(); prLoad(); } catch(_) {}
     }
-  }).catch(() => {});
+    try { setupRealtime(); } catch(_) { console.warn('setupRealtime:', _); }
+  }).catch(() => {
+    try { setupRealtime(); } catch(_) { console.warn('setupRealtime fallback:', _); }
+  });
 }
 
 // Navigation
@@ -3187,7 +3226,7 @@ function tcLoad() {
   try { tcData = JSON.parse(localStorage.getItem(TC_KEY)); if(!Array.isArray(tcData)||tcData.length===0) tcData=TC_DEFAULT.map(t=>({...t})); }
   catch { tcData = TC_DEFAULT.map(t=>({...t})); }
 }
-function tcSave() { localStorage.setItem(TC_KEY, JSON.stringify(tcData)); }
+function tcSave() { localStorage.setItem(TC_KEY, JSON.stringify(tcData)); saveToSupabase('tasks', tcData); }
 
 const TODAY = new Date(); TODAY.setHours(0,0,0,0);
 
@@ -3855,7 +3894,7 @@ function dcLoad() {
   catch(e) { dcData = []; }
   dcRender();
 }
-function dcSave() { localStorage.setItem(DC_KEY, JSON.stringify(dcData)); }
+function dcSave() { localStorage.setItem(DC_KEY, JSON.stringify(dcData)); saveToSupabase('documents', dcData); }
 
 function dcHandleFiles(files) {
   if (!files || !files.length) return;
@@ -4734,7 +4773,7 @@ let faMonth = new Date().getMonth(); // 0-indexed
 function faInitRetards() {
   try { faRetards = JSON.parse(localStorage.getItem(FA_RETARDS_KEY)) || []; } catch { faRetards = []; }
 }
-function faSaveRetardsData() { localStorage.setItem(FA_RETARDS_KEY, JSON.stringify(faRetards)); }
+function faSaveRetardsData() { localStorage.setItem(FA_RETARDS_KEY, JSON.stringify(faRetards)); saveToSupabase('fa_retards', faRetards); }
 
 function faNavMonth(delta) {
   faMonth += delta;
