@@ -687,7 +687,7 @@
           <div class="kpi-grid">
             <div class="kpi accent">
               <div class="kpi-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 110 7H6"/></svg></div>
-              <div class="kpi-val">89€</div>
+              <div class="kpi-val" id="dash-kpi-mrr">—</div>
               <div class="kpi-label">MRR ACTUEL</div>
               <div class="kpi-sub">Abonnements mensuels actifs</div>
             </div>
@@ -3047,7 +3047,7 @@ function setupRealtime() {
         case 'clients':
           clData = data; clRenderGrid(); break;
         case 'documents':
-          dcData = data; break;
+          dcData = data; if (document.getElementById('page-documents')?.classList.contains('active')) dcRender(); break;
         case 'leads':
           if (data && data.leads) { ldData = data.leads; ldDeleted = new Set(data.deleted || []); }
           ldRender(); break;
@@ -3060,6 +3060,14 @@ function setupRealtime() {
           if (document.getElementById('page-facturation')?.classList.contains('active')) renderGlobalFactures();
           break;
       }
+    })
+    .subscribe();
+
+  // Realtime pour la table calls (Appels)
+  sb.channel('crm_calls_realtime')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'calls' }, async () => {
+      await apLoadCalls();
+      if (document.getElementById('page-appels')?.classList.contains('active')) apRenderList();
     })
     .subscribe();
 }
@@ -3807,6 +3815,7 @@ function clRenderGrid() {
   document.getElementById('cl-kpi-actifs').textContent = actifs;
   document.getElementById('cl-kpi-encours').textContent = encours;
   document.getElementById('cl-kpi-mrr').textContent = mrr+'€';
+  const dashMrr = document.getElementById('dash-kpi-mrr'); if (dashMrr) dashMrr.textContent = mrr+'€';
 }
 
 async function clOpenDetail(id) {
@@ -6570,12 +6579,28 @@ function apRenderList() {
     return `<div class="ap-call-item ${sel}" onclick="apSelectCall('${c.id}')">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:6px;margin-bottom:3px">
         <div class="ap-call-name">${c.name}</div>
-        <span class="ap-src ${sc}">${c.source}</span>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span class="ap-src ${sc}">${c.source}</span>
+          <button onclick="event.stopPropagation();apDeleteCall('${c.id}')" title="Supprimer" style="background:none;border:none;cursor:pointer;color:var(--muted);padding:2px 4px;border-radius:4px;font-size:13px;line-height:1" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--muted)'">🗑</button>
+        </div>
       </div>
       <div class="ap-call-time">${ds}</div>
       ${c.email ? `<div class="ap-call-email">${c.email}</div>` : ''}
     </div>`;
   }).join('');
+}
+
+/* ── Delete call ── */
+async function apDeleteCall(id) {
+  if (!confirm('Supprimer cet appel ?')) return;
+  await sb.from('calls').delete().eq('id', id);
+  apCalls = apCalls.filter(c => c.id !== id);
+  if (apSelectedId === id) {
+    apSelectedId = null;
+    apCurrentCallId = null;
+    document.getElementById('ap-detail').innerHTML = '<div style="padding:40px;text-align:center;color:var(--muted);font-size:13px">Sélectionne un appel pour voir les détails.</div>';
+  }
+  apRenderList();
 }
 
 /* ── Select call ── */
