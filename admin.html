@@ -2993,70 +2993,84 @@ async function doSignOut() { await sb.auth.signOut(); window.location.href='auth
 
 
 // ═══════════════════════════════════════════════
-// SUPABASE CRM SYNC — restore on boot, save on change
+// CRM SYNC v2 — table crm_items : une ligne par item, écritures atomiques.
+// (remplace l'ancien système crm_data en blob où n'importe quelle sauvegarde
+// réécrivait TOUT le tableau — un onglet périmé pouvait donc effacer les
+// ajouts faits depuis sur un autre appareil. Ici chaque item est inséré /
+// mis à jour / supprimé individuellement : un onglet périmé ne peut plus
+// jamais écraser les données ajoutées par un autre appareil.)
 // ═══════════════════════════════════════════════
-async function restoreFromSupabase() {
+async function crmItemsLoadAll(section) {
   try {
-    const { data: rows, error } = await sb.from('crm_data').select('key, data');
-    if (error || !rows || rows.length === 0) return false;
-    for (const row of rows) {
-      if (row.key === 'leads') {
-        const obj = row.data;
-        try {
-          if (obj && Array.isArray(obj.leads))   localStorage.setItem('ld_v1',         JSON.stringify(obj.leads));
-          if (obj && Array.isArray(obj.deleted)) localStorage.setItem('ld_deleted_v1', JSON.stringify(obj.deleted));
-        } catch(_){}
-      } else {
-        const lsMap = {
-          projects:   'pr_v1',
-          clients:    'cl_crm_v1',
-          pipeline:   'pl_v2',
-          fa_retards: 'fa_retards_v1',
-          tasks:      'tc_v1',
-          documents:  'dc_docs_v1'
-        };
-        if (lsMap[row.key]) try { localStorage.setItem(lsMap[row.key], JSON.stringify(row.data)); } catch(_){}
-      }
-    }
-    return true;
-  } catch(e) { console.warn('restoreFromSupabase:', e); return false; }
+    const { data, error } = await sb.from('crm_items').select('id,payload').eq('section', section);
+    if (error || !data) return null;
+    return data.map(r => r.payload);
+  } catch(e) { console.warn('crmItemsLoadAll:', section, e); return null; }
 }
-
 let _sbWriting = false;
-const _origSaveToSupabase = saveToSupabase;
-async function saveToSupabase(key, data) {
+async function crmItemUpsert(section, id, payload) {
+  if (id === undefined || id === null) return;
   _sbWriting = true;
   try {
-    await sb.from('crm_data').upsert({ key, data, updated_at: new Date().toISOString() }, { onConflict: 'key' });
-  } catch(e) { console.warn('saveToSupabase:', e); }
+    await sb.from('crm_items').upsert(
+      { section, id: String(id), payload, updated_at: new Date().toISOString() },
+      { onConflict: 'section,id' }
+    );
+  } catch(e) { console.warn('crmItemUpsert:', section, id, e); }
+  setTimeout(() => { _sbWriting = false; }, 1500);
+}
+async function crmItemDelete(section, id) {
+  if (id === undefined || id === null) return;
+  _sbWriting = true;
+  try {
+    await sb.from('crm_items').delete().eq('section', section).eq('id', String(id));
+  } catch(e) { console.warn('crmItemDelete:', section, id, e); }
   setTimeout(() => { _sbWriting = false; }, 1500);
 }
 
 function setupRealtime() {
-  sb.channel('crm_realtime')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'crm_data' }, (payload) => {
+  sb.channel('crm_items_realtime')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'crm_items' }, (payload) => {
       if (_sbWriting) return; // ignorer notre propre écho
-      const key  = payload.new?.key;
-      const data = payload.new?.data;
-      if (!key || data === undefined) return;
-      switch(key) {
+      const row = payload.eventType === 'DELETE' ? payload.old : payload.new;
+      if (!row || !row.section) return;
+      const section = row.section, id = row.id;
+      const isDelete = payload.eventType === 'DELETE';
+      const patch = (arr, item) => {
+        const i = arr.findIndex(x => String(x.id) === String(id));
+        if (i >= 0) arr[i] = item; else arr.unshift(item);
+        return arr;
+      };
+      switch(section) {
         case 'tasks':
-          tcData = data; tcRender(); break;
+          tcData = isDelete ? tcData.filter(t => String(t.id) !== String(id)) : patch(tcData, row.payload);
+          localStorage.setItem(TC_KEY, JSON.stringify(tcData));
+          tcRender(); break;
         case 'pipeline':
-          plData = data; renderPipeline(); break;
+          plData = isDelete ? plData.filter(p => String(p.id) !== String(id)) : patch(plData, row.payload);
+          localStorage.setItem(PL_KEY, JSON.stringify(plData));
+          renderPipeline(); break;
         case 'clients':
-          clData = data; clRenderGrid(); break;
+          clData = isDelete ? clData.filter(c => String(c.id) !== String(id)) : patch(clData, row.payload);
+          localStorage.setItem(CL_KEY, JSON.stringify(clData));
+          clRenderGrid(); break;
         case 'documents':
-          dcData = data; if (document.getElementById('page-documents')?.classList.contains('active')) dcRender(); break;
+          dcData = isDelete ? dcData.filter(d => String(d.id) !== String(id)) : patch(dcData, row.payload);
+          localStorage.setItem(DC_KEY, JSON.stringify(dcData));
+          if (document.getElementById('page-documents')?.classList.contains('active')) dcRender();
+          break;
         case 'leads':
-          if (data && data.leads) { ldData = data.leads; ldDeleted = new Set(data.deleted || []); }
+          ldData = isDelete ? ldData.filter(l => String(l.id) !== String(id)) : patch(ldData, row.payload);
+          localStorage.setItem(LD_KEY, JSON.stringify(ldData));
           ldRender(); break;
         case 'projects':
-          prData = data;
+          prData = isDelete ? prData.filter(p => String(p.id) !== String(id)) : patch(prData, row.payload);
+          localStorage.setItem(PR_KEY, JSON.stringify(prData));
           if (document.getElementById('page-projets')?.classList.contains('active')) prRender();
           break;
         case 'fa_retards':
-          faRetards = data;
+          faRetards = isDelete ? faRetards.filter(r => String(r.id) !== String(id)) : patch(faRetards, row.payload);
+          localStorage.setItem(FA_RETARDS_KEY, JSON.stringify(faRetards));
           if (document.getElementById('page-facturation')?.classList.contains('active')) renderGlobalFactures();
           break;
       }
@@ -3072,36 +3086,27 @@ function setupRealtime() {
     .subscribe();
 }
 
-function bootApp(email) {
+async function bootApp(email) {
   document.getElementById('app').style.display = 'block';
   const e = email || '';
   document.getElementById('sb-av').textContent = e ? e[0].toUpperCase() : 'E';
   document.getElementById('sb-email').textContent = e;
-  // Init immédiate — chaque bloc isolé pour ne jamais bloquer les suivants
+  // Init immédiate
   try { initCharts(); } catch(_) { console.warn('initCharts:', _); }
-  try { tcLoad(); tcRender(); } catch(_) { console.warn('tcLoad:', _); }
-  try { plLoad(); renderPipeline(); } catch(_) { console.warn('plLoad:', _); }
-  try { clLoad(); clRenderGrid(); } catch(_) { console.warn('clLoad:', _); }
-  try { dcLoad(); } catch(_) { console.warn('dcLoad:', _); }
-  try { ldInit(); prLoad(); } catch(_) { console.warn('ldInit:', _); }
+  // Chargement des données depuis crm_items (Supabase) — prLoad avant ldInit (dépendance)
+  try { await prLoad(); } catch(_) { console.warn('prLoad:', _); }
+  try {
+    await Promise.all([tcLoad(), plLoad(), clLoad(), dcLoad(), ldInit()]);
+  } catch(_) { console.warn('load all:', _); }
+  try { tcRender(); } catch(_) { console.warn('tcRender:', _); }
+  try { renderPipeline(); } catch(_) { console.warn('renderPipeline:', _); }
+  try { clRenderGrid(); } catch(_) { console.warn('clRenderGrid:', _); }
   // Forcer l'affichage du dashboard (sécurité si nav() a pu être appelé avant)
   try {
     const dashNav = document.querySelector('[data-page="dashboard"]');
     if (dashNav) nav(dashNav);
   } catch(_) {}
-  // Restauration Supabase en arrière-plan → re-render si données trouvées
-  restoreFromSupabase().then(restored => {
-    if (restored) {
-      try { tcLoad(); tcRender(); } catch(_) {}
-      try { plLoad(); renderPipeline(); } catch(_) {}
-      try { clLoad(); clRenderGrid(); } catch(_) {}
-      try { dcLoad(); } catch(_) {}
-      try { ldInit(); prLoad(); } catch(_) {}
-    }
-    try { setupRealtime(); } catch(_) { console.warn('setupRealtime:', _); }
-  }).catch(() => {
-    try { setupRealtime(); } catch(_) { console.warn('setupRealtime fallback:', _); }
-  });
+  try { setupRealtime(); } catch(_) { console.warn('setupRealtime:', _); }
 }
 
 // Navigation
@@ -3127,10 +3132,10 @@ function nav(el) {
   document.getElementById('page-'+p).classList.add('active');
   document.getElementById('tb-section').textContent = sections[p]||'';
   document.getElementById('tb-title').textContent   = titles[p]||p;
-  if(p==='facturation') { faInitRetards(); renderGlobalFactures(); }
+  if(p==='facturation') { faInitRetards().then(() => renderGlobalFactures()).catch(()=>renderGlobalFactures()); }
   if(p==='devis') renderGlobalDevis();
   if(p==='leads') ldRender();
-  if(p==='projets') { prLoad(); prRender(); prLoadAllAssetsFromIDB(); }
+  if(p==='projets') { prLoad().then(() => { prRender(); prLoadAllAssetsFromIDB(); }).catch(()=>{ prRender(); prLoadAllAssetsFromIDB(); }); }
   if(p==='formulaire') fmLoad();
   if(p==='appels') apInit();
   if(p==='objectifs') obInit();
@@ -3230,11 +3235,22 @@ const TC_DEFAULT = [
 let tcData = [];
 let tcDragId = null;
 
-function tcLoad() {
+async function tcLoad() {
+  const remote = await crmItemsLoadAll('tasks');
+  if (remote && remote.length > 0) {
+    tcData = remote;
+    localStorage.setItem(TC_KEY, JSON.stringify(tcData));
+    return;
+  }
   try { tcData = JSON.parse(localStorage.getItem(TC_KEY)); if(!Array.isArray(tcData)||tcData.length===0) tcData=TC_DEFAULT.map(t=>({...t})); }
   catch { tcData = TC_DEFAULT.map(t=>({...t})); }
 }
-function tcSave() { localStorage.setItem(TC_KEY, JSON.stringify(tcData)); saveToSupabase('tasks', tcData); }
+function tcSave(changedId, deletedId) {
+  localStorage.setItem(TC_KEY, JSON.stringify(tcData));
+  if (deletedId !== undefined) { crmItemDelete('tasks', deletedId); return; }
+  if (changedId !== undefined) { const t = tcData.find(x=>String(x.id)===String(changedId)); if (t) crmItemUpsert('tasks', t.id, t); return; }
+  tcData.forEach(t => crmItemUpsert('tasks', t.id, t)); // jamais de suppression de masse ici
+}
 
 const TODAY = new Date(); TODAY.setHours(0,0,0,0);
 
@@ -3308,7 +3324,7 @@ function tcRender() {
       ev.preventDefault(); body.classList.remove('drag-over');
       if (!tcDragId) return;
       const t = tcData.find(x => x.id === tcDragId);
-      if (t) { t.status = st; tcSave(); tcRender(); tcUpdateKpis(); }
+      if (t) { t.status = st; tcSave(t.id); tcRender(); tcUpdateKpis(); }
       tcDragId = null;
     });
     document.getElementById('tc-cnt-'+st).textContent = cards.length;
@@ -3326,9 +3342,10 @@ function tcSetupDoneZone() {
   zone.addEventListener('drop', e => {
     e.preventDefault(); zone.classList.remove('drag-over');
     if (!tcDragId) return;
+    const _tcDelId = tcDragId;
     tcData = tcData.filter(t => t.id !== tcDragId);
     tcDragId = null;
-    tcSave(); tcRender();
+    tcSave(undefined, _tcDelId); tcRender();
   });
 }
 
@@ -3368,7 +3385,7 @@ function tcUpdateDeadline() {
 
 function tcDel(id) {
   tcData = tcData.filter(t=>t.id!==id);
-  tcSave(); tcRender();
+  tcSave(undefined, id); tcRender();
 }
 
 /* Modal */
@@ -3418,13 +3435,16 @@ function tcSaveTask() {
     due: document.getElementById('tc-m-due').value,
     assignees
   };
+  let _tcSavedId = editId;
   if (editId) {
     const t = tcData.find(x=>x.id===editId);
     if (t) Object.assign(t, fields);
   } else {
-    tcData.push({ id: 't'+Date.now(), ...fields });
+    const _tcNew = { id: 't'+Date.now(), ...fields };
+    tcData.push(_tcNew);
+    _tcSavedId = _tcNew.id;
   }
-  tcSave(); tcRender(); tcCloseModal();
+  tcSave(_tcSavedId); tcRender(); tcCloseModal();
 }
 
 /* Brief IA parser */
@@ -3505,13 +3525,21 @@ const DEFAULT_DATA = [
 ];
 
 let plData = [];
-function plLoad() {
+async function plLoad() {
+  const remote = await crmItemsLoadAll('pipeline');
+  if (remote && remote.length > 0) {
+    plData = remote;
+    localStorage.setItem(PL_KEY, JSON.stringify(plData));
+    return;
+  }
   try { plData = JSON.parse(localStorage.getItem(PL_KEY)) || DEFAULT_DATA; }
   catch { plData = DEFAULT_DATA; }
 }
-function plSave() {
+function plSave(changedId, deletedId) {
   localStorage.setItem(PL_KEY, JSON.stringify(plData));
-  saveToSupabase('pipeline', plData);
+  if (deletedId !== undefined) { crmItemDelete('pipeline', deletedId); return; }
+  if (changedId !== undefined) { const p = plData.find(x=>String(x.id)===String(changedId)); if (p) crmItemUpsert('pipeline', p.id, p); return; }
+  plData.forEach(p => crmItemUpsert('pipeline', p.id, p));
 }
 
 let dragId = null;
@@ -3547,7 +3575,7 @@ function renderBoard(containerId, cols, board) {
       div.classList.remove('drag-over');
       if (!dragId) return;
       const p = plData.find(x => x.id === dragId);
-      if (p) { p.col = col.id; p.board = board; plSave(); renderPipeline(); }
+      if (p) { p.col = col.id; p.board = board; plSave(p.id); renderPipeline(); }
     });
     container.appendChild(div);
   });
@@ -3623,13 +3651,13 @@ function plSaveEditCard() {
   c.email = document.getElementById('pl-edit-email').value.trim();
   c.prix = document.getElementById('pl-edit-prix').value.trim() || c.prix;
   c.maint = document.getElementById('pl-edit-maint').value.trim() || c.maint;
-  plSave(); renderPipeline(); plCloseEditCard();
+  plSave(id); renderPipeline(); plCloseEditCard();
 }
 
 function delCard(id) {
   if (!confirm('Supprimer ce prospect ?')) return;
   plData = plData.filter(p => p.id !== id);
-  plSave(); renderPipeline();
+  plSave(undefined, id); renderPipeline();
 }
 
 function updateKpis() {
@@ -3690,7 +3718,7 @@ function addProspect() {
   const maint = document.getElementById('m-maint').value.trim() || '49€/m';
   const id    = 'p'+Date.now();
   plData.push({ id, board, col, name, prix, maint });
-  plSave(); renderPipeline(); closeModal();
+  plSave(id); renderPipeline(); closeModal();
 }
 
 /* ════════════════════════ CLIENTS CRM ════════════════════════ */
@@ -3736,11 +3764,17 @@ let clData = [];
 let clCurrentId = null;
 let clEditMode = false;
 
-function clLoad() {
-  try {
-    const raw = JSON.parse(localStorage.getItem(CL_KEY));
-    clData = Array.isArray(raw) && raw.length > 0 ? raw : CL_DEFAULT.map(c=>({...c, docs:[...(c.docs||[])], assets:[...(c.assets||[])], paiements:[...(c.paiements||[])], devis:[...(c.devis||[])], factures:[...(c.factures||[])], messages:[...(c.messages||[])]}));
-  } catch { clData = CL_DEFAULT.map(c=>({...c})); }
+async function clLoad() {
+  const remote = await crmItemsLoadAll('clients');
+  if (remote && remote.length > 0) {
+    clData = remote;
+    localStorage.setItem(CL_KEY, JSON.stringify(clData));
+  } else {
+    try {
+      const raw = JSON.parse(localStorage.getItem(CL_KEY));
+      clData = Array.isArray(raw) && raw.length > 0 ? raw : CL_DEFAULT.map(c=>({...c, docs:[...(c.docs||[])], assets:[...(c.assets||[])], paiements:[...(c.paiements||[])], devis:[...(c.devis||[])], factures:[...(c.factures||[])], messages:[...(c.messages||[])]}));
+    } catch { clData = CL_DEFAULT.map(c=>({...c})); }
+  }
   // Migration : injecter les clients manquants depuis CL_DEFAULT
   CL_DEFAULT.forEach(def => {
     if (!clData.find(c => c.id === def.id)) {
@@ -3766,7 +3800,7 @@ function clSave() {
     factures: (c.factures||[]).map(f => f.type==='import' ? (({data,...r})=>r)(f) : f),
   }));
   localStorage.setItem(CL_KEY, JSON.stringify(slim));
-  saveToSupabase('clients', slim);
+  slim.forEach(c => crmItemUpsert('clients', c.id, c)); // pas de suppression de masse — aucun client n'est jamais effacé du tableau
 }
 
 const CL_STATUT_LABELS = { actif:'Actif', encours:'En cours', pause:'En pause', termine:'Terminé', retard:'Retard paiement' };
@@ -3898,12 +3932,22 @@ function clSaveNotes() {
 const DC_KEY = 'dc_docs_v1';
 let dcData = [];
 
-function dcLoad() {
-  try { const raw = JSON.parse(localStorage.getItem(DC_KEY)); dcData = Array.isArray(raw) ? raw : []; }
-  catch(e) { dcData = []; }
+async function dcLoad() {
+  const remote = await crmItemsLoadAll('documents');
+  if (remote && remote.length > 0) {
+    dcData = remote;
+    localStorage.setItem(DC_KEY, JSON.stringify(dcData));
+  } else {
+    try { const raw = JSON.parse(localStorage.getItem(DC_KEY)); dcData = Array.isArray(raw) ? raw : []; }
+    catch(e) { dcData = []; }
+  }
   dcRender();
 }
-function dcSave() { localStorage.setItem(DC_KEY, JSON.stringify(dcData)); saveToSupabase('documents', dcData); }
+function dcSave(deletedId) {
+  localStorage.setItem(DC_KEY, JSON.stringify(dcData));
+  if (deletedId !== undefined) { crmItemDelete('documents', deletedId); return; }
+  dcData.forEach(d => crmItemUpsert('documents', d.id, d));
+}
 
 function dcHandleFiles(files) {
   if (!files || !files.length) return;
@@ -3930,7 +3974,7 @@ function dcHandleFiles(files) {
 
 function dcDelDoc(did) {
   dcData = dcData.filter(d=>d.id!==did);
-  dcSave(); dcRender();
+  dcSave(did); dcRender();
 }
 
 function dcSizeTxt(bytes) {
@@ -4779,10 +4823,20 @@ let faRetards = [];
 let faYear = new Date().getFullYear();
 let faMonth = new Date().getMonth(); // 0-indexed
 
-function faInitRetards() {
+async function faInitRetards() {
+  const remote = await crmItemsLoadAll('fa_retards');
+  if (remote && remote.length > 0) {
+    faRetards = remote;
+    localStorage.setItem(FA_RETARDS_KEY, JSON.stringify(faRetards));
+    return;
+  }
   try { faRetards = JSON.parse(localStorage.getItem(FA_RETARDS_KEY)) || []; } catch { faRetards = []; }
 }
-function faSaveRetardsData() { localStorage.setItem(FA_RETARDS_KEY, JSON.stringify(faRetards)); saveToSupabase('fa_retards', faRetards); }
+function faSaveRetardsData(deletedId) {
+  localStorage.setItem(FA_RETARDS_KEY, JSON.stringify(faRetards));
+  if (deletedId !== undefined) { crmItemDelete('fa_retards', deletedId); return; }
+  faRetards.forEach(r => crmItemUpsert('fa_retards', r.id, r));
+}
 
 function faNavMonth(delta) {
   faMonth += delta;
@@ -4806,7 +4860,7 @@ function faSaveRetard() {
 }
 function faDelRetard(id) {
   faRetards = faRetards.filter(r=>r.id!==id);
-  faSaveRetardsData();
+  faSaveRetardsData(id);
   faRenderRetards();
 }
 function faGlobalImportOpen() {
@@ -5988,11 +6042,17 @@ const LD_DEFAULT = [
   { id:'ld_h12', nom:'Chakir',      tel:'0624872333', email:'', metier:'Transport de personnes',        entreprise:'En cours de création',         source:'formulaire', campagne:'META ADS — V1 GRATUITE', statut:'contacte', notes:'', createdAt:'2026-05-18T17:37:00.000Z', url:'https://potentieel.fr/formulaire?fbclid=IwZXh0bgNhZW0BMABhZGlkAasxjiseaEhzcnRjBmFwcF9pZAwzNTA2ODU1Mz...' },
 ];
 
-function ldInit() {
-  try {
-    const raw = JSON.parse(localStorage.getItem(LD_KEY));
-    ldData = Array.isArray(raw) ? raw : [];
-  } catch { ldData = []; }
+async function ldInit() {
+  const remote = await crmItemsLoadAll('leads');
+  if (remote && remote.length > 0) {
+    ldData = remote;
+    localStorage.setItem(LD_KEY, JSON.stringify(ldData));
+  } else {
+    try {
+      const raw = JSON.parse(localStorage.getItem(LD_KEY));
+      ldData = Array.isArray(raw) ? raw : [];
+    } catch { ldData = []; }
+  }
   try {
     const del = JSON.parse(localStorage.getItem(LD_DELETED_KEY));
     ldDeleted = new Set(Array.isArray(del) ? del : []);
@@ -6005,18 +6065,24 @@ function ldInit() {
   });
   // Supprimer les leads qui sont aussi dans prData (basculés en projet)
   const prNames = new Set((typeof prData !== 'undefined' ? prData : []).filter(p=>p.source==='leads').map(p=>p.tel||p.nom));
+  const _ldRemovedIds = [];
   ldData = ldData.filter(l => {
-    if (prNames.has(l.tel||l.nom)) { ldDeleted.add(l.id); return false; }
+    if (prNames.has(l.tel||l.nom)) { ldDeleted.add(l.id); _ldRemovedIds.push(l.id); return false; }
     return true;
   });
   ldSaveDeleted();
+  _ldRemovedIds.forEach(rid => crmItemDelete('leads', rid));
   ldSave();
   ldRender();
 }
 
-function ldSave() {
+function ldSave(deletedIds) {
   localStorage.setItem(LD_KEY, JSON.stringify(ldData));
-  saveToSupabase('leads', { leads: ldData, deleted: [...ldDeleted] });
+  if (deletedIds !== undefined) {
+    (Array.isArray(deletedIds) ? deletedIds : [deletedIds]).forEach(did => crmItemDelete('leads', did));
+    return;
+  }
+  ldData.forEach(l => crmItemUpsert('leads', l.id, l)); // jamais de suppression de masse ici
 }
 function ldSaveDeleted() { localStorage.setItem(LD_DELETED_KEY, JSON.stringify([...ldDeleted])); }
 
@@ -6177,7 +6243,7 @@ function ldDelete(id) {
   ldDeleted.add(id);
   ldSaveDeleted();
   ldData = ldData.filter(x => x.id !== id);
-  ldSave();
+  ldSave(id);
   ldRender();
 }
 
@@ -7202,9 +7268,15 @@ const PR_DEFAULT = [
     createdAt:'2026-04-20T00:00:00.000Z' },
 ];
 
-function prLoad() {
-  try { const r = JSON.parse(localStorage.getItem(PR_KEY)); prData = Array.isArray(r) ? r : []; }
-  catch { prData = []; }
+async function prLoad() {
+  const remote = await crmItemsLoadAll('projects');
+  if (remote && remote.length > 0) {
+    prData = remote;
+    localStorage.setItem(PR_KEY, JSON.stringify(prData));
+  } else {
+    try { const r = JSON.parse(localStorage.getItem(PR_KEY)); prData = Array.isArray(r) ? r : []; }
+    catch { prData = []; }
+  }
   // Migration : injecter projets par défaut manquants
   let changed = false;
   PR_DEFAULT.forEach(def => {
@@ -7220,13 +7292,14 @@ function prLoad() {
     }
   } catch {}
 }
-function prSave() {
+function prSave(deletedId) {
   const slim = prData.map(p => ({
     ...p,
     assets: (p.assets||[]).map(({data,...r})=>r),
   }));
   localStorage.setItem(PR_KEY, JSON.stringify(slim));
-  saveToSupabase('projects', slim);
+  if (deletedId !== undefined) { crmItemDelete('projects', deletedId); return; }
+  slim.forEach(p => crmItemUpsert('projects', p.id, p));
 }
 
 async function prLoadAllAssetsFromIDB() {
@@ -7368,7 +7441,7 @@ function prWhatsApp(id) {
 }
 function prDelete(id) {
   if (!confirm('Supprimer ce projet ?')) return;
-  prData = prData.filter(x=>x.id!==id); prSave(); prRender();
+  prData = prData.filter(x=>x.id!==id); prSave(id); prRender();
 }
 
 /* ── Devis ── */
@@ -7626,7 +7699,7 @@ function prConvertToClient(id) {
     messages:[]
   });
   clSave();
-  prData = prData.filter(x=>x.id!==id); prSave(); prRender();
+  prData = prData.filter(x=>x.id!==id); prSave(id); prRender();
   alert('✓ Client créé avec le devis transféré !');
   nav(document.querySelector('[data-page="clients"]'));
 }
@@ -7640,7 +7713,7 @@ function ldAddToClient(id) {
     docs:[], assets:[], paiements:[], devis:[], factures:[], messages:[] });
   clSave();
   ldDeleted.add(id); ldSaveDeleted();
-  ldData = ldData.filter(x=>x.id!==id); ldSave(); ldRender();
+  ldData = ldData.filter(x=>x.id!==id); ldSave(id); ldRender();
   alert('Client créé ✓');
   nav(document.querySelector('[data-page="clients"]'));
 }
@@ -7651,7 +7724,7 @@ function ldAddToProject(id) {
     createdAt: new Date().toISOString() });
   prSave();
   ldDeleted.add(id); ldSaveDeleted();
-  ldData = ldData.filter(x=>x.id!==id); ldSave(); ldRender();
+  ldData = ldData.filter(x=>x.id!==id); ldSave(id); ldRender();
   alert('Ajouté aux Projets ✓');
   nav(document.querySelector('[data-page="projets"]'));
 }
