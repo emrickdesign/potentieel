@@ -1505,6 +1505,18 @@ section { padding: 100px 0; }
   transition: transform 0.55s cubic-bezier(0.25,0.46,0.45,0.94);
   padding: 8px 4px;
 }
+.wa-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 28px;
+  padding: 8px 4px;
+}
+.wa-grid .wa-screenshot-card { min-width: 0; }
+@media (max-width: 700px) {
+  .wa-grid .wa-screenshot-card { width: 100%; max-width: 320px; }
+}
+
 .wa-screenshot-card {
   min-width: 280px;
   max-width: 300px;
@@ -1837,4 +1849,162 @@ button { touch-action: manipulation; }
   .social-proof-grid { grid-template-columns: repeat(2, 1fr); gap: 28px; }
   .sp-item { border-right: none; padding: 0; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
   .sp-item:nth-child(3), .sp-item:nth-child(4) { border-bottom: none; }
+}
+
+/* =============================================
+   ABOUT PAGE — text design (highlights, underline draw, word reveal)
+   ============================================= */
+/* Highlighter sweep (animates when its .scroll-anim parent becomes visible) */
+.hl {
+  font-weight: 600;
+  color: var(--white);
+  background-image: linear-gradient(transparent 58%, rgba(244,146,106,0.32) 58%);
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 0% 100%;
+  transition: background-size 0.85s cubic-bezier(0.22,1,0.36,1) 0.15s;
+  padding: 0 2px;
+  border-radius: 2px;
+}
+.hl.hl-lime { background-image: linear-gradient(transparent 58%, rgba(200,245,66,0.30) 58%); }
+.scroll-anim.visible .hl,
+.reveal-words.visible .hl { background-size: 100% 100%; }
+
+/* Underline that draws in on scroll */
+.ul-draw {
+  position: relative;
+  font-weight: 600;
+  color: var(--white);
+  white-space: nowrap;
+}
+.ul-draw::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -3px;
+  height: 2px;
+  background: var(--orange);
+  border-radius: 2px;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.7s cubic-bezier(0.22,1,0.36,1) 0.25s;
+}
+.ul-draw.ul-lime::after { background: var(--lime); }
+.scroll-anim.visible .ul-draw::after,
+.reveal-words.visible .ul-draw::after { transform: scaleX(1); }
+
+/* Words appearing on scroll */
+.reveal-words .rw {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s ease, transform 0.55s cubic-bezier(0.22,1,0.36,1);
+}
+.reveal-words.visible .rw { opacity: 1; transform: none; }
+
+/* Founders caption on the about image */
+.who-image-caption {
+  position: absolute;
+  left: 16px; bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 16px;
+  background: rgba(10,10,12,0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 100px;
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+.who-image-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--lime);
+  box-shadow: 0 0 0 4px rgba(200,245,66,0.18);
+  flex-shrink: 0;
+}
+/* About image: ensure both founders stay centered */
+.who-image-wrap img { object-position: center; }
+
+/* =============================================
+   ABOUT PAGE — "Notre histoire" cards
+   ============================================= */
+.histoire-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+.histoire-card {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius);
+  padding: 40px 38px 38px;
+  transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), border-color 0.4s, box-shadow 0.4s;
+}
+.histoire-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--orange), transparent);
+  opacity: 0.7;
+  transition: opacity 0.4s;
+}
+.histoire-card.lime::before { background: linear-gradient(90deg, var(--lime), transparent); }
+.histoire-card::after {
+  content: "\201C";
+  position: absolute;
+  top: 8px; right: 24px;
+  font-family: Georgia, serif;
+  font-size: 110px;
+  line-height: 1;
+  color: var(--orange);
+  opacity: 0.10;
+  pointer-events: none;
+}
+.histoire-card.lime::after { color: var(--lime); }
+.histoire-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(244,146,106,0.35);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+}
+.histoire-card.lime:hover { border-color: rgba(200,245,66,0.35); }
+.histoire-num {
+  display: block;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--orange);
+  opacity: 0.85;
+  margin-bottom: 14px;
+}
+.histoire-card.lime .histoire-num { color: var(--lime); }
+.histoire-label {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--orange);
+  background: rgba(244,146,106,0.10);
+  padding: 5px 12px;
+  border-radius: 100px;
+  margin-bottom: 18px;
+}
+.histoire-card.lime .histoire-label {
+  color: var(--lime);
+  background: rgba(200,245,66,0.10);
+}
+.histoire-card p {
+  color: var(--gray-light);
+  font-size: 16px;
+  line-height: 1.8;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+}
+@media (max-width: 760px) {
+  .histoire-grid { grid-template-columns: 1fr; }
 }

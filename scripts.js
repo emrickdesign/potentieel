@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initSparkles();
   initTicker();
   initTiltCards();
+  initWordReveal();
   initScrollAnimations();
   initCounters();
 });
@@ -89,7 +90,7 @@ function initScrollAnimations() {
     });
   }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
 
-  document.querySelectorAll('.scroll-anim').forEach(el => observer.observe(el));
+  document.querySelectorAll('.scroll-anim, .reveal-words').forEach(el => observer.observe(el));
 }
 
 /* ---- Counter Animation ---- */
@@ -116,6 +117,34 @@ function initCounters() {
   }, { threshold: 0.5 });
 
   counters.forEach(el => observer.observe(el));
+}
+
+/* ---- Word Reveal (splits text into staggered spans, keeps inline elements) ---- */
+function initWordReveal() {
+  document.querySelectorAll('.reveal-words').forEach(el => {
+    const nodes = Array.from(el.childNodes);
+    el.innerHTML = '';
+    let i = 0;
+    nodes.forEach(node => {
+      if (node.nodeType === 3) { // text node
+        node.textContent.split(/(\s+)/).forEach(tok => {
+          if (tok === '' ) return;
+          if (/^\s+$/.test(tok)) { el.appendChild(document.createTextNode(tok)); return; }
+          const sp = document.createElement('span');
+          sp.className = 'rw';
+          sp.textContent = tok;
+          sp.style.transitionDelay = (i * 0.045) + 's';
+          el.appendChild(sp);
+          i++;
+        });
+      } else { // element node (e.g. <br>, <span class="serif">)
+        if (node.classList) node.classList.add('rw');
+        if (node.style) node.style.transitionDelay = (i * 0.045) + 's';
+        el.appendChild(node);
+        i++;
+      }
+    });
+  });
 }
 
 /* ---- WA Carousel (index page) ---- */
