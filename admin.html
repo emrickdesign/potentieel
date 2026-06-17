@@ -136,6 +136,7 @@
     }
     .sb-user { padding: 8px 10px; display: flex; align-items: center; gap: 9px; }
     .sb-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0; }
+.sb-sync-status { display: none; align-items: center; font-size: 10px; font-weight: 600; color: #f4926a; background: rgba(244,146,106,.12); border-radius: 6px; padding: 2px 7px; margin-left: 6px; white-space: nowrap; }
     .sb-user-email { font-size: 11px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .btn-logout { display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; background: transparent; border: none; border-radius: 7px; color: var(--muted); font-size: 12px; cursor: pointer; transition: all .13s; }
     .btn-logout:hover { background: rgba(239,68,68,.1); color: var(--red); }
@@ -635,6 +636,7 @@
         <div class="sb-user">
           <div class="sb-avatar" id="sb-av">E</div>
           <div class="sb-user-email" id="sb-email">—</div>
+          <div class="sb-sync-status" id="sb-sync-status" style="display:none"></div>
         </div>
         <button class="btn-logout" onclick="doSignOut()">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -3007,23 +3009,102 @@ async function crmItemsLoadAll(section) {
     return data.map(r => r.payload);
   } catch(e) { console.warn('crmItemsLoadAll:', section, e); return null; }
 }
+
+// ── File de synchronisation persistante ──────────────────────────────────
+// Chaque écriture (upsert/delete) est d'abord enregistrée ici (localStorage)
+// AVANT l'appel réseau, et n'en est retirée qu'après confirmation explicite
+// de Supabase (error === null). Une écriture qui échoue — réseau coupé,
+// onglet fermé avant la fin de la requête, etc. — reste donc mémorisée et
+// sera rejouée par sqFlush() : elle ne peut plus jamais être perdue.
+const SYNC_QUEUE_KEY = 'crm_sync_queue_v1';
+function sqLoad() {
+  try { const q = JSON.parse(localStorage.getItem(SYNC_QUEUE_KEY)); return Array.isArray(q) ? q : []; }
+  catch { return []; }
+}
+function sqSaveQueue(q) { localStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(q)); }
+function sqEnqueue(section, id, op, payload) {
+  const q = sqLoad().filter(e => !(e.section === section && String(e.id) === String(id)));
+  q.push({ section, id: String(id), op, payload, ts: Date.now() });
+  sqSaveQueue(q);
+  sqUpdateBadge();
+}
+function sqDequeue(section, id) {
+  sqSaveQueue(sqLoad().filter(e => !(e.section === section && String(e.id) === String(id))));
+  sqUpdateBadge();
+}
+function sqPending(section) { return sqLoad().filter(e => e.section === section); }
+function sqUpdateBadge() {
+  const el = document.getElementById('sb-sync-status');
+  if (!el) return;
+  const n = sqLoad().length;
+  if (n > 0) { el.style.display = 'flex'; el.textContent = n === 1 ? '1 modif. en attente' : (n + ' modifs en attente'); }
+  else { el.style.display = 'none'; }
+}
+let _sqFlushing = false;
+async function sqFlush() {
+  if (_sqFlushing) return;
+  _sqFlushing = true;
+  try {
+    const q = sqLoad();
+    for (const entry of q) {
+      try {
+        if (entry.op === 'delete') {
+          const { error } = await sb.from('crm_items').delete().eq('section', entry.section).eq('id', entry.id);
+          if (!error) sqDequeue(entry.section, entry.id);
+        } else {
+          const { error } = await sb.from('crm_items').upsert(
+            { section: entry.section, id: entry.id, payload: entry.payload, updated_at: new Date().toISOString() },
+            { onConflict: 'section,id' }
+          );
+          if (!error) sqDequeue(entry.section, entry.id);
+        }
+      } catch(e) { console.warn('sqFlush entry:', entry, e); }
+    }
+  } finally {
+    _sqFlushing = false;
+  }
+}
+window.addEventListener('online', () => { sqFlush().then(sqUpdateBadge); });
+setInterval(() => { sqFlush().then(sqUpdateBadge); }, 30000);
+// Fusionne les données distantes avec les écritures locales pas encore confirmées :
+// un chargement (boot, navigation, reconnexion réseau...) ne peut alors plus jamais
+// écraser un ajout / une modif / une suppression récente qui n'a pas fini de partir.
+function crmMerge(section, remoteArr) {
+  const pending = sqPending(section);
+  if (!pending.length) return remoteArr;
+  const merged = Array.isArray(remoteArr) ? [...remoteArr] : [];
+  pending.forEach(entry => {
+    const idx = merged.findIndex(x => String(x.id) === String(entry.id));
+    if (entry.op === 'delete') {
+      if (idx >= 0) merged.splice(idx, 1);
+    } else {
+      if (idx >= 0) merged[idx] = entry.payload; else merged.push(entry.payload);
+    }
+  });
+  return merged;
+}
+
 let _sbWriting = false;
 async function crmItemUpsert(section, id, payload) {
   if (id === undefined || id === null) return;
+  sqEnqueue(section, id, 'upsert', payload);
   _sbWriting = true;
   try {
-    await sb.from('crm_items').upsert(
+    const { error } = await sb.from('crm_items').upsert(
       { section, id: String(id), payload, updated_at: new Date().toISOString() },
       { onConflict: 'section,id' }
     );
+    if (!error) sqDequeue(section, id);
   } catch(e) { console.warn('crmItemUpsert:', section, id, e); }
   setTimeout(() => { _sbWriting = false; }, 1500);
 }
 async function crmItemDelete(section, id) {
   if (id === undefined || id === null) return;
+  sqEnqueue(section, id, 'delete', null);
   _sbWriting = true;
   try {
-    await sb.from('crm_items').delete().eq('section', section).eq('id', String(id));
+    const { error } = await sb.from('crm_items').delete().eq('section', section).eq('id', String(id));
+    if (!error) sqDequeue(section, id);
   } catch(e) { console.warn('crmItemDelete:', section, id, e); }
   setTimeout(() => { _sbWriting = false; }, 1500);
 }
@@ -3091,6 +3172,8 @@ async function bootApp(email) {
   const e = email || '';
   document.getElementById('sb-av').textContent = e ? e[0].toUpperCase() : 'E';
   document.getElementById('sb-email').textContent = e;
+  // Rejoue d'abord toute écriture restée en attente (coupure réseau / fermeture précédente)
+  try { sqUpdateBadge(); await sqFlush(); sqUpdateBadge(); } catch(_) { console.warn('sqFlush boot:', _); }
   // Init immédiate
   try { initCharts(); } catch(_) { console.warn('initCharts:', _); }
   // Chargement des données depuis crm_items (Supabase) — prLoad avant ldInit (dépendance)
@@ -3237,8 +3320,9 @@ let tcDragId = null;
 
 async function tcLoad() {
   const remote = await crmItemsLoadAll('tasks');
-  if (remote && remote.length > 0) {
-    tcData = remote;
+  const merged = remote ? crmMerge('tasks', remote) : null;
+  if (merged && merged.length > 0) {
+    tcData = merged;
     localStorage.setItem(TC_KEY, JSON.stringify(tcData));
     return;
   }
@@ -3527,8 +3611,9 @@ const DEFAULT_DATA = [
 let plData = [];
 async function plLoad() {
   const remote = await crmItemsLoadAll('pipeline');
-  if (remote && remote.length > 0) {
-    plData = remote;
+  const merged = remote ? crmMerge('pipeline', remote) : null;
+  if (merged && merged.length > 0) {
+    plData = merged;
     localStorage.setItem(PL_KEY, JSON.stringify(plData));
     return;
   }
@@ -3766,8 +3851,9 @@ let clEditMode = false;
 
 async function clLoad() {
   const remote = await crmItemsLoadAll('clients');
-  if (remote && remote.length > 0) {
-    clData = remote;
+  const merged = remote ? crmMerge('clients', remote) : null;
+  if (merged && merged.length > 0) {
+    clData = merged;
     localStorage.setItem(CL_KEY, JSON.stringify(clData));
   } else {
     try {
@@ -3934,8 +4020,9 @@ let dcData = [];
 
 async function dcLoad() {
   const remote = await crmItemsLoadAll('documents');
-  if (remote && remote.length > 0) {
-    dcData = remote;
+  const merged = remote ? crmMerge('documents', remote) : null;
+  if (merged && merged.length > 0) {
+    dcData = merged;
     localStorage.setItem(DC_KEY, JSON.stringify(dcData));
   } else {
     try { const raw = JSON.parse(localStorage.getItem(DC_KEY)); dcData = Array.isArray(raw) ? raw : []; }
@@ -4825,8 +4912,9 @@ let faMonth = new Date().getMonth(); // 0-indexed
 
 async function faInitRetards() {
   const remote = await crmItemsLoadAll('fa_retards');
-  if (remote && remote.length > 0) {
-    faRetards = remote;
+  const merged = remote ? crmMerge('fa_retards', remote) : null;
+  if (merged && merged.length > 0) {
+    faRetards = merged;
     localStorage.setItem(FA_RETARDS_KEY, JSON.stringify(faRetards));
     return;
   }
@@ -6044,8 +6132,9 @@ const LD_DEFAULT = [
 
 async function ldInit() {
   const remote = await crmItemsLoadAll('leads');
-  if (remote && remote.length > 0) {
-    ldData = remote;
+  const merged = remote ? crmMerge('leads', remote) : null;
+  if (merged && merged.length > 0) {
+    ldData = merged;
     localStorage.setItem(LD_KEY, JSON.stringify(ldData));
   } else {
     try {
@@ -7270,8 +7359,9 @@ const PR_DEFAULT = [
 
 async function prLoad() {
   const remote = await crmItemsLoadAll('projects');
-  if (remote && remote.length > 0) {
-    prData = remote;
+  const merged = remote ? crmMerge('projects', remote) : null;
+  if (merged && merged.length > 0) {
+    prData = merged;
     localStorage.setItem(PR_KEY, JSON.stringify(prData));
   } else {
     try { const r = JSON.parse(localStorage.getItem(PR_KEY)); prData = Array.isArray(r) ? r : []; }
