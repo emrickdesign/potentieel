@@ -4342,6 +4342,7 @@ function clRenderDevis(c) {
     const actions = isImport
       ? `<button onclick="dvPreview('${d.id}')" title="Ouvrir" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>`
       : `<button onclick="dvPreview('${d.id}')" title="Voir" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+         <button onclick="dvDownload('${d.id}')" title="Télécharger" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
          <button onclick="dvSendEmail('${d.id}')" title="Email" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></button>
          ${d.statut!=='signé'?'<button onclick="dvSign(\''+d.id+'\')" title="Signé" style="background:rgba(74,222,128,.15);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#4ade80;font-size:13px;font-weight:700">✓</button>':''}`;
     return `<div style="display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--border)">
@@ -4483,7 +4484,7 @@ function dvCreate() {
   const c=clData.find(x=>x.id===cid);
   const allDevis=clData.flatMap(x=>x.devis||[]).concat(dvStandalone);
   const ref='DEV-'+String(allDevis.length+1).padStart(3,'0')+'-'+new Date().getFullYear();
-  const dv={id:'dv'+Date.now(),ref,date:new Date().toLocaleDateString('fr-FR'),statut:'en attente',totalTxt,
+  const dv={id:'dv'+Date.now(),ref,date:new Date().toLocaleDateString('fr-FR'),statut:'envoyé',totalTxt,
     data:{entreprise,tel:document.getElementById('dv-tel').value.trim(),email:document.getElementById('dv-email').value.trim(),
       adresse:document.getElementById('dv-adresse').value.trim(),idType:document.getElementById('dv-id-type').value,
       idNum:document.getElementById('dv-id-num').value.trim(),creation,abo,creationAmt,aboAmt:parseInt(abo)||0}};
@@ -4526,7 +4527,7 @@ function openImportedFile(data, fileName) {
   setTimeout(()=>URL.revokeObjectURL(url), 10000);
 }
 
-function dvPrintDv(dv) {
+function dvQuoteHtml(dv, withPrintBtn) {
   const d=dv.data||{};
   const cPrix={'1x':'990,00 €','2x':'2 × 495,00 €','3x':'3 × 330,00 €','4x':'4 × 247,50 €'};
   const cDesc={'1x':'Conception, développement et mise en ligne. Site multi-pages, responsive, SEO local, boutons d\'action (appel, WhatsApp), formulaire de contact. 1ère version présentée gratuitement avant tout engagement.','2x':'Idem — règlement en 2 versements de 495,00 € espacés de 30 jours.','3x':'Idem — règlement en 3 versements de 330,00 € espacés de 30 jours.','4x':'Idem — règlement en 4 versements de 247,50 € espacés de 30 jours.'};
@@ -4616,7 +4617,7 @@ tbody tr:last-child td{border-bottom:none}
 .sig-space{height:28px}
 .btn{background:#f4926a;color:#fff;border:none;padding:10px 24px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;margin:14px 32px}
 </style></head><body>
-<button class="btn no-print" onclick="window.print()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> Imprimer / PDF</button>
+${withPrintBtn ? '<button class="btn no-print" onclick="window.print()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> Imprimer / PDF</button>' : ''}
 <div class="topbar">
   <div class="logo">
     <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
@@ -4675,7 +4676,70 @@ tbody tr:last-child td{border-bottom:none}
     }
   <\/script>
 </body></html>`;
+  return html;
+}
+
+function dvPrintDv(dv) {
+  const html = dvQuoteHtml(dv, true);
   const w=window.open('','_blank');if(w){w.document.write(html);w.document.close();}
+}
+
+// Construit un PDF (base64) à partir du HTML du devis, via html2pdf.js (rendu hors-écran)
+async function dvBuildPdfBase64(dv) {
+  const html = dvQuoteHtml(dv, false);
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'position:fixed;left:-99999px;top:0;width:820px;background:#fff';
+  wrap.innerHTML = html.replace(/^[\s\S]*?<body[^>]*>/i,'').replace(/<\/body>[\s\S]*$/i,'');
+  document.body.appendChild(wrap);
+  try {
+    const blob = await html2pdf().set({
+      margin: 0,
+      filename: `devis-${dv.ref||'potentieel'}.pdf`,
+      image: { type: 'jpeg', quality: 0.95 },
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    }).from(wrap).outputPdf('blob');
+    const base64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(String(reader.result).split(',')[1] || '');
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+    return base64;
+  } finally {
+    wrap.remove();
+  }
+}
+
+// Télécharge directement le devis en PDF (sans passer par la fenêtre d'impression)
+async function dvDownloadPdf(dv) {
+  const html = dvQuoteHtml(dv, false);
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'position:fixed;left:-99999px;top:0;width:820px;background:#fff';
+  wrap.innerHTML = html.replace(/^[\s\S]*?<body[^>]*>/i,'').replace(/<\/body>[\s\S]*$/i,'');
+  document.body.appendChild(wrap);
+  try {
+    await html2pdf().set({
+      margin: 0,
+      filename: `devis-${dv.ref||'potentieel'}.pdf`,
+      image: { type: 'jpeg', quality: 0.95 },
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    }).from(wrap).save();
+  } finally {
+    wrap.remove();
+  }
+}
+function dvDownload(did){
+  const c=clData.find(x=>x.id===clCurrentId); if(!c)return;
+  const dv=(c.devis||[]).find(d=>d.id===did); if(!dv)return;
+  dvDownloadPdf(dv);
+}
+function dvDownloadFromGlobal(did){
+  const c=clData.find(x=>(x.devis||[]).find(d=>d.id===did));
+  const dv = c ? c.devis.find(d=>d.id===did) : dvFindStandalone(did);
+  if(!dv)return;
+  dvDownloadPdf(dv);
 }
 
 function clRenderFactures(c) {
@@ -4911,15 +4975,47 @@ function dvSign(did){
   const dv=c.devis.find(d=>d.id===did);if(!dv)return;
   dv.statut='signé';clSave();clRenderDevis(c);
 }
+const DV_EMAIL_FN_URL = 'https://alpzagoprkpzirgtrdup.supabase.co/functions/v1/send-quote-email';
+
+async function dvSendEmailCore(dv, did, fallbackEmail){
+  const email=(dv.data&&dv.data.email)||fallbackEmail||'';
+  if(!email){alert('Aucun email enregistré.');return;}
+  const btns = document.querySelectorAll(`button[onclick*="dvSendEmail('${did}')"], button[onclick*="dvSendEmailFromGlobal('${did}')"]`);
+  btns.forEach(b=>{ b.disabled = true; b.style.opacity = '.4'; });
+  try {
+    const pdfBase64 = await dvBuildPdfBase64(dv);
+    const { data: { session } } = await sb.auth.getSession();
+    const resp = await fetch(DV_EMAIL_FN_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session?.access_token || SUPABASE_KEY}`,
+        'apikey': SUPABASE_KEY
+      },
+      body: JSON.stringify({
+        to: email,
+        clientName: (dv.data&&dv.data.entreprise) || '',
+        ref: dv.ref,
+        totalTxt: dv.totalTxt || '',
+        fileName: `devis-${dv.ref||'potentieel'}.pdf`,
+        pdfBase64
+      })
+    });
+    const out = await resp.json().catch(()=>({}));
+    if (!resp.ok || out.error) throw new Error(out.error || `Erreur ${resp.status}`);
+    alert(`Devis ${dv.ref} envoyé par email à ${email} ✓`);
+  } catch(e) {
+    console.error(e);
+    alert("Échec de l'envoi automatique : " + (e.message||e) + "\n\nOuverture du devis pour envoi manuel…");
+    dvPrintDv(dv);
+  } finally {
+    btns.forEach(b=>{ b.disabled = false; b.style.opacity = ''; });
+  }
+}
 function dvSendEmail(did){
   const c=clData.find(x=>(x.devis||[]).find(d=>d.id===did));if(!c)return;
   const dv=c.devis.find(d=>d.id===did);if(!dv)return;
-  dvPrintDv(dv);
-  const email=(dv.data&&dv.data.email)||c.email||'';
-  if(!email){alert('Aucun email enregistré.');return;}
-  const subj=encodeURIComponent(`Devis ${dv.ref} — Potentieel`);
-  const body=encodeURIComponent(`Bonjour,\n\nVeuillez trouver en pièce jointe votre devis ${dv.ref} d'un montant de ${dv.totalTxt||'—'}.\n\nLe devis vient de s'ouvrir dans votre navigateur — imprimez-le ou enregistrez-le en PDF pour l'attacher à cet email.\n\nN'hésitez pas à me contacter pour toute question.\n\nCordialement,\nEmrick — Potentieel\ncontact@potentieel.fr`);
-  setTimeout(()=>window.open(`mailto:${email}?subject=${subj}&body=${body}`),400);
+  dvSendEmailCore(dv, did, c.email);
 }
 
 // ─── VUES GLOBALES ───────────────────────────────────────
@@ -5148,7 +5244,7 @@ function renderGlobalDevis(filter){
           <option value="signé" ${d.statut==='signé'?'selected':''}>Signé</option>
           <option value="refusé" ${d.statut==='refusé'?'selected':''}>Refusé</option>
         </select>
-        <button onclick="dvPreviewFromGlobal('${d.id}')" title="Voir" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        <button onclick="dvDownloadFromGlobal('${d.id}')" title="Télécharger" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
         <button onclick="dvDelFromGlobal('${d.id}')" title="Supprimer" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px;opacity:.5"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>
       </td></tr>`).join('')+
     '</tbody></table>';
@@ -5167,14 +5263,9 @@ async function dvPreviewFromGlobal(did){
 }
 function dvSendEmailFromGlobal(did){
   const c=clData.find(x=>(x.devis||[]).find(d=>d.id===did));
-  if(c){ const old=clCurrentId; clCurrentId=c.id; dvSendEmail(did); clCurrentId=old; return; }
-  const dv=dvFindStandalone(did); if(!dv)return;
-  dvPrintDv(dv);
-  const email=(dv.data&&dv.data.email)||'';
-  if(!email){alert('Aucun email enregistré.');return;}
-  const subj=encodeURIComponent(`Devis ${dv.ref} — Potentieel`);
-  const body=encodeURIComponent(`Bonjour,\n\nVeuillez trouver en pièce jointe votre devis ${dv.ref} d'un montant de ${dv.totalTxt||'—'}.\n\nLe devis vient de s'ouvrir dans votre navigateur — imprimez-le ou enregistrez-le en PDF pour l'attacher à cet email.\n\nN'hésitez pas à me contacter pour toute question.\n\nCordialement,\nEmrick — Potentieel\ncontact@potentieel.fr`);
-  setTimeout(()=>window.open(`mailto:${email}?subject=${subj}&body=${body}`),400);
+  const dv = c ? c.devis.find(d=>d.id===did) : dvFindStandalone(did);
+  if(!dv)return;
+  dvSendEmailCore(dv, did, c&&c.email);
 }
 function dvSignFromGlobal(did){
   const c=clData.find(x=>(x.devis||[]).find(d=>d.id===did));
