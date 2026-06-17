@@ -1258,95 +1258,6 @@
             <!-- Tab: Discussion -->
           </div>
 
-          <!-- DEVIS MODAL -->
-          <div id="dv-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1100;align-items:center;justify-content:center;padding:16px;overflow-y:auto" onclick="if(event.target.id==='dv-modal')dvCloseModal()">
-            <div style="background:#18181f;border:1px solid var(--border);border-radius:18px;padding:28px 30px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;position:relative">
-              <button onclick="dvCloseModal()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">×</button>
-              <h3 id="dv-modal-title" style="font-size:18px;font-weight:800;margin:0 0 18px">Nouveau devis</h3>
-
-              <!-- Bannière client auto (fiche client) -->
-              <div id="dv-client-banner" style="display:none;background:rgba(244,146,106,.1);border:1px solid rgba(244,146,106,.3);border-radius:10px;padding:10px 14px;margin-bottom:16px">
-                <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">Client sélectionné</div>
-                <div id="dv-client-name-display" style="font-size:14px;font-weight:700;color:#fff"></div>
-                <div id="dv-client-email-display" style="font-size:12px;color:var(--muted)"></div>
-              </div>
-
-              <!-- Client existant (page globale) -->
-              <div id="dv-cl-section">
-              <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Client existant <span style="font-weight:400">(optionnel — pré-remplit le formulaire)</span></label>
-              <select id="dv-cl-select" onchange="dvPrefill()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:16px;outline:none">
-                <option value="">— Aucun client sélectionné —</option>
-              </select>
-              </div>
-
-              <!-- Entreprise + Contact -->
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
-                <div>
-                  <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Entreprise *</label>
-                  <input id="dv-entreprise" placeholder="Nom entreprise" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
-                </div>
-                <div>
-                  <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Contact</label>
-                  <input id="dv-tel" placeholder="0600000000" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
-                </div>
-              </div>
-
-              <!-- Email -->
-              <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Email *</label>
-              <input id="dv-email" type="email" placeholder="client@exemple.fr" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:14px;outline:none;box-sizing:border-box">
-
-              <!-- Adresse -->
-              <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Adresse</label>
-              <input id="dv-adresse" placeholder="12 rue des Exemples, 73000 Chambéry" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:14px;outline:none;box-sizing:border-box">
-
-              <!-- Type identifiant + numéro -->
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
-                <div>
-                  <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Type d'identifiant</label>
-                  <select id="dv-id-type" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
-                    <option value="SIRET">SIRET (14 chiffres)</option>
-                    <option value="SIREN">SIREN (9 chiffres)</option>
-                    <option value="">Non applicable</option>
-                  </select>
-                </div>
-                <div>
-                  <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Numéro</label>
-                  <input id="dv-id-num" placeholder="85005018800026" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
-                </div>
-              </div>
-
-              <!-- Création + Abonnement -->
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
-                <div>
-                  <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Création (paiement unique)</label>
-                  <select id="dv-creation" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
-                    <option value="">Aucun</option>
-                    <option value="1x">Création site web — 990 €</option>
-                    <option value="2x">Création site web — 2 × 495 €</option>
-                    <option value="3x">Création site web — 3 × 330 €</option>
-                    <option value="4x">Création site web — 4 × 247,50 €</option>
-                  </select>
-                </div>
-                <div>
-                  <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Abonnement mensuel</label>
-                  <select id="dv-abo" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
-                    <option value="">Aucun abonnement</option>
-                    <option value="20">Assistant Digital — 20 €/mois</option>
-                    <option value="49">Gestion complète — 49 €/mois</option>
-                  </select>
-                </div>
-              </div>
-
-              <!-- Note -->
-              <p style="font-size:11px;color:var(--muted);margin:0 0 20px;background:rgba(255,255,255,.03);padding:10px;border-radius:8px">Si abonnement combiné : aucun prélèvement d'abonnement tant que la création n'est pas intégralement réglée (mois d'abonnement offerts).</p>
-
-              <div style="display:flex;gap:10px">
-                <button onclick="dvCloseModal()" class="btn-modal-cancel">Annuler</button>
-                <button onclick="dvCreate()" class="btn-modal-confirm">+ Créer le devis</button>
-              </div>
-            </div>
-          </div>
-
           <!-- FACTURE MODAL -->
           <div id="fa-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1100;align-items:center;justify-content:center;padding:16px;overflow-y:auto" onclick="if(event.target.id==='fa-modal')faCloseModal()">
             <div style="background:#18181f;border:1px solid var(--border);border-radius:18px;padding:28px 30px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;position:relative">
@@ -2372,6 +2283,96 @@
           </div>
         </div>
 
+
+          <!-- DEVIS MODAL -->
+          <div id="dv-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1100;align-items:center;justify-content:center;padding:16px;overflow-y:auto" onclick="if(event.target.id==='dv-modal')dvCloseModal()">
+            <div style="background:#18181f;border:1px solid var(--border);border-radius:18px;padding:28px 30px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;position:relative">
+              <button onclick="dvCloseModal()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">×</button>
+              <h3 id="dv-modal-title" style="font-size:18px;font-weight:800;margin:0 0 18px">Nouveau devis</h3>
+
+              <!-- Bannière client auto (fiche client) -->
+              <div id="dv-client-banner" style="display:none;background:rgba(244,146,106,.1);border:1px solid rgba(244,146,106,.3);border-radius:10px;padding:10px 14px;margin-bottom:16px">
+                <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">Client sélectionné</div>
+                <div id="dv-client-name-display" style="font-size:14px;font-weight:700;color:#fff"></div>
+                <div id="dv-client-email-display" style="font-size:12px;color:var(--muted)"></div>
+              </div>
+
+              <!-- Client existant (page globale) -->
+              <div id="dv-cl-section">
+              <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Client existant <span style="font-weight:400">(optionnel — pré-remplit le formulaire)</span></label>
+              <select id="dv-cl-select" onchange="dvPrefill()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:16px;outline:none">
+                <option value="">— Aucun client sélectionné —</option>
+              </select>
+              </div>
+
+              <!-- Entreprise + Contact -->
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+                <div>
+                  <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Entreprise *</label>
+                  <input id="dv-entreprise" placeholder="Nom entreprise" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                </div>
+                <div>
+                  <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Contact</label>
+                  <input id="dv-tel" placeholder="0600000000" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                </div>
+              </div>
+
+              <!-- Email -->
+              <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Email *</label>
+              <input id="dv-email" type="email" placeholder="client@exemple.fr" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:14px;outline:none;box-sizing:border-box">
+
+              <!-- Adresse -->
+              <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Adresse</label>
+              <input id="dv-adresse" placeholder="12 rue des Exemples, 73000 Chambéry" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:14px;outline:none;box-sizing:border-box">
+
+              <!-- Type identifiant + numéro -->
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+                <div>
+                  <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Type d'identifiant</label>
+                  <select id="dv-id-type" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
+                    <option value="SIRET">SIRET (14 chiffres)</option>
+                    <option value="SIREN">SIREN (9 chiffres)</option>
+                    <option value="">Non applicable</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Numéro</label>
+                  <input id="dv-id-num" placeholder="85005018800026" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                </div>
+              </div>
+
+              <!-- Création + Abonnement -->
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+                <div>
+                  <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Création (paiement unique)</label>
+                  <select id="dv-creation" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
+                    <option value="">Aucun</option>
+                    <option value="1x">Création site web — 990 €</option>
+                    <option value="2x">Création site web — 2 × 495 €</option>
+                    <option value="3x">Création site web — 3 × 330 €</option>
+                    <option value="4x">Création site web — 4 × 247,50 €</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Abonnement mensuel</label>
+                  <select id="dv-abo" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
+                    <option value="">Aucun abonnement</option>
+                    <option value="20">Assistant Digital — 20 €/mois</option>
+                    <option value="49">Gestion complète — 49 €/mois</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Note -->
+              <p style="font-size:11px;color:var(--muted);margin:0 0 20px;background:rgba(255,255,255,.03);padding:10px;border-radius:8px">Si abonnement combiné : aucun prélèvement d'abonnement tant que la création n'est pas intégralement réglée (mois d'abonnement offerts).</p>
+
+              <div style="display:flex;gap:10px">
+                <button onclick="dvCloseModal()" class="btn-modal-cancel">Annuler</button>
+                <button onclick="dvCreate()" class="btn-modal-confirm">+ Créer le devis</button>
+              </div>
+            </div>
+          </div>
+
         <!-- ── DEVIS ── -->
         <div id="page-devis" class="page">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">
@@ -3215,8 +3216,9 @@ function nav(el) {
   document.getElementById('page-'+p).classList.add('active');
   document.getElementById('tb-section').textContent = sections[p]||'';
   document.getElementById('tb-title').textContent   = titles[p]||p;
+  if (p !== 'clients') clCurrentId = null;
   if(p==='facturation') { faInitRetards().then(() => renderGlobalFactures()).catch(()=>renderGlobalFactures()); }
-  if(p==='devis') renderGlobalDevis();
+  if(p==='devis') { dvInitStandalone().then(() => renderGlobalDevis()).catch(()=>renderGlobalDevis()); }
   if(p==='leads') ldRender();
   if(p==='projets') { prLoad().then(() => { prRender(); prLoadAllAssetsFromIDB(); }).catch(()=>{ prRender(); prLoadAllAssetsFromIDB(); }); }
   if(p==='formulaire') fmLoad();
@@ -4403,6 +4405,27 @@ function clDelDevis(did) {
 
 /* ══════════════════════  DEVIS  ═══════════════════════ */
 
+// ─── Devis sans client (standalone, pas encore en client) ────────────
+const DV_STANDALONE_KEY = 'dv_standalone_v1';
+let dvStandalone = [];
+
+async function dvInitStandalone() {
+  const remote = await crmItemsLoadAll('devis_standalone');
+  const merged = remote ? crmMerge('devis_standalone', remote) : null;
+  if (merged && merged.length > 0) {
+    dvStandalone = merged;
+    localStorage.setItem(DV_STANDALONE_KEY, JSON.stringify(dvStandalone));
+    return;
+  }
+  try { dvStandalone = JSON.parse(localStorage.getItem(DV_STANDALONE_KEY)) || []; } catch { dvStandalone = []; }
+}
+function dvSaveStandalone(deletedId) {
+  localStorage.setItem(DV_STANDALONE_KEY, JSON.stringify(dvStandalone));
+  if (deletedId !== undefined) { crmItemDelete('devis_standalone', deletedId); return; }
+  dvStandalone.forEach(d => crmItemUpsert('devis_standalone', d.id, d));
+}
+function dvFindStandalone(did) { return dvStandalone.find(d=>d.id===did); }
+
 function dvOpenModal(clientId) {
   const cid = clientId || clCurrentId;
   const fromClient = !!cid;
@@ -4458,14 +4481,19 @@ function dvCreate() {
   const totalTxt=parts.join(' + ')||'—';
   const cid=document.getElementById('dv-cl-select').value||clCurrentId;
   const c=clData.find(x=>x.id===cid);
-  const allDevis=clData.flatMap(x=>x.devis||[]);
+  const allDevis=clData.flatMap(x=>x.devis||[]).concat(dvStandalone);
   const ref='DEV-'+String(allDevis.length+1).padStart(3,'0')+'-'+new Date().getFullYear();
   const dv={id:'dv'+Date.now(),ref,date:new Date().toLocaleDateString('fr-FR'),statut:'en attente',totalTxt,
     data:{entreprise,tel:document.getElementById('dv-tel').value.trim(),email:document.getElementById('dv-email').value.trim(),
       adresse:document.getElementById('dv-adresse').value.trim(),idType:document.getElementById('dv-id-type').value,
       idNum:document.getElementById('dv-id-num').value.trim(),creation,abo,creationAmt,aboAmt:parseInt(abo)||0}};
-  if(c){if(!c.devis)c.devis=[];c.devis.unshift(dv);clSave();clRenderDevis(c);}
-  dvCloseModal(); dvPrintDv(dv);
+  if(c){
+    if(!c.devis)c.devis=[];c.devis.unshift(dv);clSave();clRenderDevis(c);
+  } else {
+    dvStandalone.unshift(dv);
+    dvSaveStandalone();
+  }
+  dvCloseModal(); dvPrintDv(dv); renderGlobalDevis();
 }
 
 function clAddDevis(){dvOpenModal(clCurrentId);}
@@ -5087,7 +5115,7 @@ function renderGlobalFactures(){
 
 function renderGlobalDevis(filter){
   filter=filter||_dvCurrentFilter||'all';
-  const allDv=clData.flatMap(c=>(c.devis||[]).map(d=>({...d,clientNom:c.nom||c.id,clientId:c.id})));
+  const allDv=clData.flatMap(c=>(c.devis||[]).map(d=>({...d,clientNom:c.nom||c.id,clientId:c.id}))).concat(dvStandalone.map(d=>({...d,clientNom:(d.data&&d.data.entreprise)||'—',clientId:null})));
   allDv.sort((a,b)=>{const da=(a.date||'').split('/').reverse().join('');const db=(b.date||'').split('/').reverse().join('');return db.localeCompare(da);});
   const filtered=filter==='all'?allDv:allDv.filter(d=>d.statut===filter);
   const nbAttente=allDv.filter(d=>!d.statut||d.statut==='en attente').length;
@@ -5126,8 +5154,9 @@ function renderGlobalDevis(filter){
     '</tbody></table>';
 }
 async function dvPreviewFromGlobal(did){
-  const c=clData.find(x=>(x.devis||[]).find(d=>d.id===did)); if(!c)return;
-  const dv=c.devis.find(d=>d.id===did); if(!dv)return;
+  const c=clData.find(x=>(x.devis||[]).find(d=>d.id===did));
+  const dv = c ? c.devis.find(d=>d.id===did) : dvFindStandalone(did);
+  if(!dv)return;
   if(dv.type==='import'){
     let data=dv.data;
     if(!data && dv.idbKey){ try{ data=await idbGet(dv.idbKey); }catch{} }
@@ -5136,14 +5165,37 @@ async function dvPreviewFromGlobal(did){
   }
   dvPrintDv(dv);
 }
-function dvSendEmailFromGlobal(did){const c=clData.find(x=>(x.devis||[]).find(d=>d.id===did));if(!c)return;const old=clCurrentId;clCurrentId=c.id;dvSendEmail(did);clCurrentId=old;}
-function dvSignFromGlobal(did){const c=clData.find(x=>(x.devis||[]).find(d=>d.id===did));if(!c)return;const dv=c.devis.find(d=>d.id===did);if(!dv)return;dv.statut='signé';clSave();renderGlobalDevis();}
-function dvDelFromGlobal(did){const c=clData.find(x=>(x.devis||[]).find(d=>d.id===did));if(!c)return;c.devis=(c.devis||[]).filter(d=>d.id!==did);clSave();renderGlobalDevis();}
+function dvSendEmailFromGlobal(did){
+  const c=clData.find(x=>(x.devis||[]).find(d=>d.id===did));
+  if(c){ const old=clCurrentId; clCurrentId=c.id; dvSendEmail(did); clCurrentId=old; return; }
+  const dv=dvFindStandalone(did); if(!dv)return;
+  dvPrintDv(dv);
+  const email=(dv.data&&dv.data.email)||'';
+  if(!email){alert('Aucun email enregistré.');return;}
+  const subj=encodeURIComponent(`Devis ${dv.ref} — Potentieel`);
+  const body=encodeURIComponent(`Bonjour,\n\nVeuillez trouver en pièce jointe votre devis ${dv.ref} d'un montant de ${dv.totalTxt||'—'}.\n\nLe devis vient de s'ouvrir dans votre navigateur — imprimez-le ou enregistrez-le en PDF pour l'attacher à cet email.\n\nN'hésitez pas à me contacter pour toute question.\n\nCordialement,\nEmrick — Potentieel\ncontact@potentieel.fr`);
+  setTimeout(()=>window.open(`mailto:${email}?subject=${subj}&body=${body}`),400);
+}
+function dvSignFromGlobal(did){
+  const c=clData.find(x=>(x.devis||[]).find(d=>d.id===did));
+  if(c){ const dv=c.devis.find(d=>d.id===did); if(!dv)return; dv.statut='signé'; clSave(); renderGlobalDevis(); return; }
+  const dv=dvFindStandalone(did); if(!dv)return;
+  dv.statut='signé'; dvSaveStandalone(); renderGlobalDevis();
+}
+function dvDelFromGlobal(did){
+  const c=clData.find(x=>(x.devis||[]).find(d=>d.id===did));
+  if(c){ c.devis=(c.devis||[]).filter(d=>d.id!==did); clSave(); renderGlobalDevis(); return; }
+  if(!dvFindStandalone(did))return;
+  dvStandalone=dvStandalone.filter(d=>d.id!==did);
+  dvSaveStandalone(did);
+  renderGlobalDevis();
+}
 
 function dvChangeStatutGlobal(did, newStatut) {
-  const c = clData.find(x=>(x.devis||[]).find(d=>d.id===did)); if (!c) return;
-  const dv = c.devis.find(d=>d.id===did); if (!dv) return;
-  dv.statut = newStatut; clSave(); renderGlobalDevis();
+  const c = clData.find(x=>(x.devis||[]).find(d=>d.id===did));
+  if (c) { const dv = c.devis.find(d=>d.id===did); if (!dv) return; dv.statut = newStatut; clSave(); renderGlobalDevis(); return; }
+  const dv = dvFindStandalone(did); if (!dv) return;
+  dv.statut = newStatut; dvSaveStandalone(); renderGlobalDevis();
 }
 
 function dvImportOpen() {
