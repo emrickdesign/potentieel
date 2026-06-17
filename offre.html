@@ -195,10 +195,10 @@
     <div style="max-width:780px;margin:0 auto;text-align:center;">
       <div class="eyebrow scroll-anim" style="justify-content:center;">Notre garantie</div>
       <h2 class="scroll-anim d1" style="font-size:clamp(34px,4.5vw,54px);font-weight:800;letter-spacing:-0.02em;margin-bottom:20px;">
-        Pas satisfait ? On <span class="serif accent-orange">rembourse.</span>
+        Pas satisfait ? On <span class="serif accent-orange">recommence.</span>
       </h2>
       <p class="scroll-anim d2" style="color:var(--gray-light);font-size:17px;line-height:1.75;margin-bottom:48px;">
-        On s'engage sur le résultat. Si votre site ne vous convient pas une fois livré, on corrige jusqu'à ce que vous soyez 100% satisfait. Et si vraiment ça ne va pas — on rembourse. Simple.
+        On s'engage sur le résultat. On ne rembourse pas — on fait bien mieux : on apporte toutes les modifications nécessaires, autant de fois qu'il le faut, jusqu'à ce que votre site vous plaise vraiment. On ne lâche rien tant que vous n'êtes pas 100% satisfait.
       </p>
       <div class="scroll-anim d2" style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;">
         <div style="background:var(--bg-card);border:1px solid var(--border-card);border-radius:16px;padding:28px 20px;text-align:center;">
@@ -213,7 +213,7 @@
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
           </div>
           <h4 style="font-size:16px;font-weight:700;margin-bottom:8px;">Livraison garantie</h4>
-          <p style="font-size:14px;color:var(--gray);line-height:1.6;">5 à 14 jours. On s'y tient, ou on vous rembourse les jours de retard.</p>
+          <p style="font-size:14px;color:var(--gray);line-height:1.6;">5 à 14 jours. On s'y tient, sans exception.</p>
         </div>
         <div style="background:var(--bg-card);border:1px solid var(--border-card);border-radius:16px;padding:28px 20px;text-align:center;">
           <div style="width:48px;height:48px;border-radius:50%;background:rgba(244,146,106,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--orange);">
@@ -266,6 +266,27 @@
     </h2>
     <p class="scroll-anim d2" style="text-align:center;color:var(--gray-light);font-size:16px;max-width:520px;margin:0 auto 64px;line-height:1.7;">Simple, rapide, sans jargon. De l'appel découverte à la mise en ligne, on vous guide à chaque étape.</p>
     <div class="process-timeline">
+
+      <!-- Wavy connecting line -->
+      <svg class="process-wave-svg" viewBox="0 0 1000 130" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="waveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#f4926a"/>
+            <stop offset="100%" stop-color="#c8f542"/>
+          </linearGradient>
+          <filter id="waveGlow">
+            <feGaussianBlur stdDeviation="2.5" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <!-- Glow layer -->
+        <path d="M 125,106 C 188,84 295,128 375,106 C 452,86 548,126 625,106 C 705,88 810,124 875,106"
+              fill="none" stroke="url(#waveGrad)" stroke-width="5" stroke-linecap="round" opacity="0.22" filter="url(#waveGlow)"/>
+        <!-- Main wave -->
+        <path d="M 125,106 C 188,84 295,128 375,106 C 452,86 548,126 625,106 C 705,88 810,124 875,106"
+              fill="none" stroke="url(#waveGrad)" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+
       <div class="process-step-new scroll-anim d1">
         <div class="process-badge">01</div>
         <div class="process-icon">
@@ -370,20 +391,18 @@
 <!-- WA SCREENSHOTS -->
 <section style="padding:20px 0 80px;">
   <div class="container">
-    <div class="wa-carousel-track-wrap">
-      <div class="wa-carousel-track" id="waCarouselOffre">
-        <div class="wa-screenshot-card tilt-card scroll-anim d1">
-          <img src="assets/avisplaisir.png" alt="Avis client WhatsApp — Retour qui fait plaisir" loading="lazy">
-        </div>
-        <div class="wa-screenshot-card tilt-card scroll-anim d2">
-          <img src="assets/avisadore.png" alt="Avis client WhatsApp — On adore ce genre de retour" loading="lazy">
-        </div>
-        <div class="wa-screenshot-card tilt-card scroll-anim d3">
-          <img src="assets/avisencore.png" alt="Avis client WhatsApp — Genre de retour qu'on aime voir" loading="lazy">
-        </div>
-        <div class="wa-screenshot-card tilt-card scroll-anim d4">
-          <img src="assets/avis.png" alt="Avis client WhatsApp — Encore un super retour" loading="lazy">
-        </div>
+    <div class="wa-grid">
+      <div class="wa-screenshot-card tilt-card scroll-anim d1">
+        <img src="assets/avisplaisir.png" alt="Avis client WhatsApp — Retour qui fait plaisir" loading="lazy">
+      </div>
+      <div class="wa-screenshot-card tilt-card scroll-anim d2">
+        <img src="assets/avisadore.png" alt="Avis client WhatsApp — On adore ce genre de retour" loading="lazy">
+      </div>
+      <div class="wa-screenshot-card tilt-card scroll-anim d3">
+        <img src="assets/avisencore.png" alt="Avis client WhatsApp — Genre de retour qu'on aime voir" loading="lazy">
+      </div>
+      <div class="wa-screenshot-card tilt-card scroll-anim d4">
+        <img src="assets/avis.png" alt="Avis client WhatsApp — Encore un super retour" loading="lazy">
       </div>
     </div>
   </div>
@@ -398,28 +417,28 @@
     </h2>
     <div class="faq-list">
       <details class="faq-item scroll-anim d1">
-        <summary>C'est quoi la différence entre un site vitrine et un site marchand ?</summary>
-        <div class="faq-body">Un site vitrine présente votre activité et permet à vos clients de vous contacter — idéal pour les artisans, prestataires, professions libérales. Un site marchand (e-commerce) permet en plus de vendre directement en ligne. On fait les deux, au même tarif de 990€.</div>
+        <summary class="faq-question">C'est quoi la différence entre un site vitrine et un site marchand ?</summary>
+        <div class="faq-answer">Un site vitrine présente votre activité et permet à vos clients de vous contacter — idéal pour les artisans, prestataires, professions libérales. Un site marchand (e-commerce) permet en plus de vendre directement en ligne. On fait les deux, au même tarif de 990€.</div>
       </details>
       <details class="faq-item scroll-anim d2">
-        <summary>Combien de temps pour avoir mon site en ligne ?</summary>
-        <div class="faq-body">Entre 5 et 14 jours après notre appel de démarrage. Le délai dépend de votre réactivité pour valider la maquette. La moyenne de nos clients : 7 jours.</div>
+        <summary class="faq-question">Combien de temps pour avoir mon site en ligne ?</summary>
+        <div class="faq-answer">Entre 5 et 14 jours après notre appel de démarrage. Le délai dépend de votre réactivité pour valider la maquette. La moyenne de nos clients : 7 jours.</div>
       </details>
       <details class="faq-item scroll-anim d3">
-        <summary>Est-ce que je garde la propriété de mon site ?</summary>
-        <div class="faq-body">Absolument. Votre nom de domaine, vos contenus, vos données — tout vous appartient. Si vous voulez récupérer votre site pour le gérer ailleurs, on vous remet tout le code source. Aucun verrouillage.</div>
+        <summary class="faq-question">Est-ce que je garde la propriété de mon site ?</summary>
+        <div class="faq-answer">Absolument. Votre nom de domaine, vos contenus, vos données — tout vous appartient. Si vous voulez récupérer votre site pour le gérer ailleurs, on vous remet tout le code source. Aucun verrouillage.</div>
       </details>
       <details class="faq-item scroll-anim d4">
-        <summary>La maintenance est-elle obligatoire ?</summary>
-        <div class="faq-body">Non. Vous pouvez gérer votre hébergement et votre domaine vous-même. La maintenance à 49€/mois est là pour ceux qui veulent zéro stress technique : on gère tout, on intervient sous 48h. Résiliable à tout moment.</div>
+        <summary class="faq-question">La maintenance est-elle obligatoire ?</summary>
+        <div class="faq-answer">Non. Vous pouvez gérer votre hébergement et votre domaine vous-même. La maintenance à 49€/mois est là pour ceux qui veulent zéro stress technique : on gère tout, on intervient sous 48h. Résiliable à tout moment.</div>
       </details>
       <details class="faq-item scroll-anim d1">
-        <summary>Vous travaillez dans toute la France ?</summary>
-        <div class="faq-body">Oui, 100% en ligne. On travaille avec des artisans, commerçants et indépendants partout en France. Appel découverte en visio, livraison et suivi à distance. Aucun frais de déplacement.</div>
+        <summary class="faq-question">Vous travaillez dans toute la France ?</summary>
+        <div class="faq-answer">Oui, 100% en ligne. On travaille avec des artisans, commerçants et indépendants partout en France. Appel découverte en visio, livraison et suivi à distance. Aucun frais de déplacement.</div>
       </details>
       <details class="faq-item scroll-anim d2">
-        <summary>Et si je ne suis pas satisfait du résultat ?</summary>
-        <div class="faq-body">On itère jusqu'à ce que vous soyez 100% content. Si après plusieurs allers-retours le résultat ne vous convient toujours pas, on rembourse. On ne vous laisse pas avec un site qui ne vous ressemble pas.</div>
+        <summary class="faq-question">Et si je ne suis pas satisfait du résultat ?</summary>
+        <div class="faq-answer">On itère jusqu'à ce que vous soyez 100% content. On ne rembourse pas — on apporte autant de modifications qu'il le faut, jusqu'à ce que le résultat vous plaise vraiment. On ne vous laisse jamais avec un site qui ne vous ressemble pas.</div>
       </details>
     </div>
   </div>
