@@ -4693,11 +4693,14 @@ async function dvBuildPdfBase64(dv) {
   try {
     await new Promise((resolve) => { frame.onload = () => resolve(); frame.srcdoc = html; });
     const body = frame.contentDocument.body;
+    const fullH = Math.max(body.scrollHeight, frame.contentDocument.documentElement.scrollHeight);
+    frame.style.height = fullH + 'px';
+    await new Promise((r) => setTimeout(r, 80));
     const blob = await html2pdf().set({
       margin: 0,
       filename: `devis-${dv.ref||'potentieel'}.pdf`,
       image: { type: 'jpeg', quality: 0.95 },
-      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff', windowWidth: 820 },
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff', windowWidth: 820, windowHeight: fullH },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     }).from(body).outputPdf('blob');
     const base64 = await new Promise((resolve, reject) => {
@@ -4721,11 +4724,14 @@ async function dvDownloadPdf(dv) {
   try {
     await new Promise((resolve) => { frame.onload = () => resolve(); frame.srcdoc = html; });
     const body = frame.contentDocument.body;
+    const fullH = Math.max(body.scrollHeight, frame.contentDocument.documentElement.scrollHeight);
+    frame.style.height = fullH + 'px';
+    await new Promise((r) => setTimeout(r, 80));
     await html2pdf().set({
       margin: 0,
       filename: `devis-${dv.ref||'potentieel'}.pdf`,
       image: { type: 'jpeg', quality: 0.95 },
-      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff', windowWidth: 820 },
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff', windowWidth: 820, windowHeight: fullH },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     }).from(body).save();
   } finally {
@@ -4900,11 +4906,14 @@ async function faBuildPdfBase64(fa) {
   try {
     await new Promise((resolve) => { frame.onload = () => resolve(); frame.srcdoc = html; });
     const body = frame.contentDocument.body;
+    const fullH = Math.max(body.scrollHeight, frame.contentDocument.documentElement.scrollHeight);
+    frame.style.height = fullH + 'px';
+    await new Promise((r) => setTimeout(r, 80));
     const blob = await html2pdf().set({
       margin: 0,
       filename: `facture-${fa.ref||'potentieel'}.pdf`,
       image: { type: 'jpeg', quality: 0.95 },
-      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff', windowWidth: 820 },
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff', windowWidth: 820, windowHeight: fullH },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     }).from(body).outputPdf('blob');
     const base64 = await new Promise((resolve, reject) => {
