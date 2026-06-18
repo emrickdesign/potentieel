@@ -6,6 +6,26 @@
   <title>Obtenez votre première version — Potentieel</title>
   <meta name="description" content="Obtenez votre première version de site offerte et sans engagement. On vous rappelle sous 24h.">
   <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+
+  <!-- Meta Pixel Code -->
+  <script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '834746582999499');
+  fbq('track', 'PageView');
+  </script>
+  <noscript>
+  <img height="1" width="1" style="display:none"
+  src="https://www.facebook.com/tr?id=834746582999499&ev=PageView&noscript=1"/>
+  </noscript>
+  <!-- End Meta Pixel Code -->
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -268,11 +288,18 @@ async function submitForm() {
   btn.disabled = true;
   btn.textContent = 'Envoi en cours...';
 
-  await sb.from('form_submissions').insert({
+  const { error } = await sb.from('form_submissions').insert({
     prenom, entreprise, domaine, telephone,
     fields_filled: filledFields.size,
     source: new URLSearchParams(window.location.search).get('src') || 'formulaire'
   });
+
+  // En cas d'échec : pas de redirection, donc l'événement Lead n'est PAS déclenché.
+  if (error) {
+    btn.disabled = false;
+    btn.textContent = 'Réessayer';
+    return;
+  }
 
   if (visitId) {
     await sb.from('form_visits').update({
@@ -283,8 +310,9 @@ async function submitForm() {
     }).eq('id', visitId);
   }
 
-  document.getElementById('form-content').style.display = 'none';
-  document.getElementById('success-screen').style.display = 'block';
+  // Redirection vers la page de remerciement (l'événement Meta "Lead" y est déclenché
+  // une seule fois, au chargement de /merci, après une soumission réussie).
+  window.location.href = '/merci';
 }
 
 // Temps sur page à la fermeture

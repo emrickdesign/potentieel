@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Merci ! On vous rappelle sous 24 h — Potentieel</title>
+  <meta name="description" content="Votre demande a bien été enregistrée. On vous rappelle sous 24 h.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+
+  <!-- Meta Pixel Code -->
+  <script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '834746582999499');
+  fbq('track', 'PageView');
+  </script>
+  <noscript>
+  <img height="1" width="1" style="display:none"
+  src="https://www.facebook.com/tr?id=834746582999499&ev=PageView&noscript=1"/>
+  </noscript>
+  <!-- End Meta Pixel Code -->
+
+  <!-- Meta Pixel — Lead (déclenché uniquement sur cette page de remerciement,
+       après une soumission de formulaire réussie. Aucune donnée personnelle envoyée). -->
+  <script>
+  fbq('track', 'Lead', {
+    content_name: 'formulaire_demande_site_internet',
+    content_category: 'lead_generation',
+    source: 'meta_ads'
+  });
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #fdf7f4;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+    .container { width: 100%; max-width: 560px; text-align: center; }
+    .logo {
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; margin-bottom: 28px;
+    }
+    .logo-icon {
+      width: 32px; height: 32px; background: #f4926a; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-icon svg { width: 18px; height: 18px; }
+    .logo-name {
+      font-size: 16px; font-weight: 800; letter-spacing: 2px;
+      color: #111; text-transform: uppercase;
+    }
+    .card {
+      background: #fff; border: 1.5px solid #f4ddd3; border-radius: 20px;
+      padding: 48px 28px;
+    }
+    .success-icon {
+      width: 72px; height: 72px; background: rgba(244,146,106,.15);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 24px; font-size: 32px;
+    }
+    h1 { font-size: 26px; font-weight: 800; color: #111; margin-bottom: 12px; }
+    p { font-size: 15px; color: #888; line-height: 1.7; }
+    .home-link {
+      display: inline-block; margin-top: 28px; color: #f4926a;
+      font-weight: 700; font-size: 14px; text-decoration: none;
+    }
+    .home-link:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 3L17 7V13L10 17L3 13V7L10 3Z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/>
+        <circle cx="10" cy="10" r="2.5" fill="#fff"/>
+      </svg>
+    </div>
+    <span class="logo-name">Potentieel</span>
+  </div>
+
+  <div class="card">
+    <div class="success-icon">🎉</div>
+    <h1>C'est enregistré !</h1>
+    <p>On vous rappelle <strong>sous 24 h</strong>.<br>En attendant, gardez votre téléphone à portée 😊</p>
+    <a class="home-link" href="/">← Retour à l'accueil</a>
+  </div>
+</div>
+
+</body>
+</html>
