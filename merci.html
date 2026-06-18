@@ -27,10 +27,11 @@
   </noscript>
   <!-- End Meta Pixel Code -->
 
-  <!-- Meta Pixel — Lead (déclenché uniquement sur cette page de remerciement,
-       après une soumission de formulaire réussie. Aucune donnée personnelle envoyée). -->
+  <!-- Meta Pixel — événement personnalisé "Prospect" (déclenché uniquement sur cette
+       page de remerciement, après une soumission de formulaire réussie.
+       Aucune donnée personnelle envoyée). -->
   <script>
-  fbq('track', 'Lead', {
+  fbq('trackCustom', 'Prospect', {
     content_name: 'formulaire_demande_site_internet',
     content_category: 'lead_generation',
     source: 'meta_ads'
