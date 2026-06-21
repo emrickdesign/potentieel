@@ -360,6 +360,8 @@ body {
 .hero-stats {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
+  row-gap: 16px;
   gap: 0;
   margin-top: 52px;
   border-top: 1px solid var(--border);
@@ -1816,6 +1818,16 @@ button { touch-action: manipulation; }
 }
 
 /* =============================================
+   GRID UTILITIES — ex-inline grids, now classed so they
+   can collapse properly on mobile (agence/offre/index)
+   ============================================= */
+.team-grid       { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+.method-grid     { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.guarantee-grid  { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.compare-grid    { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.garantie-split  { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+
+/* =============================================
    RESPONSIVE
    ============================================= */
 @media (max-width: 900px) {
@@ -1849,6 +1861,34 @@ button { touch-action: manipulation; }
   .social-proof-grid { grid-template-columns: repeat(2, 1fr); gap: 28px; }
   .sp-item { border-right: none; padding: 0; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
   .sp-item:nth-child(3), .sp-item:nth-child(4) { border-bottom: none; }
+  .team-grid { grid-template-columns: 1fr; }
+  .method-grid { grid-template-columns: 1fr; }
+  .guarantee-grid { grid-template-columns: 1fr; }
+  .compare-grid { grid-template-columns: 1fr; }
+  .garantie-split { grid-template-columns: 1fr; gap: 32px; }
+}
+
+/* =============================================
+   RESPONSIVE — small phones
+   ============================================= */
+@media (max-width: 600px) {
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px 6px;
+    text-align: center;
+    row-gap: 16px;
+  }
+  .hero-stat { padding-right: 0; margin-right: 0; border-right: none; }
+  .hero-stat .val { font-size: 20px; }
+  .hero-stat .lbl { font-size: 9px; letter-spacing: 0.04em; }
+  .hero-ctas { flex-direction: column; align-items: stretch; width: 100%; }
+  .hero-ctas .btn-primary,
+  .hero-ctas .btn-secondary,
+  .hero-ctas .btn-lime { width: 100%; justify-content: center; }
+}
+@media (max-width: 380px) {
+  .container { padding: 0 16px; }
 }
 
 /* =============================================
