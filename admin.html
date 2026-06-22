@@ -1227,9 +1227,27 @@
               </div>
 
               <!-- Liens générés -->
-              <div class="panel">
+              <div class="panel" style="margin-bottom:16px">
                 <div class="panel-head" style="padding-bottom:0"><div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1px">LIENS GÉNÉRÉS (ACTIFS)</div></div>
                 <div id="cl-pay-links" style="padding:0 16px 16px;min-height:60px"></div>
+              </div>
+
+              <!-- Suivi du paiement du site (plan choisi + versements reçus) -->
+              <div class="panel">
+                <div class="panel-head"><h3 style="display:flex;align-items:center;gap:8px"><span style="color:var(--accent)">✅</span> Suivi du paiement du site</h3></div>
+                <div style="padding:0 16px 16px">
+                  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+                    <span style="font-size:13px;color:var(--muted)">Plan choisi par le client :</span>
+                    <select id="cl-siteplan-select" onchange="clSetSitePlan(this.value)" style="background:#1a1a22;border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:#fff;font-size:13px;outline:none;cursor:pointer">
+                      <option value="">— Aucun —</option>
+                      <option value="1x">Paiement 1 fois — 990,00 €</option>
+                      <option value="2x">Paiement 2 fois — 495,00 €/mois</option>
+                      <option value="3x">Paiement 3 fois — 330,00 €/mois</option>
+                      <option value="4x">Paiement 4 fois — 247,50 €/mois</option>
+                    </select>
+                  </div>
+                  <div id="cl-siteplan-tracker"></div>
+                </div>
               </div>
 
             </div>
@@ -1248,9 +1266,10 @@
             <!-- Tab: Factures -->
             <div id="cl-tab-factures" class="cl-tab-pane" style="display:none">
               <div class="panel">
-                <div class="panel-head"><h3>Factures</h3><div style="display:flex;gap:6px">
+                <div class="panel-head"><h3>Factures</h3><div style="display:flex;gap:6px;flex-wrap:wrap">
                   <button class="ph-action" onclick="clTriggerFilePick('application/pdf,image/*', clImportFacture)" style="background:rgba(255,255,255,.06);border:1px solid var(--border)">↑ Importer</button>
-                  <button class="ph-action" onclick="faOpenModal(clCurrentId)">+ Nouvelle</button>
+                  <button class="ph-action" onclick="faOpenAboModal(clCurrentId)">+ Abonnement</button>
+                  <button class="ph-action" onclick="faOpenModal(clCurrentId)">+ Facture</button>
                 </div></div>
                 <div id="cl-factures-list" style="padding:16px;min-height:80px"></div>
               </div>
@@ -1302,17 +1321,27 @@
                   <option value="49">Gestion complète — 49 €/mois</option>
                 </select></div>
               </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
-                <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Date d'échéance</label>
+              <div style="background:rgba(244,146,106,.07);border:1px solid rgba(244,146,106,.25);border-radius:10px;padding:12px 14px;margin-bottom:14px">
+                <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Versement — paiement du site en plusieurs fois <span style="font-weight:400">(optionnel)</span></label>
+                <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:12px">
+                  <input id="fa-versement-montant" type="number" step="0.01" min="0" placeholder="Montant, ex: 247,50" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                  <input id="fa-versement-note" type="text" placeholder="Précision, ex: Versement 2/4" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                </div>
+                <div style="font-size:11px;color:var(--muted);margin-top:6px">À utiliser à chaque paiement reçu pour un règlement en plusieurs fois : une facture = un versement.</div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+                <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Date d'émission</label>
+                <input id="fa-emission" type="date" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
+                <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Date de paiement</label>
                 <input id="fa-echeance" type="date" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
-                <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Mode de règlement</label>
+              </div>
+              <div style="margin-bottom:20px"><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Mode de règlement</label>
                 <select id="fa-reglement" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
                   <option value="virement">Virement bancaire</option>
                   <option value="stripe">Paiement en ligne (Stripe)</option>
                   <option value="especes">Espèces</option>
                   <option value="cheque">Chèque</option>
                 </select></div>
-              </div>
               <div style="display:flex;gap:10px">
                 <button onclick="faCloseModal()" class="btn-modal-cancel">Annuler</button>
                 <button onclick="faCreate()" class="btn-modal-confirm">+ Créer la facture</button>
@@ -2217,7 +2246,10 @@
               <h1 class="page-title">Facturation</h1>
               <p class="page-sub">Toutes les factures émises.</p>
             </div>
-            <button onclick="faGlobalImportOpen()" style="background:var(--accent);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">↑ Importer une facture</button>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <button onclick="faOpenModal()" style="background:var(--accent);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">+ Nouvelle facture</button>
+              <button onclick="faGlobalImportOpen()" style="background:rgba(255,255,255,.07);color:#fff;border:1px solid var(--border);padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">↑ Importer une facture</button>
+            </div>
           </div>
           <!-- Navigateur mensuel -->
           <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;flex-wrap:wrap">
@@ -2226,7 +2258,7 @@
             <button onclick="faNavMonth(1)" class="btn-nav-arrow">›</button>
           </div>
           <!-- Stats -->
-          <div id="fa-stats" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px"></div>
+          <div id="fa-stats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px"></div>
           <!-- Payées -->
           <div style="font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px">Factures payées</div>
           <div id="fa-global-list"></div>
@@ -3933,7 +3965,7 @@ function clRenderGrid() {
   // KPIs
   const actifs = clData.filter(c=>c.statut==='actif').length;
   const encours = clData.filter(c=>c.statut==='encours').length;
-  const mrr = clData.filter(c => c.statut === 'actif').reduce((s,c) => s + (parseInt(c.mrr)||0), 0);
+  const mrr = clData.filter(c => c.statut === 'actif' || c.statut === 'retard').reduce((s,c) => s + (parseInt(c.mrr)||0), 0);
   document.getElementById('cl-kpi-total').textContent = clData.length;
   document.getElementById('cl-kpi-actifs').textContent = actifs;
   document.getElementById('cl-kpi-encours').textContent = encours;
@@ -3965,6 +3997,7 @@ async function clOpenDetail(id) {
   clRenderAssets(c);
   clRenderPaiements(c);
   clRenderPayLinks(c);
+  clRenderSitePlan(c);
   clSetNx(1);
   clSetAds(150);
   clRenderDevis(c);
@@ -4783,7 +4816,7 @@ function clRenderFactures(c) {
     return `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
       <div style="flex:1;min-width:0">
         <div style="font-weight:700;font-size:13px">${f.ref||'—'}${isImport?' <span style="font-size:10px;color:var(--muted)">(importé)</span>':''} <span style="font-size:11px;color:var(--muted);font-weight:400">· ${f.date||''}</span></div>
-        <div style="font-size:12px;color:var(--accent);font-weight:600">${f.totalTxt||f.montant||'—'}${f.echeance?' <span style="color:var(--muted);font-weight:400">— échéance '+f.echeance+'</span>':''}</div>
+        <div style="font-size:12px;color:var(--accent);font-weight:600">${f.totalTxt||f.montant||'—'}${f.echeance?' <span style="color:var(--muted);font-weight:400">— payé le '+f.echeance+'</span>':''}</div>
       </div>
       <span class="badge ${badge}" style="flex-shrink:0">${label}</span>
       <div style="display:flex;gap:4px;flex-shrink:0;align-items:center">
@@ -4802,37 +4835,49 @@ function faDelFacture(fid) {
 }
 
 // ─── FACTURES ───────────────────────────────────────────────
+function faOpenAboModal(clientId) {
+  // Depuis fiche client : modale abonnement simplifiée
+  const cid = clientId || clCurrentId;
+  const c = clData.find(x=>x.id===cid);
+  if (!c) return;
+  document.getElementById('fa-abo-modal')._clientId = cid;
+  document.getElementById('fa-abo-nom').textContent = c.nom || cid;
+  document.getElementById('fa-abo-email').textContent = c.email || '';
+  document.getElementById('fa-abo-montant').value = '49';
+  // Période 7 du mois actuel → 7 du mois suivant
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth(), 7);
+  const end   = new Date(now.getFullYear(), now.getMonth()+1, 7);
+  const fmt = d => d.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('fa-abo-periode-display').textContent = `Du ${fmt(start)} au ${fmt(end)}`;
+  document.getElementById('fa-abo-modal').style.display = 'flex';
+}
+// Modale complète : depuis la page Facturation (sans client) ou depuis une fiche client (client pré-rempli et verrouillé)
 function faOpenModal(clientId) {
-  if (clientId || clCurrentId) {
-    // Depuis fiche client : modale abonnement simplifiée
-    const cid = clientId || clCurrentId;
-    const c = clData.find(x=>x.id===cid);
-    if (!c) return;
-    document.getElementById('fa-abo-modal')._clientId = cid;
-    document.getElementById('fa-abo-nom').textContent = c.nom || cid;
-    document.getElementById('fa-abo-email').textContent = c.email || '';
-    document.getElementById('fa-abo-montant').value = '49';
-    // Période 7 du mois actuel → 7 du mois suivant
-    const now = new Date();
-    const start = new Date(now.getFullYear(), now.getMonth(), 7);
-    const end   = new Date(now.getFullYear(), now.getMonth()+1, 7);
-    const fmt = d => d.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
-    document.getElementById('fa-abo-periode-display').textContent = `Du ${fmt(start)} au ${fmt(end)}`;
-    document.getElementById('fa-abo-modal').style.display = 'flex';
+  const cid = clientId || null;
+  const sel = document.getElementById('fa-cl-select');
+  sel.innerHTML = '<option value="">— Aucun client sélectionné —</option>' +
+    clData.map(c => `<option value="${c.id}">${c.nom||c.id}</option>`).join('');
+  ['fa-entreprise','fa-tel','fa-email','fa-adresse','fa-id-num'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('fa-id-type').value='SIRET';
+  document.getElementById('fa-creation').value='';
+  document.getElementById('fa-abo').value='';
+  document.getElementById('fa-versement-montant').value='';
+  document.getElementById('fa-versement-note').value='';
+  document.getElementById('fa-reglement').value='virement';
+  const todayStr=new Date().toISOString().split('T')[0];
+  document.getElementById('fa-emission').value=todayStr;
+  document.getElementById('fa-echeance').value=todayStr;
+  if (cid) {
+    sel.value = cid;
+    sel.disabled = true;
+    sel.style.opacity = '.6';
+    faPrefill();
   } else {
-    // Depuis page Facturation : modale complète
-    const sel = document.getElementById('fa-cl-select');
-    sel.innerHTML = '<option value="">— Aucun client sélectionné —</option>' +
-      clData.map(c => `<option value="${c.id}">${c.nom||c.id}</option>`).join('');
-    ['fa-entreprise','fa-tel','fa-email','fa-adresse','fa-id-num'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-    document.getElementById('fa-id-type').value='SIRET';
-    document.getElementById('fa-creation').value='';
-    document.getElementById('fa-abo').value='';
-    document.getElementById('fa-reglement').value='virement';
-    const ech=new Date();ech.setDate(ech.getDate()+30);
-    document.getElementById('fa-echeance').value=ech.toISOString().split('T')[0];
-    document.getElementById('fa-modal').style.display='flex';
+    sel.disabled = false;
+    sel.style.opacity = '1';
   }
+  document.getElementById('fa-modal').style.display='flex';
 }
 function faCloseModal(){document.getElementById('fa-modal').style.display='none';}
 function faPrefill(){
@@ -4849,26 +4894,38 @@ function faCreate(){
   if(!entreprise){alert('Le nom d\'entreprise est requis.');return;}
   const creation=document.getElementById('fa-creation').value;
   const abo=document.getElementById('fa-abo').value;
-  if(!creation&&!abo){alert('Sélectionne au moins une prestation.');return;}
+  const versementMontant=parseFloat((document.getElementById('fa-versement-montant').value||'').replace(',','.'));
+  const versementNote=document.getElementById('fa-versement-note').value.trim();
+  const hasVersement=!isNaN(versementMontant)&&versementMontant>0;
+  if(!creation&&!abo&&!hasVersement){alert('Sélectionne au moins une prestation.');return;}
+  const cid=document.getElementById('fa-cl-select').value||clCurrentId;
+  const c=clData.find(x=>x.id===cid);
+  if(!c){alert('Sélectionne un client existant pour rattacher la facture.');return;}
   const cPrix={'1x':'990,00 €','2x':'2 × 495,00 €','3x':'3 × 330,00 €','4x':'4 × 247,50 €'};
   const aPrix={'20':'20,00 €/mois','49':'49,00 €/mois'};
+  const fmtEUR=n=>n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
   const parts=[];
   if(creation)parts.push(cPrix[creation]);
   if(abo)parts.push(aPrix[abo]);
+  if(hasVersement)parts.push(fmtEUR(versementMontant)+(versementNote?` (${versementNote})`:''));
   const totalTxt=parts.join(' + ')||'—';
-  const montantNum=(creation?990:0)+(abo?parseInt(abo):0);
+  const montantNum=(creation?990:0)+(abo?parseInt(abo):0)+(hasVersement?versementMontant:0);
+  const emiInput=document.getElementById('fa-emission').value;
+  const emiDate=emiInput?new Date(emiInput).toLocaleDateString('fr-FR'):new Date().toLocaleDateString('fr-FR');
   const echInput=document.getElementById('fa-echeance').value;
   const echDate=echInput?new Date(echInput).toLocaleDateString('fr-FR'):null;
-  const cid=document.getElementById('fa-cl-select').value||clCurrentId;
-  const c=clData.find(x=>x.id===cid);
   const allFa=clData.flatMap(x=>x.factures||[]);
   const _now=new Date();
   const ref='FA-'+String(_now.getMonth()+1).padStart(2,'0')+'-'+_now.getFullYear()+'-'+String(allFa.length+1).padStart(3,'0');
-  const fa={id:'fa'+Date.now(),ref,date:new Date().toLocaleDateString('fr-FR'),echeance:echDate,statut:'payee',totalTxt,montantNum,
+  const fa={id:'fa'+Date.now(),ref,date:emiDate,echeance:echDate,statut:'payee',totalTxt,montantNum,
     data:{entreprise,tel:document.getElementById('fa-tel').value.trim(),email:document.getElementById('fa-email').value.trim(),
       adresse:document.getElementById('fa-adresse').value.trim(),idType:document.getElementById('fa-id-type').value,
-      idNum:document.getElementById('fa-id-num').value.trim(),creation,abo,reglement:document.getElementById('fa-reglement').value}};
-  if(c){if(!c.factures)c.factures=[];c.factures.unshift(fa);clSave();clRenderFactures(c);}
+      idNum:document.getElementById('fa-id-num').value.trim(),creation,abo,
+      versementMontant:hasVersement?versementMontant:null,versementNote:versementNote,
+      reglement:document.getElementById('fa-reglement').value}};
+  if(!c.factures)c.factures=[];
+  c.factures.unshift(fa);clSave();clRenderFactures(c);
+  if(document.getElementById('page-facturation')?.classList.contains('active')) renderGlobalFactures();
   faCloseModal();faPrintFa(fa);
 }
 function faAboCloseModal(){document.getElementById('fa-abo-modal').style.display='none';}
@@ -5200,6 +5257,10 @@ function renderGlobalFactures(){
   // Stats
   const totPayee=monthFa.reduce((s,f)=>s+(f.montantNum||0),0);
   const nbPayee=monthFa.length;
+  // MRR actuel — même calcul que le dashboard principal (somme des mrr des clients actif + retard)
+  const mrrStatutsFa=new Set(['actif','retard']);
+  const mrrActuelFa=(clData||[]).filter(c=>mrrStatutsFa.has(c.statut)).reduce((s,c)=>s+(parseFloat(c.mrr)||0),0);
+  const nbAbosFa=(clData||[]).filter(c=>mrrStatutsFa.has(c.statut)&&(parseFloat(c.mrr)||0)>0).length;
   const stat=(label,val,nb,color,sub)=>`<div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:14px 16px">
     <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">${label}</div>
     <div style="font-size:22px;font-weight:800;color:${color}">${val}</div>
@@ -5208,6 +5269,7 @@ function renderGlobalFactures(){
   const statsEl=document.getElementById('fa-stats');
   if(statsEl)statsEl.innerHTML=
     stat('Payées ce mois',totPayee.toLocaleString('fr-FR')+' €',0,'#4ade80',nbPayee+' facture'+(nbPayee!==1?'s':''))+
+    stat('MRR actuel',mrrActuelFa.toLocaleString('fr-FR')+' €',0,'var(--accent)',nbAbosFa+' abonnement'+(nbAbosFa!==1?'s':'')+' actif'+(nbAbosFa!==1?'s':''))+
     stat('Retards en cours',faRetards.length,0,'#f87171',faRetards.length+' alerte'+(faRetards.length!==1?'s':''));
 
   // Render invoices list
@@ -5362,10 +5424,16 @@ function faInvoiceHtml(fa, withPrintBtn) {
   const aPrix={'20':'20,00 €/mois','49':'49,00 €/mois'};
   const aDesc={'20':'Hébergement inclus, support WhatsApp, modifications de contenu illimitées sous 48 h.','49':'Hébergement, sécurité SSL, support VIP WhatsApp, modifications illimitées sous 48 h, sauvegardes automatiques, surveillance technique.'};
   const reglMap={virement:'Virement bancaire',stripe:'Paiement en ligne (Stripe)',especes:'Espèces',cheque:'Chèque'};
+  const fmtEUR=n=>Number(n).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
   let lignes='';
   if(d.creation)lignes+=`<tr><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0"><div style="font-weight:700;font-size:14px;color:#111;margin-bottom:4px">Création de site web</div><div style="font-size:12px;color:#777;line-height:1.6">${cDesc[d.creation]||''}</div></td><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0;text-align:right;vertical-align:top;white-space:nowrap"><span style="font-size:16px;font-weight:800;color:#f4926a">${cPrix[d.creation]}</span></td></tr>`;
   if(d.abo)lignes+=`<tr><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0"><div style="font-weight:700;font-size:14px;color:#111;margin-bottom:4px">Abonnement mensuel — ${d.abo==='49'?'Gestion & Tranquillité':'Assistant Digital'}</div>${d.periode?`<div style="font-size:12px;font-weight:600;color:#f4926a;margin:3px 0">Période : ${d.periode}</div>`:''}<div style="font-size:12px;color:#777;line-height:1.6">${aDesc[d.abo]||''}</div></td><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0;text-align:right;vertical-align:top;white-space:nowrap"><span style="font-size:16px;font-weight:800;color:#f4926a">${aPrix[d.abo]}</span></td></tr>`;
-  const totalCell=`${d.creation?(cPrix[d.creation]||''):''}${d.creation&&d.abo?' + ':''}${d.abo?(aPrix[d.abo]||''):''}`;
+  if(d.versementMontant)lignes+=`<tr><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0"><div style="font-weight:700;font-size:14px;color:#111;margin-bottom:4px">Paiement du site — versement${d.versementNote?' ('+d.versementNote+')':''}</div><div style="font-size:12px;color:#777;line-height:1.6">Règlement en plusieurs fois — versement reçu à la date ci-dessus.</div></td><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0;text-align:right;vertical-align:top;white-space:nowrap"><span style="font-size:16px;font-weight:800;color:#f4926a">${fmtEUR(d.versementMontant)}</span></td></tr>`;
+  const totalParts=[];
+  if(d.creation)totalParts.push(cPrix[d.creation]);
+  if(d.abo)totalParts.push(aPrix[d.abo]);
+  if(d.versementMontant)totalParts.push(fmtEUR(d.versementMontant));
+  const totalCell=totalParts.join(' + ');
   const idLine=d.idNum?`<br><span style="font-size:11px;color:#aaa">${d.idType||'SIRET'} : ${d.idNum}</span>`:'';
   const today=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
   // Conditions de règlement
@@ -5387,6 +5455,9 @@ function faInvoiceHtml(fa, withPrintBtn) {
       ?`Abonnement de <strong>${aPrix[d.abo]}</strong> — démarre automatiquement le 7 du mois suivant le dernier versement de création. Les mois de création sont offerts.`
       :`Abonnement de <strong>${aPrix[d.abo]}</strong> — premier prélèvement à réception de cette facture. Résiliable à tout moment par simple message.`;
     cond+=`<div class="cond-item"><span class="cond-dot"></span>${aboTxt}</div>`;
+  }
+  if(d.versementMontant){
+    cond+=`<div class="cond-item"><span class="cond-dot"></span>Versement de <strong>${fmtEUR(d.versementMontant)}</strong> au titre du règlement en plusieurs fois du site internet${d.versementNote?' — '+d.versementNote:''}.</div>`;
   }
   cond+=`<div class="cond-item"><span class="cond-dot" style="background:#999"></span>Tout retard de paiement entraîne des pénalités de retard au taux légal en vigueur (art. L441-10 C.com.).</div>`;
   cond+=`<div class="cond-item"><span class="cond-dot" style="background:#999"></span>TVA non applicable — art. 293B du CGI (micro-entreprise). Pas de TVA à récupérer.</div>`;
@@ -5990,7 +6061,7 @@ ${withPrintBtn ? '<button class="btn no-print" onclick="window.print()"><svg wid
     <div class="logo-name">POTENTIEEL</div>
   </div>
   <div class="fa-tag">FACTURE</div>
-  <div class="meta-top"><strong>Réf. ${fa.ref}</strong><br>Émise le ${fa.date||today}${fa.echeance?`<br>Échéance : <strong style="color:#f4926a">${fa.echeance}</strong>`:''}</div>
+  <div class="meta-top"><strong>Réf. ${fa.ref}</strong><br>Émise le ${fa.date||today}${fa.echeance?`<br>Date de paiement : <strong style="color:#f4926a">${fa.echeance}</strong>`:''}</div>
 </div>
 <div class="content">
 <div class="parties">
@@ -6173,6 +6244,39 @@ function clDelPayLink(lid) {
   const c = clData.find(x=>x.id===clCurrentId); if (!c) return;
   c.payLinks = (c.payLinks||[]).filter(l=>l.id!==lid);
   clSave(); clRenderPayLinks(c);
+}
+
+// Suivi du paiement du site (plan choisi + versements reçus)
+function clRenderSitePlan(c) {
+  const sel = document.getElementById('cl-siteplan-select');
+  if (sel) sel.value = c.sitePlan || '';
+  const el = document.getElementById('cl-siteplan-tracker');
+  if (!el) return;
+  if (!c.sitePlan) { el.innerHTML = '<div style="color:var(--muted);font-size:13px">Choisis un plan ci-dessus pour activer le suivi des versements.</div>'; return; }
+  const n = parseInt(c.sitePlan);
+  const unit = SITE_PLAN_PRIX[c.sitePlan]||0;
+  if (!c.siteVersements || c.siteVersements.length !== n) c.siteVersements = new Array(n).fill(false);
+  const nbPaid = c.siteVersements.filter(Boolean).length;
+  el.innerHTML = `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">` +
+    c.siteVersements.map((paid,i)=>`
+      <label style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,${paid?'.08':'.03'});border:1px solid ${paid?'var(--accent)':'var(--border)'};border-radius:10px;padding:10px 14px;cursor:pointer;user-select:none">
+        <input type="checkbox" ${paid?'checked':''} onchange="clToggleVersement(${i})" style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer">
+        <span style="font-size:13px;font-weight:600;color:${paid?'var(--text)':'var(--muted)'}">Versement ${i+1}/${n} — ${unit.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})} €</span>
+      </label>`).join('') + `</div>` +
+    `<div style="font-size:12px;color:var(--muted)">${nbPaid}/${n} versement${n>1?'s':''} reçu${nbPaid>1?'s':''} · ${(nbPaid*unit).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})} € sur ${(n*unit).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})} €</div>`;
+}
+function clSetSitePlan(val) {
+  const c = clData.find(x=>x.id===clCurrentId); if (!c) return;
+  c.sitePlan = val || null;
+  if (val) { const n=parseInt(val); c.siteVersements = new Array(n).fill(false); }
+  else { c.siteVersements = []; }
+  clSave(); clRenderSitePlan(c); updateDashboard(); if(document.getElementById('page-facturation')?.classList.contains('active')) renderGlobalFactures();
+}
+function clToggleVersement(i) {
+  const c = clData.find(x=>x.id===clCurrentId); if (!c) return;
+  if (!c.siteVersements) return;
+  c.siteVersements[i] = !c.siteVersements[i];
+  clSave(); clRenderSitePlan(c); updateDashboard(); if(document.getElementById('page-facturation')?.classList.contains('active')) renderGlobalFactures();
 }
 
 async function clCallStripe(type, extra = {}) {
@@ -7174,12 +7278,10 @@ function obRender() {
 }
 
 async function obRefreshAuto() {
-  // CA : somme des factures payées
-  const { data: factures } = await sb.from('factures').select('montant_ttc,status').eq('status','payee');
-  const totalCA = (factures||[]).reduce((s,f)=>s+(f.montant_ttc||0),0);
+  // CA : somme des factures payées de tous les clients (source réelle : clData, pas une table Supabase à part)
+  const totalCA = (clData||[]).flatMap(c=>c.factures||[]).filter(f=>f.statut==='payee').reduce((s,f)=>s+(f.montantNum||0),0);
   // Devis signés
-  const { data: devis } = await sb.from('devis').select('id').eq('status','signé');
-  const totalDevis = (devis||[]).length;
+  const totalDevis = (clData||[]).flatMap(c=>c.devis||[]).filter(d=>d.statut==='signé').length;
 
   for (const o of obData) {
     let val = null;
