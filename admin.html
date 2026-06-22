@@ -4811,6 +4811,7 @@ function clRenderFactures(c) {
     const actions = isImport
       ? `<button onclick="faViewFromGlobal('${f.id}')" title="Prévisualiser" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button onclick="faRenameFromGlobal('${f.id}')" title="Renommer" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>`
       : `<button onclick="faView('${f.id}')" title="Voir" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+         <button onclick="faDownload('${f.id}')" title="Télécharger" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
          <button onclick="faSendEmail('${f.id}')" title="Email" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#fff;font-size:13px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></button>
          ${f.statut!=='payee'?'<button onclick="faMarkPaid(\''+f.id+'\')" title="Payée" style="background:rgba(74,222,128,.15);border:none;border-radius:6px;padding:5px 8px;cursor:pointer;color:#4ade80;font-size:13px;font-weight:700">✓</button>':''}`;
     return `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
@@ -4995,6 +4996,32 @@ async function faBuildPdfBase64(fa) {
     frame.remove();
   }
 }
+
+// Télécharge directement la facture en PDF (sans passer par la fenêtre d'impression)
+async function faDownloadPdf(fa) {
+  const html = faInvoiceHtml(fa, false);
+  const frame = document.createElement('iframe');
+  frame.style.cssText = 'position:fixed;left:-99999px;top:0;width:820px;height:1px;border:none';
+  document.body.appendChild(frame);
+  try {
+    await new Promise((resolve) => { frame.onload = () => resolve(); frame.srcdoc = html; });
+    const body = frame.contentDocument.body;
+    const fullH = Math.max(body.scrollHeight, frame.contentDocument.documentElement.scrollHeight);
+    frame.style.height = fullH + 'px';
+    await new Promise((r) => setTimeout(r, 80));
+    const canvas = await html2canvas(body, { scale: 2, useCORS: true, backgroundColor: '#ffffff', windowWidth: 820, windowHeight: fullH });
+    const pdf = dvCanvasToPdf(canvas);
+    pdf.save(`facture-${fa.ref||'potentieel'}.pdf`);
+  } finally {
+    frame.remove();
+  }
+}
+function faDownload(fid){
+  const c=clData.find(x=>(x.factures||[]).find(f=>f.id===fid)); if(!c)return;
+  const fa=c.factures.find(f=>f.id===fid); if(!fa)return;
+  faDownloadPdf(fa);
+}
+function faDownloadFromGlobal(fid){faDownload(fid);}
 
 async function faSendEmail(fid){
   const c=clData.find(x=>(x.factures||[]).find(f=>f.id===fid));if(!c)return;
@@ -5285,6 +5312,7 @@ function renderGlobalFactures(){
         <td style="color:#4ade80;font-weight:700">${f.totalTxt||f.montant||'—'}</td>
         <td style="white-space:nowrap">
           <button onclick="faViewFromGlobal('${f.id}')" title="Prévisualiser" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          <button onclick="faDownloadFromGlobal('${f.id}')" title="Télécharger" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
           <button onclick="faRenameFromGlobal('${f.id}')" title="Renommer" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
           <button onclick="faSendEmailFromGlobal('${f.id}')" title="Email" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></button>
           <button onclick="faDelFromGlobal('${f.id}')" title="Supprimer" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:14px;opacity:.5"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>
