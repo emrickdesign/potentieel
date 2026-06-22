@@ -195,6 +195,13 @@ body {
 .btn-crm svg { width: 14px; height: 14px; }
 
 /* =============================================
+   MOBILE BOTTOM TAB BAR
+   (remplace navbar-links sur mobile — pas de burger,
+   navigation directe par icones, flottante en bas)
+   ============================================= */
+.mobile-tabbar { display: none; }
+
+/* =============================================
    BUTTONS
    ============================================= */
 .btn-primary {
@@ -1835,7 +1842,7 @@ button { touch-action: manipulation; }
   .navbar { padding: 16px 24px; }
   .navbar-links { display: none; }
   .hero h1 { font-size: 48px; letter-spacing: -0.02em; }
-  .hero-image { height: 55%; opacity: 0.25; }
+  .hero-image { height: 55%; width: 100%; opacity: 0.25; object-position: 78% center; }
   .circuit-grid { grid-template-columns: 1fr; }
   .circuit-divider { padding: 16px 0; transform: rotate(90deg); }
   .testimonials-grid { grid-template-columns: 1fr; }
@@ -1866,6 +1873,44 @@ button { touch-action: manipulation; }
   .guarantee-grid { grid-template-columns: 1fr; }
   .compare-grid { grid-template-columns: 1fr; }
   .garantie-split { grid-template-columns: 1fr; gap: 32px; }
+
+  .mobile-tabbar {
+    display: flex;
+    position: fixed;
+    left: 50%;
+    bottom: 14px;
+    transform: translateX(-50%);
+    z-index: 300;
+    width: calc(100% - 28px);
+    max-width: 420px;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2px;
+    padding: 8px 6px;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom));
+    background: rgba(19,19,19,0.92);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 22px;
+    box-shadow: 0 10px 32px rgba(0,0,0,0.5);
+  }
+  .mobile-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    flex: 1;
+    padding: 7px 2px;
+    border-radius: 14px;
+    color: var(--gray);
+    transition: color 0.2s, background 0.2s;
+  }
+  .mobile-tab svg { width: 19px; height: 19px; flex-shrink: 0; }
+  .mobile-tab span { font-size: 9.5px; font-weight: 500; letter-spacing: 0.01em; white-space: nowrap; }
+  .mobile-tab.active { color: var(--orange); background: rgba(244,146,106,0.12); }
+  .footer { padding-bottom: 112px; }
 }
 
 /* =============================================
