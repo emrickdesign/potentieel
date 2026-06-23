@@ -4617,7 +4617,8 @@ function dvQuoteHtml(dv, withPrintBtn) {
   const fmtP=v=>Number(v).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
   const creationN=nMap[d.creation]||1;
   const creationPer=(d.creationPerInstallment!=null)?d.creationPerInstallment:({'1x':990,'2x':495,'3x':330,'4x':247.50}[d.creation]);
-  const cPrixVal=d.creation?(creationN===1?fmtP(creationPer):(creationN+' × '+fmtP(creationPer))):'';
+  const creationTotal=(d.creationAmt!=null)?d.creationAmt:(creationPer*creationN);
+  const cPrixVal=d.creation?(creationN===1?fmtP(creationPer):(creationN+' × '+fmtP(creationPer)+' = '+fmtP(creationTotal))):'';
   const cDescVal=d.creation?(creationN===1
     ?'Conception, développement et mise en ligne. Site multi-pages, responsive, SEO local, boutons d\'action (appel, WhatsApp), formulaire de contact. 1ère version présentée gratuitement avant tout engagement.'
     :('Idem — règlement en '+creationN+' versements de '+fmtP(creationPer)+' espacés de 30 jours.')):'';
