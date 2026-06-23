@@ -1067,6 +1067,10 @@
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                 Modifier
               </button>
+                <button onclick="clDeleteClient(clCurrentId)" class="btn-back" style="color:var(--red)" title="Supprimer ce client">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+                Supprimer
+              </button>
               </div>
             </div>
 
@@ -3910,7 +3914,7 @@ async function clLoad() {
   }));
   if (faMig) clSave();
 }
-function clSave() {
+function clSave(deletedId) {
   // On retire les data base64 volumineux avant de sauver dans localStorage
   // (ils sont déjà dans IDB — on garde juste idbKey comme référence)
   const slim = clData.map(c => ({
@@ -3921,7 +3925,10 @@ function clSave() {
     factures: (c.factures||[]).map(f => f.type==='import' ? (({data,...r})=>r)(f) : f),
   }));
   localStorage.setItem(CL_KEY, JSON.stringify(slim));
-  slim.forEach(c => crmItemUpsert('clients', c.id, c)); // pas de suppression de masse — aucun client n'est jamais effacé du tableau
+  // pas de suppression de masse en boucle normale — seule clDeleteClient() peut
+  // explicitement effacer un client (id passé ici en paramètre)
+  if (deletedId !== undefined) { crmItemDelete('clients', deletedId); return; }
+  slim.forEach(c => crmItemUpsert('clients', c.id, c));
 }
 
 const CL_STATUT_LABELS = { actif:'Actif', encours:'En cours', pause:'En pause', termine:'Terminé', retard:'Retard paiement' };
@@ -3951,7 +3958,10 @@ function clRenderGrid() {
           <div class="cl-card-name">${c.nom}</div>
           <div class="cl-card-secteur">${c.secteur||'—'}</div>
         </div>
-        <span class="badge ${CL_STATUT_BADGE[c.statut]||'badge-gray'}" style="margin-left:auto">${CL_STATUT_LABELS[c.statut]||c.statut}</span>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:6px">
+          <span class="badge ${CL_STATUT_BADGE[c.statut]||'badge-gray'}">${CL_STATUT_LABELS[c.statut]||c.statut}</span>
+          <button onclick="clDeleteClient('${c.id}', event)" style="background:none;border:none;color:var(--muted);cursor:pointer;opacity:.5;padding:2px;display:flex" title="Supprimer le client"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>
+        </div>
       </div>
       <div class="cl-card-rows">
         <div class="cl-card-row"><span class="cl-card-row-label">MRR</span><span class="cl-card-row-val" style="color:var(--accent)">${mrrTxt}</span></div>
@@ -6239,6 +6249,16 @@ function clSaveClient() {
     clCloseModal();
     clRenderGrid();
   }
+}
+
+function clDeleteClient(id, ev) {
+  if (ev) { ev.preventDefault(); ev.stopPropagation(); }
+  const c = clData.find(x => x.id === id);
+  if (!c) return;
+  if (!confirm(`Supprimer définitivement ${c.nom} ? Cette action est irréversible.`)) return;
+  clData = clData.filter(x => x.id !== id);
+  clSave(id);
+  if (clCurrentId === id) clBack(); else clRenderGrid();
 }
 
 /* ═══════════════════  PAIEMENT STRIPE  ══════════════════ */
