@@ -1211,6 +1211,11 @@
                     </div>
                     <span id="pay-nx-amount" style="font-size:16px;font-weight:700;color:var(--text)">= 990,00 € × 1</span>
                   </div>
+                  <div style="display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap">
+                    <span style="font-size:13px;color:var(--muted)">Prix total personnalisé :</span>
+                    <input id="pay-nx-custom" type="number" min="1" step="0.01" placeholder="990" oninput="clSetNx(payNx)" style="width:110px;background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:#fff;font-size:13px;outline:none">
+                    <span style="font-size:11px;color:var(--muted)">(laisser vide pour le tarif standard 990 €)</span>
+                  </div>
                   <p style="font-size:11px;color:var(--muted);margin:10px 0 12px">1ère mensualité aujourd'hui, puis prélèvements à 30j d'intervalle. L'abonnement 49 €/m démarre automatiquement le 7 du mois suivant le dernier prélèvement.</p>
                   <button id="pay-nx-btn" onclick="clGenerateNx()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:12px 20px;font-size:14px;font-weight:700;cursor:pointer">Générer le lien 990,00 € × 1</button>
                 </div>
@@ -2382,12 +2387,12 @@
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
                 <div>
                   <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Création (paiement unique)</label>
-                  <select id="dv-creation" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
+                  <select id="dv-creation" onchange="dvUpdateCreationPreview()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
                     <option value="">Aucun</option>
-                    <option value="1x">Création site web — 990 €</option>
-                    <option value="2x">Création site web — 2 × 495 €</option>
-                    <option value="3x">Création site web — 3 × 330 €</option>
-                    <option value="4x">Création site web — 4 × 247,50 €</option>
+                    <option value="1x">Création site web — 1 fois</option>
+                    <option value="2x">Création site web — 2 fois</option>
+                    <option value="3x">Création site web — 3 fois</option>
+                    <option value="4x">Création site web — 4 fois</option>
                   </select>
                 </div>
                 <div>
@@ -2398,6 +2403,13 @@
                     <option value="49">Gestion complète — 49 €/mois</option>
                   </select>
                 </div>
+              </div>
+
+              <!-- Prix personnalisé (remplace le tarif standard 990 € pour ce client) -->
+              <div id="dv-creation-prix-wrap" style="margin-bottom:14px;display:none">
+                <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Prix personnalisé <span style="font-weight:400">(laisser vide pour garder le tarif standard 990 €)</span></label>
+                <input id="dv-creation-prix" type="number" min="0" step="0.01" placeholder="ex: 700" oninput="dvUpdateCreationPreview()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                <div id="dv-creation-preview" style="font-size:12px;color:var(--accent);margin-top:6px;font-weight:600"></div>
               </div>
 
               <!-- Note -->
@@ -4008,6 +4020,8 @@ async function clOpenDetail(id) {
   clRenderPaiements(c);
   clRenderPayLinks(c);
   clRenderSitePlan(c);
+  const _payNxCustomInput = document.getElementById('pay-nx-custom');
+  if (_payNxCustomInput) _payNxCustomInput.value = '';
   clSetNx(1);
   clSetAds(150);
   clRenderDevis(c);
@@ -4484,6 +4498,8 @@ function dvOpenModal(clientId) {
   document.getElementById('dv-id-type').value='SIRET';
   document.getElementById('dv-creation').value='';
   document.getElementById('dv-abo').value='';
+  document.getElementById('dv-creation-prix').value='';
+  dvUpdateCreationPreview();
   if (fromClient) {
     // Depuis fiche client : bannière + champs auto, masquer le sélecteur
     const c = clData.find(x=>x.id===cid);
@@ -4512,14 +4528,38 @@ function dvPrefill() {
   else if(c.siren)document.getElementById('dv-id-type').value='SIREN';
 }
 
+function dvUpdateCreationPreview() {
+  const creation=document.getElementById('dv-creation').value;
+  const wrap=document.getElementById('dv-creation-prix-wrap');
+  const preview=document.getElementById('dv-creation-preview');
+  if(!wrap||!preview)return;
+  if(!creation){ wrap.style.display='none'; preview.textContent=''; return; }
+  wrap.style.display='block';
+  const n={'1x':1,'2x':2,'3x':3,'4x':4}[creation]||1;
+  const fmt=v=>v.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+  const raw=parseFloat((document.getElementById('dv-creation-prix').value||'').replace(',','.'));
+  if(isNaN(raw)||raw<=0){
+    preview.textContent='Tarif standard : '+(n===1?fmt(990):(n+' × '+fmt(990/n)))+' (laisser vide pour garder ce tarif)';
+    return;
+  }
+  const per=raw/n;
+  preview.textContent = n===1 ? ('= '+fmt(raw)+' en 1 fois') : ('= '+n+' × '+fmt(per)+'/mois (total '+fmt(raw)+')');
+}
+
 function dvCreate() {
   const entreprise=document.getElementById('dv-entreprise').value.trim();
   if(!entreprise){alert('Le nom d\'entreprise est requis.');return;}
   const creation=document.getElementById('dv-creation').value;
   const abo=document.getElementById('dv-abo').value;
-  const creationMap={'1x':'Création site — 990 €','2x':'Création site — 2×495 €','3x':'Création site — 3×330 €','4x':'Création site — 4×247,50 €'};
+  const nMap={'1x':1,'2x':2,'3x':3,'4x':4};
+  const n=nMap[creation]||1;
+  const fmt=v=>v.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+  const customRaw=parseFloat((document.getElementById('dv-creation-prix').value||'').replace(',','.'));
+  const hasCustom=!!creation && !isNaN(customRaw) && customRaw>0;
+  const creationAmt=hasCustom?customRaw:({'1x':990,'2x':990,'3x':990,'4x':990}[creation]||0);
+  const creationPerInstallment=creation?(creationAmt/n):0;
+  const creationMap=creation?{[creation]: n===1?('Création site — '+fmt(creationPerInstallment)):('Création site — '+n+'×'+fmt(creationPerInstallment))}:{};
   const aboMap={'20':'Abonnement 20 €/m','49':'Abonnement 49 €/m'};
-  const creationAmt={'1x':990,'2x':990,'3x':990,'4x':990}[creation]||0;
   const parts=[];
   if(creation)parts.push(creationMap[creation]);
   if(abo)parts.push(aboMap[abo]);
@@ -4531,7 +4571,7 @@ function dvCreate() {
   const dv={id:'dv'+Date.now(),ref,date:new Date().toLocaleDateString('fr-FR'),statut:'envoyé',totalTxt,
     data:{entreprise,tel:document.getElementById('dv-tel').value.trim(),email:document.getElementById('dv-email').value.trim(),
       adresse:document.getElementById('dv-adresse').value.trim(),idType:document.getElementById('dv-id-type').value,
-      idNum:document.getElementById('dv-id-num').value.trim(),creation,abo,creationAmt,aboAmt:parseInt(abo)||0}};
+      idNum:document.getElementById('dv-id-num').value.trim(),creation,abo,creationAmt,creationPerInstallment,aboAmt:parseInt(abo)||0}};
   if(c){
     if(!c.devis)c.devis=[];c.devis.unshift(dv);clSave();clRenderDevis(c);
   } else {
@@ -4573,27 +4613,33 @@ function openImportedFile(data, fileName) {
 
 function dvQuoteHtml(dv, withPrintBtn) {
   const d=dv.data||{};
-  const cPrix={'1x':'990,00 €','2x':'2 × 495,00 €','3x':'3 × 330,00 €','4x':'4 × 247,50 €'};
-  const cDesc={'1x':'Conception, développement et mise en ligne. Site multi-pages, responsive, SEO local, boutons d\'action (appel, WhatsApp), formulaire de contact. 1ère version présentée gratuitement avant tout engagement.','2x':'Idem — règlement en 2 versements de 495,00 € espacés de 30 jours.','3x':'Idem — règlement en 3 versements de 330,00 € espacés de 30 jours.','4x':'Idem — règlement en 4 versements de 247,50 € espacés de 30 jours.'};
-  const cLbl={'1x':'Création de site web','2x':'Création de site web','3x':'Création de site web','4x':'Création de site web'};
+  const nMap={'1x':1,'2x':2,'3x':3,'4x':4};
+  const fmtP=v=>Number(v).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+  const creationN=nMap[d.creation]||1;
+  const creationPer=(d.creationPerInstallment!=null)?d.creationPerInstallment:({'1x':990,'2x':495,'3x':330,'4x':247.50}[d.creation]);
+  const cPrixVal=d.creation?(creationN===1?fmtP(creationPer):(creationN+' × '+fmtP(creationPer))):'';
+  const cDescVal=d.creation?(creationN===1
+    ?'Conception, développement et mise en ligne. Site multi-pages, responsive, SEO local, boutons d\'action (appel, WhatsApp), formulaire de contact. 1ère version présentée gratuitement avant tout engagement.'
+    :('Idem — règlement en '+creationN+' versements de '+fmtP(creationPer)+' espacés de 30 jours.')):'';
+  const cLblVal='Création de site web';
   const aLbl={'20':'Abonnement mensuel — Assistant Digital','49':'Abonnement mensuel — Gestion & Tranquillité'};
   const aDesc={'20':'Hébergement inclus, support WhatsApp, modifications de contenu illimitées sous 48 h.','49':'Hébergement, sécurité SSL, support VIP WhatsApp, modifications illimitées sous 48 h, sauvegardes automatiques, surveillance technique.'};
   const aPrix={'20':'20,00 €/mois','49':'49,00 €/mois'};
   let lignes='';
-  if(d.creation)lignes+=`<tr><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0"><div style="font-weight:700;font-size:14px;color:#111;margin-bottom:4px">${cLbl[d.creation]}</div><div style="font-size:12px;color:#777;line-height:1.6">${cDesc[d.creation]||''}</div></td><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0;text-align:right;vertical-align:top;white-space:nowrap"><span style="font-size:16px;font-weight:800;color:#f4926a">${cPrix[d.creation]}</span></td></tr>`;
+  if(d.creation)lignes+=`<tr><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0"><div style="font-weight:700;font-size:14px;color:#111;margin-bottom:4px">${cLblVal}</div><div style="font-size:12px;color:#777;line-height:1.6">${cDescVal}</div></td><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0;text-align:right;vertical-align:top;white-space:nowrap"><span style="font-size:16px;font-weight:800;color:#f4926a">${cPrixVal}</span></td></tr>`;
   if(d.abo)lignes+=`<tr><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0"><div style="font-weight:700;font-size:14px;color:#111;margin-bottom:4px">${aLbl[d.abo]}</div><div style="font-size:12px;color:#777;line-height:1.6">${aDesc[d.abo]||''}</div></td><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0;text-align:right;vertical-align:top;white-space:nowrap"><span style="font-size:16px;font-weight:800;color:#f4926a">${aPrix[d.abo]}</span></td></tr>`;
   if(!lignes)lignes=`<tr><td colspan="2" style="padding:20px;color:#aaa;text-align:center;font-size:13px">Aucune prestation sélectionnée</td></tr>`;
   const idLine=d.idNum?`<br><span style="font-size:11px;color:#aaa">${d.idType||'SIRET'} : ${d.idNum}</span>`:'';
   const valid=new Date();valid.setDate(valid.getDate()+5);
   const validTxt=valid.toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
   const today=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
-  const totalCell=`${d.creation?(cPrix[d.creation]||''):''}${d.creation&&d.abo?' + ':''}${d.abo?(aPrix[d.abo]||''):''}`;
+  const totalCell=`${d.creation?cPrixVal:''}${d.creation&&d.abo?' + ':''}${d.abo?(aPrix[d.abo]||''):''}`;
 
   // Conditions de paiement
   let cond='';
   if(d.creation){
-    const n={'1x':1,'2x':2,'3x':3,'4x':4}[d.creation]||1;
-    const amt={'1x':'990,00','2x':'495,00','3x':'330,00','4x':'247,50'}[d.creation];
+    const n=creationN;
+    const amt=fmtP(creationPer).replace(' €','');
     if(n===1)cond+=`<div class="cond-item"><span class="cond-dot"></span>Création du site : <strong>${amt} € à la validation de ce devis.</strong> La 1ère version du site est présentée gratuitement avant tout paiement.</div>`;
     else cond+=`<div class="cond-item"><span class="cond-dot"></span>Création du site : <strong>${n} versements de ${amt} €</strong>, espacés de 30 jours. Le 1er versement est déclenché à la validation de ce devis. La 1ère version du site est présentée gratuitement avant tout paiement.</div>`;
   }
@@ -6372,17 +6418,30 @@ function clSetNx(n) {
     const b = document.getElementById('pay-nx-'+i);
     if (b) b.classList.toggle('active', i===n);
   });
-  const amounts = {1:'990,00 € × 1', 2:'495,00 € × 2', 3:'330,00 € × 3', 4:'247,50 € × 4'};
+  const fmt=v=>v.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const inp=document.getElementById('pay-nx-custom');
+  const raw=inp?parseFloat((inp.value||'').replace(',','.')):NaN;
+  const total=(!isNaN(raw)&&raw>0)?raw:990;
+  const per=total/n;
+  const txt = n===1 ? (fmt(total)+' € × 1') : (fmt(per)+' € × '+n);
   const el = document.getElementById('pay-nx-amount');
-  if (el) el.textContent = '= ' + amounts[n];
+  if (el) el.textContent = '= ' + txt;
   const btn = document.getElementById('pay-nx-btn');
-  if (btn) btn.textContent = 'Générer le lien ' + amounts[n];
+  if (btn) btn.textContent = 'Générer le lien ' + txt;
 }
 
 async function clGenerateNx() {
-  const labels = {1:'Site 990 €', 2:'Site 495 € × 2', 3:'Site 330 € × 3', 4:'Site 247,50 € × 4'};
-  const url = await clCallStripe('setup_nx', { nbPaiements: payNx });
-  if (url) { clSavePayLink(url, labels[payNx]); window.open(url, '_blank'); }
+  const fmt=v=>v.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const inp=document.getElementById('pay-nx-custom');
+  const raw=inp?parseFloat((inp.value||'').replace(',','.')):NaN;
+  const hasCustom=!isNaN(raw)&&raw>0;
+  const total=hasCustom?raw:990;
+  const per=total/payNx;
+  const label = payNx===1 ? ('Site '+fmt(total)+' €') : ('Site '+fmt(per)+' € × '+payNx);
+  const extra = { nbPaiements: payNx };
+  if (hasCustom) extra.customAmount = total;
+  const url = await clCallStripe('setup_nx', extra);
+  if (url) { clSavePayLink(url, label); window.open(url, '_blank'); }
 }
 
 // Ads recharge
