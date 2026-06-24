@@ -623,6 +623,7 @@
         <div class="sb-section">Business</div>
         <div class="nav-item" data-page="clients" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg> <span>Clients</span></div>
         <div class="nav-item" data-page="leads" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg> <span>Leads</span></div>
+        <div class="nav-item" data-page="ads" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> <span>Google Ads</span></div>
         <div class="nav-item" data-page="projets" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg> <span>Projets</span></div>
         <div class="nav-item" data-page="formulaire" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> <span>Formulaire</span></div>
         <div class="nav-item" data-page="appels" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.07 19.79 19.79 0 01.12.45a2 2 0 012-2.18h3a2 2 0 012 1.72c.127.96.361 1.9.7 2.81a2 2 0 01-.45 2.11L6.91 10.09a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7a2 2 0 011.72 2z"/></svg> <span>Appels</span></div>
@@ -2446,6 +2447,21 @@
           <div id="dv-global-list"></div>
         </div>
 
+        <div id="page-ads" class="page">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+            <div class="page-header-left">
+              <div class="page-eyebrow">Business</div>
+              <h1 class="page-title">Google Ads</h1>
+              <p class="page-sub">Budgets et performances des campagnes, par client.</p>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button onclick="adsOpenAddModal()" style="background:var(--accent);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">+ Lier un compte</button>
+            </div>
+          </div>
+          <div id="ads-stats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px"></div>
+          <div id="ads-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px"></div>
+        </div>
+
       </div><!-- /main -->
     </div><!-- /main-wrap -->
   </div><!-- /layout -->
@@ -3215,6 +3231,169 @@ function setupRealtime() {
       if (document.getElementById('page-appels')?.classList.contains('active')) apRenderList();
     })
     .subscribe();
+
+  // Realtime pour la table google_ads_tracking (page Google Ads)
+  sb.channel('crm_ads_realtime')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'google_ads_tracking' }, (payload) => {
+      if (_sbWriting) return;
+      const isDelete = payload.eventType === 'DELETE';
+      const row = isDelete ? payload.old : payload.new;
+      if (!row) return;
+      adsData = adsData.filter(r => r.customer_id !== row.customer_id);
+      if (!isDelete) adsData.unshift(row);
+      if (document.getElementById('page-ads')?.classList.contains('active')) adsRender();
+    })
+    .subscribe();
+}
+
+// ═══════════════════════════════════════════════
+// GOOGLE ADS — suivi budgets / dépenses / résultats par client
+// Données dans la table dédiée "google_ads_tracking" (clé = customer_id).
+// Champs auto (écrits par le script Google Ads installé sur le MCC) :
+//   client_nom, budget_actuel, depenses_mois, clics, conversions,
+//   cout_conversion, ctr, derniere_synchro
+// Champs manuels (jamais touchés par le script) : client_id, budget_base
+// Tout reste modifiable à la main directement sur les cartes.
+// ═══════════════════════════════════════════════
+let adsData = [];
+
+async function adsLoad() {
+  try {
+    const { data, error } = await sb.from('google_ads_tracking').select('*').order('updated_at', { ascending: false });
+    if (!error && data) adsData = data;
+  } catch(e) { console.warn('adsLoad:', e); }
+}
+
+function adsInit() { adsLoad().then(adsRender).catch(()=>adsRender()); }
+
+function adsFmtMoney(n) { return (Number(n)||0).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €'; }
+function adsFmtDate(iso) {
+  if (!iso) return 'Jamais';
+  try { const d=new Date(iso); return d.toLocaleDateString('fr-FR')+' à '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}); }
+  catch { return '—'; }
+}
+
+function adsRender() {
+  const statsEl = document.getElementById('ads-stats');
+  if (statsEl) {
+    const totalBase = adsData.reduce((s,r)=>s+(Number(r.budget_base)||0),0);
+    const totalActuel = adsData.reduce((s,r)=>s+(Number(r.budget_actuel)||0),0);
+    const totalDepenses = adsData.reduce((s,r)=>s+(Number(r.depenses_mois)||0),0);
+    const nbLies = adsData.filter(r=>r.client_id).length;
+    const statCard=(label,val,color)=>`<div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:14px 16px">
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">${label}</div>
+      <div style="font-size:24px;font-weight:800;color:${color}">${val}</div>
+    </div>`;
+    statsEl.innerHTML = statCard('Budget de base (total)', adsFmtMoney(totalBase), 'var(--accent)')
+      + statCard('Budget actuel (total)', adsFmtMoney(totalActuel), '#60a5fa')
+      + statCard('Dépenses ce mois (total)', adsFmtMoney(totalDepenses), '#4ade80')
+      + statCard('Comptes liés', nbLies+' / '+adsData.length, '#f4906a');
+  }
+  const gridEl = document.getElementById('ads-grid');
+  if (!gridEl) return;
+  if (adsData.length === 0) { gridEl.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0;grid-column:1/-1">Aucun compte Google Ads suivi pour le moment. Installe le script de synchro, ou clique sur "+ Lier un compte".</div>'; return; }
+  const clientOptions = (selectedId) => '<option value="">— Non lié —</option>' + clData.map(c=>`<option value="${c.id}" ${String(c.id)===String(selectedId)?'selected':''}>${(c.nom||c.id)}</option>`).join('');
+  gridEl.innerHTML = adsData.map(r => {
+    const isNew = !!r._isNew;
+    const matchedClient = clData.find(c=>String(c.id)===String(r.client_id));
+    const displayName = matchedClient ? (matchedClient.nom||matchedClient.id) : (r.client_nom || 'Compte non lié');
+    if (isNew) {
+      return `<div style="background:rgba(244,146,106,.06);border:1px solid var(--accent);border-radius:14px;padding:18px">
+        <div style="font-weight:700;margin-bottom:10px;color:var(--accent)">Nouveau compte Google Ads</div>
+        <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Identifiant client Google Ads (ex: 1234567890)</label>
+        <input id="ads-new-cid" placeholder="1234567890" style="width:100%;background:#1a1a22;border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:#fff;font-size:13px;margin-bottom:10px;outline:none">
+        <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Lier à un client (optionnel pour l'instant)</label>
+        <select id="ads-new-client" style="width:100%;background:#1a1a22;border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:#fff;font-size:13px;margin-bottom:10px;outline:none">${clientOptions(null)}</select>
+        <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Budget de base (€)</label>
+        <input id="ads-new-base" type="number" step="0.01" value="0" style="width:100%;background:#1a1a22;border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:#fff;font-size:13px;margin-bottom:12px;outline:none">
+        <div style="display:flex;gap:8px">
+          <button onclick="adsSaveNew()" style="flex:1;background:var(--accent);color:#fff;border:none;padding:9px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">Enregistrer</button>
+          <button onclick="adsCancelNew()" style="flex:1;background:none;border:1px solid var(--border);color:var(--muted);padding:9px;border-radius:8px;font-size:12px;cursor:pointer">Annuler</button>
+        </div>
+      </div>`;
+    }
+    const field = (label, key, val) => `<div style="margin-bottom:8px">
+      <label style="font-size:10.5px;color:var(--muted);display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.3px">${label}</label>
+      <input type="number" step="0.01" value="${Number(val)||0}" onchange="adsUpdateField('${r.customer_id}','${key}',this.value)" style="width:100%;background:#1a1a22;border:1px solid var(--border);border-radius:7px;padding:6px 9px;color:#fff;font-size:13px;outline:none">
+    </div>`;
+    return `<div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:14px;padding:18px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+        <div style="font-weight:700;font-size:15px">${displayName}</div>
+        <button onclick="adsDelete('${r.customer_id}')" title="Supprimer" style="background:none;border:none;cursor:pointer;padding:2px;color:var(--muted);opacity:.5"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:12px">ID Google Ads : ${r.customer_id}</div>
+      <label style="font-size:10.5px;color:var(--muted);display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.3px">Lié au client</label>
+      <select onchange="adsLinkClient('${r.customer_id}',this.value)" style="width:100%;background:#1a1a22;border:1px solid var(--border);border-radius:7px;padding:6px 9px;color:#fff;font-size:13px;outline:none;margin-bottom:10px">${clientOptions(r.client_id)}</select>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        ${field('Budget de base (€)','budget_base',r.budget_base)}
+        ${field('Budget actuel (€)','budget_actuel',r.budget_actuel)}
+        ${field('Dépenses ce mois (€)','depenses_mois',r.depenses_mois)}
+        ${field('Clics','clics',r.clics)}
+        ${field('Conversions','conversions',r.conversions)}
+        ${field('Coût / conversion (€)','cout_conversion',r.cout_conversion)}
+        ${field('CTR (%)','ctr',r.ctr)}
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">Dernière synchro auto : ${adsFmtDate(r.derniere_synchro)}</div>
+    </div>`;
+  }).join('');
+}
+
+async function adsUpdateField(customerId, field, value) {
+  const row = adsData.find(r=>r.customer_id===customerId);
+  if (!row) return;
+  const v = parseFloat(String(value).replace(',','.')) || 0;
+  row[field] = v;
+  row.updated_at = new Date().toISOString();
+  _sbWriting = true;
+  try { await sb.from('google_ads_tracking').update({ [field]: v, updated_at: row.updated_at }).eq('customer_id', customerId); }
+  catch(e) { console.warn('adsUpdateField:', e); }
+  setTimeout(()=>{ _sbWriting = false; }, 1500);
+  adsRender();
+}
+
+async function adsLinkClient(customerId, clientId) {
+  const row = adsData.find(r=>r.customer_id===customerId);
+  if (!row) return;
+  row.client_id = clientId || null;
+  _sbWriting = true;
+  try { await sb.from('google_ads_tracking').update({ client_id: row.client_id, updated_at: new Date().toISOString() }).eq('customer_id', customerId); }
+  catch(e) { console.warn('adsLinkClient:', e); }
+  setTimeout(()=>{ _sbWriting = false; }, 1500);
+  adsRender();
+}
+
+function adsOpenAddModal() {
+  if (adsData.find(r=>r._isNew)) return;
+  adsData.unshift({ _isNew:true, customer_id:'', client_id:null, client_nom:'', budget_base:0, budget_actuel:0, depenses_mois:0, clics:0, conversions:0, cout_conversion:0, ctr:0, derniere_synchro:null });
+  adsRender();
+}
+
+function adsCancelNew() { adsData = adsData.filter(r=>!r._isNew); adsRender(); }
+
+async function adsSaveNew() {
+  const cidInput = document.getElementById('ads-new-cid');
+  const clientSel = document.getElementById('ads-new-client');
+  const baseInput = document.getElementById('ads-new-base');
+  const cid = String(cidInput ? cidInput.value : '').trim().replace(/[^0-9]/g,'');
+  if (!cid) { alert('Identifiant Google Ads requis (uniquement des chiffres, ex: 1234567890).'); return; }
+  if (adsData.find(r=>r.customer_id===cid && !r._isNew)) { alert('Ce compte est déjà suivi.'); return; }
+  const row = { customer_id: cid, client_id: (clientSel && clientSel.value) || null, budget_base: parseFloat(baseInput ? baseInput.value : 0) || 0 };
+  _sbWriting = true;
+  try { await sb.from('google_ads_tracking').upsert(row, { onConflict:'customer_id' }); }
+  catch(e) { console.warn('adsSaveNew:', e); }
+  setTimeout(()=>{ _sbWriting = false; }, 1500);
+  await adsLoad();
+  adsRender();
+}
+
+async function adsDelete(customerId) {
+  if (!confirm('Supprimer le suivi de ce compte Google Ads ?')) return;
+  adsData = adsData.filter(r=>r.customer_id!==customerId);
+  _sbWriting = true;
+  try { await sb.from('google_ads_tracking').delete().eq('customer_id', customerId); }
+  catch(e) { console.warn('adsDelete:', e); }
+  setTimeout(()=>{ _sbWriting = false; }, 1500);
+  adsRender();
 }
 
 async function bootApp(email) {
@@ -3246,14 +3425,14 @@ async function bootApp(email) {
 const sections = {
   dashboard:'VUE D\'ENSEMBLE', pipeline:'BUSINESS', taches:'PILOTAGE',
   objectifs:'PILOTAGE', planning:'PILOTAGE',
-  clients:'BUSINESS', leads:'BUSINESS',
+  clients:'BUSINESS', leads:'BUSINESS', ads:'BUSINESS',
   formulaire:'BUSINESS', appels:'BUSINESS',
   documents:'OPÉRATIONS', facturation:'OPÉRATIONS', devis:'OPÉRATIONS', tresorerie:'OPÉRATIONS'
 };
 const titles = {
   dashboard:'Dashboard', pipeline:'Pipeline', taches:'Tâches',
   objectifs:'Objectifs', planning:'Planning',
-  clients:'Clients', leads:'Leads',
+  clients:'Clients', leads:'Leads', ads:'Google Ads',
   formulaire:'Formulaire', appels:'Appels',
   documents:'Documents', facturation:'Facturation', devis:'Devis', tresorerie:'Trésorerie'
 };
@@ -3269,6 +3448,7 @@ function nav(el) {
   if(p==='facturation') { faInitRetards().then(() => renderGlobalFactures()).catch(()=>renderGlobalFactures()); }
   if(p==='devis') { dvInitStandalone().then(() => renderGlobalDevis()).catch(()=>renderGlobalDevis()); }
   if(p==='leads') ldRender();
+  if(p==='ads') adsInit();
   if(p==='projets') { prLoad().then(() => { prRender(); prLoadAllAssetsFromIDB(); }).catch(()=>{ prRender(); prLoadAllAssetsFromIDB(); }); }
   if(p==='formulaire') fmLoad();
   if(p==='appels') apInit();
