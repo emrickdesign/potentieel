@@ -47,26 +47,6 @@
       text-align: center;
     }
 
-    .logo {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-bottom: 28px;
-    }
-    .logo-icon {
-      width: 32px; height: 32px;
-      background: #f4926a;
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .logo-icon svg { width: 18px; height: 18px; }
-    .logo-name {
-      font-size: 16px; font-weight: 800;
-      letter-spacing: 2px; color: #111;
-      text-transform: uppercase;
-    }
-
     h1 {
       font-size: clamp(26px, 5vw, 36px);
       font-weight: 700;
@@ -93,6 +73,12 @@
       color: #888;
       margin-bottom: 28px;
       line-height: 1.6;
+      text-wrap: balance;
+    }
+
+    @media (max-width: 360px) {
+      body { padding: 28px 12px; }
+      .subtitle-desc { font-size: 13px; }
     }
 
     .form-card {
@@ -122,17 +108,18 @@
     }
     .field input {
       width: 100%;
-      border: 1.5px solid #e8e0dc;
+      border: 2px solid #ddccc2;
       border-radius: 10px;
       padding: 13px 16px;
       font-size: 14px;
       color: #111;
       background: #fff;
       outline: none;
-      transition: border-color .2s;
+      transition: border-color .2s, box-shadow .2s;
     }
     .field input::placeholder { color: #bbb; }
-    .field input:focus { border-color: #f4926a; }
+    .field input:hover { border-color: #f4b894; }
+    .field input:focus { border-color: #f4926a; box-shadow: 0 0 0 3px rgba(244,146,106,.15); }
 
     .btn-submit {
       width: 100%;
@@ -184,19 +171,9 @@
 <body>
 
 <div class="container">
-  <div class="logo">
-    <div class="logo-icon">
-      <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M10 3L17 7V13L10 17L3 13V7L10 3Z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/>
-        <circle cx="10" cy="10" r="2.5" fill="#fff"/>
-      </svg>
-    </div>
-    <span class="logo-name">Potentieel</span>
-  </div>
-
   <h1>Obtenez votre<em>PREMIÈRE VERSION</em></h1>
   <p class="subtitle-italic">offerte et sans engagement.</p>
-  <p class="subtitle-desc">On vous rappelle sous 24 h pour comprendre votre activité<br>et vous présenter votre V1 en 7 jours.</p>
+  <p class="subtitle-desc">On vous rappelle sous 24h pour comprendre votre activité et vous présenter votre V1 en 7 jours.</p>
 
   <div class="form-card">
 
@@ -218,7 +195,7 @@
         <label>Numéro de <span>Téléphone</span></label>
         <input id="f-telephone" type="tel" placeholder="ex : 06 12 34 56 78" autocomplete="tel" oninput="trackField('telephone')">
       </div>
-      <button class="btn-submit" id="submit-btn" onclick="submitForm()">JE VEUX MA PREMIÈRE VERSION GRATUITE</button>
+      <button class="btn-submit" id="submit-btn" onclick="submitForm()">JE VEUX MA V1 GRATUITE</button>
       <p class="legal">Aucune carte bancaire demandée. Vos données restent confidentielles.</p>
     </div>
 
