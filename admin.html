@@ -623,7 +623,6 @@
         <div class="sb-section">Business</div>
         <div class="nav-item" data-page="clients" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg> <span>Clients</span></div>
         <div class="nav-item" data-page="leads" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg> <span>Leads</span></div>
-        <div class="nav-item" data-page="ads" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> <span>Google Ads</span></div>
         <div class="nav-item" data-page="projets" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg> <span>Projets</span></div>
         <div class="nav-item" data-page="formulaire" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> <span>Formulaire</span></div>
         <div class="nav-item" data-page="appels" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.07 19.79 19.79 0 01.12.45a2 2 0 012-2.18h3a2 2 0 012 1.72c.127.96.361 1.9.7 2.81a2 2 0 01-.45 2.11L6.91 10.09a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7a2 2 0 011.72 2z"/></svg> <span>Appels</span></div>
@@ -1081,7 +1080,6 @@
               <button class="cl-tab" data-tab="docs" onclick="clTab('docs',this)">Documents</button>
               <button class="cl-tab" data-tab="assets" onclick="clTab('assets',this)">Assets</button>
               <button class="cl-tab" data-tab="paiement" onclick="clTab('paiement',this)">Paiement</button>
-              <button class="cl-tab" data-tab="gads" onclick="clTab('gads',this)">Google Ads</button>
               <button class="cl-tab" data-tab="devis" onclick="clTab('devis',this)">Devis</button>
               <button class="cl-tab" data-tab="factures" onclick="clTab('factures',this)">Factures</button>
             </div>
@@ -1261,14 +1259,6 @@
                 </div>
               </div>
 
-            </div>
-
-            <!-- Tab: Google Ads -->
-            <div id="cl-tab-gads" class="cl-tab-pane" style="display:none">
-              <div class="panel">
-                <div class="panel-head"><h3 style="display:flex;align-items:center;gap:8px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> Google Ads</h3></div>
-                <div id="cl-gads-content" style="padding:16px"></div>
-              </div>
             </div>
 
             <!-- Tab: Devis -->
@@ -2456,22 +2446,6 @@
           <div id="dv-global-list"></div>
         </div>
 
-        <div id="page-ads" class="page">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">
-            <div class="page-header-left">
-              <div class="page-eyebrow">Business</div>
-              <h1 class="page-title">Google Ads</h1>
-              <p class="page-sub">Vue d'ensemble en lecture seule — les budgets se modifient depuis la fiche de chaque client (onglet "Google Ads").</p>
-            </div>
-          </div>
-          <div id="ads-stats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px"></div>
-          <div id="ads-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:28px"></div>
-          <div id="ads-unlinked-wrap" style="display:none">
-            <h3 style="font-size:13px;color:var(--muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px">Comptes non liés</h3>
-            <div id="ads-unlinked-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px"></div>
-          </div>
-        </div>
-
       </div><!-- /main -->
     </div><!-- /main-wrap -->
   </div><!-- /layout -->
@@ -3241,244 +3215,6 @@ function setupRealtime() {
       if (document.getElementById('page-appels')?.classList.contains('active')) apRenderList();
     })
     .subscribe();
-
-  // Realtime pour la table google_ads_tracking (fiche client + page d'ensemble)
-  sb.channel('crm_ads_realtime')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'google_ads_tracking' }, (payload) => {
-      if (_sbWriting) return;
-      const isDelete = payload.eventType === 'DELETE';
-      const row = isDelete ? payload.old : payload.new;
-      if (!row) return;
-      adsData = adsData.filter(r => r.customer_id !== row.customer_id);
-      if (!isDelete) adsData.unshift(row);
-      if (document.getElementById('page-ads')?.classList.contains('active')) adsRenderOverview();
-      const gadsPane = document.getElementById('cl-tab-gads');
-      if (clCurrentId && gadsPane && gadsPane.classList.contains('active')) {
-        const c = clData.find(x=>String(x.id)===String(clCurrentId));
-        if (c) clRenderGads(c);
-      }
-    })
-    .subscribe();
-}
-
-// ═══════════════════════════════════════════════
-// GOOGLE ADS — suivi budgets / dépenses / résultats par client
-// Données dans la table dédiée "google_ads_tracking" (clé = customer_id).
-// Champs auto (écrits par le script Google Ads installé sur le MCC) :
-//   client_nom, statut, budget_actuel, depenses_mois, clics, conversions,
-//   cout_conversion, ctr, derniere_synchro
-// Champs manuels (jamais touchés par le script) : client_id, budget_base
-// La carte éditable vit dans la fiche du client (onglet "Google Ads").
-// La page "Google Ads" du menu est une vue d'ensemble en lecture seule.
-// ═══════════════════════════════════════════════
-let adsData = [];
-
-async function adsLoad() {
-  try {
-    const { data, error } = await sb.from('google_ads_tracking').select('*').order('updated_at', { ascending: false });
-    if (!error && data) adsData = data;
-  } catch(e) { console.warn('adsLoad:', e); }
-}
-
-function adsInit() { adsLoad().then(adsRenderOverview).catch(()=>adsRenderOverview()); }
-
-function adsFmtMoney(n) { return (Number(n)||0).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €'; }
-function adsFmtDate(iso) {
-  if (!iso) return 'Jamais';
-  try { const d=new Date(iso); return d.toLocaleDateString('fr-FR')+' à '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}); }
-  catch { return '—'; }
-}
-function adsStatutTag(statut) {
-  const map = { actif:['Actif','#4ade80'], 'en pause':['En pause','#facc15'], 'aucune campagne':['Aucune campagne','#9ca3af'] };
-  const [label,color] = map[statut] || [statut||'—','#9ca3af'];
-  return `<span style="font-size:10.5px;font-weight:700;color:${color};background:${color}1a;border:1px solid ${color}55;border-radius:6px;padding:2px 8px;white-space:nowrap">${label}</span>`;
-}
-
-// ── Page d'ensemble (lecture seule) ──
-function adsRenderOverview() {
-  const linked = adsData.filter(r => r.client_id && clData.find(c=>String(c.id)===String(r.client_id)));
-  const unlinked = adsData.filter(r => !(r.client_id && clData.find(c=>String(c.id)===String(r.client_id))));
-
-  const statsEl = document.getElementById('ads-stats');
-  if (statsEl) {
-    const totalBase = linked.reduce((s,r)=>s+(Number(r.budget_base)||0),0);
-    const totalActuel = linked.reduce((s,r)=>s+(Number(r.budget_actuel)||0),0);
-    const totalDepenses = linked.reduce((s,r)=>s+(Number(r.depenses_mois)||0),0);
-    const statCard=(label,val,color)=>`<div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:14px 16px">
-      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">${label}</div>
-      <div style="font-size:24px;font-weight:800;color:${color}">${val}</div>
-    </div>`;
-    statsEl.innerHTML = statCard('Budget de base (total)', adsFmtMoney(totalBase), 'var(--accent)')
-      + statCard('Budget actuel (total)', adsFmtMoney(totalActuel), '#60a5fa')
-      + statCard('Dépenses ce mois (total)', adsFmtMoney(totalDepenses), '#4ade80')
-      + statCard('Comptes liés', linked.length+' / '+adsData.length, '#f4906a');
-  }
-
-  const gridEl = document.getElementById('ads-grid');
-  if (gridEl) {
-    if (linked.length === 0) {
-      gridEl.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0;grid-column:1/-1">Aucun compte Google Ads lié à un client pour le moment. Ouvre la fiche d\'un client, onglet "Google Ads", pour en lier un.</div>';
-    } else {
-      const stat = (label,val) => `<div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;margin-bottom:2px">${label}</div><div style="font-size:14px;font-weight:700">${val}</div></div>`;
-      gridEl.innerHTML = linked.map(r => {
-        const c = clData.find(x=>String(x.id)===String(r.client_id));
-        const displayName = c ? (c.nom||c.id) : (r.client_nom||'—');
-        return `<div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:14px;padding:18px">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;gap:8px">
-            <div style="font-weight:700;font-size:15px">${displayName}</div>
-            ${adsStatutTag(r.statut)}
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
-            ${stat('Budget de base', adsFmtMoney(r.budget_base))}
-            ${stat('Budget actuel', adsFmtMoney(r.budget_actuel))}
-            ${stat('Dépenses ce mois', adsFmtMoney(r.depenses_mois))}
-            ${stat('Clics', r.clics||0)}
-            ${stat('Conversions', r.conversions||0)}
-            ${stat('CTR', (Number(r.ctr)||0).toLocaleString('fr-FR',{maximumFractionDigits:2})+' %')}
-          </div>
-          <div style="font-size:11px;color:var(--muted);margin-bottom:12px">Dernière synchro auto : ${adsFmtDate(r.derniere_synchro)}</div>
-          <button onclick="adsGoToFiche('${r.client_id}')" style="width:100%;background:none;border:1px solid var(--border);color:var(--accent);padding:8px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer">Voir la fiche →</button>
-        </div>`;
-      }).join('');
-    }
-  }
-
-  const unlinkedWrap = document.getElementById('ads-unlinked-wrap');
-  const unlinkedGrid = document.getElementById('ads-unlinked-grid');
-  if (unlinkedWrap && unlinkedGrid) {
-    if (unlinked.length === 0) { unlinkedWrap.style.display = 'none'; }
-    else {
-      unlinkedWrap.style.display = 'block';
-      unlinkedGrid.innerHTML = unlinked.map(r => `<div style="background:rgba(255,255,255,.02);border:1px dashed var(--border);border-radius:12px;padding:14px 16px">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:4px">
-          <div style="font-weight:600;font-size:13.5px">${r.client_nom || 'Compte sans nom'}</div>
-          ${adsStatutTag(r.statut)}
-        </div>
-        <div style="font-size:11px;color:var(--muted)">ID : ${r.customer_id}</div>
-      </div>`).join('');
-    }
-  }
-}
-
-function adsGoToFiche(clientId) {
-  const c = clData.find(x=>String(x.id)===String(clientId));
-  if (!c) return;
-  const navEl = document.querySelector('.nav-item[data-page="clients"]');
-  if (navEl) nav(navEl);
-  clOpenDetail(c.id).then(() => {
-    const btn = document.querySelector('.cl-tab[data-tab="gads"]');
-    if (btn) clTab('gads', btn);
-  });
-}
-
-// ── Onglet "Google Ads" de la fiche client (éditable) ──
-function clRenderGads(c) {
-  const el = document.getElementById('cl-gads-content');
-  if (!el) return;
-  const row = adsData.find(r => String(r.client_id) === String(c.id));
-
-  if (!row) {
-    const unlinked = adsData.filter(r => !(r.client_id && clData.find(x=>String(x.id)===String(r.client_id))));
-    const opts = unlinked.map(r => `<option value="${r.customer_id}">${(r.client_nom||'Compte')} (${r.customer_id})</option>`).join('');
-    el.innerHTML = `
-      <div style="text-align:center;padding:10px">
-        <div style="color:var(--muted);font-size:13px;margin-bottom:16px">Aucun compte Google Ads lié à ce client.</div>
-        <div style="max-width:340px;margin:0 auto;text-align:left">
-          <label style="font-size:10.5px;color:var(--muted);display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.3px">Compte détecté par le script</label>
-          <select id="gads-link-select" onchange="clGadsToggleManual(this)" style="width:100%;background:#1a1a22;border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:#fff;font-size:13px;margin-bottom:10px;outline:none">
-            <option value="">— Choisir un compte non lié —</option>
-            ${opts}
-            <option value="__manual__">Saisir un identifiant manuellement…</option>
-          </select>
-          <div id="gads-link-manual" style="display:${unlinked.length?'none':'block'}">
-            <label style="font-size:10.5px;color:var(--muted);display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.3px">Identifiant client Google Ads</label>
-            <input id="gads-link-cid" placeholder="1234567890" style="width:100%;background:#1a1a22;border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:#fff;font-size:13px;margin-bottom:10px;outline:none">
-          </div>
-          <label style="font-size:10.5px;color:var(--muted);display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.3px">Budget de base (€)</label>
-          <input id="gads-link-base" type="number" step="0.01" value="0" style="width:100%;background:#1a1a22;border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:#fff;font-size:13px;margin-bottom:14px;outline:none">
-          <button onclick="clGadsLinkAccount('${c.id}')" style="width:100%;background:var(--accent);color:#fff;border:none;padding:10px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">Lier ce compte</button>
-        </div>
-      </div>`;
-    return;
-  }
-
-  const field = (label, key, val) => `<div style="margin-bottom:8px">
-    <label style="font-size:10.5px;color:var(--muted);display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.3px">${label}</label>
-    <input type="number" step="0.01" value="${Number(val)||0}" onchange="clGadsUpdateField('${row.customer_id}','${key}',this.value)" style="width:100%;background:#1a1a22;border:1px solid var(--border);border-radius:7px;padding:6px 9px;color:#fff;font-size:13px;outline:none">
-  </div>`;
-  el.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;gap:8px">
-      <div style="font-size:11px;color:var(--muted)">ID Google Ads : ${row.customer_id}</div>
-      <div style="display:flex;align-items:center;gap:8px">
-        ${adsStatutTag(row.statut)}
-        <button onclick="clGadsUnlink('${row.customer_id}')" style="background:none;border:1px solid var(--border);color:var(--muted);padding:4px 10px;border-radius:7px;font-size:11px;cursor:pointer">Délier</button>
-      </div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
-      ${field('Budget de base (€)','budget_base',row.budget_base)}
-      ${field('Budget actuel (€)','budget_actuel',row.budget_actuel)}
-      ${field('Dépenses ce mois (€)','depenses_mois',row.depenses_mois)}
-      ${field('Clics','clics',row.clics)}
-      ${field('Conversions','conversions',row.conversions)}
-      ${field('Coût / conversion (€)','cout_conversion',row.cout_conversion)}
-      ${field('CTR (%)','ctr',row.ctr)}
-    </div>
-    <div style="font-size:11px;color:var(--muted);margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">Dernière synchro auto : ${adsFmtDate(row.derniere_synchro)}</div>
-  `;
-}
-
-function clGadsToggleManual(sel) {
-  const manual = document.getElementById('gads-link-manual');
-  if (manual) manual.style.display = sel.value === '__manual__' ? 'block' : 'none';
-}
-
-async function clGadsLinkAccount(clientId) {
-  const sel = document.getElementById('gads-link-select');
-  const manualInput = document.getElementById('gads-link-cid');
-  const baseInput = document.getElementById('gads-link-base');
-  const cid = (sel && sel.value && sel.value !== '__manual__') ? sel.value : String(manualInput ? manualInput.value : '').trim().replace(/[^0-9]/g,'');
-  if (!cid) { alert('Choisis un compte détecté ou saisis un identifiant Google Ads (chiffres uniquement).'); return; }
-  const base = parseFloat(baseInput ? baseInput.value : 0) || 0;
-  const existing = adsData.find(r=>r.customer_id===cid);
-  _sbWriting = true;
-  try {
-    if (existing) { await sb.from('google_ads_tracking').update({ client_id: clientId, budget_base: base, updated_at: new Date().toISOString() }).eq('customer_id', cid); }
-    else { await sb.from('google_ads_tracking').upsert({ customer_id: cid, client_id: clientId, budget_base: base }, { onConflict:'customer_id' }); }
-  } catch(e) { console.warn('clGadsLinkAccount:', e); }
-  setTimeout(()=>{ _sbWriting = false; }, 1500);
-  await adsLoad();
-  const c = clData.find(x=>String(x.id)===String(clientId));
-  if (c) clRenderGads(c);
-  if (document.getElementById('page-ads')?.classList.contains('active')) adsRenderOverview();
-}
-
-async function clGadsUpdateField(customerId, field, value) {
-  const row = adsData.find(r=>r.customer_id===customerId);
-  if (!row) return;
-  const v = parseFloat(String(value).replace(',','.')) || 0;
-  row[field] = v;
-  row.updated_at = new Date().toISOString();
-  _sbWriting = true;
-  try { await sb.from('google_ads_tracking').update({ [field]: v, updated_at: row.updated_at }).eq('customer_id', customerId); }
-  catch(e) { console.warn('clGadsUpdateField:', e); }
-  setTimeout(()=>{ _sbWriting = false; }, 1500);
-  const c = clData.find(x=>String(x.id)===String(row.client_id));
-  if (c) clRenderGads(c);
-  if (document.getElementById('page-ads')?.classList.contains('active')) adsRenderOverview();
-}
-
-async function clGadsUnlink(customerId) {
-  if (!confirm('Délier ce compte Google Ads de ce client ? Les données restent suivies (visibles dans "Comptes non liés" sur la page Google Ads).')) return;
-  const row = adsData.find(r=>r.customer_id===customerId);
-  const clientId = row ? row.client_id : null;
-  if (row) row.client_id = null;
-  _sbWriting = true;
-  try { await sb.from('google_ads_tracking').update({ client_id: null, updated_at: new Date().toISOString() }).eq('customer_id', customerId); }
-  catch(e) { console.warn('clGadsUnlink:', e); }
-  setTimeout(()=>{ _sbWriting = false; }, 1500);
-  const c = clData.find(x=>String(x.id)===String(clientId));
-  if (c) clRenderGads(c);
-  if (document.getElementById('page-ads')?.classList.contains('active')) adsRenderOverview();
 }
 
 async function bootApp(email) {
@@ -3493,7 +3229,7 @@ async function bootApp(email) {
   // Chargement des données depuis crm_items (Supabase) — prLoad avant ldInit (dépendance)
   try { await prLoad(); } catch(_) { console.warn('prLoad:', _); }
   try {
-    await Promise.all([tcLoad(), plLoad(), clLoad(), dcLoad(), ldInit(), adsLoad()]);
+    await Promise.all([tcLoad(), plLoad(), clLoad(), dcLoad(), ldInit()]);
   } catch(_) { console.warn('load all:', _); }
   try { tcRender(); } catch(_) { console.warn('tcRender:', _); }
   try { renderPipeline(); } catch(_) { console.warn('renderPipeline:', _); }
@@ -3533,7 +3269,6 @@ function nav(el) {
   if(p==='facturation') { faInitRetards().then(() => renderGlobalFactures()).catch(()=>renderGlobalFactures()); }
   if(p==='devis') { dvInitStandalone().then(() => renderGlobalDevis()).catch(()=>renderGlobalDevis()); }
   if(p==='leads') ldRender();
-  if(p==='ads') adsInit();
   if(p==='projets') { prLoad().then(() => { prRender(); prLoadAllAssetsFromIDB(); }).catch(()=>{ prRender(); prLoadAllAssetsFromIDB(); }); }
   if(p==='formulaire') fmLoad();
   if(p==='appels') apInit();
@@ -4289,7 +4024,6 @@ async function clOpenDetail(id) {
   if (_payNxCustomInput) _payNxCustomInput.value = '';
   clSetNx(1);
   clSetAds(150);
-  clRenderGads(c);
   clRenderDevis(c);
   clRenderFactures(c);
 }
