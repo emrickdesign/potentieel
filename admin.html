@@ -1167,6 +1167,11 @@
               <div class="panel" style="margin-bottom:16px">
                 <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 16px">
                   <span style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1px;white-space:nowrap;display:flex;align-items:center;gap:6px"><span style="color:var(--accent)">✅</span> SUIVI PAIEMENT SITE</span>
+                  <span style="display:flex;align-items:center;gap:5px;white-space:nowrap">
+                    <span style="font-size:12px;color:var(--muted)">Prix site :</span>
+                    <input id="cl-siteprix-input" type="number" min="1" step="0.01" placeholder="990" onchange="clSetSitePrix(this.value)" title="Prix total du site pour ce client (par défaut 990 €)" style="width:84px;background:#1a1a22;border:1px solid var(--border);border-radius:8px;padding:6px 8px;color:#fff;font-size:12px;outline:none">
+                    <span style="font-size:12px;color:var(--muted)">€</span>
+                  </span>
                   <select id="cl-siteplan-select" onchange="clSetSitePlan(this.value)" style="background:#1a1a22;border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:#fff;font-size:12px;outline:none;cursor:pointer">
                     <option value="">— Plan —</option>
                     <option value="1x">1× — 990,00 €</option>
@@ -3994,7 +3999,7 @@ function clRenderGrid() {
   // Setup cumulé : somme des versements "site" cochés comme reçus, tous clients confondus
   const setupTotal = clData.reduce((s,c) => {
     if (!c.sitePlan || !Array.isArray(c.siteVersements)) return s;
-    const unit = SITE_PLAN_PRIX[c.sitePlan] || 0;
+    const unit = clSitePlanUnit(c, c.sitePlan);
     return s + c.siteVersements.filter(Boolean).length * unit;
   }, 0);
   const dashSetup = document.getElementById('dash-kpi-setup');
@@ -6317,7 +6322,9 @@ function clDeleteClient(id, ev) {
 /* ═══════════════════  PAIEMENT STRIPE  ══════════════════ */
 
 const SUPABASE_FN_URL = 'https://alpzagoprkpzirgtrdup.supabase.co/functions/v1/stripe-checkout';
-const SITE_PLAN_PRIX = {'1x':990, '2x':495, '3x':330, '4x':247.50};
+const SITE_PLAN_PRIX_DEFAULT = 990; // tarif standard appliqué si le client n'a pas de prix personnalisé
+function clSitePrixBase(c) { return (typeof c.sitePrix === 'number' && c.sitePrix > 0) ? c.sitePrix : SITE_PLAN_PRIX_DEFAULT; }
+function clSitePlanUnit(c, plan) { const n = parseInt(plan) || 0; return n > 0 ? clSitePrixBase(c) / n : 0; }
 let payNx = 1;
 let payAdsAmount = 150;
 
@@ -6350,16 +6357,23 @@ function clDelPayLink(lid) {
 
 // Suivi du paiement du site (plan choisi + versements reçus) — compact, en haut de l'onglet Paiement
 function clRenderSitePlan(c) {
+  const fmt = v => v.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const base = clSitePrixBase(c);
+  const priceInput = document.getElementById('cl-siteprix-input');
+  if (priceInput && document.activeElement !== priceInput) priceInput.value = (typeof c.sitePrix === 'number' && c.sitePrix > 0) ? c.sitePrix : '';
   const sel = document.getElementById('cl-siteplan-select');
-  if (sel) sel.value = c.sitePlan || '';
+  if (sel) {
+    sel.value = c.sitePlan || '';
+    const optTexts = { '1x': `1× — ${fmt(base)} €`, '2x': `2× — ${fmt(base/2)} €/mois`, '3x': `3× — ${fmt(base/3)} €/mois`, '4x': `4× — ${fmt(base/4)} €/mois` };
+    Array.from(sel.options).forEach(o => { if (optTexts[o.value]) o.textContent = optTexts[o.value]; });
+  }
   const el = document.getElementById('cl-siteplan-tracker');
   if (!el) return;
   if (!c.sitePlan) { el.innerHTML = '<span style="font-size:12px;color:var(--muted)">Choisis un plan pour activer le suivi des versements.</span>'; return; }
   const n = parseInt(c.sitePlan);
-  const unit = SITE_PLAN_PRIX[c.sitePlan]||0;
+  const unit = clSitePlanUnit(c, c.sitePlan);
   if (!c.siteVersements || c.siteVersements.length !== n) c.siteVersements = new Array(n).fill(false);
   const nbPaid = c.siteVersements.filter(Boolean).length;
-  const fmt = v => v.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2});
   el.innerHTML =
     c.siteVersements.map((paid,i)=>`
       <div onclick="clToggleVersement(${i})" title="Versement ${i+1}/${n} — ${fmt(unit)} €${paid?' · reçu':' · à encaisser'}" style="width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;font-weight:700;border:1.5px solid ${paid?'var(--accent)':'var(--border)'};background:${paid?'var(--accent)':'transparent'};color:${paid?'#fff':'var(--muted)'};transition:all .15s;flex-shrink:0">${paid?'✓':(i+1)}</div>`).join('') +
@@ -6370,6 +6384,12 @@ function clSetSitePlan(val) {
   c.sitePlan = val || null;
   if (val) { const n=parseInt(val); c.siteVersements = new Array(n).fill(false); }
   else { c.siteVersements = []; }
+  clSave(); clRenderSitePlan(c); clRenderGrid();
+}
+function clSetSitePrix(val) {
+  const c = clData.find(x=>x.id===clCurrentId); if (!c) return;
+  const n = parseFloat(String(val).replace(',', '.'));
+  c.sitePrix = (!isNaN(n) && n > 0) ? n : null;
   clSave(); clRenderSitePlan(c); clRenderGrid();
 }
 function clToggleVersement(i) {
