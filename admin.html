@@ -696,9 +696,9 @@
             </div>
             <div class="kpi">
               <div class="kpi-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
-              <div class="kpi-val">0€</div>
+              <div class="kpi-val" id="dash-kpi-setup">0€</div>
               <div class="kpi-label">SETUP CUMULÉ</div>
-              <div class="kpi-sub">Revenus setup estimés</div>
+              <div class="kpi-sub">Versements site reçus</div>
             </div>
             <div class="kpi">
               <div class="kpi-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
@@ -1163,6 +1163,21 @@
             <!-- Tab: Paiement -->
             <div id="cl-tab-paiement" class="cl-tab-pane" style="display:none">
 
+              <!-- Suivi du paiement du site (plan choisi + versements reçus) — compact, en haut -->
+              <div class="panel" style="margin-bottom:16px">
+                <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 16px">
+                  <span style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1px;white-space:nowrap;display:flex;align-items:center;gap:6px"><span style="color:var(--accent)">✅</span> SUIVI PAIEMENT SITE</span>
+                  <select id="cl-siteplan-select" onchange="clSetSitePlan(this.value)" style="background:#1a1a22;border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:#fff;font-size:12px;outline:none;cursor:pointer">
+                    <option value="">— Plan —</option>
+                    <option value="1x">1× — 990,00 €</option>
+                    <option value="2x">2× — 495,00 €/mois</option>
+                    <option value="3x">3× — 330,00 €/mois</option>
+                    <option value="4x">4× — 247,50 €/mois</option>
+                  </select>
+                  <div id="cl-siteplan-tracker" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"></div>
+                </div>
+              </div>
+
               <!-- Générer un lien Stripe -->
               <div class="panel" style="margin-bottom:16px">
                 <div class="panel-head"><h3 style="display:flex;align-items:center;gap:8px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Générer un lien de paiement Stripe</h3></div>
@@ -1239,24 +1254,6 @@
               <div class="panel" style="margin-bottom:16px">
                 <div class="panel-head" style="padding-bottom:0"><div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1px">LIENS GÉNÉRÉS (ACTIFS)</div></div>
                 <div id="cl-pay-links" style="padding:0 16px 16px;min-height:60px"></div>
-              </div>
-
-              <!-- Suivi du paiement du site (plan choisi + versements reçus) -->
-              <div class="panel">
-                <div class="panel-head"><h3 style="display:flex;align-items:center;gap:8px"><span style="color:var(--accent)">✅</span> Suivi du paiement du site</h3></div>
-                <div style="padding:0 16px 16px">
-                  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px">
-                    <span style="font-size:13px;color:var(--muted)">Plan choisi par le client :</span>
-                    <select id="cl-siteplan-select" onchange="clSetSitePlan(this.value)" style="background:#1a1a22;border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:#fff;font-size:13px;outline:none;cursor:pointer">
-                      <option value="">— Aucun —</option>
-                      <option value="1x">Paiement 1 fois — 990,00 €</option>
-                      <option value="2x">Paiement 2 fois — 495,00 €/mois</option>
-                      <option value="3x">Paiement 3 fois — 330,00 €/mois</option>
-                      <option value="4x">Paiement 4 fois — 247,50 €/mois</option>
-                    </select>
-                  </div>
-                  <div id="cl-siteplan-tracker"></div>
-                </div>
               </div>
 
             </div>
@@ -3993,6 +3990,15 @@ function clRenderGrid() {
   document.getElementById('cl-kpi-encours').textContent = encours;
   document.getElementById('cl-kpi-mrr').textContent = mrr+'€';
   const dashMrr = document.getElementById('dash-kpi-mrr'); if (dashMrr) dashMrr.textContent = mrr+'€';
+
+  // Setup cumulé : somme des versements "site" cochés comme reçus, tous clients confondus
+  const setupTotal = clData.reduce((s,c) => {
+    if (!c.sitePlan || !Array.isArray(c.siteVersements)) return s;
+    const unit = SITE_PLAN_PRIX[c.sitePlan] || 0;
+    return s + c.siteVersements.filter(Boolean).length * unit;
+  }, 0);
+  const dashSetup = document.getElementById('dash-kpi-setup');
+  if (dashSetup) dashSetup.textContent = setupTotal.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+'€';
 }
 
 async function clOpenDetail(id) {
@@ -6311,6 +6317,7 @@ function clDeleteClient(id, ev) {
 /* ═══════════════════  PAIEMENT STRIPE  ══════════════════ */
 
 const SUPABASE_FN_URL = 'https://alpzagoprkpzirgtrdup.supabase.co/functions/v1/stripe-checkout';
+const SITE_PLAN_PRIX = {'1x':990, '2x':495, '3x':330, '4x':247.50};
 let payNx = 1;
 let payAdsAmount = 150;
 
@@ -6341,37 +6348,35 @@ function clDelPayLink(lid) {
   clSave(); clRenderPayLinks(c);
 }
 
-// Suivi du paiement du site (plan choisi + versements reçus)
+// Suivi du paiement du site (plan choisi + versements reçus) — compact, en haut de l'onglet Paiement
 function clRenderSitePlan(c) {
   const sel = document.getElementById('cl-siteplan-select');
   if (sel) sel.value = c.sitePlan || '';
   const el = document.getElementById('cl-siteplan-tracker');
   if (!el) return;
-  if (!c.sitePlan) { el.innerHTML = '<div style="color:var(--muted);font-size:13px">Choisis un plan ci-dessus pour activer le suivi des versements.</div>'; return; }
+  if (!c.sitePlan) { el.innerHTML = '<span style="font-size:12px;color:var(--muted)">Choisis un plan pour activer le suivi des versements.</span>'; return; }
   const n = parseInt(c.sitePlan);
   const unit = SITE_PLAN_PRIX[c.sitePlan]||0;
   if (!c.siteVersements || c.siteVersements.length !== n) c.siteVersements = new Array(n).fill(false);
   const nbPaid = c.siteVersements.filter(Boolean).length;
-  el.innerHTML = `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">` +
+  const fmt = v => v.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  el.innerHTML =
     c.siteVersements.map((paid,i)=>`
-      <label style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,${paid?'.08':'.03'});border:1px solid ${paid?'var(--accent)':'var(--border)'};border-radius:10px;padding:10px 14px;cursor:pointer;user-select:none">
-        <input type="checkbox" ${paid?'checked':''} onchange="clToggleVersement(${i})" style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer">
-        <span style="font-size:13px;font-weight:600;color:${paid?'var(--text)':'var(--muted)'}">Versement ${i+1}/${n} — ${unit.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})} €</span>
-      </label>`).join('') + `</div>` +
-    `<div style="font-size:12px;color:var(--muted)">${nbPaid}/${n} versement${n>1?'s':''} reçu${nbPaid>1?'s':''} · ${(nbPaid*unit).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})} € sur ${(n*unit).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})} €</div>`;
+      <div onclick="clToggleVersement(${i})" title="Versement ${i+1}/${n} — ${fmt(unit)} €${paid?' · reçu':' · à encaisser'}" style="width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;font-weight:700;border:1.5px solid ${paid?'var(--accent)':'var(--border)'};background:${paid?'var(--accent)':'transparent'};color:${paid?'#fff':'var(--muted)'};transition:all .15s;flex-shrink:0">${paid?'✓':(i+1)}</div>`).join('') +
+    `<span style="font-size:12px;color:var(--muted);margin-left:6px;white-space:nowrap">${nbPaid}/${n} reçu${nbPaid>1?'s':''} · <strong style="color:var(--text)">${fmt(nbPaid*unit)} €</strong> / ${fmt(n*unit)} €</span>`;
 }
 function clSetSitePlan(val) {
   const c = clData.find(x=>x.id===clCurrentId); if (!c) return;
   c.sitePlan = val || null;
   if (val) { const n=parseInt(val); c.siteVersements = new Array(n).fill(false); }
   else { c.siteVersements = []; }
-  clSave(); clRenderSitePlan(c); updateDashboard(); if(document.getElementById('page-facturation')?.classList.contains('active')) renderGlobalFactures();
+  clSave(); clRenderSitePlan(c); clRenderGrid();
 }
 function clToggleVersement(i) {
   const c = clData.find(x=>x.id===clCurrentId); if (!c) return;
   if (!c.siteVersements) return;
   c.siteVersements[i] = !c.siteVersements[i];
-  clSave(); clRenderSitePlan(c); updateDashboard(); if(document.getElementById('page-facturation')?.classList.contains('active')) renderGlobalFactures();
+  clSave(); clRenderSitePlan(c); clRenderGrid();
 }
 
 async function clCallStripe(type, extra = {}) {
