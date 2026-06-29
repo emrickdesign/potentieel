@@ -221,13 +221,35 @@ const filledFields = new Set();
 let visitId = null;
 let clickedSubmit = false;
 
+// Attribution publicitaire (utm / fbclid) — capturée à l'arrivée depuis une pub,
+// persistée en session pour survivre aux reloads et à la redirection /merci.
+const _qp = new URLSearchParams(window.location.search);
+function pickParam(...keys) {
+  for (const k of keys) {
+    const v = _qp.get(k);
+    if (v) { try { sessionStorage.setItem('ptl_' + k, v); } catch {} return v; }
+  }
+  for (const k of keys) {
+    try { const s = sessionStorage.getItem('ptl_' + k); if (s) return s; } catch {}
+  }
+  return null;
+}
+const tracking = {
+  campagne:  pickParam('utm_campaign', 'utm_id'),
+  publicite: pickParam('utm_content', 'utm_term'),
+  fbclid:    pickParam('fbclid')
+};
+
 // Enregistrer la visite
 async function trackVisit() {
   const { data } = await sb.from('form_visits').insert({
     session_id: sessionId,
     fields_filled: 0,
     clicked_submit: false,
-    converted: false
+    converted: false,
+    campagne: tracking.campagne,
+    publicite: tracking.publicite,
+    fbclid: tracking.fbclid
   }).select().single();
   if (data) visitId = data.id;
 }
@@ -268,7 +290,10 @@ async function submitForm() {
   const { error } = await sb.from('form_submissions').insert({
     prenom, entreprise, domaine, telephone,
     fields_filled: filledFields.size,
-    source: new URLSearchParams(window.location.search).get('src') || 'formulaire'
+    source: _qp.get('src') || 'formulaire',
+    campagne: tracking.campagne,
+    publicite: tracking.publicite,
+    fbclid: tracking.fbclid
   });
 
   // En cas d'échec : pas de redirection, donc l'événement Lead n'est PAS déclenché.

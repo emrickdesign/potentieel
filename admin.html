@@ -6555,6 +6555,30 @@ async function ldInit() {
       ldData.unshift({...def});
     }
   });
+  // Importer les soumissions du formulaire public (table form_submissions).
+  // Le formulaire écrit dans form_submissions ; sans ça les leads n'arrivaient jamais dans le CRM.
+  try {
+    const { data: _subs } = await sb.from('form_submissions').select('*');
+    (_subs || []).forEach(s => {
+      const fid = 'ld_fs_' + s.id;
+      if (ldDeleted.has(fid)) return;              // respecte les suppressions manuelles
+      if (ldData.find(l => l.id === fid)) return;  // déjà importé
+      ldData.unshift({
+        id: fid,
+        nom: s.prenom || '',
+        tel: s.telephone || '',
+        email: '',
+        metier: s.domaine || '',
+        entreprise: s.entreprise || '',
+        source: 'formulaire',
+        campagne: s.campagne || '',
+        statut: 'nouveau',
+        notes: '',
+        createdAt: s.submitted_at || new Date().toISOString(),
+        url: s.fbclid ? ('https://potentieel.fr/formulaire?fbclid=' + s.fbclid) : ''
+      });
+    });
+  } catch(e) { console.warn('import form_submissions:', e); }
   // Supprimer les leads qui sont aussi dans prData (basculés en projet)
   const prNames = new Set((typeof prData !== 'undefined' ? prData : []).filter(p=>p.source==='leads').map(p=>p.tel||p.nom));
   const _ldRemovedIds = [];
