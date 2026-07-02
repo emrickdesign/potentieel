@@ -12,7 +12,15 @@ document.addEventListener('DOMContentLoaded', () => {
   initScrollAnimations();
   initCounters();
   initMockCardFlip();
+  initToolFlips();
 });
+
+/* ---- Tool flip cards — tap/click toggles (hover handles desktop) ---- */
+function initToolFlips() {
+  document.querySelectorAll('.tool-flip').forEach(card => {
+    card.addEventListener('click', () => card.classList.toggle('flipped'));
+  });
+}
 
 /* ---- Hero mock card flip — floating badges reveal content on the back ---- */
 function initMockCardFlip() {
