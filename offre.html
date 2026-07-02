@@ -136,34 +136,61 @@
         </div>
       </div>
       <div class="hero-modern-visual hero-entry d3">
-        <div class="hero-float-badge fb1">
+        <div class="hero-float-badge fb1" data-scene="fb1" role="button" tabindex="0" aria-label="Voir le détail de la réactivité">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
           Réponse sous 48h
         </div>
-        <div class="hero-float-badge fb2 lime">
+        <div class="hero-float-badge fb2 lime" data-scene="fb2" role="button" tabindex="0" aria-label="Voir le détail du SEO local">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           SEO local optimisé
         </div>
-        <div class="hero-float-badge fb3">
+        <div class="hero-float-badge fb3" data-scene="fb3" role="button" tabindex="0" aria-label="Voir le calendrier de livraison">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
           En ligne en 5 à 14j
         </div>
-        <div class="hero-mock-card">
-          <div class="mock-topbar">
-            <span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-dot"></span>
-            <span class="mock-url">votre-entreprise.fr</span>
+        <div class="hero-mock-card" id="heroMockCard">
+          <div class="hero-mock-card-inner">
+            <div class="mock-face mock-face-front">
+              <div class="mock-topbar">
+                <span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-dot"></span>
+                <span class="mock-url">votre-entreprise.fr</span>
+              </div>
+              <div class="mock-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Nouvelle demande de devis reçue</div>
+              <div class="mock-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Avis client 5★ publié</div>
+              <div class="mock-bars">
+                <span style="height:35%;"></span>
+                <span style="height:55%;" class="b-lime"></span>
+                <span style="height:45%;"></span>
+                <span style="height:75%;" class="b-lime"></span>
+                <span style="height:90%;"></span>
+              </div>
+              <div class="mock-stat">+5</div>
+              <div class="mock-stat-label">demandes dès la 1ère semaine</div>
+            </div>
+            <div class="mock-face mock-face-back">
+              <div class="mock-back-scene active" data-scene="fb1">
+                <div class="mock-back-title">Toujours joignable</div>
+                <div class="mock-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Client : devis pour ma toiture ?</div>
+                <div class="mock-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Vous : réponse en 2h &#9889;</div>
+                <div class="mock-stat">48h</div>
+                <div class="mock-stat-label">délai de réponse maximum garanti</div>
+              </div>
+              <div class="mock-back-scene" data-scene="fb2">
+                <div class="mock-back-title">Visibilité locale</div>
+                <div class="mock-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>1ère page Google <strong style="margin-left:auto;">local</strong></div>
+                <div class="mock-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Fiche Google Maps <strong style="margin-left:auto;">optimisée</strong></div>
+                <div class="mock-stat">+240%</div>
+                <div class="mock-stat-label">de visibilité en recherche locale</div>
+              </div>
+              <div class="mock-back-scene" data-scene="fb3">
+                <div class="mock-back-title">Votre calendrier</div>
+                <div class="mock-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Brief &amp; maquette <strong style="margin-left:auto;">J1 → J7</strong></div>
+                <div class="mock-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Mise en ligne <strong style="margin-left:auto;">J12</strong></div>
+                <div class="mock-stat">12j</div>
+                <div class="mock-stat-label">délai moyen constaté</div>
+              </div>
+            </div>
           </div>
-          <div class="mock-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Nouvelle demande de devis reçue</div>
-          <div class="mock-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Avis client 5★ publié</div>
-          <div class="mock-bars">
-            <span style="height:35%;"></span>
-            <span style="height:55%;" class="b-lime"></span>
-            <span style="height:45%;"></span>
-            <span style="height:75%;" class="b-lime"></span>
-            <span style="height:90%;"></span>
-          </div>
-          <div class="mock-stat">+5</div>
-          <div class="mock-stat-label">demandes dès la 1ère semaine</div>
         </div>
       </div>
     </div>
@@ -187,7 +214,7 @@
 </div>
 
 <!-- OFFRE SITES INTERNET -->
-<section id="offres" style="padding:100px 0 80px;">
+<section id="offres" class="bg-grid-lines" style="padding:100px 0 80px;">
   <div class="container">
     <div class="eyebrow scroll-anim" style="justify-content:center;">L'offre sites internet</div>
     <h2 class="scroll-anim d1" style="font-size:clamp(36px,4.5vw,56px);font-weight:800;letter-spacing:-0.02em;line-height:1.1;margin-bottom:16px;text-align:center;">
@@ -302,7 +329,7 @@
 </section>
 
 <!-- PROBLÈME -->
-<section style="padding:100px 0;background:rgba(10,10,10,0.01);">
+<section class="bg-dots" style="padding:100px 0;background-color:rgba(10,10,10,0.01);">
   <div class="container">
     <div class="eyebrow scroll-anim" style="justify-content:center;">Pourquoi Potentieel</div>
     <h2 class="scroll-anim d1" style="font-size:clamp(34px,4.5vw,56px);font-weight:800;letter-spacing:-0.02em;line-height:1.1;margin-bottom:52px;text-align:center;">
@@ -494,7 +521,7 @@
 </section>
 
 <!-- FAQ -->
-<section style="padding:80px 0 100px;background:rgba(10,10,10,0.01);">
+<section class="bg-glow-soft" style="padding:80px 0 100px;background:rgba(10,10,10,0.01);">
   <div class="container" style="max-width:780px;">
     <div class="eyebrow scroll-anim" style="justify-content:center;">FAQ</div>
     <h2 class="scroll-anim d1" style="font-size:clamp(34px,4.5vw,52px);font-weight:800;letter-spacing:-0.02em;margin-bottom:48px;text-align:center;">

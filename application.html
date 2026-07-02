@@ -113,34 +113,67 @@
         </div>
       </div>
       <div class="hero-modern-visual hero-entry d3">
-        <div class="hero-float-badge fb1">
+        <div class="hero-float-badge fb1" data-scene="fb1" role="button" tabindex="0" aria-label="Voir le détail du temps économisé">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
           &asymp; 120h économisées / mois
         </div>
-        <div class="hero-float-badge fb2 lime">
+        <div class="hero-float-badge fb2 lime" data-scene="fb2" role="button" tabindex="0" aria-label="Voir les stats devis">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l1.6 5 5 1.6-5 1.6-1.6 5-1.6-5-5-1.6 5-1.6z"/></svg>
           Devis en 1 clic (IA)
         </div>
-        <div class="hero-float-badge fb3">
+        <div class="hero-float-badge fb3" data-scene="fb3" role="button" tabindex="0" aria-label="Voir les outils centralisés">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
           Centralisé
         </div>
-        <div class="hero-mock-card">
-          <div class="mock-topbar">
-            <span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-dot"></span>
-            <span class="mock-url">app.votre-entreprise.fr</span>
+        <div class="hero-mock-card" id="heroMockCard">
+          <div class="hero-mock-card-inner">
+            <div class="mock-face mock-face-front">
+              <div class="mock-topbar">
+                <span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-dot"></span>
+                <span class="mock-url">app.votre-entreprise.fr</span>
+              </div>
+              <div class="mock-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Devis envoyé — Chantier Dupont</div>
+              <div class="mock-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>3 nouveaux messages équipe</div>
+              <div class="mock-bars">
+                <span style="height:40%;"></span>
+                <span style="height:65%;" class="b-lime"></span>
+                <span style="height:50%;"></span>
+                <span style="height:85%;" class="b-lime"></span>
+                <span style="height:60%;"></span>
+              </div>
+              <div class="mock-stat">128h</div>
+              <div class="mock-stat-label">économisées ce mois-ci</div>
+            </div>
+            <div class="mock-face mock-face-back">
+              <div class="mock-back-scene active" data-scene="fb1">
+                <div class="mock-back-title">Où passent les heures</div>
+                <div class="mock-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Devis &amp; IA <strong style="margin-left:auto;">-18h</strong></div>
+                <div class="mock-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Relances auto <strong style="margin-left:auto;">-6h</strong></div>
+                <div class="mock-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Reporting <strong style="margin-left:auto;">-4h</strong></div>
+                <div class="mock-stat">128h</div>
+                <div class="mock-stat-label">= 3,5 jours de travail retrouvés</div>
+              </div>
+              <div class="mock-back-scene" data-scene="fb2">
+                <div class="mock-back-title">Ce mois-ci</div>
+                <div class="mock-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Devis envoyés <strong style="margin-left:auto;">24</strong></div>
+                <div class="mock-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Acceptés (75%) <strong style="margin-left:auto;">18</strong></div>
+                <div class="mock-stat">31 200€</div>
+                <div class="mock-stat-label">générés grâce aux devis IA</div>
+                <div class="mock-back-note">Générés en 1 clic, envoyés depuis l'appli.</div>
+              </div>
+              <div class="mock-back-scene" data-scene="fb3">
+                <div class="mock-back-title">Tout au même endroit</div>
+                <div class="mock-logos-row">
+                  <div class="mock-logo-chip"><svg viewBox="0 0 512 448.82" xmlns="http://www.w3.org/2000/svg"><g fill-rule="nonzero"><path fill="#4285f4" d="M34.91 398.818h81.454V201L0 113.727V363.91c0 19.287 15.622 34.91 34.91 34.91z"/><path fill="#34a853" d="M395.636 398.818h81.455c19.287 0 34.909-15.622 34.909-34.909V113.727L395.636 201z"/><path fill="#fbbc04" d="M395.636 49.727V201L512 113.727V67.182c0-43.142-49.25-67.782-83.782-41.891z"/><path fill="#ea4335" d="M116.364 201V49.727L256 154.455 395.636 49.727V201L256 305.727z"/><path fill="#c5221f" d="M0 67.182v46.545L116.364 201V49.727L83.782 25.291C49.25-.6 0 24.04 0 67.18z"/></g></svg></div>
+                  <div class="mock-logo-chip"><svg viewBox="0 0 360 362" xmlns="http://www.w3.org/2000/svg"><path fill="#25D366" fill-rule="evenodd" d="M307.546 52.566C273.709 18.684 228.706.017 180.756 0 81.951 0 1.538 80.404 1.504 179.235c-.017 31.594 8.242 62.432 23.928 89.609L0 361.736l95.024-24.925c26.179 14.285 55.659 21.805 85.655 21.814h.077c98.788 0 179.21-80.413 179.244-179.244.017-47.898-18.608-92.926-52.454-126.807v-.008Z"/></svg></div>
+                  <div class="mock-logo-chip"><svg viewBox="0 0 486 500" xmlns="http://www.w3.org/2000/svg"><rect width="222.17" height="222.22" y="236.11" rx="45.13" ry="45.13" fill="#185C37"/><path d="M69.43 159.72c0-34.52 27.98-62.5 62.49-62.5h354.09v361.11c0 23.01-18.65 41.67-41.66 41.67H152.74c-46.01 0-83.31-37.31-83.31-83.33V159.72Z" fill="#21A366"/><path d="M69.43 83.33C69.43 37.31 106.73 0 152.74 0h166.63v166.67H152.74c-46.01 0-83.31 37.31-83.31 83.33V83.33Z" fill="#33C481"/></svg></div>
+                  <div class="mock-logo-chip"><svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="M390.736 121.264H121.264V390.736H390.736V121.264Z" fill="#fff"/><path d="M512 121.264V40.42C512 18.088 493.912 0 471.58 0H390.736C383.36 30.072 379.671 52.2027 379.67 66.392C379.67 80.58 383.359 98.8707 390.736 121.264C417.556 128.944 437.767 132.784 451.368 132.784C464.969 132.784 485.18 128.945 512 121.264Z" fill="#1967D2"/><path d="M512 121.264H390.736V390.736H512V121.264Z" fill="#FBBC04"/><path d="M390.736 390.736H121.264V512H390.736V390.736Z" fill="#34A853"/><path d="M390.736 0H40.422C18.088 0 0 18.088 0 40.42V390.736H121.264V121.264H390.736V0Z" fill="#4285F4"/></svg></div>
+                  <div class="mock-logo-chip"><svg viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg"><path fill="#0066da" d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L27.5 53H0c0 1.55.4 3.1 1.2 4.5z"/><path fill="#00ac47" d="M43.65 25 29.9 1.2c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44A9.06 9.06 0 0 0 0 53h27.5z"/><path fill="#ea4335" d="M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75L86.1 57.5c.8-1.4 1.2-2.95 1.2-4.5H59.798l5.852 11.5z"/><path fill="#00832d" d="M43.65 25 57.4 1.2C56.05.4 54.5 0 52.9 0H34.4c-1.6 0-3.15.45-4.5 1.2z"/><path fill="#2684fc" d="M59.8 53H27.5L13.75 76.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z"/><path fill="#ffba00" d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3L43.65 25 59.8 53h27.45c0-1.55-.4-3.1-1.2-4.5z"/></svg></div>
+                </div>
+                <div class="mock-back-note">Gmail, WhatsApp, Excel, Drive... tout centralisé dans une seule appli, sur-mesure pour vous.</div>
+              </div>
+            </div>
           </div>
-          <div class="mock-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Devis envoyé — Chantier Dupont</div>
-          <div class="mock-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>3 nouveaux messages équipe</div>
-          <div class="mock-bars">
-            <span style="height:40%;"></span>
-            <span style="height:65%;" class="b-lime"></span>
-            <span style="height:50%;"></span>
-            <span style="height:85%;" class="b-lime"></span>
-            <span style="height:60%;"></span>
-          </div>
-          <div class="mock-stat">128h</div>
-          <div class="mock-stat-label">économisées ce mois-ci</div>
         </div>
       </div>
     </div>
@@ -215,7 +248,7 @@
 </section>
 
 <!-- ===================== BÉNÉFICES ===================== -->
-<section style="padding:90px 0;">
+<section class="bg-dots" style="padding:90px 0;">
   <div class="container">
     <div class="eyebrow scroll-anim" style="justify-content:center;">Pourquoi centraliser</div>
     <h2 class="scroll-anim d1" style="font-size:clamp(32px,4vw,50px);font-weight:800;letter-spacing:-0.02em;line-height:1.1;margin-bottom:52px;text-align:center;">
@@ -242,7 +275,7 @@
 </section>
 
 <!-- ===================== CONFIGURATEUR ===================== -->
-<section id="offres" style="padding:20px 0 100px;background:rgba(10,10,10,0.015);">
+<section id="offres" class="bg-grid-lines" style="padding:20px 0 100px;">
   <div class="container">
     <div class="eyebrow scroll-anim" style="justify-content:center;">Nos formules</div>
     <h2 class="scroll-anim d1" style="font-size:clamp(34px,4.5vw,54px);font-weight:800;letter-spacing:-0.02em;line-height:1.1;margin-bottom:16px;text-align:center;">
@@ -516,7 +549,7 @@
 </section>
 
 <!-- ===================== FAQ ===================== -->
-<section style="padding:80px 0 100px;">
+<section class="bg-glow-soft" style="padding:80px 0 100px;">
   <div class="container" style="max-width:780px;">
     <div class="eyebrow scroll-anim" style="justify-content:center;">FAQ</div>
     <h2 class="scroll-anim d1" style="font-size:clamp(34px,4.5vw,52px);font-weight:800;letter-spacing:-0.02em;margin-bottom:48px;text-align:center;">

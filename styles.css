@@ -2396,7 +2396,7 @@ button { touch-action: manipulation; }
    ============================================= */
 .hero-modern {
   position: relative;
-  padding: 100px 0 0;
+  padding: 118px 0 0;
   overflow: hidden;
 }
 .hero-modern-grid {
@@ -2410,11 +2410,11 @@ button { touch-action: manipulation; }
 }
 .hero-modern-text .eyebrow { margin-bottom: 10px; }
 .hero-modern-text h1 {
-  font-size: clamp(26px, 3.1vw, 38px);
+  font-size: clamp(32px, 3.8vw, 46px);
   font-weight: 800;
   letter-spacing: -0.02em;
-  line-height: 1.14;
-  margin-bottom: 12px;
+  line-height: 1.12;
+  margin-bottom: 14px;
 }
 .hero-modern-text .heading-divider { margin: 10px 0 14px; }
 .hero-modern-text .hero-sub { text-align: left; margin: 0 0 18px; font-size: 15px; line-height: 1.55; }
@@ -2436,15 +2436,13 @@ button { touch-action: manipulation; }
 .hero-mock-card {
   position: absolute;
   inset: 6px 20px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-card);
   border-radius: 18px;
   box-shadow: 0 34px 70px rgba(20,15,5,0.16);
-  padding: 16px;
   transform: perspective(1200px) rotateY(-9deg) rotateX(4deg) rotate(-2deg);
   transition: transform 0.5s cubic-bezier(0.22,1,0.36,1);
   animation: mockFloat 7s ease-in-out infinite;
   z-index: 1;
+  perspective: 1600px;
 }
 .hero-modern-visual:hover .hero-mock-card {
   transform: perspective(1200px) rotateY(-2deg) rotateX(1deg) rotate(0deg);
@@ -2453,6 +2451,34 @@ button { touch-action: manipulation; }
   0%, 100% { margin-top: 0; }
   50%      { margin-top: -14px; }
 }
+.hero-mock-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.7s cubic-bezier(0.22,1,0.36,1);
+  transform-style: preserve-3d;
+}
+.hero-mock-card.flipped .hero-mock-card-inner { transform: rotateY(180deg); }
+.mock-face {
+  position: absolute;
+  inset: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 18px;
+  padding: 16px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  overflow: hidden;
+}
+.mock-face-back { transform: rotateY(180deg); display: flex; flex-direction: column; }
+.mock-back-scene { display: none; flex-direction: column; height: 100%; }
+.mock-back-scene.active { display: flex; animation: panelIn 0.4s ease; }
+.mock-back-title { font-size: 11.5px; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; }
+.mock-logos-row { display: flex; gap: 10px; flex-wrap: wrap; margin: 4px 0 12px; }
+.mock-logo-chip { width: 34px; height: 34px; border-radius: 9px; background: var(--bg-card-2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.mock-logo-chip svg { width: 19px; height: 19px; }
+.mock-back-scene .mock-stat { font-size: 19px; }
+.mock-back-note { font-size: 11.5px; color: var(--gray); line-height: 1.5; margin-top: auto; }
 .mock-topbar { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
 .mock-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--border-card); }
 .mock-url {
@@ -2500,10 +2526,17 @@ button { touch-action: manipulation; }
   z-index: 2;
   animation: badgeFloat 6s ease-in-out infinite;
   white-space: nowrap;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+.hero-float-badge:hover { transform: translateY(-2px); }
+.hero-float-badge.active-badge {
+  border-color: var(--orange);
+  box-shadow: 0 16px 36px rgba(193,83,30,0.28);
 }
 .hero-float-badge svg { width: 17px; height: 17px; flex-shrink: 0; color: var(--orange); }
 .hero-float-badge.lime svg { color: var(--lime); }
-.hero-float-badge.fb1 { top: -7%;  left: -4%;  animation-delay: 0s; }
+.hero-float-badge.fb1 { top: 2%;  left: -4%;  animation-delay: 0s; }
 .hero-float-badge.fb2 { bottom: -7%; left: -4%; animation-delay: -2s; }
 .hero-float-badge.fb3 { top: 38%; right: -11%; animation-delay: -4s; }
 @keyframes badgeFloat {
@@ -2651,6 +2684,45 @@ button { touch-action: manipulation; }
 @media (prefers-reduced-motion: reduce) {
   .tool-chip, .tools-flow-arrow svg, .tools-hub, .tools-hub::after { animation: none; }
 }
+
+/* =============================================
+   SECTION BACKGROUND TEXTURES
+   ============================================= */
+.bg-dots {
+  background-image: radial-gradient(circle, rgba(20,15,5,0.09) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+.bg-grid-lines {
+  background-color: rgba(10,10,10,0.015);
+  background-image:
+    linear-gradient(rgba(20,15,5,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20,15,5,0.05) 1px, transparent 1px);
+  background-size: 34px 34px;
+  background-position: center top;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 8%, black 92%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, black 8%, black 92%, transparent);
+}
+.bg-glow-soft { position: relative; overflow: hidden; }
+.bg-glow-soft::before,
+.bg-glow-soft::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(10px);
+}
+.bg-glow-soft::before {
+  top: -25%; right: -8%;
+  width: 55%; height: 130%;
+  background: radial-gradient(circle, rgba(193,83,30,0.07) 0%, transparent 65%);
+}
+.bg-glow-soft::after {
+  bottom: -25%; left: -8%;
+  width: 46%; height: 110%;
+  background: radial-gradient(circle, rgba(76,111,24,0.06) 0%, transparent 65%);
+}
+.bg-glow-soft > .container { position: relative; z-index: 1; }
 
 @media (max-width: 900px) {
   .tools-flow { grid-template-columns: 1fr; gap: 20px; }

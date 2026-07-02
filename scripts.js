@@ -11,7 +11,40 @@ document.addEventListener('DOMContentLoaded', () => {
   initWordReveal();
   initScrollAnimations();
   initCounters();
+  initMockCardFlip();
 });
+
+/* ---- Hero mock card flip — floating badges reveal content on the back ---- */
+function initMockCardFlip() {
+  const card = document.getElementById('heroMockCard');
+  if (!card) return;
+  const badges = Array.from(document.querySelectorAll('.hero-float-badge[data-scene]'));
+  if (!badges.length) return;
+
+  function activate(scene, badge) {
+    const isSame = card.classList.contains('flipped') && card.dataset.activeScene === scene;
+    badges.forEach(b => b.classList.remove('active-badge'));
+    if (isSame) {
+      card.classList.remove('flipped');
+      card.dataset.activeScene = '';
+      return;
+    }
+    card.querySelectorAll('.mock-back-scene').forEach(s => s.classList.toggle('active', s.dataset.scene === scene));
+    card.classList.add('flipped');
+    card.dataset.activeScene = scene;
+    badge.classList.add('active-badge');
+  }
+
+  badges.forEach(badge => {
+    badge.addEventListener('click', () => activate(badge.dataset.scene, badge));
+    badge.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        activate(badge.dataset.scene, badge);
+      }
+    });
+  });
+}
 
 /* ---- Trust marquee (hero-modern) — clones chips for a seamless loop ---- */
 function initTrustMarquee() {
