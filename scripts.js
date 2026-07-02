@@ -3,6 +3,7 @@
    ============================================= */
 
 document.addEventListener('DOMContentLoaded', () => {
+  initBlobBackgrounds();
   initSparkles();
   initTicker();
   initTiltCards();
@@ -10,6 +11,18 @@ document.addEventListener('DOMContentLoaded', () => {
   initScrollAnimations();
   initCounters();
 });
+
+/* ---- Animated blob backgrounds (hero + page headers) ---- */
+function initBlobBackgrounds() {
+  document.querySelectorAll('.hero, .page-header').forEach(section => {
+    if (section.querySelector('.blob-bg')) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'blob-bg';
+    wrap.setAttribute('aria-hidden', 'true');
+    wrap.innerHTML = '<span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>';
+    section.insertBefore(wrap, section.firstChild);
+  });
+}
 
 /* ---- Sparkles ---- */
 function initSparkles() {

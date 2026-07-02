@@ -429,6 +429,55 @@ body {
 }
 
 /* =============================================
+   ANIMATED BLOB BACKGROUNDS (injected by scripts.js
+   into every .hero / .page-header)
+   ============================================= */
+.blob-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.blob {
+  position: absolute;
+  border-radius: 42% 58% 65% 35% / 45% 45% 55% 55%;
+  filter: blur(56px);
+  opacity: 0.4;
+  will-change: transform, border-radius;
+  animation: blobDrift 22s ease-in-out infinite;
+}
+.blob.b1 {
+  width: 440px; height: 440px;
+  top: -140px; left: -100px;
+  background: radial-gradient(circle at 30% 30%, var(--orange-light), transparent 70%);
+  animation-duration: 24s;
+}
+.blob.b2 {
+  width: 380px; height: 380px;
+  bottom: -160px; right: -80px;
+  background: radial-gradient(circle at 60% 40%, #c8f542, transparent 70%);
+  animation-duration: 28s;
+  animation-delay: -6s;
+}
+.blob.b3 {
+  width: 260px; height: 260px;
+  top: 35%; right: 12%;
+  background: radial-gradient(circle at 50% 50%, var(--orange-light), transparent 70%);
+  opacity: 0.22;
+  animation-duration: 19s;
+  animation-delay: -3s;
+}
+@keyframes blobDrift {
+  0%, 100% { transform: translate(0,0) scale(1); border-radius: 42% 58% 65% 35% / 45% 45% 55% 55%; }
+  33%      { transform: translate(26px,-32px) scale(1.08); border-radius: 58% 42% 35% 65% / 55% 65% 35% 45%; }
+  66%      { transform: translate(-22px,26px) scale(0.95); border-radius: 65% 35% 55% 45% / 35% 55% 45% 65%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .blob { animation: none; }
+}
+
+/* =============================================
    TICKER / MARQUEE
    ============================================= */
 .ticker-wrap {
@@ -930,6 +979,23 @@ section { padding: 100px 0; }
   background: linear-gradient(135deg, rgba(244,146,106,0.05) 0%, var(--bg-card) 60%);
   box-shadow: 0 20px 48px rgba(193,83,30,0.22), 0 0 0 4px rgba(193,83,30,0.06);
 }
+.pricing-card.featured::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: -1;
+  animation: recoPulse 2.6s cubic-bezier(0.22,1,0.36,1) infinite;
+}
+@keyframes recoPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(193,83,30,0.35); }
+  70%  { box-shadow: 0 0 0 16px rgba(193,83,30,0); }
+  100% { box-shadow: 0 0 0 0 rgba(193,83,30,0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pricing-card.featured::after { animation: none; }
+}
 
 .pricing-option-card {
   background: var(--bg-card);
@@ -1029,6 +1095,14 @@ section { padding: 100px 0; }
   background: var(--orange);
   border-color: var(--orange);
   color: #fff;
+  animation: tabPop 0.3s cubic-bezier(0.22,1,0.36,1);
+}
+@keyframes tabPop {
+  0%   { transform: scale(0.93); }
+  100% { transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .profile-tab.active { animation: none; }
 }
 .profile-note {
   text-align: center;
@@ -1037,7 +1111,14 @@ section { padding: 100px 0; }
   margin: 0 auto 48px;
 }
 .app-profile-panel { display: none; }
-.app-profile-panel.active { display: block; }
+.app-profile-panel.active { display: block; animation: panelIn 0.45s cubic-bezier(0.22,1,0.36,1); }
+@keyframes panelIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-profile-panel.active { animation: none; }
+}
 
 .pricing-card.recommended { position: relative; overflow: visible; }
 .app-badge-reco {
@@ -1138,10 +1219,13 @@ section { padding: 100px 0; }
 .type-tab-title { font-size: 16px; font-weight: 700; color: var(--white); }
 .type-tab-sub { display: block; font-size: 12.5px; font-weight: 500; color: var(--gray); margin-top: 2px; }
 .type-tab:hover { border-color: rgba(193,83,30,0.4); }
-.type-tab.active { border-color: var(--orange); background: rgba(193,83,30,0.05); }
+.type-tab.active { border-color: var(--orange); background: rgba(193,83,30,0.05); animation: tabPop 0.3s cubic-bezier(0.22,1,0.36,1); }
 .type-tab.active .type-tab-icon { background: var(--orange); color: #fff; }
 .offer-type-panel { display: none; }
-.offer-type-panel.active { display: block; }
+.offer-type-panel.active { display: block; animation: panelIn 0.45s cubic-bezier(0.22,1,0.36,1); }
+@media (prefers-reduced-motion: reduce) {
+  .offer-type-panel.active { animation: none; }
+}
 
 @media (max-width: 700px) {
   .type-tabs { grid-template-columns: 1fr; }
