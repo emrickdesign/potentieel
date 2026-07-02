@@ -6393,8 +6393,12 @@ function clRenderSitePlan(c) {
         if (nbPaid >= n) {
           nextHtml = `<span style="font-size:12px;color:var(--accent);font-weight:600;white-space:nowrap">✅ Tous les versements reçus</span>`;
         } else {
-          const next = new Date(firstDate);
-          next.setMonth(next.getMonth() + nbPaid);
+          // Prochain = firstDate + max(1, nbPaid) mois
+          // (dès la saisie de la date, on affiche le mois suivant même sans versement coché)
+          // On parse la date en heure locale (pas UTC) pour éviter tout décalage de fuseau
+          const [fy,fm,fd] = firstDate.split('-').map(Number);
+          const next = new Date(fy, fm - 1, fd);
+          next.setMonth(next.getMonth() + Math.max(1, nbPaid));
           nextHtml = `<span style="font-size:12px;color:var(--accent);font-weight:600;white-space:nowrap">→ Prochain paiement prévu le ${next.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})}</span>`;
         }
       }
