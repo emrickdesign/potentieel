@@ -170,6 +170,60 @@ body {
   border-radius: 2px;
 }
 
+/* Dropdown — "Services" */
+.has-dropdown { position: relative; }
+.dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--gray-light);
+  transition: color 0.2s;
+  padding-bottom: 3px;
+}
+.dropdown-trigger svg { width: 11px; height: 11px; transition: transform 0.2s; }
+.has-dropdown:hover .dropdown-trigger,
+.has-dropdown:focus-within .dropdown-trigger,
+.dropdown-trigger.active { color: var(--white); font-weight: 500; }
+.has-dropdown:hover .dropdown-trigger svg,
+.has-dropdown:focus-within .dropdown-trigger svg { transform: rotate(180deg); }
+.navbar-dropdown {
+  position: absolute;
+  top: calc(100% + 18px);
+  left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 14px;
+  box-shadow: 0 20px 48px rgba(20,15,5,0.14);
+  padding: 8px;
+  min-width: 230px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+  z-index: 250;
+}
+.has-dropdown:hover .navbar-dropdown,
+.has-dropdown:focus-within .navbar-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+.navbar-dropdown a {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  color: var(--white);
+  font-weight: 500;
+  transition: background 0.15s;
+}
+.navbar-dropdown a:hover { background: var(--bg-card-3); }
+.navbar-dropdown a small { font-size: 12px; color: var(--gray); font-weight: 400; }
+
 .btn-crm {
   display: flex;
   align-items: center;
@@ -2334,4 +2388,168 @@ button { touch-action: manipulation; }
 }
 @media (max-width: 760px) {
   .histoire-grid { grid-template-columns: 1fr; }
+}
+
+/* =============================================
+   MODERN HERO (application.html / offre.html)
+   proposition de valeur + mockup flottant + trust strip
+   ============================================= */
+.hero-modern {
+  position: relative;
+  padding: 150px 0 0;
+  overflow: hidden;
+}
+.hero-modern-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 50px;
+  align-items: center;
+  padding-bottom: 64px;
+  position: relative;
+  z-index: 2;
+}
+.hero-modern-text h1 {
+  font-size: clamp(38px, 4.6vw, 60px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+  margin-bottom: 20px;
+}
+.hero-modern-text .hero-sub { text-align: left; margin: 0 0 32px; }
+.hero-modern-text .hero-ctas { justify-content: flex-start; }
+.hero-mini-trust {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 36px;
+}
+.hero-mini-trust .stars { color: #f5a623; font-size: 14px; letter-spacing: 1px; }
+.hero-mini-trust span { font-size: 13.5px; color: var(--gray); }
+.hero-mini-trust strong { color: var(--white); }
+
+.hero-modern-visual {
+  position: relative;
+  height: 440px;
+}
+.hero-mock-card {
+  position: absolute;
+  inset: 16px 30px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 20px;
+  box-shadow: 0 34px 70px rgba(20,15,5,0.16);
+  padding: 22px;
+  transform: perspective(1200px) rotateY(-9deg) rotateX(4deg) rotate(-2deg);
+  transition: transform 0.5s cubic-bezier(0.22,1,0.36,1);
+  animation: mockFloat 7s ease-in-out infinite;
+  z-index: 1;
+}
+.hero-modern-visual:hover .hero-mock-card {
+  transform: perspective(1200px) rotateY(-2deg) rotateX(1deg) rotate(0deg);
+}
+@keyframes mockFloat {
+  0%, 100% { margin-top: 0; }
+  50%      { margin-top: -14px; }
+}
+.mock-topbar { display: flex; align-items: center; gap: 6px; margin-bottom: 18px; }
+.mock-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--border-card); }
+.mock-url {
+  margin-left: 10px;
+  font-size: 11.5px;
+  color: var(--gray);
+  background: var(--bg-card-3);
+  padding: 4px 12px;
+  border-radius: 100px;
+  flex: 1;
+  max-width: 200px;
+}
+.mock-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--bg-card-2);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--white);
+}
+.mock-row svg { width: 15px; height: 15px; color: var(--orange); flex-shrink: 0; }
+.mock-bars { display: flex; align-items: flex-end; gap: 6px; height: 64px; margin: 14px 0; }
+.mock-bars span { display: block; flex: 1; border-radius: 5px 5px 0 0; background: linear-gradient(180deg, var(--orange-light), var(--orange)); }
+.mock-bars span.b-lime { background: linear-gradient(180deg, #c8f542, var(--lime)); }
+.mock-stat { font-size: 26px; font-weight: 800; color: var(--orange); line-height: 1; }
+.mock-stat-label { font-size: 11px; color: var(--gray); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+
+.hero-float-badge {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 14px;
+  padding: 11px 15px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--white);
+  box-shadow: 0 16px 36px rgba(20,15,5,0.13);
+  z-index: 2;
+  animation: badgeFloat 6s ease-in-out infinite;
+  white-space: nowrap;
+}
+.hero-float-badge svg { width: 17px; height: 17px; flex-shrink: 0; color: var(--orange); }
+.hero-float-badge.lime svg { color: var(--lime); }
+.hero-float-badge.fb1 { top: 4%;  left: -2%;  animation-delay: 0s; }
+.hero-float-badge.fb2 { bottom: 10%; left: -6%; animation-delay: -2s; }
+.hero-float-badge.fb3 { top: 46%; right: -8%; animation-delay: -4s; }
+@keyframes badgeFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-mock-card, .hero-float-badge { animation: none; }
+}
+
+/* Trust marquee — vrais avis / stats, défile en boucle */
+.trust-strip {
+  position: relative;
+  z-index: 2;
+  border-top: 1px solid var(--border);
+  padding: 28px 0;
+  overflow: hidden;
+  background: var(--bg-card-2);
+}
+.trust-track {
+  display: flex;
+  gap: 0;
+  width: max-content;
+  animation: ticker 32s linear infinite;
+}
+.trust-track:hover { animation-play-state: paused; }
+.trust-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 28px;
+  border-right: 1px solid var(--border);
+  white-space: nowrap;
+  font-size: 13.5px;
+  color: var(--gray-light);
+}
+.trust-chip .stars { color: #f5a623; font-size: 13px; letter-spacing: 1px; flex-shrink: 0; }
+.trust-chip strong { color: var(--white); }
+
+@media (max-width: 900px) {
+  .hero-modern { padding-top: 128px; }
+  .hero-modern-grid { grid-template-columns: 1fr; gap: 20px; padding-bottom: 40px; }
+  .hero-modern-text .hero-sub, .hero-modern-text p { text-align: center; }
+  .hero-modern-text .hero-ctas { justify-content: center; }
+  .hero-mini-trust { justify-content: center; }
+  .hero-modern-visual { height: 320px; margin-top: 20px; }
+  .hero-float-badge.fb3 { display: none; }
+  .hero-float-badge { font-size: 11px; padding: 8px 12px; }
+  .hero-float-badge.fb1 { left: 0; }
+  .hero-float-badge.fb2 { left: 0; }
 }

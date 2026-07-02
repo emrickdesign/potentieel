@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Application sur mesure — Centralisez vos outils | Potentieel</title>
+  <meta name="description" content="Une application de gestion sur-mesure pour votre entreprise, façon BatiPilot. Devis, chantiers, clients, facturation : tout centralisé. Gagnez du temps, gagnez de l'argent.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://potentieel.fr/application.html">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://potentieel.fr/application.html">
+  <meta property="og:title" content="Application sur mesure — Centralisez vos outils | Potentieel">
+  <meta property="og:description" content="Une application de gestion sur-mesure pour votre entreprise, façon BatiPilot. Gagnez du temps, gagnez de l'argent.">
+  <meta property="og:image" content="https://potentieel.fr/assets/og-image.jpg">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:site_name" content="Potentieel">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Application sur mesure — Potentieel">
+  <meta name="twitter:description" content="Centralisez tous vos outils dans une application pensée pour votre métier.">
+  <meta name="twitter:image" content="https://potentieel.fr/assets/og-image.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": "https://potentieel.fr/application.html#service",
+    "name": "Application de gestion sur-mesure",
+    "description": "Application de gestion d'entreprise sur-mesure : devis, chantiers, clients, facturation centralisés.",
+    "provider": { "@id": "https://potentieel.fr/#business" },
+    "url": "https://potentieel.fr/application.html",
+    "areaServed": "FR",
+    "inLanguage": "fr-FR"
+  }
+  </script>
+</head>
+<body>
+<a href="#main-content" class="skip-link">Aller au contenu</a>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="index.html" class="navbar-logo">
+    <span class="arrow-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#c1531e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
+      </svg>
+    </span>
+    POTENTIEEL
+  </a>
+  <div class="navbar-links">
+    <a href="index.html">Accueil</a>
+    <a href="agence.html">À Propos</a>
+    <div class="has-dropdown">
+      <span class="dropdown-trigger active" tabindex="0">Services <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+      <div class="navbar-dropdown">
+        <a href="offre.html">Sites internet<small>Vitrine, marchand ou sur-mesure + CRM</small></a>
+        <a href="application.html">Applications sur mesure<small>Gestion d'entreprise, façon BatiPilot</small></a>
+      </div>
+    </div>
+    <a href="blog.html">Blog</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  <a href="auth.html" class="btn-crm">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+      <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+    </svg>
+    Se connecter
+  </a>
+</nav>
+
+<!-- ===================== MOBILE BOTTOM TAB BAR ===================== -->
+<nav class="mobile-tabbar" aria-label="Navigation mobile">
+  <a href="index.html" class="mobile-tab">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9.5a.5.5 0 0 0 .5.5H10v-6h4v6h3.5a.5.5 0 0 0 .5-.5V10"/></svg>
+    <span>Accueil</span>
+  </a>
+  <a href="agence.html" class="mobile-tab">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="7.7" r="0.6" fill="currentColor" stroke="none"/></svg>
+    <span>À Propos</span>
+  </a>
+  <a href="offre.html" class="mobile-tab active">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7.5" width="18" height="12" rx="2"/><path d="M8 7.5V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1.5"/><line x1="3" y1="12.5" x2="21" y2="12.5"/></svg>
+    <span>Services</span>
+  </a>
+  <a href="blog.html" class="mobile-tab">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+    <span>Blog</span>
+  </a>
+  <a href="contact.html" class="mobile-tab">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5 12 13l8.5-6.5"/></svg>
+    <span>Contact</span>
+  </a>
+</nav>
+
+<!-- ===================== HERO MODERNE ===================== -->
+<section class="hero-modern" id="main-content">
+  <div class="container">
+    <div class="hero-modern-grid">
+      <div class="hero-modern-text">
+        <div class="eyebrow hero-entry">Application sur mesure</div>
+        <h1 class="hero-entry d1">Centralisez vos outils.<br><span class="serif accent-orange">Récupérez votre temps.</span></h1>
+        <div class="heading-divider hero-entry d2"><span class="d-orange"></span><span class="d-lime"></span></div>
+        <p class="hero-sub hero-entry d2">Devis, chantiers, factures, équipes : chaque heure perdue à jongler entre outils est une heure — et de l'argent — que vous ne facturez pas. On construit l'application qui centralise tout, sur-mesure pour votre métier.</p>
+        <div class="hero-ctas hero-entry d3">
+          <a href="contact.html" class="btn-primary">Demander une démo &rarr;</a>
+          <a href="#offres" class="btn-secondary">Voir les tarifs</a>
+        </div>
+        <div class="hero-mini-trust hero-entry d4">
+          <span class="stars">★★★★★</span>
+          <span><strong>12+</strong> entreprises déjà équipées</span>
+        </div>
+      </div>
+      <div class="hero-modern-visual hero-entry d3">
+        <div class="hero-float-badge fb1">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
+          &asymp; 120h économisées / mois
+        </div>
+        <div class="hero-float-badge fb2 lime">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l1.6 5 5 1.6-5 1.6-1.6 5-1.6-5-5-1.6 5-1.6z"/></svg>
+          Devis en 1 clic (IA)
+        </div>
+        <div class="hero-float-badge fb3">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+          Tout centralisé
+        </div>
+        <div class="hero-mock-card">
+          <div class="mock-topbar">
+            <span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-dot"></span>
+            <span class="mock-url">app.votre-entreprise.fr</span>
+          </div>
+          <div class="mock-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Devis envoyé — Chantier Dupont</div>
+          <div class="mock-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>3 nouveaux messages équipe</div>
+          <div class="mock-bars">
+            <span style="height:40%;"></span>
+            <span style="height:65%;" class="b-lime"></span>
+            <span style="height:50%;"></span>
+            <span style="height:85%;" class="b-lime"></span>
+            <span style="height:60%;"></span>
+          </div>
+          <div class="mock-stat">128h</div>
+          <div class="mock-stat-label">économisées ce mois-ci</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRUST STRIP -->
+  <div class="trust-strip">
+    <div class="trust-track" id="trustTrack">
+      <div class="trust-chip"><span class="stars">★★★★★</span> <strong>12+</strong>&nbsp;entreprises accompagnées</div>
+      <div class="trust-chip"><span class="stars">★★★★★</span> <strong>100%</strong>&nbsp;recommandent Potentieel</div>
+      <div class="trust-chip">&laquo;&nbsp;Le site nous fait passer un cap&nbsp;&raquo; — Client Potentieel</div>
+      <div class="trust-chip">Conçu et développé par notre équipe, comme <strong>BatiPilot</strong></div>
+      <div class="trust-chip"><span class="stars">★★★★★</span> <strong>48h</strong>&nbsp;réponse garantie</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== BÉNÉFICES ===================== -->
+<section style="padding:90px 0;">
+  <div class="container">
+    <div class="eyebrow scroll-anim" style="justify-content:center;">Pourquoi centraliser</div>
+    <h2 class="scroll-anim d1" style="font-size:clamp(32px,4vw,50px);font-weight:800;letter-spacing:-0.02em;line-height:1.1;margin-bottom:52px;text-align:center;">
+      Chaque outil séparé <span class="serif accent-orange">vous coûte du temps.</span><br>Et le temps, c'est de l'argent.
+    </h2>
+    <div class="advantages-grid scroll-anim d2">
+      <div class="adv-card tilt-card">
+        <div class="icon-svg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg></div>
+        <h4>Zéro ressaisie</h4>
+        <p>Vos données passent d'un écran à l'autre toutes seules. Fini les heures perdues à copier-coller entre Excel, WhatsApp et vos mails.</p>
+      </div>
+      <div class="adv-card tilt-card">
+        <div class="icon-svg lime"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
+        <h4>Une vision claire</h4>
+        <p>Chantiers, devis, facturation, équipes : tout au même endroit, en temps réel. Vous savez exactement où vous en êtes.</p>
+      </div>
+      <div class="adv-card tilt-card">
+        <div class="icon-svg" style="background:rgba(139,92,246,0.1);color:#8b5cf6;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+        <h4>Un coût maîtrisé</h4>
+        <p>≈45€ de valeur par heure économisée (salaire, charges, gestion). Chaque automatisation se rembourse vite.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CONFIGURATEUR ===================== -->
+<section id="offres" style="padding:20px 0 100px;background:rgba(10,10,10,0.015);">
+  <div class="container">
+    <div class="eyebrow scroll-anim" style="justify-content:center;">Nos formules</div>
+    <h2 class="scroll-anim d1" style="font-size:clamp(34px,4.5vw,54px);font-weight:800;letter-spacing:-0.02em;line-height:1.1;margin-bottom:16px;text-align:center;">
+      Une application de gestion, <span class="serif accent-orange">pensée pour votre métier.</span>
+    </h2>
+    <p class="scroll-anim d2" style="text-align:center;color:var(--gray-light);font-size:16px;max-width:640px;margin:0 auto 40px;line-height:1.7;">
+      BatiPilot, notre application de gestion pour les entreprises du bâtiment, c'est nous qui l'avons conçue et développée de A à Z. On peut construire la même chose, sur-mesure, pour votre activité.
+    </p>
+
+    <div class="profile-tabs scroll-anim d2">
+      <button type="button" class="profile-tab active" data-profile="micro" onclick="showAppProfile('micro', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+        Micro-entreprise
+      </button>
+      <button type="button" class="profile-tab" data-profile="team" onclick="showAppProfile('team', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.5" cy="8.5" r="3.2"/><path d="M2.2 20c0-3.6 2.9-5.8 6.3-5.8s6.3 2.2 6.3 5.8"/><circle cx="17.5" cy="9.5" r="2.6"/><path d="M15.3 14.6c2.7.3 4.9 2.2 4.9 5.4"/></svg>
+        2 à 10 salariés
+      </button>
+      <button type="button" class="profile-tab" data-profile="growth" onclick="showAppProfile('growth', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="1"/><line x1="9" y1="22" x2="9" y2="18"/><line x1="15" y1="22" x2="15" y2="18"/><line x1="8" y1="7" x2="10" y2="7"/><line x1="14" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="10" y2="11"/><line x1="14" y1="11" x2="16" y2="11"/></svg>
+        10 à 30 salariés
+      </button>
+      <button type="button" class="profile-tab" data-profile="custom" onclick="showAppProfile('custom', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+        Sur mesure
+      </button>
+    </div>
+    <p class="profile-note scroll-anim d2">Estimations basées sur 45€ par heure économisée (salaire, charges, gestion, outils, temps administratif).</p>
+
+    <!-- MICRO-ENTREPRISE -->
+    <div class="app-profile-panel active" data-profile="micro">
+      <div class="pricing-grid-3">
+        <div class="pricing-card tilt-card">
+          <h3>Solo Essentiel</h3>
+          <p class="pricing-tagline">Pour démarrer simplement</p>
+          <div class="pricing-price">99<sup>€</sup><sub>/mois</sub></div>
+          <div class="app-setup-fee"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>Mise en place : 490€</div>
+          <div class="pricing-gain">
+            <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>&asymp; <strong>8&nbsp;h</strong> économisées / mois</div>
+            <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 15.5c.5 1 1.5 1.5 2.7 1.5 1.8 0 3-1 3-2.3 0-1.6-1.5-2-3-2.4-1.7-.4-3-.9-3-2.5 0-1.3 1.2-2.3 3-2.3 1.2 0 2.2.5 2.7 1.5"/></svg>&asymp; <strong>360&nbsp;€</strong> gagnés / mois</div>
+          </div>
+          <ul class="pricing-list">
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Suivi des clients</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Devis en 1 clic grâce à l'IA</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Factures en 1 clic</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Suivi de chantier</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Base de prix personnalisable</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Documents chantier</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Tableau de bord simple</li>
+          </ul>
+          <a href="contact.html" class="btn-secondary" style="width:100%;justify-content:center;">Choisir cette offre</a>
+        </div>
+        <div class="pricing-card featured recommended tilt-card">
+          <div class="app-badge-reco"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.8 1.4 6.8L12 17.4 5.9 20.7l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>Recommandé</div>
+          <h3>Solo Pro IA</h3>
+          <p class="pricing-tagline">L'offre la plus complète</p>
+          <div class="pricing-price">199<sup>€</sup><sub>/mois</sub></div>
+          <div class="app-setup-fee"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>Mise en place : 990€</div>
+          <div class="pricing-gain">
+            <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>&asymp; <strong>18&nbsp;h</strong> économisées / mois</div>
+            <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 15.5c.5 1 1.5 1.5 2.7 1.5 1.8 0 3-1 3-2.3 0-1.6-1.5-2-3-2.4-1.7-.4-3-.9-3-2.5 0-1.3 1.2-2.3 3-2.3 1.2 0 2.2.5 2.7 1.5"/></svg>&asymp; <strong>810&nbsp;€</strong> gagnés / mois</div>
+          </div>
+          <ul class="pricing-list">
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Tout Solo Essentiel</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Analyse de plan par IA</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Scan de tickets de dépense</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Suivi des paiements clients</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Suivi des dépenses chantier</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Export comptable en 1 clic</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Réponses aux emails par IA</li>
+          </ul>
+          <a href="contact.html" class="btn-primary" style="width:100%;justify-content:center;">Choisir cette offre</a>
+        </div>
+        <div class="pricing-card tilt-card">
+          <h3>Solo Premium</h3>
+          <p class="pricing-tagline">Pour aller plus loin</p>
+          <div class="pricing-price">349<sup>€</sup><sub>/mois</sub></div>
+          <div class="app-setup-fee"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>Mise en place : 1 990€</div>
+          <div class="pricing-gain">
+            <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>&asymp; <strong>28&nbsp;h</strong> économisées / mois</div>
+            <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 15.5c.5 1 1.5 1.5 2.7 1.5 1.8 0 3-1 3-2.3 0-1.6-1.5-2-3-2.4-1.7-.4-3-.9-3-2.5 0-1.3 1.2-2.3 3-2.3 1.2 0 2.2.5 2.7 1.5"/></svg>&asymp; <strong>1 260&nbsp;€</strong> gagnés / mois</div>
+          </div>
+          <ul class="pricing-list">
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Tout Solo Pro IA</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Relances automatiques clients</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Reporting d'activité</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Vue encaissements / dépenses</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Automatisations simples</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Tableaux de suivi avancés</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Support prioritaire</li>
+          </ul>
+          <a href="contact.html" class="btn-secondary" style="width:100%;justify-content:center;">Choisir cette offre</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 A 10 SALARIES -->
+    <div class="app-profile-panel" data-profile="team">
+      <div class="pricing-grid-3">
+        <div class="pricing-card tilt-card">
+          <h3>Équipe Start</h3>
+          <p class="pricing-tagline">Pour structurer l'entreprise</p>
+          <div class="pricing-price">499<sup>€</sup><sub>/mois</sub></div>
+          <div class="app-setup-fee"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>Mise en place : 3 900€</div>
+          <div class="pricing-gain">
+            <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>&asymp; <strong>35&nbsp;h</strong> économisées / mois</div>
+            <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 15.5c.5 1 1.5 1.5 2.7 1.5 1.8 0 3-1 3-2.3 0-1.6-1.5-2-3-2.4-1.7-.4-3-.9-3-2.5 0-1.3 1.2-2.3 3-2.3 1.2 0 2.2.5 2.7 1.5"/></svg>&asymp; <strong>1 575&nbsp;€</strong> gagnés / mois</div>
+          </div>
+          <ul class="pricing-list">
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Suivi des clients</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Suivi des prospects</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Devis en 1 clic grâce à l'IA</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Factures en 1 clic</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Suivi de chantier &amp; planning</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Relances clients automatiques</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Base de prix personnalisable</li>
+          </ul>
+          <a href="contact.html" class="btn-secondary" style="width:100%;justify-content:center;">Choisir Équipe Start</a>
+        </div>
+        <div class="pricing-card featured recommended tilt-card">
+          <div class="app-badge-reco"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.8 1.4 6.8L12 17.4 5.9 20.7l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>Recommandé</div>
+          <h3>Équipe Pro</h3>
+          <p class="pricing-tagline">Le cockpit bureau + terrain</p>
+          <div class="pricing-price">699<sup>€</sup><sub>/mois</sub></div>
+          <div class="app-setup-fee"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>Mise en place : 6 900€</div>
+          <div class="pricing-gain">
+            <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>&asymp; <strong>55&nbsp;h</strong> économisées / mois</div>
+            <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 15.5c.5 1 1.5 1.5 2.7 1.5 1.8 0 3-1 3-2.3 0-1.6-1.5-2-3-2.4-1.7-.4-3-.9-3-2.5 0-1.3 1.2-2.3 3-2.3 1.2 0 2.2.5 2.7 1.5"/></svg>&asymp; <strong>2 475&nbsp;€</strong> gagnés / mois</div>
+          </div>
+          <ul class="pricing-list">
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Tout Équipe Start</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Analyse de plan par IA</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Scan de tickets de dépense</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Suivi des paiements &amp; dépenses chantier</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Export comptable en 1 clic</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Pointage photo des salariés par chantier</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Suivi horaire salariés &amp; espace discussion</li>
+          </ul>
+          <a href="contact.html" class="btn-primary" style="width:100%;justify-content:center;">Choisir Équipe Pro</a>
+        </div>
+        <div class="pricing-card tilt-card">
+          <h3>Équipe Pilotage</h3>
+          <p class="pricing-tagline">Piloter &amp; automatiser davantage</p>
+          <div class="pricing-price">990<sup>€</sup><sub>/mois</sub></div>
+          <div class="app-setup-fee"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>Mise en place : 9 900€</div>
+          <div class="pricing-gain">
+            <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>&asymp; <strong>75&nbsp;h</strong> économisées / mois</div>
+            <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 15.5c.5 1 1.5 1.5 2.7 1.5 1.8 0 3-1 3-2.3 0-1.6-1.5-2-3-2.4-1.7-.4-3-.9-3-2.5 0-1.3 1.2-2.3 3-2.3 1.2 0 2.2.5 2.7 1.5"/></svg>&asymp; <strong>3 375&nbsp;€</strong> gagnés / mois</div>
+          </div>
+          <ul class="pricing-list">
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Tout Équipe Pro</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Reporting avancé</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Affectation des équipes par chantier</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Suivi de rentabilité chantier</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Contrôle heures / véhicules</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Automatisations mails et relances</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Support prioritaire</li>
+          </ul>
+          <a href="contact.html" class="btn-secondary" style="width:100%;justify-content:center;">Choisir Équipe Pilotage</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10 A 30 SALARIES -->
+    <div class="app-profile-panel" data-profile="growth">
+      <div class="pricing-grid-3">
+        <div class="pricing-card tilt-card">
+          <h3>Structure</h3>
+          <p class="pricing-tagline">Centraliser une entreprise déjà structurée</p>
+          <div class="pricing-price">990<sup>€</sup><sub>/mois</sub></div>
+          <div class="app-setup-fee"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>Mise en place : 9 900€</div>
+          <div class="pricing-gain">
+            <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>&asymp; <strong>80&nbsp;h</strong> économisées / mois</div>
+            <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 15.5c.5 1 1.5 1.5 2.7 1.5 1.8 0 3-1 3-2.3 0-1.6-1.5-2-3-2.4-1.7-.4-3-.9-3-2.5 0-1.3 1.2-2.3 3-2.3 1.2 0 2.2.5 2.7 1.5"/></svg>&asymp; <strong>3 600&nbsp;€</strong> gagnés / mois</div>
+          </div>
+          <ul class="pricing-list">
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Suivi des clients &amp; prospects</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Devis en 1 clic grâce à l'IA</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Factures en 1 clic</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Planning multi-chantiers</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Relances clients automatiques</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Suivi horaire salariés</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Base de prix personnalisable</li>
+          </ul>
+          <a href="contact.html" class="btn-secondary" style="width:100%;justify-content:center;">Choisir Structure</a>
+        </div>
+        <div class="pricing-card featured recommended tilt-card">
+          <div class="app-badge-reco"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.8 1.4 6.8L12 17.4 5.9 20.7l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>Recommandé</div>
+          <h3>Croissance</h3>
+          <p class="pricing-tagline">Piloter la croissance avec l'IA</p>
+          <div class="pricing-price">1 490<sup>€</sup><sub>/mois</sub></div>
+          <div class="app-setup-fee"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>Mise en place : 14 900€</div>
+          <div class="pricing-gain">
+            <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>&asymp; <strong>120&nbsp;h</strong> économisées / mois</div>
+            <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 15.5c.5 1 1.5 1.5 2.7 1.5 1.8 0 3-1 3-2.3 0-1.6-1.5-2-3-2.4-1.7-.4-3-.9-3-2.5 0-1.3 1.2-2.3 3-2.3 1.2 0 2.2.5 2.7 1.5"/></svg>&asymp; <strong>5 400&nbsp;€</strong> gagnés / mois</div>
+          </div>
+          <ul class="pricing-list">
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Tout Structure</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Analyse de plan par IA</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Scan de tickets &amp; suivi des dépenses chantier</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Suivi des paiements clients</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Export comptable en 1 clic</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Pointage photo des salariés par chantier</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Reporting d'activité</li>
+          </ul>
+          <a href="contact.html" class="btn-primary" style="width:100%;justify-content:center;">Choisir Croissance</a>
+        </div>
+        <div class="pricing-card tilt-card">
+          <h3>Performance</h3>
+          <p class="pricing-tagline">Pilotage global &amp; rentabilité</p>
+          <div class="pricing-price">2 490<sup>€</sup><sub>/mois</sub></div>
+          <div class="app-setup-fee"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>Mise en place : 24 900€</div>
+          <div class="pricing-gain">
+            <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>&asymp; <strong>180&nbsp;h</strong> économisées / mois</div>
+            <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 15.5c.5 1 1.5 1.5 2.7 1.5 1.8 0 3-1 3-2.3 0-1.6-1.5-2-3-2.4-1.7-.4-3-.9-3-2.5 0-1.3 1.2-2.3 3-2.3 1.2 0 2.2.5 2.7 1.5"/></svg>&asymp; <strong>8 100&nbsp;€</strong> gagnés / mois</div>
+          </div>
+          <ul class="pricing-list">
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Tout Croissance</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Contrôle heures / véhicules</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Reporting avancé multi-équipes</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Analyse de rentabilité chantier</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Gestion des rôles et accès</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Tableaux de bord direction</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Support premium</li>
+          </ul>
+          <a href="contact.html" class="btn-secondary" style="width:100%;justify-content:center;">Choisir Performance</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUR MESURE -->
+    <div class="app-profile-panel" data-profile="custom">
+      <div style="max-width:480px;margin:0 auto;">
+        <div class="pricing-card featured recommended tilt-card" style="text-align:center;">
+          <h3>Sur mesure</h3>
+          <p class="pricing-tagline">Besoins complexes, multi-sites ou fortement personnalisés</p>
+          <div class="pricing-price">À partir de <sup>€</sup>2 500<span style="font-size:16px;color:var(--gray);font-weight:400;"> /mois</span></div>
+          <div class="app-setup-fee" style="justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>Mise en place à partir de 25 000€</div>
+          <div class="pricing-gain">
+            <div class="pricing-gain-row" style="justify-content:center;">Heures économisées : selon audit</div>
+            <div class="pricing-gain-row" style="justify-content:center;">Gain estimé : selon organisation</div>
+          </div>
+          <ul class="pricing-list" style="text-align:left;">
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Audit des processus</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Architecture &amp; modules sur mesure</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Connexions aux outils existants</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Automatisations avancées</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Gestion multi-sites &amp; multi-rôles</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Reporting direction</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Accompagnement projet &amp; support premium dédié</li>
+          </ul>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <a href="contact.html" class="btn-primary" style="width:100%;justify-content:center;">Demander une étude personnalisée</a>
+            <a href="https://calendly.com/potentieel-web/15min" target="_blank" class="btn-secondary" style="width:100%;justify-content:center;">Planifier un rendez-vous</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="custom-block-grid">
+        <div class="custom-block"><h4>Audit</h4><p>Nous analysons vos processus, vos outils et vos données pour identifier les leviers de performance.</p></div>
+        <div class="custom-block"><h4>Déploiement</h4><p>Nous construisons et intégrons votre solution sur mesure, en toute sécurité et sans perturber vos activités.</p></div>
+        <div class="custom-block"><h4>Accompagnement</h4><p>Nos experts vous accompagnent durablement pour garantir l'adoption, l'optimisation et la montée en puissance.</p></div>
+        <div class="custom-block"><h4>Sécurité &amp; conformité</h4><p>Vos données sont protégées et hébergées dans un environnement sécurisé.</p></div>
+        <div class="custom-block"><h4>Évolutivité totale</h4><p>La solution est conçue pour évoluer avec votre organisation.</p></div>
+        <div class="custom-block"><h4>ROI mesurable</h4><p>Des résultats concrets et un retour sur investissement suivi dans le temps.</p></div>
+        <div class="custom-block"><h4>Support premium dédié</h4><p>Un accompagnement prioritaire avec un interlocuteur expert.</p></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===================== FAQ ===================== -->
+<section style="padding:80px 0 100px;">
+  <div class="container" style="max-width:780px;">
+    <div class="eyebrow scroll-anim" style="justify-content:center;">FAQ</div>
+    <h2 class="scroll-anim d1" style="font-size:clamp(34px,4.5vw,52px);font-weight:800;letter-spacing:-0.02em;margin-bottom:48px;text-align:center;">
+      Les questions <span class="serif accent-orange">qu'on nous pose</span> souvent.
+    </h2>
+    <div class="faq-list">
+      <details class="faq-item scroll-anim d1">
+        <summary class="faq-question">Combien de temps pour avoir mon application ?</summary>
+        <div class="faq-answer">Selon la formule et la complexité, comptez de 2 à 6 semaines entre le cadrage et la mise en service. On avance par étapes courtes, avec des points réguliers.</div>
+      </details>
+      <details class="faq-item scroll-anim d2">
+        <summary class="faq-question">C'est vraiment sur-mesure ou un produit générique ?</summary>
+        <div class="faq-answer">Chaque application est construite pour votre métier et vos process réels — pas un template. BatiPilot en est l'exemple : conçu spécifiquement pour les entreprises du bâtiment.</div>
+      </details>
+      <details class="faq-item scroll-anim d3">
+        <summary class="faq-question">Et si mes besoins évoluent ?</summary>
+        <div class="faq-answer">L'application évolue avec vous. Vous pouvez changer de formule à tout moment, et les besoins spécifiques supplémentaires se traitent au fil de l'eau.</div>
+      </details>
+      <details class="faq-item scroll-anim d4">
+        <summary class="faq-question">Qui a accès à mes données ?</summary>
+        <div class="faq-answer">Vous seul, et les personnes que vous autorisez. Vos données sont hébergées en Europe, sécurisées, et ne sont jamais partagées.</div>
+      </details>
+      <details class="faq-item scroll-anim d1">
+        <summary class="faq-question">La mise en place, c'est quoi exactement ?</summary>
+        <div class="faq-answer">C'est le travail de conception et développement initial : cadrage de vos besoins, construction des modules, import de vos données existantes, formation de votre équipe.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CTA FINAL ===================== -->
+<section class="cta-section">
+  <div class="container">
+    <div class="eyebrow" style="justify-content:center;">Prêt à centraliser ?</div>
+    <h2>Votre temps <span class="serif accent-orange">vaut cher.</span><br>Arrêtez de le perdre.</h2>
+    <a href="contact.html" class="btn-primary" style="font-size:17px;padding:18px 40px;">Discuter de mon projet &rarr;</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="navbar-logo" style="margin-bottom:16px;">
+          <span class="arrow-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#c1531e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+          POTENTIEEL
+        </div>
+        <p style="font-size:14px;color:var(--gray);line-height:1.7;margin-bottom:20px;max-width:300px;">Sites web et applications de gestion sur-mesure pour les indépendants et petites entreprises, partout en France.</p>
+        <div class="footer-contact">
+          <a href="mailto:potentieel.web@gmail.com">potentieel.web@gmail.com</a>
+          <a href="https://wa.me/33769387613">WhatsApp · 07 69 38 76 13</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Le site</h4>
+        <ul><li><a href="offre.html">Sites internet</a></li><li><a href="application.html">Applications sur mesure</a></li><li><a href="agence.html">L'agence</a></li><li><a href="avis.html">Avis clients</a></li><li><a href="blog.html">Blog</a></li><li><a href="contact.html">Contact</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h4>Agence</h4>
+        <ul><li><a href="contact.html">Contact</a></li><li><a href="auth.html">Espace client</a></li><li><a href="legal/mentions.html">Mentions légales</a></li><li><a href="legal/cgv.html">CGV</a></li><li><a href="legal/confidentialite.html">Confidentialité</a></li><li><a href="legal/cookies.html">Cookies</a></li></ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Potentieel — Votre accélérateur de visibilité.</p>
+      <p style="font-weight:600;letter-spacing:0.05em;">POTENTIEEL.FR</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+function showAppProfile(name, btn) {
+  document.querySelectorAll('.app-profile-panel').forEach(function(p) {
+    p.classList.toggle('active', p.dataset.profile === name);
+  });
+  document.querySelectorAll('.profile-tab').forEach(function(t) {
+    t.classList.remove('active');
+  });
+  btn.classList.add('active');
+}
+</script>
+<script src="scripts.js"></script>
+</body>
+</html>

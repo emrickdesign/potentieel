@@ -6,15 +6,24 @@ document.addEventListener('DOMContentLoaded', () => {
   initBlobBackgrounds();
   initSparkles();
   initTicker();
+  initTrustMarquee();
   initTiltCards();
   initWordReveal();
   initScrollAnimations();
   initCounters();
 });
 
+/* ---- Trust marquee (hero-modern) — clones chips for a seamless loop ---- */
+function initTrustMarquee() {
+  const track = document.getElementById('trustTrack');
+  if (!track) return;
+  const original = Array.from(track.children);
+  original.forEach(chip => track.appendChild(chip.cloneNode(true)));
+}
+
 /* ---- Animated blob backgrounds (hero + page headers) ---- */
 function initBlobBackgrounds() {
-  document.querySelectorAll('.hero, .page-header').forEach(section => {
+  document.querySelectorAll('.hero, .hero-modern, .page-header').forEach(section => {
     if (section.querySelector('.blob-bg')) return;
     const wrap = document.createElement('div');
     wrap.className = 'blob-bg';
