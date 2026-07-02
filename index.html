@@ -179,51 +179,291 @@
   <div class="container">
     <div class="eyebrow scroll-anim" style="justify-content:center;">Nos offres</div>
     <h2 class="scroll-anim d1" style="font-size:clamp(34px,4.5vw,52px);font-weight:800;letter-spacing:-0.02em;margin-bottom:12px;text-align:center;">
-      Des tarifs <span class="serif accent-orange">transparents,</span><br>zéro mauvaise surprise.
+      Un site. Une application. <span class="serif accent-orange">À vous de choisir.</span>
     </h2>
-    <p class="scroll-anim d2" style="color:var(--gray-light);font-size:17px;max-width:540px;margin:0 auto 52px;line-height:1.65;text-align:center;">
-      Site vitrine ou marchand — tout est inclus. Pas de frais cachés, pas de jargon technique.
+    <p class="scroll-anim d2" style="color:var(--gray-light);font-size:17px;max-width:540px;margin:0 auto 40px;line-height:1.65;text-align:center;">
+      Sélectionnez ce qu'il vous faut, on vous montre tout, en clair.
     </p>
-    <div class="pricing-grid">
-      <div class="pricing-card featured tilt-card scroll-anim d1">
-        <div class="pricing-eyebrow">LE CŒUR DU SYSTÈME</div>
-        <div class="pricing-subtitle">Votre site web</div>
-        <h3>Site Vitrine <span style="color:var(--gray);font-weight:400;">ou</span> Marchand</h3>
-        <p class="pricing-tagline">Création unique, tout inclus</p>
-        <div class="pricing-price"><sup>€</sup>990<span style="font-size:16px;color:var(--gray);font-weight:400;"> ou paiement en 4x sans frais</span></div>
-        <ul class="pricing-list">
-          <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Site vitrine ou boutique en ligne sur-mesure</li>
-          <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Design adapté aux smartphones</li>
-          <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Formulaire de contact &amp; Google Maps</li>
-          <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Bouton WhatsApp d'urgence intégré</li>
-          <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Formulaire de devis structuré</li>
-          <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Certificat de sécurité SSL inclus</li>
-          <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Référencement local (SEO) de base</li>
-        </ul>
-        <a href="https://calendly.com/potentieel-web/15min" target="_blank" class="btn-primary" style="width:100%;justify-content:center;">Prendre rendez-vous</a>
+
+    <div class="type-tabs scroll-anim d2">
+      <button type="button" class="type-tab active" data-type="site" onclick="showOfferType('site', this)">
+        <span class="type-tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
+        <span><span class="type-tab-title">Un site internet</span><span class="type-tab-sub">Vitrine, marchand ou sur-mesure + CRM</span></span>
+      </button>
+      <button type="button" class="type-tab" data-type="app" onclick="showOfferType('app', this)">
+        <span class="type-tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></span>
+        <span><span class="type-tab-title">Une application sur mesure</span><span class="type-tab-sub">Gestion d'entreprise, façon BatiPilot</span></span>
+      </button>
+    </div>
+
+    <!-- SITE -->
+    <div class="offer-type-panel active" data-type="site">
+      <div class="pricing-grid scroll-anim d2">
+        <div class="pricing-card">
+          <div class="pricing-eyebrow">L'ESSENTIEL, EN PREMIUM</div>
+          <div class="pricing-subtitle">Votre site vitrine ou marchand</div>
+          <h3>Site Vitrine Premium</h3>
+          <p class="pricing-tagline">Design soigné, tout inclus</p>
+          <div class="pricing-price"><sup>€</sup>990<span style="font-size:16px;color:var(--gray);font-weight:400;"> paiement unique</span></div>
+          <ul class="pricing-list">
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Site sur-mesure : vitrine <em>ou</em> marchand (e-commerce)</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Design premium adapté à votre activité</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Responsive smartphones &amp; tablettes</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Formulaire de contact &amp; Google Maps</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Bouton WhatsApp d'urgence intégré</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>SSL, SEO local, certificat de sécurité</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Livraison en 5 à 14 jours</li>
+          </ul>
+          <a href="https://calendly.com/potentieel-web/15min" target="_blank" class="btn-primary" style="width:100%;justify-content:center;">Prendre rendez-vous</a>
+        </div>
+        <div class="pricing-card featured recommended">
+          <div class="app-badge-reco"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.8 1.4 6.8L12 17.4 5.9 20.7l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>Le plus complet</div>
+          <div class="pricing-eyebrow">SUR-MESURE HAUT DE GAMME</div>
+          <div class="pricing-subtitle">Votre site + votre CRM</div>
+          <h3>Site Premium + CRM</h3>
+          <p class="pricing-tagline">Design signature, animations avancées</p>
+          <div class="pricing-price"><sup>€</sup>3 900<span style="font-size:16px;color:var(--gray);font-weight:400;"> paiement unique</span></div>
+          <ul class="pricing-list">
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Tout Site Vitrine Premium</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Pages illimitées + pages SEO villes alentours</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>CRM intégré : toutes vos demandes de devis centralisées</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Réservation en ligne intégrée (comme un logiciel de prise de RDV)</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Paiement en ligne</li>
+            <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Tableau de bord : réservations, demandes, activité</li>
+          </ul>
+          <a href="https://calendly.com/potentieel-web/15min" target="_blank" class="btn-primary" style="width:100%;justify-content:center;">Prendre rendez-vous</a>
+        </div>
       </div>
-      <div class="pricing-card tilt-card scroll-anim d2">
-        <div class="pricing-eyebrow" style="color:var(--gray);">Gestion &amp; hébergement</div>
-        <div class="pricing-subtitle">Maintenance mensuelle</div>
-        <h3>Gestion <span class="serif accent-lime">Mensuelle</span></h3>
-        <p class="pricing-tagline">Zéro stress technique garanti</p>
-        <div class="pricing-price">49<sup>€</sup><sub>/mois</sub></div>
-        <ul class="pricing-list">
-          <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Hébergement haute performance</li>
-          <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Votre nom de domaine (.fr / .com)</li>
-          <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Sauvegardes automatiques hebdomadaires</li>
-          <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Modifications courantes incluses (1h/mois)</li>
-          <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Réactivité garantie : intervention sous 48h</li>
-          <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Sans engagement, résiliable à tout moment</li>
-        </ul>
-        <a href="offre.html" class="btn-secondary" style="width:100%;justify-content:center;">En savoir plus</a>
+      <p class="scroll-anim" style="text-align:center;color:var(--gray);font-size:13px;margin-top:4px;">+ maintenance &amp; hébergement 49€/mois, sans engagement — <a href="offre.html" style="color:var(--orange);">détails</a></p>
+    </div>
+
+    <!-- APPLICATION -->
+    <div class="offer-type-panel" data-type="app">
+      <div class="profile-tabs scroll-anim d2">
+        <button type="button" class="profile-tab active" data-profile="micro" onclick="showAppProfile('micro', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+          Micro-entreprise
+        </button>
+        <button type="button" class="profile-tab" data-profile="team" onclick="showAppProfile('team', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.5" cy="8.5" r="3.2"/><path d="M2.2 20c0-3.6 2.9-5.8 6.3-5.8s6.3 2.2 6.3 5.8"/><circle cx="17.5" cy="9.5" r="2.6"/><path d="M15.3 14.6c2.7.3 4.9 2.2 4.9 5.4"/></svg>
+          2 à 10 salariés
+        </button>
+        <button type="button" class="profile-tab" data-profile="growth" onclick="showAppProfile('growth', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="1"/><line x1="9" y1="22" x2="9" y2="18"/><line x1="15" y1="22" x2="15" y2="18"/><line x1="8" y1="7" x2="10" y2="7"/><line x1="14" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="10" y2="11"/><line x1="14" y1="11" x2="16" y2="11"/></svg>
+          10 à 30 salariés
+        </button>
+        <button type="button" class="profile-tab" data-profile="custom" onclick="showAppProfile('custom', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+          Sur mesure
+        </button>
+      </div>
+      <p class="profile-note scroll-anim d2">Estimations basées sur 45€ par heure économisée (salaire, charges, gestion, outils, temps administratif).</p>
+
+      <!-- MICRO-ENTREPRISE -->
+      <div class="app-profile-panel active" data-profile="micro">
+        <div class="pricing-grid-3">
+          <div class="pricing-card">
+            <h3>Solo Essentiel</h3>
+            <p class="pricing-tagline">Pour démarrer simplement</p>
+            <div class="pricing-price">99<sup>€</sup><sub>/mois</sub></div>
+            <div class="app-setup-fee"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>Mise en place : 490€</div>
+            <div class="pricing-gain">
+              <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>&asymp; <strong>8&nbsp;h</strong> économisées / mois</div>
+              <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 15.5c.5 1 1.5 1.5 2.7 1.5 1.8 0 3-1 3-2.3 0-1.6-1.5-2-3-2.4-1.7-.4-3-.9-3-2.5 0-1.3 1.2-2.3 3-2.3 1.2 0 2.2.5 2.7 1.5"/></svg>&asymp; <strong>360&nbsp;€</strong> gagnés / mois</div>
+            </div>
+            <ul class="pricing-list">
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Suivi des clients</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Devis en 1 clic grâce à l'IA</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Factures en 1 clic</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Suivi de chantier</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Tableau de bord simple</li>
+            </ul>
+            <a href="contact.html" class="btn-secondary" style="width:100%;justify-content:center;">Choisir cette offre</a>
+          </div>
+          <div class="pricing-card featured recommended">
+            <div class="app-badge-reco"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.8 1.4 6.8L12 17.4 5.9 20.7l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>Recommandé</div>
+            <h3>Solo Pro IA</h3>
+            <p class="pricing-tagline">L'offre la plus complète</p>
+            <div class="pricing-price">199<sup>€</sup><sub>/mois</sub></div>
+            <div class="app-setup-fee"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>Mise en place : 990€</div>
+            <div class="pricing-gain">
+              <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>&asymp; <strong>18&nbsp;h</strong> économisées / mois</div>
+              <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 15.5c.5 1 1.5 1.5 2.7 1.5 1.8 0 3-1 3-2.3 0-1.6-1.5-2-3-2.4-1.7-.4-3-.9-3-2.5 0-1.3 1.2-2.3 3-2.3 1.2 0 2.2.5 2.7 1.5"/></svg>&asymp; <strong>810&nbsp;€</strong> gagnés / mois</div>
+            </div>
+            <ul class="pricing-list">
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Tout Solo Essentiel</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Analyse de plan par IA</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Scan de tickets de dépense</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Export comptable en 1 clic</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Réponses aux emails par IA</li>
+            </ul>
+            <a href="contact.html" class="btn-primary" style="width:100%;justify-content:center;">Choisir cette offre</a>
+          </div>
+          <div class="pricing-card">
+            <h3>Solo Premium</h3>
+            <p class="pricing-tagline">Pour aller plus loin</p>
+            <div class="pricing-price">349<sup>€</sup><sub>/mois</sub></div>
+            <div class="app-setup-fee"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>Mise en place : 1 990€</div>
+            <div class="pricing-gain">
+              <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>&asymp; <strong>28&nbsp;h</strong> économisées / mois</div>
+              <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 15.5c.5 1 1.5 1.5 2.7 1.5 1.8 0 3-1 3-2.3 0-1.6-1.5-2-3-2.4-1.7-.4-3-.9-3-2.5 0-1.3 1.2-2.3 3-2.3 1.2 0 2.2.5 2.7 1.5"/></svg>&asymp; <strong>1 260&nbsp;€</strong> gagnés / mois</div>
+            </div>
+            <ul class="pricing-list">
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Tout Solo Pro IA</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Relances automatiques clients</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Reporting d'activité</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Automatisations simples</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Support prioritaire</li>
+            </ul>
+            <a href="contact.html" class="btn-secondary" style="width:100%;justify-content:center;">Choisir cette offre</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2 A 10 SALARIES -->
+      <div class="app-profile-panel" data-profile="team">
+        <div class="pricing-grid-3">
+          <div class="pricing-card">
+            <h3>Équipe Start</h3>
+            <p class="pricing-tagline">Pour structurer l'entreprise</p>
+            <div class="pricing-price">499<sup>€</sup><sub>/mois</sub></div>
+            <div class="app-setup-fee"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>Mise en place : 3 900€</div>
+            <div class="pricing-gain">
+              <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>&asymp; <strong>35&nbsp;h</strong> économisées / mois</div>
+              <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 15.5c.5 1 1.5 1.5 2.7 1.5 1.8 0 3-1 3-2.3 0-1.6-1.5-2-3-2.4-1.7-.4-3-.9-3-2.5 0-1.3 1.2-2.3 3-2.3 1.2 0 2.2.5 2.7 1.5"/></svg>&asymp; <strong>1 575&nbsp;€</strong> gagnés / mois</div>
+            </div>
+            <ul class="pricing-list">
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Suivi clients &amp; prospects</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Devis en 1 clic grâce à l'IA</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Suivi de chantier &amp; planning</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Relances clients automatiques</li>
+            </ul>
+            <a href="contact.html" class="btn-secondary" style="width:100%;justify-content:center;">Choisir Équipe Start</a>
+          </div>
+          <div class="pricing-card featured recommended">
+            <div class="app-badge-reco"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.8 1.4 6.8L12 17.4 5.9 20.7l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>Recommandé</div>
+            <h3>Équipe Pro</h3>
+            <p class="pricing-tagline">Le cockpit bureau + terrain</p>
+            <div class="pricing-price">699<sup>€</sup><sub>/mois</sub></div>
+            <div class="app-setup-fee"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>Mise en place : 6 900€</div>
+            <div class="pricing-gain">
+              <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>&asymp; <strong>55&nbsp;h</strong> économisées / mois</div>
+              <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 15.5c.5 1 1.5 1.5 2.7 1.5 1.8 0 3-1 3-2.3 0-1.6-1.5-2-3-2.4-1.7-.4-3-.9-3-2.5 0-1.3 1.2-2.3 3-2.3 1.2 0 2.2.5 2.7 1.5"/></svg>&asymp; <strong>2 475&nbsp;€</strong> gagnés / mois</div>
+            </div>
+            <ul class="pricing-list">
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Tout Équipe Start</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Analyse de plan par IA</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Pointage photo des salariés</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Suivi horaire &amp; espace discussion</li>
+            </ul>
+            <a href="contact.html" class="btn-primary" style="width:100%;justify-content:center;">Choisir Équipe Pro</a>
+          </div>
+          <div class="pricing-card">
+            <h3>Équipe Pilotage</h3>
+            <p class="pricing-tagline">Piloter &amp; automatiser davantage</p>
+            <div class="pricing-price">990<sup>€</sup><sub>/mois</sub></div>
+            <div class="app-setup-fee"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>Mise en place : 9 900€</div>
+            <div class="pricing-gain">
+              <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>&asymp; <strong>75&nbsp;h</strong> économisées / mois</div>
+              <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 15.5c.5 1 1.5 1.5 2.7 1.5 1.8 0 3-1 3-2.3 0-1.6-1.5-2-3-2.4-1.7-.4-3-.9-3-2.5 0-1.3 1.2-2.3 3-2.3 1.2 0 2.2.5 2.7 1.5"/></svg>&asymp; <strong>3 375&nbsp;€</strong> gagnés / mois</div>
+            </div>
+            <ul class="pricing-list">
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Tout Équipe Pro</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Reporting avancé</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Suivi de rentabilité chantier</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Support prioritaire</li>
+            </ul>
+            <a href="contact.html" class="btn-secondary" style="width:100%;justify-content:center;">Choisir Équipe Pilotage</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10 A 30 SALARIES -->
+      <div class="app-profile-panel" data-profile="growth">
+        <div class="pricing-grid-3">
+          <div class="pricing-card">
+            <h3>Structure</h3>
+            <p class="pricing-tagline">Centraliser une entreprise structurée</p>
+            <div class="pricing-price">990<sup>€</sup><sub>/mois</sub></div>
+            <div class="app-setup-fee"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>Mise en place : 9 900€</div>
+            <div class="pricing-gain">
+              <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>&asymp; <strong>80&nbsp;h</strong> économisées / mois</div>
+              <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 15.5c.5 1 1.5 1.5 2.7 1.5 1.8 0 3-1 3-2.3 0-1.6-1.5-2-3-2.4-1.7-.4-3-.9-3-2.5 0-1.3 1.2-2.3 3-2.3 1.2 0 2.2.5 2.7 1.5"/></svg>&asymp; <strong>3 600&nbsp;€</strong> gagnés / mois</div>
+            </div>
+            <ul class="pricing-list">
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Suivi clients &amp; prospects</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Devis en 1 clic grâce à l'IA</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Planning multi-chantiers</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Suivi horaire salariés</li>
+            </ul>
+            <a href="contact.html" class="btn-secondary" style="width:100%;justify-content:center;">Choisir Structure</a>
+          </div>
+          <div class="pricing-card featured recommended">
+            <div class="app-badge-reco"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.8 1.4 6.8L12 17.4 5.9 20.7l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>Recommandé</div>
+            <h3>Croissance</h3>
+            <p class="pricing-tagline">Piloter la croissance avec l'IA</p>
+            <div class="pricing-price">1 490<sup>€</sup><sub>/mois</sub></div>
+            <div class="app-setup-fee"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>Mise en place : 14 900€</div>
+            <div class="pricing-gain">
+              <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>&asymp; <strong>120&nbsp;h</strong> économisées / mois</div>
+              <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 15.5c.5 1 1.5 1.5 2.7 1.5 1.8 0 3-1 3-2.3 0-1.6-1.5-2-3-2.4-1.7-.4-3-.9-3-2.5 0-1.3 1.2-2.3 3-2.3 1.2 0 2.2.5 2.7 1.5"/></svg>&asymp; <strong>5 400&nbsp;€</strong> gagnés / mois</div>
+            </div>
+            <ul class="pricing-list">
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Tout Structure</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Analyse de plan par IA</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Pointage photo des salariés</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Reporting d'activité</li>
+            </ul>
+            <a href="contact.html" class="btn-primary" style="width:100%;justify-content:center;">Choisir Croissance</a>
+          </div>
+          <div class="pricing-card">
+            <h3>Performance</h3>
+            <p class="pricing-tagline">Pilotage global &amp; rentabilité</p>
+            <div class="pricing-price">2 490<sup>€</sup><sub>/mois</sub></div>
+            <div class="app-setup-fee"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>Mise en place : 24 900€</div>
+            <div class="pricing-gain">
+              <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>&asymp; <strong>180&nbsp;h</strong> économisées / mois</div>
+              <div class="pricing-gain-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 15.5c.5 1 1.5 1.5 2.7 1.5 1.8 0 3-1 3-2.3 0-1.6-1.5-2-3-2.4-1.7-.4-3-.9-3-2.5 0-1.3 1.2-2.3 3-2.3 1.2 0 2.2.5 2.7 1.5"/></svg>&asymp; <strong>8 100&nbsp;€</strong> gagnés / mois</div>
+            </div>
+            <ul class="pricing-list">
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Tout Croissance</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Reporting avancé multi-équipes</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Gestion des rôles et accès</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Support premium</li>
+            </ul>
+            <a href="contact.html" class="btn-secondary" style="width:100%;justify-content:center;">Choisir Performance</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUR MESURE -->
+      <div class="app-profile-panel" data-profile="custom">
+        <div style="max-width:480px;margin:0 auto;">
+          <div class="pricing-card featured recommended" style="text-align:center;">
+            <h3>Sur mesure</h3>
+            <p class="pricing-tagline">Besoins complexes, multi-sites ou fortement personnalisés</p>
+            <div class="pricing-price">À partir de <sup>€</sup>2 500<span style="font-size:16px;color:var(--gray);font-weight:400;"> /mois</span></div>
+            <div class="app-setup-fee" style="justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>Mise en place à partir de 25 000€</div>
+            <div class="pricing-gain">
+              <div class="pricing-gain-row" style="justify-content:center;">Heures économisées : selon audit</div>
+              <div class="pricing-gain-row" style="justify-content:center;">Gain estimé : selon organisation</div>
+            </div>
+            <ul class="pricing-list" style="text-align:left;">
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Audit des processus</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Architecture &amp; modules sur mesure</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Gestion multi-sites &amp; multi-rôles</li>
+              <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Accompagnement projet &amp; support dédié</li>
+            </ul>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <a href="contact.html" class="btn-primary" style="width:100%;justify-content:center;">Demander une étude personnalisée</a>
+              <a href="https://calendly.com/potentieel-web/15min" target="_blank" class="btn-secondary" style="width:100%;justify-content:center;">Planifier un rendez-vous</a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="scroll-anim" style="text-align:center;margin-top:32px;">
-      <a href="offre.html" class="btn-secondary">Voir aussi nos applications sur mesure &rarr;</a>
-    </div>
-    <p class="pricing-note">Tous nos prix sont en euros HT. Sans engagement de durée. Maintenance résiliable à tout moment avec préavis de 30 jours.</p>
+    <p class="pricing-note">Tous nos prix sont en euros HT. Sans engagement de durée. Détails complets sur <a href="offre.html" style="color:var(--orange);">la page Offre</a>.</p>
   </div>
 </section>
 
@@ -628,6 +868,26 @@
   </div>
 </footer>
 
+<script>
+function showOfferType(type, btn) {
+  document.querySelectorAll('.offer-type-panel').forEach(function(p) {
+    p.classList.toggle('active', p.dataset.type === type);
+  });
+  document.querySelectorAll('.type-tab').forEach(function(t) {
+    t.classList.remove('active');
+  });
+  btn.classList.add('active');
+}
+function showAppProfile(name, btn) {
+  document.querySelectorAll('.app-profile-panel').forEach(function(p) {
+    p.classList.toggle('active', p.dataset.profile === name);
+  });
+  document.querySelectorAll('.profile-tab').forEach(function(t) {
+    t.classList.remove('active');
+  });
+  btn.classList.add('active');
+}
+</script>
 <script src="scripts.js"></script>
 </body>
 </html>
