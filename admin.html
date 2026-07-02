@@ -1180,6 +1180,7 @@
                     <option value="4x">4× — 247,50 €/mois</option>
                   </select>
                   <div id="cl-siteplan-tracker" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"></div>
+                  <div id="cl-siteplan-date-row" style="display:none;width:100%;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)"></div>
                 </div>
               </div>
 
@@ -6368,8 +6369,13 @@ function clRenderSitePlan(c) {
     Array.from(sel.options).forEach(o => { if (optTexts[o.value]) o.textContent = optTexts[o.value]; });
   }
   const el = document.getElementById('cl-siteplan-tracker');
+  const dateRowEl = document.getElementById('cl-siteplan-date-row');
   if (!el) return;
-  if (!c.sitePlan) { el.innerHTML = '<span style="font-size:12px;color:var(--muted)">Choisis un plan pour activer le suivi des versements.</span>'; return; }
+  if (!c.sitePlan) {
+    el.innerHTML = '<span style="font-size:12px;color:var(--muted)">Choisis un plan pour activer le suivi des versements.</span>';
+    if (dateRowEl) { dateRowEl.innerHTML = ''; dateRowEl.style.display = 'none'; }
+    return;
+  }
   const n = parseInt(c.sitePlan);
   const unit = clSitePlanUnit(c, c.sitePlan);
   if (!c.siteVersements || c.siteVersements.length !== n) c.siteVersements = new Array(n).fill(false);
@@ -6378,6 +6384,24 @@ function clRenderSitePlan(c) {
     c.siteVersements.map((paid,i)=>`
       <div onclick="clToggleVersement(${i})" title="Versement ${i+1}/${n} — ${fmt(unit)} €${paid?' · reçu':' · à encaisser'}" style="width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;font-weight:700;border:1.5px solid ${paid?'var(--accent)':'var(--border)'};background:${paid?'var(--accent)':'transparent'};color:${paid?'#fff':'var(--muted)'};transition:all .15s;flex-shrink:0">${paid?'✓':(i+1)}</div>`).join('') +
     `<span style="font-size:12px;color:var(--muted);margin-left:6px;white-space:nowrap">${nbPaid}/${n} reçu${nbPaid>1?'s':''} · <strong style="color:var(--text)">${fmt(nbPaid*unit)} €</strong> / ${fmt(n*unit)} €</span>`;
+  if (dateRowEl) {
+    const existingDateInput = document.getElementById('cl-sitedate-input');
+    if (!(existingDateInput && document.activeElement === existingDateInput)) {
+      const firstDate = c.siteFirstPayDate || '';
+      let nextHtml = '';
+      if (firstDate) {
+        if (nbPaid >= n) {
+          nextHtml = `<span style="font-size:12px;color:var(--accent);font-weight:600;white-space:nowrap">✅ Tous les versements reçus</span>`;
+        } else {
+          const next = new Date(firstDate);
+          next.setMonth(next.getMonth() + nbPaid);
+          nextHtml = `<span style="font-size:12px;color:var(--accent);font-weight:600;white-space:nowrap">→ Prochain paiement prévu le ${next.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})}</span>`;
+        }
+      }
+      dateRowEl.style.display = 'flex';
+      dateRowEl.innerHTML = `<span style="font-size:12px;color:var(--muted);white-space:nowrap">📅 1er paiement :</span><input type="date" id="cl-sitedate-input" value="${firstDate}" onchange="clSetSiteFirstPayDate(this.value)" style="background:#1a1a22;border:1px solid var(--border);border-radius:8px;padding:5px 8px;color:#fff;font-size:12px;outline:none;cursor:pointer">${nextHtml ? ' ' + nextHtml : ''}`;
+    }
+  }
 }
 function clSetSitePlan(val) {
   const c = clData.find(x=>x.id===clCurrentId); if (!c) return;
@@ -6391,6 +6415,11 @@ function clSetSitePrix(val) {
   const n = parseFloat(String(val).replace(',', '.'));
   c.sitePrix = (!isNaN(n) && n > 0) ? n : null;
   clSave(); clRenderSitePlan(c); clRenderGrid();
+}
+function clSetSiteFirstPayDate(val) {
+  const c = clData.find(x=>x.id===clCurrentId); if (!c) return;
+  c.siteFirstPayDate = val || null;
+  clSave(); clRenderSitePlan(c);
 }
 function clToggleVersement(i) {
   const c = clData.find(x=>x.id===clCurrentId); if (!c) return;
