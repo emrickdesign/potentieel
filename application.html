@@ -95,7 +95,7 @@
 </nav>
 
 <!-- ===================== HERO MODERNE ===================== -->
-<section class="hero-modern" id="main-content">
+<section class="hero-modern hero-modern--app" id="main-content">
   <div class="container">
     <div class="hero-modern-grid">
       <div class="hero-modern-text">
@@ -201,20 +201,15 @@
   <div class="container">
     <div class="eyebrow scroll-anim" style="justify-content:center;">Centralisation</div>
     <h2 class="scroll-anim d1" style="font-size:clamp(28px,3.6vw,44px);font-weight:800;letter-spacing:-0.02em;line-height:1.15;margin-bottom:14px;text-align:center;">
-      Tous les outils que vous jonglez chaque jour ?<br><span class="serif accent-orange">Une seule application les remplace.</span>
+      Tous vos outils. En un clic.<br><span class="serif accent-orange">Une seule application les remplace.</span>
     </h2>
     <p class="scroll-anim d2" style="text-align:center;color:var(--gray-light);font-size:15px;max-width:560px;margin:0 auto;line-height:1.65;">
       Chaque outil séparé, c'est un abonnement de plus, du temps perdu et des infos qui s'égarent entre les écrans.
     </p>
-    <div class="flip-hint scroll-anim d2">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11.5V5a1.5 1.5 0 0 1 3 0v5"/><path d="M12 10V4.5a1.5 1.5 0 0 1 3 0V10"/><path d="M15 10.5a1.5 1.5 0 0 1 3 0V14a7 7 0 0 1-7 7h-1c-2.8 0-4.5-1.2-5.8-3.2l-2.7-4.4a1.5 1.5 0 0 1 2.5-1.6L6 14V7a1.5 1.5 0 0 1 3 0"/></svg>
-      Retournez les cartes pour voir ce que chaque outil devient
-    </div>
 
     <div class="tools-cat-wrap">
       <div class="tools-category scroll-anim d1">
         <div class="tools-cat-head">
-          <span class="tools-cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5c-1.4 0-2.7-.3-3.9-.9L3 21l1.9-5.6a8.5 8.5 0 1 1 16.1-3.9Z"/></svg></span>
           <span>Communication &amp; email</span>
         </div>
         <div class="tools-flip-grid tools-flip-grid--sub">
@@ -307,7 +302,6 @@
 
       <div class="tools-category scroll-anim d2">
         <div class="tools-cat-head">
-          <span class="tools-cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6a2 2 0 0 1 2-2h3.5l2 2H18a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6Z"/></svg></span>
           <span>Documents &amp; stockage</span>
         </div>
         <div class="tools-flip-grid tools-flip-grid--sub">
@@ -400,7 +394,6 @@
 
       <div class="tools-category scroll-anim d3">
         <div class="tools-cat-head">
-          <span class="tools-cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="16" rx="2"/><path d="M3.5 9.5h17M8 2.5v4M16 2.5v4"/><path d="m8.5 14.5 2 2 4.5-4.5"/></svg></span>
           <span>Clients &amp; rendez-vous</span>
         </div>
         <div class="tools-flip-grid tools-flip-grid--sub">
@@ -493,7 +486,6 @@
 
       <div class="tools-category scroll-anim d4">
         <div class="tools-cat-head">
-          <span class="tools-cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12Z"/><circle cx="12" cy="9" r="2.4"/></svg></span>
           <span>Organisation &amp; terrain</span>
         </div>
         <div class="tools-flip-grid tools-flip-grid--sub">
@@ -596,10 +588,7 @@
     </div>
 
     <div class="tools-hub">
-      <div class="tools-hub-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-      </div>
-      <div class="tools-hub-title">Votre application</div>
+      <div class="tools-hub-title">Votre application sur mesure</div>
       <div class="tools-hub-sub">Tous ces outils remplacés. Zéro abonnement qui traîne, zéro ressaisie.</div>
     </div>
 
@@ -610,7 +599,7 @@
 </section>
 
 <!-- ===================== STATS ===================== -->
-<div class="stats-bar" style="padding:52px 0;">
+<div class="stats-bar" id="appStatsBar" style="padding:52px 0;">
   <div class="container">
     <div class="stats-bar-grid">
       <div class="stat-item"><span class="num" data-count="12" data-suffix="+">0+</span><span class="desc">Entreprises équipées</span></div>
@@ -629,18 +618,15 @@
       Chaque outil séparé <span class="serif accent-orange">vous coûte du temps.</span><br>Et le temps, c'est de l'argent.
     </h2>
     <div class="advantages-grid scroll-anim d2">
-      <div class="adv-card tilt-card">
-        <div class="icon-svg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg></div>
+      <div class="adv-card adv-card--orange tilt-card">
         <h4>Zéro ressaisie</h4>
         <p>Vos données passent d'un écran à l'autre toutes seules. Fini les heures perdues à copier-coller entre Excel, WhatsApp et vos mails.</p>
       </div>
-      <div class="adv-card tilt-card">
-        <div class="icon-svg lime"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
+      <div class="adv-card adv-card--lime tilt-card">
         <h4>Une vision claire</h4>
         <p>Chantiers, devis, facturation, équipes : tout au même endroit, en temps réel. Vous savez exactement où vous en êtes.</p>
       </div>
-      <div class="adv-card tilt-card">
-        <div class="icon-svg" style="background:rgba(139,92,246,0.1);color:#8b5cf6;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+      <div class="adv-card adv-card--purple tilt-card">
         <h4>Un coût maîtrisé</h4>
         <p>≈45€ de valeur par heure économisée (salaire, charges, gestion). Chaque automatisation se rembourse vite.</p>
       </div>
@@ -656,52 +642,49 @@
       <span class="serif accent-orange">4 étapes.</span> Votre application tourne.
     </h2>
     <p class="scroll-anim d2" style="text-align:center;color:var(--gray-light);font-size:16px;max-width:520px;margin:0 auto 64px;line-height:1.7;">Vous n'apprenez pas un logiciel : on construit le vôtre autour de vos habitudes.</p>
-    <div class="process-timeline">
+    <div class="process-timeline" id="processTimeline">
 
-      <svg class="process-wave-svg" viewBox="0 0 1000 130" preserveAspectRatio="none" aria-hidden="true">
+      <svg class="process-wave-svg" viewBox="0 0 1000 56" preserveAspectRatio="none" aria-hidden="true">
         <defs>
           <linearGradient id="waveGradApp" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stop-color="#f4926a"/>
             <stop offset="100%" stop-color="#c8f542"/>
           </linearGradient>
         </defs>
-        <path d="M 125,106 C 188,84 295,128 375,106 C 452,86 548,126 625,106 C 705,88 810,124 875,106"
+        <path d="M 125,28 C 188,14 295,42 375,28 C 452,16 548,40 625,28 C 705,18 810,38 875,28"
               fill="none" stroke="url(#waveGradApp)" stroke-width="2" stroke-linecap="round"/>
       </svg>
+      <div class="process-drag-dot" id="processDragDot" aria-hidden="true"></div>
 
-      <div class="process-step-new scroll-anim d1">
+      <button type="button" class="process-step-new active scroll-anim d1" style="--step-accent:var(--orange);" data-step="1" onclick="setProcessStep(1, this)">
         <div class="process-badge">01</div>
-        <div class="process-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-        </div>
         <h4>Échange découverte<br><span class="serif accent-orange">30 minutes</span></h4>
-        <p>On analyse vos process, vos outils actuels et où partent vos heures. Gratuit, sans engagement.</p>
-      </div>
-      <div class="process-step-new scroll-anim d2">
-        <div class="process-badge" style="border-color:color-mix(in srgb, var(--orange) 60%, var(--lime) 40%);">02</div>
-        <div class="process-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-        </div>
+      </button>
+      <button type="button" class="process-step-new scroll-anim d2" style="--step-accent:color-mix(in srgb, var(--orange) 60%, var(--lime) 40%);" data-step="2" onclick="setProcessStep(2, this)">
+        <div class="process-badge">02</div>
         <h4>Conception<br><span class="serif accent-orange">sur-mesure</span></h4>
-        <p>On maquette votre application autour de vos habitudes. Vous validez avant tout développement.</p>
-      </div>
-      <div class="process-step-new scroll-anim d3">
-        <div class="process-badge" style="border-color:color-mix(in srgb, var(--orange) 30%, var(--lime) 70%);">03</div>
-        <div class="process-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-        </div>
+      </button>
+      <button type="button" class="process-step-new scroll-anim d3" style="--step-accent:color-mix(in srgb, var(--orange) 30%, var(--lime) 70%);" data-step="3" onclick="setProcessStep(3, this)">
+        <div class="process-badge">03</div>
         <h4>Mise en place<br><span class="serif accent-lime">&amp; import</span></h4>
-        <p>On construit, on importe vos données (clients, prix, documents) et on branche vos outils.</p>
-      </div>
-      <div class="process-step-new scroll-anim d4">
-        <div class="process-badge" style="border-color:var(--lime);">04</div>
-        <div class="process-icon" style="background:rgba(200,245,66,0.06);color:var(--lime);">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-        </div>
+      </button>
+      <button type="button" class="process-step-new scroll-anim d4" style="--step-accent:var(--lime);" data-step="4" onclick="setProcessStep(4, this)">
+        <div class="process-badge">04</div>
         <h4>Formation<br><span class="serif accent-lime">&amp; suivi</span></h4>
-        <p>Votre équipe est formée, on reste à vos côtés. L'application évolue avec votre activité.</p>
-      </div>
+      </button>
     </div>
+
+    <div class="process-detail scroll-anim" id="processDetail">
+      <p class="active" data-step="1">On analyse vos process, vos outils actuels et où partent vos heures. Gratuit, sans engagement.</p>
+      <p data-step="2">On maquette votre application autour de vos habitudes. Vous validez avant tout développement.</p>
+      <p data-step="3">On construit, on importe vos données (clients, prix, documents) et on branche vos outils.</p>
+      <p data-step="4">Votre équipe est formée, on reste à vos côtés. L'application évolue avec votre activité.</p>
+    </div>
+
+    <p class="process-hint">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><path d="M18 12h.01M6 12h.01"/><path d="m15 9 3 3-3 3M9 9l-3 3 3 3"/></svg>
+      Cliquez sur une étape, ou glissez le point le long de la ligne
+    </p>
   </div>
 </section>
 
@@ -712,7 +695,7 @@
       <div class="scroll-anim">
         <div class="eyebrow">La preuve par l'exemple</div>
         <h2 style="font-size:clamp(28px,3.6vw,44px);font-weight:800;letter-spacing:-0.02em;line-height:1.15;margin-bottom:18px;">
-          On ne vend pas une promesse.<br><span class="serif accent-orange">BatiPilot existe déjà.</span>
+          Votre application, pensée pour votre métier.<br><span class="serif accent-orange">Le temps gagné, c'est de l'argent gagné.</span>
         </h2>
         <p style="color:var(--gray-light);font-size:15.5px;line-height:1.7;">
           BatiPilot, c'est notre application de gestion pour les entreprises du bâtiment : devis IA, chantiers, équipes, facturation. Conçue, développée et maintenue par notre équipe, de A à Z. Votre application sur-mesure repose sur les mêmes fondations, déjà éprouvées.
@@ -760,31 +743,16 @@
   </div>
 </section>
 
-<!-- ===================== CTA BANNER ===================== -->
-<section style="padding:80px 0 20px;">
-  <div class="container">
-    <div class="cta-banner scroll-anim">
-      <div>
-        <h3>Chaque semaine qui passe, ce sont des heures qui s'évaporent.</h3>
-        <p>30 minutes suffisent pour chiffrer ce que la centralisation vous ferait gagner, sur vos vrais chiffres.</p>
-      </div>
-      <a href="https://calendly.com/potentieel-web/15min" target="_blank" class="btn-white">Réserver mon échange gratuit &rarr;</a>
-    </div>
-  </div>
-</section>
-
 <!-- ===================== CONFIGURATEUR ===================== -->
-<section id="offres" class="bg-grid-lines" style="padding:20px 0 100px;">
+<section id="offres" class="bg-grid-lines" style="padding:20px 0 70px;">
   <div class="container">
     <div class="eyebrow scroll-anim" style="justify-content:center;">Nos formules</div>
-    <h2 class="scroll-anim d1" style="font-size:clamp(34px,4.5vw,54px);font-weight:800;letter-spacing:-0.02em;line-height:1.1;margin-bottom:16px;text-align:center;">
-      Une application de gestion, <span class="serif accent-orange">pensée pour votre métier.</span>
+    <h2 class="scroll-anim d1 nowrap-until-tablet" style="font-size:clamp(24px,4vw,46px);font-weight:800;letter-spacing:-0.02em;line-height:1.1;margin-bottom:26px;text-align:center;">
+      Une application de gestion <span class="serif accent-orange">pensée pour votre métier.</span>
     </h2>
-    <p class="scroll-anim d2" style="text-align:center;color:var(--gray-light);font-size:16px;max-width:640px;margin:0 auto 40px;line-height:1.7;">
-      BatiPilot, notre application de gestion pour les entreprises du bâtiment, c'est nous qui l'avons conçue et développée de A à Z. On peut construire la même chose, sur-mesure, pour votre activité.
-    </p>
 
-    <div class="profile-tabs scroll-anim d2">
+    <div class="profile-tabs scroll-anim d2" id="profileTabs">
+      <div class="profile-pointer" id="profilePointer">Je suis<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
       <button type="button" class="profile-tab active" data-profile="micro" onclick="showAppProfile('micro', this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
         Micro-entreprise
@@ -802,7 +770,7 @@
         Sur mesure
       </button>
     </div>
-    <p class="profile-note scroll-anim d2">Estimations basées sur 45€ par heure économisée (salaire, charges, gestion, outils, temps administratif).</p>
+    <p class="profile-note scroll-anim d2" id="appProfileNote">Estimations basées sur 45€ par heure économisée (salaire, charges, gestion, outils, temps administratif).</p>
 
     <!-- MICRO-ENTREPRISE -->
     <div class="app-profile-panel active" data-profile="micro">
@@ -1051,10 +1019,10 @@
 <section class="bg-glow-soft" style="padding:80px 0 100px;">
   <div class="container" style="max-width:780px;">
     <div class="eyebrow scroll-anim" style="justify-content:center;">FAQ</div>
-    <h2 class="scroll-anim d1" style="font-size:clamp(34px,4.5vw,52px);font-weight:800;letter-spacing:-0.02em;margin-bottom:48px;text-align:center;">
+    <h2 class="scroll-anim d1 nowrap-until-tablet" style="font-size:clamp(26px,4.5vw,52px);font-weight:800;letter-spacing:-0.02em;margin-bottom:48px;text-align:center;">
       Les questions <span class="serif accent-orange">qu'on nous pose</span> souvent.
     </h2>
-    <div class="faq-list">
+    <div class="faq-list" id="faqList">
       <details class="faq-item scroll-anim d1">
         <summary class="faq-question">Combien de temps pour avoir mon application ?</summary>
         <div class="faq-answer">Selon la formule et la complexité, comptez de 2 à 6 semaines entre le cadrage et la mise en service. On avance par étapes courtes, avec des points réguliers.</div>
@@ -1075,6 +1043,19 @@
         <summary class="faq-question">La mise en place, c'est quoi exactement ?</summary>
         <div class="faq-answer">C'est le travail de conception et développement initial : cadrage de vos besoins, construction des modules, import de vos données existantes, formation de votre équipe.</div>
       </details>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CTA BANNER ===================== -->
+<section style="padding:40px 0 20px;">
+  <div class="container">
+    <div class="cta-banner scroll-anim">
+      <div>
+        <h3>Chaque semaine qui passe, ce sont des heures qui s'évaporent.</h3>
+        <p>30 minutes suffisent pour chiffrer ce que la centralisation vous ferait gagner, sur vos vrais chiffres.</p>
+      </div>
+      <a href="https://calendly.com/potentieel-web/15min" target="_blank" class="btn-white">Réserver mon échange gratuit &rarr;</a>
     </div>
   </div>
 </section>
@@ -1128,7 +1109,25 @@ function showAppProfile(name, btn) {
     t.classList.remove('active');
   });
   btn.classList.add('active');
+  moveProfilePointer(btn);
 }
+function moveProfilePointer(btn) {
+  var pointer = document.getElementById('profilePointer');
+  if (!pointer || !btn) return;
+  pointer.style.left = (btn.offsetLeft + btn.offsetWidth / 2) + 'px';
+}
+function setProcessStep(n, btn) {
+  document.querySelectorAll('.process-step-new').forEach(function(el) {
+    el.classList.toggle('active', el === btn);
+  });
+  document.querySelectorAll('.process-detail p').forEach(function(p) {
+    p.classList.toggle('active', Number(p.dataset.step) === n);
+  });
+  if (window.moveProcessDragDot) window.moveProcessDragDot(n - 1);
+}
+document.addEventListener('DOMContentLoaded', function() {
+  moveProfilePointer(document.querySelector('.profile-tab.active'));
+});
 </script>
 <script src="scripts.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
