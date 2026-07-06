@@ -1,8 +1,10 @@
 /* =============================================
    POTENTIEEL — application.html
-   Couche d'amélioration GSAP + ScrollTrigger + Lenis + Draggable.
+   Couche d'amélioration GSAP + ScrollTrigger + Draggable.
    Additive uniquement : ne modifie ni ne supprime les animations
    CSS existantes (badgeFloat, mockFloat, toolBob, ticker...).
+   Le scroll reste natif (pas de lissage type Lenis) : ScrollTrigger
+   écoute directement le scroll natif du navigateur.
    ============================================= */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -13,7 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduceMotion) return; // le HTML affiche déjà l'état final (aucune animation à sauter)
 
-  initLenisScroll();
   initHeroTitleSplit();
   initHeroParallax();
   initDraggableMarquee();
@@ -21,16 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initBpChartGrow();
   initToolCardStagger();
 });
-
-/* ---- Lenis smooth scroll, synchronisé sur le ticker GSAP/ScrollTrigger ---- */
-function initLenisScroll() {
-  if (typeof Lenis === 'undefined') return;
-  const lenis = new Lenis({ lerp: 0.11, smoothWheel: true });
-
-  lenis.on('scroll', ScrollTrigger.update);
-  gsap.ticker.add((time) => lenis.raf(time * 1000));
-  gsap.ticker.lagSmoothing(0);
-}
 
 /* ---- H1 hero : cascade mot par mot, en plus du fondu de bloc existant (.hero-entry) ---- */
 function initHeroTitleSplit() {
