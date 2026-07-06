@@ -197,7 +197,7 @@
 </section>
 
 <!-- ===================== CENTRALISATION DES OUTILS ===================== -->
-<section class="tools-section" style="padding:80px 0;background:var(--bg-card-2);">
+<section class="tools-section bg-soft-blobs" style="padding:80px 0;background:var(--bg-card-2);">
   <div class="container">
     <div class="eyebrow scroll-anim" style="justify-content:center;">Centralisation</div>
     <h2 class="scroll-anim d1" style="font-size:clamp(28px,3.6vw,44px);font-weight:800;letter-spacing:-0.02em;line-height:1.15;margin-bottom:14px;text-align:center;">
@@ -635,61 +635,71 @@
 </section>
 
 <!-- ===================== PROCESS ===================== -->
-<section style="padding:90px 0 70px;">
+<section class="bg-diagonal-lines" style="padding:90px 0 70px;">
   <div class="container">
     <div class="eyebrow scroll-anim" style="justify-content:center;">Comment ça marche</div>
     <h2 class="scroll-anim d1" style="font-size:clamp(30px,4vw,48px);font-weight:800;letter-spacing:-0.02em;line-height:1.1;margin-bottom:16px;text-align:center;">
       <span class="serif accent-orange">4 étapes.</span> Votre application tourne.
     </h2>
     <p class="scroll-anim d2" style="text-align:center;color:var(--gray-light);font-size:16px;max-width:520px;margin:0 auto 64px;line-height:1.7;">Vous n'apprenez pas un logiciel : on construit le vôtre autour de vos habitudes.</p>
-    <div class="process-timeline" id="processTimeline">
-
-      <svg class="process-wave-svg" viewBox="0 0 1000 56" preserveAspectRatio="none" aria-hidden="true">
-        <defs>
-          <linearGradient id="waveGradApp" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#f4926a"/>
-            <stop offset="100%" stop-color="#c8f542"/>
-          </linearGradient>
-        </defs>
-        <path d="M 125,28 C 188,14 295,42 375,28 C 452,16 548,40 625,28 C 705,18 810,38 875,28"
-              fill="none" stroke="url(#waveGradApp)" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-      <div class="process-drag-dot" id="processDragDot" aria-hidden="true"></div>
-
-      <button type="button" class="process-step-new active scroll-anim d1" style="--step-accent:var(--orange);" data-step="1" onclick="setProcessStep(1, this)">
-        <div class="process-badge">01</div>
-        <h4>Échange découverte<br><span class="serif accent-orange">30 minutes</span></h4>
+    <div class="process-flip-grid" id="processTimeline">
+      <button type="button" class="tool-flip process-flip scroll-anim d1" style="--step-accent:var(--orange);" aria-label="Étape 1, Échange découverte — voir le détail">
+        <span class="tool-flip-inner">
+          <span class="tool-flip-face tool-flip-front">
+            <span class="process-badge">01</span>
+            <h4>Échange découverte<br><span class="serif accent-orange">30 minutes</span></h4>
+          </span>
+          <span class="tool-flip-face tool-flip-back" style="background:linear-gradient(150deg, color-mix(in srgb, var(--step-accent) 80%, white) 0%, var(--step-accent) 55%, color-mix(in srgb, var(--step-accent) 65%, black) 100%);">
+            <span class="process-badge process-badge--back">01</span>
+            <p>On analyse vos process, vos outils actuels et où partent vos heures. Gratuit, sans engagement.</p>
+          </span>
+        </span>
       </button>
-      <button type="button" class="process-step-new scroll-anim d2" style="--step-accent:color-mix(in srgb, var(--orange) 60%, var(--lime) 40%);" data-step="2" onclick="setProcessStep(2, this)">
-        <div class="process-badge">02</div>
-        <h4>Conception<br><span class="serif accent-orange">sur-mesure</span></h4>
+      <div class="process-flip-connector" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></div>
+      <button type="button" class="tool-flip process-flip scroll-anim d2" style="--step-accent:color-mix(in srgb, var(--orange) 60%, var(--lime) 40%);" aria-label="Étape 2, Conception sur-mesure — voir le détail">
+        <span class="tool-flip-inner">
+          <span class="tool-flip-face tool-flip-front">
+            <span class="process-badge">02</span>
+            <h4>Conception<br><span class="serif accent-orange">sur-mesure</span></h4>
+          </span>
+          <span class="tool-flip-face tool-flip-back" style="background:linear-gradient(150deg, color-mix(in srgb, var(--step-accent) 80%, white) 0%, var(--step-accent) 55%, color-mix(in srgb, var(--step-accent) 65%, black) 100%);">
+            <span class="process-badge process-badge--back">02</span>
+            <p>On maquette votre application autour de vos habitudes. Vous validez avant tout développement.</p>
+          </span>
+        </span>
       </button>
-      <button type="button" class="process-step-new scroll-anim d3" style="--step-accent:color-mix(in srgb, var(--orange) 30%, var(--lime) 70%);" data-step="3" onclick="setProcessStep(3, this)">
-        <div class="process-badge">03</div>
-        <h4>Mise en place<br><span class="serif accent-lime">&amp; import</span></h4>
+      <div class="process-flip-connector" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></div>
+      <button type="button" class="tool-flip process-flip scroll-anim d3" style="--step-accent:color-mix(in srgb, var(--orange) 30%, var(--lime) 70%);" aria-label="Étape 3, Mise en place et import — voir le détail">
+        <span class="tool-flip-inner">
+          <span class="tool-flip-face tool-flip-front">
+            <span class="process-badge">03</span>
+            <h4>Mise en place<br><span class="serif accent-lime">&amp; import</span></h4>
+          </span>
+          <span class="tool-flip-face tool-flip-back" style="background:linear-gradient(150deg, color-mix(in srgb, var(--step-accent) 80%, white) 0%, var(--step-accent) 55%, color-mix(in srgb, var(--step-accent) 65%, black) 100%);">
+            <span class="process-badge process-badge--back">03</span>
+            <p>On construit, on importe vos données (clients, prix, documents) et on branche vos outils.</p>
+          </span>
+        </span>
       </button>
-      <button type="button" class="process-step-new scroll-anim d4" style="--step-accent:var(--lime);" data-step="4" onclick="setProcessStep(4, this)">
-        <div class="process-badge">04</div>
-        <h4>Formation<br><span class="serif accent-lime">&amp; suivi</span></h4>
+      <div class="process-flip-connector" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></div>
+      <button type="button" class="tool-flip process-flip scroll-anim d4" style="--step-accent:var(--lime);" aria-label="Étape 4, Formation et suivi — voir le détail">
+        <span class="tool-flip-inner">
+          <span class="tool-flip-face tool-flip-front">
+            <span class="process-badge">04</span>
+            <h4>Formation<br><span class="serif accent-lime">&amp; suivi</span></h4>
+          </span>
+          <span class="tool-flip-face tool-flip-back" style="background:linear-gradient(150deg, color-mix(in srgb, var(--step-accent) 80%, white) 0%, var(--step-accent) 55%, color-mix(in srgb, var(--step-accent) 65%, black) 100%);">
+            <span class="process-badge process-badge--back">04</span>
+            <p>Votre équipe est formée, on reste à vos côtés. L'application évolue avec votre activité.</p>
+          </span>
+        </span>
       </button>
     </div>
-
-    <div class="process-detail scroll-anim" id="processDetail">
-      <p class="active" data-step="1">On analyse vos process, vos outils actuels et où partent vos heures. Gratuit, sans engagement.</p>
-      <p data-step="2">On maquette votre application autour de vos habitudes. Vous validez avant tout développement.</p>
-      <p data-step="3">On construit, on importe vos données (clients, prix, documents) et on branche vos outils.</p>
-      <p data-step="4">Votre équipe est formée, on reste à vos côtés. L'application évolue avec votre activité.</p>
-    </div>
-
-    <p class="process-hint">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><path d="M18 12h.01M6 12h.01"/><path d="m15 9 3 3-3 3M9 9l-3 3 3 3"/></svg>
-      Cliquez sur une étape, ou glissez le point le long de la ligne
-    </p>
   </div>
 </section>
 
 <!-- ===================== PREUVE : BATIPILOT ===================== -->
-<section style="padding:80px 0;background:var(--bg-card-2);">
+<section class="bg-soft-blobs" style="padding:80px 0;background:var(--bg-card-2);">
   <div class="container">
     <div class="bp-showcase">
       <div class="scroll-anim">
@@ -1115,15 +1125,6 @@ function moveProfilePointer(btn) {
   var pointer = document.getElementById('profilePointer');
   if (!pointer || !btn) return;
   pointer.style.left = (btn.offsetLeft + btn.offsetWidth / 2) + 'px';
-}
-function setProcessStep(n, btn) {
-  document.querySelectorAll('.process-step-new').forEach(function(el) {
-    el.classList.toggle('active', el === btn);
-  });
-  document.querySelectorAll('.process-detail p').forEach(function(p) {
-    p.classList.toggle('active', Number(p.dataset.step) === n);
-  });
-  if (window.moveProcessDragDot) window.moveProcessDragDot(n - 1);
 }
 document.addEventListener('DOMContentLoaded', function() {
   moveProfilePointer(document.querySelector('.profile-tab.active'));

@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initBpKpiCounters();
   initBpChartGrow();
   initToolCardStagger();
-  initProcessDragDot();
 });
 
 /* ---- H1 hero : cascade mot par mot, en plus du fondu de bloc existant (.hero-entry) ---- */
@@ -131,47 +130,6 @@ function initBpChartGrow() {
           ease: 'power3.out',
         });
       });
-    },
-  });
-}
-
-/* ---- Process : point draggable le long de la vague, se cale sur l'étape la plus proche au relâchement ---- */
-function initProcessDragDot() {
-  const track = document.getElementById('processTimeline');
-  const dot = document.getElementById('processDragDot');
-  if (!track || !dot || typeof Draggable === 'undefined') return;
-  if (window.innerWidth <= 900) return; // vague masquée sur mobile, pas de drag là
-
-  const steps = Array.from(track.querySelectorAll('.process-step-new'));
-  const badges = steps.map((s) => s.querySelector('.process-badge'));
-  if (badges.length < 2) return;
-
-  const trackLeft = track.getBoundingClientRect().left;
-  const xs = badges.map((b) => {
-    const r = b.getBoundingClientRect();
-    return r.left + r.width / 2 - trackLeft;
-  });
-  const relXs = xs.map((x) => x - xs[0]);
-
-  // "left" fixe = origine ; tout mouvement (drag ou clic) passe ensuite par x (transform)
-  dot.style.left = xs[0] + 'px';
-
-  window.moveProcessDragDot = (index) => {
-    gsap.to(dot, { x: relXs[index], duration: 0.35, ease: 'power2.out' });
-  };
-
-  Draggable.create(dot, {
-    type: 'x',
-    bounds: { minX: 0, maxX: relXs[relXs.length - 1] },
-    liveSnap: { x: relXs },
-    onDragEnd() {
-      let idx = 0;
-      let minDist = Infinity;
-      relXs.forEach((rx, i) => {
-        const d = Math.abs(rx - this.x);
-        if (d < minDist) { minDist = d; idx = i; }
-      });
-      setProcessStep(idx + 1, steps[idx]);
     },
   });
 }
