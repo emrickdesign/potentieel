@@ -54,57 +54,93 @@ function initMockCardFlip() {
   });
 }
 
-/* ---- Carrousel de témoignages photo (hero-modern) ---- */
+/* ---- Carrousel de témoignages photo — effet 3D, piloté par le scroll de la page ---- */
 function initTestimonialCarousel() {
-  const track = document.getElementById('testimonialTrack');
-  const prev  = document.getElementById('testiPrev');
-  const next  = document.getElementById('testiNext');
-  const dots  = document.getElementById('testiDots');
-  if (!track || !prev || !next) return;
+  const stage   = document.getElementById('testimonialTrack');
+  const prev    = document.getElementById('testiPrev');
+  const next    = document.getElementById('testiNext');
+  const dots    = document.getElementById('testiDots');
+  const section = document.querySelector('.testimonial-carousel-section');
+  if (!stage || !prev || !next) return;
 
-  const cards = Array.from(track.querySelectorAll('.testimonial-card'));
+  const cards = Array.from(stage.querySelectorAll('.testi-card'));
   const total = cards.length;
-  let idx     = 0;
-  let autoTimer;
+  if (!total) return;
+
+  const hasGsap = typeof gsap !== 'undefined';
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let idx = 0;
+
+  function render(animate) {
+    cards.forEach((card, i) => {
+      let offset = i - idx;
+      if (offset > total / 2) offset -= total;
+      if (offset < -total / 2) offset += total;
+      const abs   = Math.abs(offset);
+      const x     = offset * 190;
+      const z     = -abs * 170;
+      const rotY  = offset * -26;
+      const scale = Math.max(0.55, 1 - abs * 0.15);
+      const opacity = Math.max(0, 1 - abs * 0.32);
+      const zIndex  = Math.round(100 - abs * 10);
+
+      if (hasGsap) {
+        gsap.to(card, {
+          x, z, rotationY: rotY, scale, opacity, zIndex,
+          xPercent: -50, yPercent: -50,
+          duration: animate ? 0.6 : 0,
+          ease: 'power2.out',
+          overwrite: 'auto',
+        });
+      } else {
+        card.style.transform = `translate(-50%,-50%) translateX(${x}px) translateZ(${z}px) rotateY(${rotY}deg) scale(${scale})`;
+        card.style.opacity = String(opacity);
+        card.style.zIndex = String(zIndex);
+      }
+      card.style.pointerEvents = abs > 2.5 ? 'none' : 'auto';
+    });
+    if (dots) {
+      const active = ((Math.round(idx) % total) + total) % total;
+      dots.querySelectorAll('.testi-dot').forEach((d, i) => d.classList.toggle('active', i === active));
+    }
+  }
 
   if (dots) {
     cards.forEach((_, i) => {
       const d = document.createElement('button');
       d.className = 'testi-dot' + (i === 0 ? ' active' : '');
       d.setAttribute('aria-label', 'Aller au témoignage ' + (i + 1));
-      d.addEventListener('click', () => { stopAuto(); goTo(i); startAuto(); });
+      d.addEventListener('click', () => { idx = i; render(true); });
       dots.appendChild(d);
     });
   }
 
-  function cardWidth() {
-    return cards[0].offsetWidth + parseInt(getComputedStyle(track).gap || 24);
-  }
-
-  function goTo(n) {
-    idx = ((n % total) + total) % total;
-    track.style.transform = `translateX(-${idx * cardWidth()}px)`;
-    if (dots) {
-      dots.querySelectorAll('.testi-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
-    }
-  }
-
-  function startAuto() { autoTimer = setInterval(() => goTo(idx + 1), 5000); }
-  function stopAuto()  { clearInterval(autoTimer); }
-
-  prev.addEventListener('click', () => { stopAuto(); goTo(idx - 1); startAuto(); });
-  next.addEventListener('click', () => { stopAuto(); goTo(idx + 1); startAuto(); });
+  prev.addEventListener('click', () => { idx = Math.round(idx) - 1; render(true); });
+  next.addEventListener('click', () => { idx = Math.round(idx) + 1; render(true); });
 
   let touchX = 0;
-  track.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
-  track.addEventListener('touchend',   e => {
+  stage.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+  stage.addEventListener('touchend', e => {
     const diff = touchX - e.changedTouches[0].clientX;
-    if (Math.abs(diff) > 50) { stopAuto(); goTo(diff > 0 ? idx + 1 : idx - 1); startAuto(); }
+    if (Math.abs(diff) > 50) { idx = Math.round(idx) + (diff > 0 ? 1 : -1); render(true); }
   });
 
-  window.addEventListener('resize', () => goTo(idx));
+  render(false);
 
-  startAuto();
+  // Avance automatiquement au fil du scroll de la section (désactivé si prefers-reduced-motion)
+  if (hasGsap && typeof ScrollTrigger !== 'undefined' && section && !reduceMotion) {
+    gsap.registerPlugin(ScrollTrigger);
+    ScrollTrigger.create({
+      trigger: section,
+      start: 'top bottom',
+      end: 'bottom top',
+      scrub: 0.3,
+      onUpdate(self) {
+        idx = self.progress * (total - 1);
+        render(false);
+      },
+    });
+  }
 }
 
 /* ---- Animated blob backgrounds (hero + page headers) ---- */
