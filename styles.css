@@ -1241,13 +1241,12 @@ section { padding: 100px 0; }
 .pricing-gain {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  background: var(--bg-card-3);
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
-  margin: 2px 0 16px;
+  gap: 7px;
+  border-top: 1px solid var(--border-card);
+  padding-top: 12px;
+  margin: 6px 0 16px;
 }
-.pricing-card.recommended .pricing-gain { background: rgba(193,83,30,0.07); }
+.pricing-card.recommended .pricing-gain { border-top-color: rgba(193,83,30,0.3); }
 .pricing-gain-row {
   display: flex;
   align-items: center;
@@ -1264,9 +1263,16 @@ section { padding: 100px 0; }
   gap: 7px;
   font-size: 13px;
   color: var(--gray);
-  margin: -8px 0 18px;
+  margin: 4px 0 14px;
 }
 .app-setup-fee svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+.pricing-meta {
+  font-size: 13px;
+  color: var(--gray);
+  line-height: 1.5;
+  margin: 4px 0 10px;
+}
 
 /* Site vs Application — top-level selector (homepage) */
 .type-tabs {
