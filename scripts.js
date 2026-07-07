@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initBlobBackgrounds();
   initSparkles();
   initTicker();
-  initTrustMarquee();
+  initTestimonialCarousel();
   initTiltCards();
   initWordReveal();
   initScrollAnimations();
@@ -54,12 +54,57 @@ function initMockCardFlip() {
   });
 }
 
-/* ---- Trust marquee (hero-modern) — clones chips for a seamless loop ---- */
-function initTrustMarquee() {
-  const track = document.getElementById('trustTrack');
-  if (!track) return;
-  const original = Array.from(track.children);
-  original.forEach(chip => track.appendChild(chip.cloneNode(true)));
+/* ---- Carrousel de témoignages photo (hero-modern) ---- */
+function initTestimonialCarousel() {
+  const track = document.getElementById('testimonialTrack');
+  const prev  = document.getElementById('testiPrev');
+  const next  = document.getElementById('testiNext');
+  const dots  = document.getElementById('testiDots');
+  if (!track || !prev || !next) return;
+
+  const cards = Array.from(track.querySelectorAll('.testimonial-card'));
+  const total = cards.length;
+  let idx     = 0;
+  let autoTimer;
+
+  if (dots) {
+    cards.forEach((_, i) => {
+      const d = document.createElement('button');
+      d.className = 'testi-dot' + (i === 0 ? ' active' : '');
+      d.setAttribute('aria-label', 'Aller au témoignage ' + (i + 1));
+      d.addEventListener('click', () => { stopAuto(); goTo(i); startAuto(); });
+      dots.appendChild(d);
+    });
+  }
+
+  function cardWidth() {
+    return cards[0].offsetWidth + parseInt(getComputedStyle(track).gap || 24);
+  }
+
+  function goTo(n) {
+    idx = ((n % total) + total) % total;
+    track.style.transform = `translateX(-${idx * cardWidth()}px)`;
+    if (dots) {
+      dots.querySelectorAll('.testi-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+    }
+  }
+
+  function startAuto() { autoTimer = setInterval(() => goTo(idx + 1), 5000); }
+  function stopAuto()  { clearInterval(autoTimer); }
+
+  prev.addEventListener('click', () => { stopAuto(); goTo(idx - 1); startAuto(); });
+  next.addEventListener('click', () => { stopAuto(); goTo(idx + 1); startAuto(); });
+
+  let touchX = 0;
+  track.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+  track.addEventListener('touchend',   e => {
+    const diff = touchX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) { stopAuto(); goTo(diff > 0 ? idx + 1 : idx - 1); startAuto(); }
+  });
+
+  window.addEventListener('resize', () => goTo(idx));
+
+  startAuto();
 }
 
 /* ---- Animated blob backgrounds (hero + page headers) ---- */

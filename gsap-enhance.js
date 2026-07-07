@@ -17,7 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initHeroTitleSplit();
   initHeroParallax();
-  initDraggableMarquee();
   initBpKpiCounters();
   initBpChartGrow();
   initToolCardStagger();
@@ -52,35 +51,6 @@ function initHeroParallax() {
       start: 'top top',
       end: 'bottom top',
       scrub: true,
-    },
-  });
-}
-
-/* ---- Bandeau de confiance : la piste devient draggable, l'auto-scroll CSS est mis en pause pendant le drag puis reprend ---- */
-function initDraggableMarquee() {
-  const track = document.getElementById('trustTrack');
-  const wrap = document.querySelector('.trust-strip');
-  if (!track || !wrap || typeof Draggable === 'undefined') return;
-
-  Draggable.create(track, {
-    type: 'x',
-    inertia: true,
-    bounds: wrap,
-    cursor: 'grab',
-    activeCursor: 'grabbing',
-    onPress() {
-      track.style.animationPlayState = 'paused';
-    },
-    onDragEnd() {
-      const resume = () => {
-        gsap.set(track, { clearProps: 'transform' });
-        track.style.animationPlayState = 'running';
-      };
-      if (this.tween) {
-        this.tween.eventCallback('onComplete', resume);
-      } else {
-        resume();
-      }
     },
   });
 }
