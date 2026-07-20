@@ -727,6 +727,18 @@
             </div>
           </div>
 
+          <!-- Trésorerie du mois : lecture directe de `transactions`, même source
+               que les pages Trésorerie et Dépenses. -->
+          <div class="panel" style="margin-bottom:16px">
+            <div class="panel-head">
+              <h3>Trésorerie — <span id="dash-tr-mois">ce mois-ci</span></h3>
+              <span class="ph-action" onclick="nav(document.querySelector('[data-page=depenses]'))">Voir le détail →</span>
+            </div>
+            <div id="dash-tr-body" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:4px 0">
+              <div style="color:var(--muted);font-size:12px">Chargement…</div>
+            </div>
+          </div>
+
           <div class="grid-6040">
             <div class="panel">
               <div class="panel-head">
@@ -3506,6 +3518,7 @@ function nav(el) {
   if(p==='planning') plInit();
   if(p==='tresorerie') trInit();
   if(p==='depenses') dpInit();
+  if(p==='dashboard') dashTreso();
 }
 
 function toggleTask(cb) {
@@ -9160,6 +9173,48 @@ async function dpChargeSub(id) {
   await sb.from('subscriptions').update({ next_date: d.toISOString().slice(0,10) }).eq('id', s.id);
 
   await dpInit();
+}
+
+/* Bloc trésorerie du dashboard — lit la même table `transactions` que les
+   pages Trésorerie et Dépenses, pour qu'un chiffre corrigé quelque part se
+   propage partout. Les transferts internes sont exclus des totaux. */
+async function dashTreso() {
+  const body = document.getElementById('dash-tr-body');
+  if (!body) return;
+
+  const now = new Date();
+  const ym = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const from = `${ym}-01`;
+  const to = `${ym}-${String(new Date(now.getFullYear(), now.getMonth()+1, 0).getDate()).padStart(2,'0')}`;
+
+  const lbl = document.getElementById('dash-tr-mois');
+  if (lbl) lbl.textContent = trMonthLabel(ym).toLowerCase();
+
+  const { data, error } = await sb.from('transactions').select('type,amount')
+    .gte('date', from).lte('date', to);
+  if (error) {
+    body.innerHTML = `<div style="color:var(--muted);font-size:12px">Trésorerie indisponible : ${error.message}</div>`;
+    return;
+  }
+
+  const rows = data || [];
+  const sum = t => rows.filter(r => r.type === t).reduce((s,r) => s + Number(r.amount||0), 0);
+  const inc = sum('entree'), out = sum('sortie'), tr = sum('transfert');
+  const net = inc - out;
+  const eur = n => n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' €';
+
+  const cell = (label, val, color, sub) => `
+    <div>
+      <div style="font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px">${label}</div>
+      <div style="font-size:19px;font-weight:900;color:${color}">${val}</div>
+      <div style="font-size:10.5px;color:var(--muted);margin-top:3px">${sub}</div>
+    </div>`;
+
+  body.innerHTML =
+    cell('Entrées', '+' + eur(inc), '#4ade80', rows.filter(r=>r.type==='entree').length + ' opération(s)') +
+    cell('Dépenses', '−' + eur(out), '#f87171', rows.filter(r=>r.type==='sortie').length + ' opération(s)') +
+    cell('Résultat net', (net>=0?'+':'') + eur(net), net>=0?'#4ade80':'#f87171', 'Entrées − dépenses') +
+    cell('Transferts', eur(tr), 'var(--muted)', tr>0 ? 'Internes, hors totaux' : 'Aucun ce mois-ci');
 }
 
 // Appelle l'Edge Function stripe-sync, qui importe les mouvements Stripe dans
