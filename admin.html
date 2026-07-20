@@ -2267,6 +2267,10 @@
               <p class="page-sub">Charges, abonnements et entrées — vue analytique.</p>
             </div>
             <div style="display:flex;gap:8px">
+              <button id="dp-sync-btn" onclick="dpSyncStripe()" class="btn-newtask" style="background:rgba(255,255,255,.06);color:#fff">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-3-6.7"/><polyline points="21 3 21 9 15 9"/></svg>
+                Sync Stripe
+              </button>
               <button onclick="dpOpenSub()" class="btn-newtask" style="background:rgba(255,255,255,.06);color:#fff">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-3-6.7"/><polyline points="21 3 21 9 15 9"/></svg>
                 Abonnement
@@ -2288,6 +2292,7 @@
           </div>
 
           <div class="dp-kpis" id="dp-kpis"></div>
+          <div id="dp-transfer-note" style="display:none;font-size:11.5px;color:var(--muted);background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:14px"></div>
 
           <div class="dp-grid">
             <div class="dp-card">
@@ -2324,18 +2329,40 @@
                 <button class="tr-cat-btn dp-f active" data-f="all" onclick="dpFilter('all',this)">Tout</button>
                 <button class="tr-cat-btn dp-f" data-f="sortie" onclick="dpFilter('sortie',this)">↓ Dépenses</button>
                 <button class="tr-cat-btn dp-f" data-f="entree" onclick="dpFilter('entree',this)">↑ Entrées</button>
+                <button class="tr-cat-btn dp-f" data-f="transfert" onclick="dpFilter('transfert',this)">⇄ Transferts</button>
               </div>
             </div>
             <div id="dp-list"></div>
           </div>
 
-          <!-- Compte bancaire -->
-          <div class="dp-card" style="margin-top:14px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
-            <div>
-              <h3 class="dp-card-title">Compte bancaire</h3>
-              <div class="dp-card-sub" style="margin:0" id="dp-bank-status">Non connecté — les opérations sont saisies manuellement.</div>
+          <!-- Sources de données -->
+          <div class="dp-card" style="margin-top:14px">
+            <h3 class="dp-card-title">Sources</h3>
+            <div class="dp-card-sub">D'où viennent les opérations affichées ci-dessus</div>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
+              <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:14px">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                  <span style="width:8px;height:8px;border-radius:50%;background:#4ade80"></span>
+                  <span style="font-size:13px;font-weight:700;color:#fff">Stripe</span>
+                </div>
+                <div style="font-size:11px;color:var(--muted);line-height:1.5" id="dp-src-stripe">
+                  Connecté — encaissements, frais et virements importés automatiquement.
+                </div>
+              </div>
+              <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:14px">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                  <span style="width:8px;height:8px;border-radius:50%;background:#fbbf24"></span>
+                  <span style="font-size:13px;font-weight:700;color:#fff">Revolut Business</span>
+                </div>
+                <div style="font-size:11px;color:var(--muted);line-height:1.5">
+                  Saisie manuelle — virements reçus directement et dépenses payées depuis le compte pro.
+                </div>
+              </div>
             </div>
-            <button onclick="dpBankInfo()" class="btn-newtask" style="background:rgba(255,255,255,.06);color:#fff">Connecter</button>
+            <div style="font-size:11px;color:var(--muted);margin-top:12px;line-height:1.6">
+              Les virements Stripe → compte pro sont enregistrés en <strong style="color:var(--accent)">transfert</strong> et exclus des totaux :
+              le chiffre d'affaires est compté au moment du paiement, pas une deuxième fois à l'arrivée sur Revolut.
+            </div>
           </div>
 
           <!-- Modal dépense -->
@@ -8597,8 +8624,9 @@ function trRender() {
   // Trier par date décroissante
   const sorted = [...filtered].sort((a,b) => (b.date||'').localeCompare(a.date||''));
   document.getElementById('tr-list').innerHTML = sorted.map(t => {
-    const sign = t.type === 'entree' ? '+' : '-';
-    const cls  = t.type === 'entree' ? 'tr-entree' : 'tr-sortie';
+    const isTr = t.type === 'transfert';
+    const sign = isTr ? '⇄ ' : (t.type === 'entree' ? '+' : '-');
+    const cls  = isTr ? '' : (t.type === 'entree' ? 'tr-entree' : 'tr-sortie');
     const ds   = t.date ? new Date(t.date+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'}) : '';
     const notes = t.notes ? `<span style="color:var(--muted);font-size:11px"> — ${t.notes}</span>` : '';
     return `<div class="tr-row" style="cursor:pointer" onclick="trOpenEdit('${t.id}')">
@@ -8606,7 +8634,7 @@ function trRender() {
         <div class="tr-row-desc">${t.description||'—'}${notes}</div>
         <div class="tr-row-meta">${catLabels[t.category]||t.category||''}${ds?' · '+ds:''}</div>
       </div>
-      <div class="tr-row-amt ${cls}">${sign}${(t.amount||0).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})} €</div>
+      <div class="tr-row-amt ${cls}" ${isTr?'style="color:var(--muted)"':''}>${sign}${(t.amount||0).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})} €</div>
     </div>`;
   }).join('');
 }
@@ -8844,6 +8872,17 @@ function dpRenderKpis() {
       <div class="dp-kpi-val" style="color:var(--accent)">${dpEur(recu)}</div>
       <div class="dp-kpi-sub">${dpSubs.filter(s=>s.active).length} actif(s) · ${dpEur(recu*12)} / an</div>
     </div>`;
+
+  // Rappel discret : les transferts existent mais ne comptent nulle part.
+  const tr = dpMonthData.filter(t => t.type === 'transfert');
+  const trTot = tr.reduce((s,t) => s + Number(t.amount||0), 0);
+  const note = document.getElementById('dp-transfer-note');
+  if (note) {
+    note.innerHTML = tr.length
+      ? `⇄ ${tr.length} transfert(s) interne(s) ce mois-ci pour ${dpEur(trTot)} — exclus des totaux ci-dessus.`
+      : '';
+    note.style.display = tr.length ? 'block' : 'none';
+  }
 }
 
 function dpRenderLine() {
@@ -8962,18 +9001,20 @@ function dpRenderList() {
   }
   const sorted = [...rows].sort((a,b) => (b.date||'').localeCompare(a.date||''));
   el.innerHTML = sorted.map(t => {
-    const sign = t.type === 'entree' ? '+' : '−';
-    const cls  = t.type === 'entree' ? 'dp-in' : 'dp-out';
+    const isTr = t.type === 'transfert';
+    const sign = isTr ? '⇄ ' : (t.type === 'entree' ? '+' : '−');
+    const cls  = isTr ? '' : (t.type === 'entree' ? 'dp-in' : 'dp-out');
     const ds   = t.date ? new Date(t.date+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'}) : '';
     const rec  = t.subscription_id ? '<span class="dp-tag dp-tag-rec">récurrent</span>' : '';
-    const bank = t.source === 'bancaire' ? '<span class="dp-tag">banque</span>' : '';
+    const bank = t.source === 'stripe' ? '<span class="dp-tag">Stripe</span>'
+               : t.source === 'bancaire' ? '<span class="dp-tag">banque</span>' : '';
     const notes = t.notes ? `<span style="color:var(--muted);font-size:11px"> — ${t.notes}</span>` : '';
     return `<div class="dp-row" onclick="dpOpenEdit('${t.id}')">
       <div style="flex:1;min-width:0">
         <div class="dp-row-desc">${t.description||'—'}${rec}${bank}${notes}</div>
         <div class="dp-row-meta">${DP_CATS[t.category]||t.category||''}${ds?' · '+ds:''}</div>
       </div>
-      <div class="dp-row-amt ${cls}">${sign}${dpEur(t.amount)}</div>
+      <div class="dp-row-amt ${cls}" ${isTr?'style="color:var(--muted)"':''}>${sign}${dpEur(t.amount)}</div>
     </div>`;
   }).join('');
 }
@@ -9121,14 +9162,38 @@ async function dpChargeSub(id) {
   await dpInit();
 }
 
-function dpBankInfo() {
-  alert(
-    "Connexion bancaire — pas encore active.\n\n" +
-    "Elle nécessite un compte chez un agrégateur bancaire (GoCardless Bank Account Data, Bridge ou Powens) " +
-    "et une clé API, qui doit vivre côté serveur et non dans cette page.\n\n" +
-    "La base est déjà prête : les colonnes source et external_id existent sur la table transactions " +
-    "pour importer les opérations sans doublon dès que le compte est ouvert."
-  );
+// Appelle l'Edge Function stripe-sync, qui importe les mouvements Stripe dans
+// `transactions`. La dédup se fait sur external_id : relancer est sans risque.
+async function dpSyncStripe() {
+  const btn = document.getElementById('dp-sync-btn');
+  const old = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = 'Sync…';
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/stripe-sync`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session?.access_token || SUPABASE_KEY}`,
+        'apikey': SUPABASE_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ months: 12 })
+    });
+    const out = await res.json();
+    if (!res.ok || out.error) throw new Error(out.error || `HTTP ${res.status}`);
+
+    const src = document.getElementById('dp-src-stripe');
+    if (src) src.textContent = `Synchronisé à l'instant — ${out.imported} nouvelle(s) opération(s), ${out.skipped} déjà connue(s).`;
+
+    await dpInit();
+    if (out.imported === 0) alert('Stripe est à jour, rien de nouveau à importer.');
+  } catch (e) {
+    alert('Synchronisation Stripe impossible :\n' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = old;
+  }
 }
 
 // Session — si pas connecté ou pas admin, retour auth.html
