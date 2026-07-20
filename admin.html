@@ -2160,6 +2160,8 @@
               Transaction
             </button>
           </div>
+          <!-- Totaux depuis le début, au-dessus de la navigation mensuelle -->
+          <div id="tr-cumul"></div>
           <!-- Sélecteur de mois -->
           <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:20px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 20px">
             <button onclick="trPrevMonth()" class="btn-nav-arrow">‹</button>
@@ -2169,7 +2171,6 @@
             <button onclick="trNextMonth()" class="btn-nav-arrow">›</button>
           </div>
           <div class="tr-stats" id="tr-stats"></div>
-          <div id="tr-cumul"></div>
           <div class="tr-cats">
             <button class="tr-cat-btn active" data-f="all" onclick="trFilter('all',this)">Tout</button>
             <button class="tr-cat-btn" data-f="entree" onclick="trFilter('entree',this)">↑ Entrées</button>
