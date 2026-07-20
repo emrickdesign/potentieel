@@ -693,13 +693,13 @@
               <div class="kpi-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 110 7H6"/></svg></div>
               <div class="kpi-val" id="dash-kpi-mrr">—</div>
               <div class="kpi-label">MRR ACTUEL</div>
-              <div class="kpi-sub">Abonnements mensuels actifs</div>
+              <div class="kpi-sub" id="dash-kpi-mrr-sub">Abonnements mensuels actifs</div>
             </div>
             <div class="kpi">
               <div class="kpi-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
-              <div class="kpi-val" id="dash-kpi-setup">0€</div>
+              <div class="kpi-val" id="dash-kpi-setup">—</div>
               <div class="kpi-label">SETUP CUMULÉ</div>
-              <div class="kpi-sub">Versements site reçus</div>
+              <div class="kpi-sub" id="dash-kpi-setup-sub">Versements site reçus</div>
             </div>
             <div class="kpi">
               <div class="kpi-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
@@ -734,7 +734,7 @@
               <h3>Trésorerie — <span id="dash-tr-mois">ce mois-ci</span></h3>
               <span class="ph-action" onclick="nav(document.querySelector('[data-page=depenses]'))">Voir le détail →</span>
             </div>
-            <div id="dash-tr-body" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:4px 0">
+            <div id="dash-tr-body" class="dash-tr-grid">
               <div style="color:var(--muted);font-size:12px">Chargement…</div>
             </div>
           </div>
@@ -2278,7 +2278,7 @@
               <h1 class="page-title">Dépenses</h1>
               <p class="page-sub">Charges, abonnements et entrées — vue analytique.</p>
             </div>
-            <div style="display:flex;gap:8px">
+            <div class="dp-head-actions" style="display:flex;gap:8px;flex-wrap:wrap">
               <button id="dp-sync-btn" onclick="dpSyncStripe()" class="btn-newtask" style="background:rgba(255,255,255,.06);color:#fff">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-3-6.7"/><polyline points="21 3 21 9 15 9"/></svg>
                 Sync Stripe
@@ -2351,7 +2351,7 @@
           <div class="dp-card" style="margin-top:14px">
             <h3 class="dp-card-title">Sources</h3>
             <div class="dp-card-sub">D'où viennent les opérations affichées ci-dessus</div>
-            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
+            <div class="dp-sources" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
               <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:14px">
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
                   <span style="width:8px;height:8px;border-radius:50%;background:#4ade80"></span>
@@ -2383,7 +2383,7 @@
               <button onclick="dpClose()" style="position:absolute;top:14px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">×</button>
               <h3 id="dp-modal-title" style="font-size:17px;font-weight:800;margin:0 0 16px">Nouvelle dépense</h3>
               <input type="hidden" id="dp-id">
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+              <div class="dp-modal-row" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
                 <div>
                   <label class="dp-lbl">Type</label>
                   <select id="dp-type" class="dp-fld">
@@ -2396,7 +2396,7 @@
                   <input id="dp-amount" type="number" step="0.01" placeholder="49,90" class="dp-fld">
                 </div>
               </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+              <div class="dp-modal-row" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
                 <div>
                   <label class="dp-lbl">Catégorie</label>
                   <select id="dp-cat" class="dp-fld"></select>
@@ -2425,7 +2425,7 @@
               <input type="hidden" id="dp-sub-id">
               <label class="dp-lbl">Nom *</label>
               <input id="dp-sub-name" placeholder="Vercel Pro, Adobe CC…" class="dp-fld" style="margin-bottom:12px">
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+              <div class="dp-modal-row" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
                 <div>
                   <label class="dp-lbl">Montant (€) *</label>
                   <input id="dp-sub-amount" type="number" step="0.01" placeholder="20" class="dp-fld">
@@ -2439,7 +2439,7 @@
                   </select>
                 </div>
               </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+              <div class="dp-modal-row" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
                 <div>
                   <label class="dp-lbl">Catégorie</label>
                   <select id="dp-sub-cat" class="dp-fld"></select>
@@ -3518,7 +3518,7 @@ function nav(el) {
   if(p==='planning') plInit();
   if(p==='tresorerie') trInit();
   if(p==='depenses') dpInit();
-  if(p==='dashboard') dashTreso();
+  if(p==='dashboard') { dashTreso(); dashStripe(); }
 }
 
 function toggleTask(cb) {
@@ -4236,16 +4236,9 @@ function clRenderGrid() {
   document.getElementById('cl-kpi-actifs').textContent = actifs;
   document.getElementById('cl-kpi-encours').textContent = encours;
   document.getElementById('cl-kpi-mrr').textContent = mrr+'€';
-  const dashMrr = document.getElementById('dash-kpi-mrr'); if (dashMrr) dashMrr.textContent = mrr+'€';
-
-  // Setup cumulé : somme des versements "site" cochés comme reçus, tous clients confondus
-  const setupTotal = clData.reduce((s,c) => {
-    if (!c.sitePlan || !Array.isArray(c.siteVersements)) return s;
-    const unit = clSitePlanUnit(c, c.sitePlan);
-    return s + c.siteVersements.filter(Boolean).length * unit;
-  }, 0);
-  const dashSetup = document.getElementById('dash-kpi-setup');
-  if (dashSetup) dashSetup.textContent = setupTotal.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+'€';
+  // Le MRR et le setup du dashboard ne viennent plus d'ici : ils sont lus en
+  // direct chez Stripe par dashStripe(). Les écrire depuis les fiches clients
+  // les écraserait avec des valeurs saisies à la main.
 }
 
 async function clOpenDetail(id) {
@@ -6384,6 +6377,36 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 @media (max-width: 900px)  { .kpi-grid { grid-template-columns: repeat(2, 1fr); } .grid-2,.grid-6040,.grid-3 { grid-template-columns: 1fr; } }
 @media (max-width: 700px)  { .sidebar { display: none; } .main { padding: 16px; } }
 @media (max-width: 500px)  { .kpi-grid { grid-template-columns: 1fr; } }
+
+/* ── Responsive des blocs financiers (dashboard + Dépenses) ──
+   Les montants sont longs ("1 034,60 €") : en colonne étroite ils débordent
+   ou se coupent. On réduit le nombre de colonnes puis la taille du chiffre,
+   et on autorise la césure plutôt que le débordement. */
+.dash-tr-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 4px 0; }
+.dash-tr-grid > div { min-width: 0; }
+.dash-tr-grid .dash-tr-val { overflow-wrap: anywhere; }
+
+@media (max-width: 1000px) {
+  .dash-tr-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+}
+@media (max-width: 420px) {
+  .dash-tr-grid { grid-template-columns: 1fr; gap: 14px; }
+}
+
+/* Dépenses : les cartes KPI et les deux graphiques */
+@media (max-width: 640px) {
+  .dp-kpis { grid-template-columns: 1fr !important; }
+  .dp-sources { grid-template-columns: 1fr !important; }
+  .dp-modal-row { grid-template-columns: 1fr !important; }
+  .dp-canvas-wrap { height: 260px !important; }
+  .dp-kpi-val { font-size: 21px !important; }
+  .dp-head-actions { width: 100%; }
+  .dp-head-actions .btn-newtask { flex: 1; justify-content: center; }
+}
+/* Les libellés de catégorie du graphique en barres et les montants ne doivent
+   jamais forcer un scroll horizontal de la page. */
+.dp-kpi, .dp-card { min-width: 0; }
+.dp-kpi-val, .dp-row-amt { overflow-wrap: anywhere; }
 
 /* ══ REDUCED MOTION ══ */
 @media (prefers-reduced-motion: reduce) {
@@ -9175,6 +9198,50 @@ async function dpChargeSub(id) {
   await dpInit();
 }
 
+/* MRR et setup cumulé du dashboard, lus en direct chez Stripe via l'Edge
+   Function stripe-metrics. Ces deux chiffres venaient auparavant des fiches
+   clients (saisie manuelle), ils étaient donc faux dès qu'on oubliait de
+   cocher un versement. */
+async function dashStripe() {
+  const elMrr = document.getElementById('dash-kpi-mrr');
+  const elSetup = document.getElementById('dash-kpi-setup');
+  if (!elMrr || !elSetup) return;
+
+  const eur = n => n.toLocaleString('fr-FR',{minimumFractionDigits:0,maximumFractionDigits:0}) + '€';
+  const fail = msg => {
+    elMrr.textContent = '—';
+    elSetup.textContent = '—';
+    const s = document.getElementById('dash-kpi-mrr-sub');
+    if (s) s.textContent = msg;
+  };
+
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/stripe-metrics`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session?.access_token || SUPABASE_KEY}`,
+        'apikey': SUPABASE_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ months: 12 })
+    });
+    const m = await res.json();
+    if (!res.ok || m.error) throw new Error(m.error || `HTTP ${res.status}`);
+
+    elMrr.textContent = eur(m.mrr);
+    elSetup.textContent = eur(m.setup);
+
+    const subMrr = document.getElementById('dash-kpi-mrr-sub');
+    if (subMrr) subMrr.textContent = `${m.abonnes} abonné(s) · ${eur(m.arr)}/an — Stripe`;
+    const subSetup = document.getElementById('dash-kpi-setup-sub');
+    if (subSetup) subSetup.textContent = `${m.paiements} paiement(s) sur 12 mois — Stripe`;
+  } catch (e) {
+    console.warn('dashStripe:', e);
+    fail('Stripe indisponible');
+  }
+}
+
 /* Bloc trésorerie du dashboard — lit la même table `transactions` que les
    pages Trésorerie et Dépenses, pour qu'un chiffre corrigé quelque part se
    propage partout. Les transferts internes sont exclus des totaux. */
@@ -9206,7 +9273,7 @@ async function dashTreso() {
   const cell = (label, val, color, sub) => `
     <div>
       <div style="font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px">${label}</div>
-      <div style="font-size:19px;font-weight:900;color:${color}">${val}</div>
+      <div class="dash-tr-val" style="font-size:19px;font-weight:900;color:${color}">${val}</div>
       <div style="font-size:10.5px;color:var(--muted);margin-top:3px">${sub}</div>
     </div>`;
 
