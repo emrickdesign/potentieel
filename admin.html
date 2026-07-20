@@ -2124,9 +2124,17 @@
         <!-- ── TRÉSORERIE ── -->
         <div id="page-tresorerie" class="page">
           <style>
-            .tr-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:20px}
+            .tr-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:12px}
             .tr-stat{min-width:0}
             .tr-stat-val{overflow-wrap:anywhere}
+            /* Bande de cumul : volontairement plus discrète que les totaux du
+               mois, qui restent l'information principale de la page. */
+            .tr-cumul{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:12px 16px;margin-bottom:20px;
+                      display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px 16px;align-items:center}
+            .tr-cumul-head{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;font-weight:800}
+            .tr-cumul-item{min-width:0}
+            .tr-cumul-lbl{font-size:10.5px;color:var(--muted);margin-bottom:2px}
+            .tr-cumul-val{font-size:15px;font-weight:800;overflow-wrap:anywhere}
             .tr-stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}
             .tr-stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
             .tr-stat-val{font-size:24px;font-weight:900}
@@ -2161,6 +2169,7 @@
             <button onclick="trNextMonth()" class="btn-nav-arrow">›</button>
           </div>
           <div class="tr-stats" id="tr-stats"></div>
+          <div id="tr-cumul"></div>
           <div class="tr-cats">
             <button class="tr-cat-btn active" data-f="all" onclick="trFilter('all',this)">Tout</button>
             <button class="tr-cat-btn" data-f="entree" onclick="trFilter('entree',this)">↑ Entrées</button>
@@ -8594,6 +8603,7 @@ async function plResizeEnd(e) {
    TRÉSORERIE
 ═══════════════════════════════════════════════ */
 let trData = [];
+let trCumul = null;   // totaux depuis le début, via la RPC treso_totaux
 let trCurrentFilter = 'all';
 let trEditId = null;
 
@@ -8643,9 +8653,16 @@ async function trInit() {
   const to   = `${trCurrentMonth}-${String(last).padStart(2,'0')}`;
   const lbl = document.getElementById('tr-month-label');
   if (lbl) lbl.textContent = trMonthLabel(trCurrentMonth);
-  const { data } = await sb.from('transactions').select('*')
-    .gte('date', from).lte('date', to).order('date', { ascending: false });
-  if (data) trData = data;
+  const [moisRes, cumulRes] = await Promise.all([
+    sb.from('transactions').select('*').gte('date', from).lte('date', to).order('date', { ascending: false }),
+    sb.rpc('treso_totaux')
+  ]);
+
+  if (moisRes.data) trData = moisRes.data;
+  // Le cumul est un bonus : s'il échoue, la page reste utilisable.
+  trCumul = cumulRes.error ? null : (Array.isArray(cumulRes.data) ? cumulRes.data[0] : cumulRes.data);
+  if (cumulRes.error) console.warn('treso_totaux:', cumulRes.error.message);
+
   trRender();
 }
 
@@ -8665,6 +8682,8 @@ function trRender() {
     <div class="tr-stat"><div class="tr-stat-label">Charges ${Math.round(TAUX_CHARGES*100)}%</div><div class="tr-stat-val" style="color:#fbbf24">-${eur(charges)}</div><div style="font-size:10.5px;color:var(--muted);margin-top:3px">À provisionner sur le CA</div></div>
     <div class="tr-stat"><div class="tr-stat-label">Reste net</div><div class="tr-stat-val" style="color:${balCol}">${balance>=0?'+':''}${eur(balance)}</div><div style="font-size:10.5px;color:var(--muted);margin-top:3px">Après charges</div></div>
   `;
+
+  trRenderCumul(eur);
 
   const filtered = trCurrentFilter === 'all' ? trData : trData.filter(t => t.type === trCurrentFilter);
   const catLabels = { ca:'CA', pub:'Publicité', outil:'Outils/Abos', salaire:'Salaire', autre:'Autre' };
@@ -8688,6 +8707,35 @@ function trRender() {
       <div class="tr-row-amt ${cls}" ${isTr?'style="color:var(--muted)"':''}>${sign}${(t.amount||0).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})} €</div>
     </div>`;
   }).join('');
+}
+
+/* Bande « depuis le début » sous les totaux du mois. Les charges sont calculées
+   ici avec TAUX_CHARGES, comme partout ailleurs : la RPC ne renvoie que le CA
+   taxable brut, pour qu'un changement de taux n'ait qu'un seul endroit à vivre. */
+function trRenderCumul(eur) {
+  const el = document.getElementById('tr-cumul');
+  if (!el) return;
+  if (!trCumul) { el.innerHTML = ''; return; }
+
+  const inc = Number(trCumul.entrees || 0);
+  const out = Number(trCumul.sorties || 0);
+  const charges = Number(trCumul.ca_taxable || 0) * TAUX_CHARGES;
+  const net = inc - out - charges;
+  const depuis = trCumul.premiere
+    ? trMonthLabel(String(trCumul.premiere).slice(0, 7)).toLowerCase()
+    : null;
+
+  const item = (lbl, val, color) =>
+    `<div class="tr-cumul-item"><div class="tr-cumul-lbl">${lbl}</div><div class="tr-cumul-val" style="color:${color}">${val}</div></div>`;
+
+  el.className = 'tr-cumul';
+  el.innerHTML =
+    `<div class="tr-cumul-head">Depuis le début${depuis ? `<br><span style="font-weight:600;text-transform:none;letter-spacing:0">${depuis}</span>` : ''}</div>` +
+    item('Entrées', '+' + eur(inc), '#4ade80') +
+    item('Sorties', '−' + eur(out), '#f87171') +
+    item(`Charges ${Math.round(TAUX_CHARGES * 100)}%`, '−' + eur(charges), '#fbbf24') +
+    item('Reste net', (net >= 0 ? '+' : '') + eur(net), net >= 0 ? '#4ade80' : '#f87171') +
+    item('Opérations', String(trCumul.nb ?? 0), 'var(--muted)');
 }
 
 function trFilter(f, btn) {
