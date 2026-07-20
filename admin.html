@@ -632,6 +632,7 @@
         <div class="nav-item" data-page="facturation" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> <span>Facturation</span></div>
         <div class="nav-item" data-page="devis" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> <span>Devis</span></div>
         <div class="nav-item" data-page="tresorerie" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 110 7H6"/></svg> <span>Trésorerie</span></div>
+        <div class="nav-item" data-page="depenses" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><path d="M20 12V8H6a2 2 0 010-4h12v4"/><path d="M4 6v12a2 2 0 002 2h14v-4"/><path d="M18 12a2 2 0 000 4h4v-4z"/></svg> <span>Dépenses</span></div>
       </nav>
       <div class="sb-bottom">
         <div class="sb-user">
@@ -2226,6 +2227,203 @@
           </div>
         </div>
 
+        <!-- ── DÉPENSES ── -->
+        <div id="page-depenses" class="page">
+          <style>
+            .dp-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+            .dp-kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}
+            .dp-kpi-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+            .dp-kpi-val{font-size:23px;font-weight:900;line-height:1.1}
+            .dp-kpi-sub{font-size:11px;color:var(--muted);margin-top:5px}
+            .dp-grid{display:grid;grid-template-columns:1.55fr 1fr;gap:14px;margin-bottom:14px}
+            .dp-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+            .dp-card-title{font-size:13px;font-weight:800;color:#fff;margin:0 0 2px}
+            .dp-card-sub{font-size:11px;color:var(--muted);margin-bottom:14px}
+            .dp-canvas-wrap{position:relative;height:230px}
+            .dp-in{color:#4ade80}
+            .dp-out{color:#f87171}
+            .dp-row{display:flex;justify-content:space-between;align-items:center;padding:11px 16px;border-bottom:1px solid rgba(255,255,255,.04);gap:10px;cursor:pointer}
+            .dp-row:hover{background:rgba(255,255,255,.025)}
+            .dp-row:last-child{border-bottom:none}
+            .dp-row-desc{font-size:13px;font-weight:600;color:#fff}
+            .dp-row-meta{font-size:11px;color:var(--muted);margin-top:2px}
+            .dp-row-amt{font-size:14px;font-weight:800;white-space:nowrap}
+            .dp-tag{display:inline-block;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700;background:rgba(255,255,255,.06);color:var(--muted);margin-left:6px}
+            .dp-tag-rec{background:rgba(244,146,106,.14);color:var(--accent)}
+            .dp-sub-row{display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid rgba(255,255,255,.04)}
+            .dp-sub-row:last-child{border-bottom:none}
+            .dp-sub-row.off{opacity:.42}
+            .dp-fld{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box}
+            .dp-lbl{font-size:11px;color:var(--muted);display:block;margin-bottom:5px}
+            .dp-mini-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;padding:4px 6px;border-radius:6px}
+            .dp-mini-btn:hover{background:rgba(255,255,255,.06);color:#fff}
+            @media(max-width:1100px){.dp-kpis{grid-template-columns:repeat(2,1fr)}.dp-grid{grid-template-columns:1fr}}
+          </style>
+
+          <div class="page-header">
+            <div class="page-header-left">
+              <div class="page-eyebrow">Opérations</div>
+              <h1 class="page-title">Dépenses</h1>
+              <p class="page-sub">Charges, abonnements et entrées — vue analytique.</p>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button onclick="dpOpenSub()" class="btn-newtask" style="background:rgba(255,255,255,.06);color:#fff">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-3-6.7"/><polyline points="21 3 21 9 15 9"/></svg>
+                Abonnement
+              </button>
+              <button onclick="dpOpenAdd()" class="btn-newtask">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Dépense
+              </button>
+            </div>
+          </div>
+
+          <!-- Sélecteur de mois -->
+          <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:18px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 20px">
+            <button onclick="dpPrevMonth()" class="btn-nav-arrow">‹</button>
+            <div style="text-align:center;min-width:150px">
+              <div id="dp-month-label" style="font-size:16px;font-weight:800;color:#fff"></div>
+            </div>
+            <button onclick="dpNextMonth()" class="btn-nav-arrow">›</button>
+          </div>
+
+          <div class="dp-kpis" id="dp-kpis"></div>
+
+          <div class="dp-grid">
+            <div class="dp-card">
+              <h3 class="dp-card-title">Évolution sur 12 mois</h3>
+              <div class="dp-card-sub">Entrées vs dépenses, mois par mois</div>
+              <div class="dp-canvas-wrap"><canvas id="dp-chart-line"></canvas></div>
+            </div>
+            <div class="dp-card">
+              <h3 class="dp-card-title">Dépenses par catégorie</h3>
+              <div class="dp-card-sub" id="dp-bar-sub">Ce mois-ci</div>
+              <div class="dp-canvas-wrap"><canvas id="dp-chart-bar"></canvas></div>
+            </div>
+          </div>
+
+          <!-- Abonnements -->
+          <div class="dp-card" style="padding:0;margin-bottom:14px">
+            <div style="padding:16px 18px 12px;display:flex;justify-content:space-between;align-items:flex-end">
+              <div>
+                <h3 class="dp-card-title">Abonnements & charges récurrentes</h3>
+                <div class="dp-card-sub" style="margin:0" id="dp-sub-total"></div>
+              </div>
+            </div>
+            <div id="dp-subs"></div>
+          </div>
+
+          <!-- Dernières opérations -->
+          <div class="dp-card" style="padding:0">
+            <div style="padding:16px 18px 12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+              <div>
+                <h3 class="dp-card-title">Opérations du mois</h3>
+                <div class="dp-card-sub" style="margin:0">Cliquer une ligne pour modifier</div>
+              </div>
+              <div class="tr-cats" style="margin:0">
+                <button class="tr-cat-btn dp-f active" data-f="all" onclick="dpFilter('all',this)">Tout</button>
+                <button class="tr-cat-btn dp-f" data-f="sortie" onclick="dpFilter('sortie',this)">↓ Dépenses</button>
+                <button class="tr-cat-btn dp-f" data-f="entree" onclick="dpFilter('entree',this)">↑ Entrées</button>
+              </div>
+            </div>
+            <div id="dp-list"></div>
+          </div>
+
+          <!-- Compte bancaire -->
+          <div class="dp-card" style="margin-top:14px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
+            <div>
+              <h3 class="dp-card-title">Compte bancaire</h3>
+              <div class="dp-card-sub" style="margin:0" id="dp-bank-status">Non connecté — les opérations sont saisies manuellement.</div>
+            </div>
+            <button onclick="dpBankInfo()" class="btn-newtask" style="background:rgba(255,255,255,.06);color:#fff">Connecter</button>
+          </div>
+
+          <!-- Modal dépense -->
+          <div id="dp-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1100;align-items:center;justify-content:center;padding:16px" onclick="if(event.target.id==='dp-modal')dpClose()">
+            <div style="background:#18181f;border:1px solid var(--border);border-radius:18px;padding:26px 28px;width:100%;max-width:440px;position:relative">
+              <button onclick="dpClose()" style="position:absolute;top:14px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">×</button>
+              <h3 id="dp-modal-title" style="font-size:17px;font-weight:800;margin:0 0 16px">Nouvelle dépense</h3>
+              <input type="hidden" id="dp-id">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+                <div>
+                  <label class="dp-lbl">Type</label>
+                  <select id="dp-type" class="dp-fld">
+                    <option value="sortie">↓ Dépense</option>
+                    <option value="entree">↑ Entrée</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="dp-lbl">Montant (€) *</label>
+                  <input id="dp-amount" type="number" step="0.01" placeholder="49,90" class="dp-fld">
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+                <div>
+                  <label class="dp-lbl">Catégorie</label>
+                  <select id="dp-cat" class="dp-fld"></select>
+                </div>
+                <div>
+                  <label class="dp-lbl">Date</label>
+                  <input id="dp-date" type="date" class="dp-fld">
+                </div>
+              </div>
+              <label class="dp-lbl">Description</label>
+              <input id="dp-desc" placeholder="Vercel, Google Ads, URSSAF…" class="dp-fld" style="margin-bottom:12px">
+              <label class="dp-lbl">Notes</label>
+              <input id="dp-notes" placeholder="Détails, contexte…" class="dp-fld" style="margin-bottom:16px">
+              <div style="display:flex;gap:10px">
+                <button id="dp-del-btn" onclick="dpDelete()" style="flex:1;padding:11px;border-radius:8px;border:none;background:rgba(239,68,68,.12);color:#f87171;font-size:13px;font-weight:700;cursor:pointer;display:none">Supprimer</button>
+                <button onclick="dpSave()" style="flex:2;padding:11px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:700;cursor:pointer">Enregistrer</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal abonnement -->
+          <div id="dp-sub-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1100;align-items:center;justify-content:center;padding:16px" onclick="if(event.target.id==='dp-sub-modal')dpCloseSub()">
+            <div style="background:#18181f;border:1px solid var(--border);border-radius:18px;padding:26px 28px;width:100%;max-width:440px;position:relative">
+              <button onclick="dpCloseSub()" style="position:absolute;top:14px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">×</button>
+              <h3 id="dp-sub-modal-title" style="font-size:17px;font-weight:800;margin:0 0 16px">Nouvel abonnement</h3>
+              <input type="hidden" id="dp-sub-id">
+              <label class="dp-lbl">Nom *</label>
+              <input id="dp-sub-name" placeholder="Vercel Pro, Adobe CC…" class="dp-fld" style="margin-bottom:12px">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+                <div>
+                  <label class="dp-lbl">Montant (€) *</label>
+                  <input id="dp-sub-amount" type="number" step="0.01" placeholder="20" class="dp-fld">
+                </div>
+                <div>
+                  <label class="dp-lbl">Périodicité</label>
+                  <select id="dp-sub-period" class="dp-fld">
+                    <option value="mensuel">Mensuel</option>
+                    <option value="trimestriel">Trimestriel</option>
+                    <option value="annuel">Annuel</option>
+                  </select>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+                <div>
+                  <label class="dp-lbl">Catégorie</label>
+                  <select id="dp-sub-cat" class="dp-fld"></select>
+                </div>
+                <div>
+                  <label class="dp-lbl">Prochain prélèvement</label>
+                  <input id="dp-sub-next" type="date" class="dp-fld">
+                </div>
+              </div>
+              <label class="dp-lbl">Notes</label>
+              <input id="dp-sub-notes" placeholder="Compte, offre…" class="dp-fld" style="margin-bottom:14px">
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:16px">
+                <input type="checkbox" id="dp-sub-active" checked style="accent-color:var(--accent);width:15px;height:15px">
+                Abonnement actif
+              </label>
+              <div style="display:flex;gap:10px">
+                <button id="dp-sub-del-btn" onclick="dpDeleteSub()" style="flex:1;padding:11px;border-radius:8px;border:none;background:rgba(239,68,68,.12);color:#f87171;font-size:13px;font-weight:700;cursor:pointer;display:none">Supprimer</button>
+                <button onclick="dpSaveSub()" style="flex:2;padding:11px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:700;cursor:pointer">Enregistrer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- ── DOCUMENTS ── -->
         <div id="page-documents" class="page">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">
@@ -3251,14 +3449,16 @@ const sections = {
   objectifs:'PILOTAGE', planning:'PILOTAGE',
   clients:'BUSINESS', leads:'BUSINESS', ads:'BUSINESS',
   formulaire:'BUSINESS', appels:'BUSINESS',
-  documents:'OPÉRATIONS', facturation:'OPÉRATIONS', devis:'OPÉRATIONS', tresorerie:'OPÉRATIONS'
+  documents:'OPÉRATIONS', facturation:'OPÉRATIONS', devis:'OPÉRATIONS', tresorerie:'OPÉRATIONS',
+  depenses:'OPÉRATIONS'
 };
 const titles = {
   dashboard:'Dashboard', pipeline:'Pipeline', taches:'Tâches',
   objectifs:'Objectifs', planning:'Planning',
   clients:'Clients', leads:'Leads', ads:'Google Ads',
   formulaire:'Formulaire', appels:'Appels',
-  documents:'Documents', facturation:'Facturation', devis:'Devis', tresorerie:'Trésorerie'
+  documents:'Documents', facturation:'Facturation', devis:'Devis', tresorerie:'Trésorerie',
+  depenses:'Dépenses'
 };
 function nav(el) {
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
@@ -3278,6 +3478,7 @@ function nav(el) {
   if(p==='objectifs') obInit();
   if(p==='planning') plInit();
   if(p==='tresorerie') trInit();
+  if(p==='depenses') dpInit();
 }
 
 function toggleTask(cb) {
@@ -8523,6 +8724,411 @@ function trCloseModal() {
   document.getElementById('tr-modal').style.display = 'none';
   document.getElementById('tr-split-section').style.display = '';
   trEditId = null;
+}
+
+/* ═══════════════════════════════════════════════
+   DÉPENSES
+═══════════════════════════════════════════════ */
+const DP_CATS = {
+  ca:'Chiffre d\'affaires', pub:'Publicité', outil:'Outils / Abos',
+  salaire:'Salaire', charge:'Charges / URSSAF', banque:'Frais bancaires',
+  materiel:'Matériel', deplacement:'Déplacement', autre:'Autre'
+};
+const DP_CAT_COLORS = {
+  ca:'#4ade80', pub:'#f4926a', outil:'#60a5fa', salaire:'#c084fc',
+  charge:'#fbbf24', banque:'#38bdf8', materiel:'#fb7185', deplacement:'#2dd4bf', autre:'#94a3b8'
+};
+
+let dpMonthData = [];      // transactions du mois sélectionné
+let dpYearData  = [];      // transactions des 12 derniers mois
+let dpSubs      = [];      // abonnements
+let dpFilterVal = 'all';
+let dpEditId    = null;
+let dpSubEditId = null;
+let dpChartLine = null, dpChartBar = null;
+
+const _dpNow = new Date();
+let dpMonth = `${_dpNow.getFullYear()}-${String(_dpNow.getMonth()+1).padStart(2,'0')}`;
+
+const dpEur = n => (n||0).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' €';
+const dpMonthEnd = ym => {
+  const [y,m] = ym.split('-').map(Number);
+  return `${ym}-${String(new Date(y, m, 0).getDate()).padStart(2,'0')}`;
+};
+function dpShiftMonth(ym, delta) {
+  const [y,m] = ym.split('-').map(Number);
+  const d = new Date(y, m-1+delta, 1);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+}
+function dpPrevMonth() { dpMonth = dpShiftMonth(dpMonth, -1); dpInit(); }
+function dpNextMonth() { dpMonth = dpShiftMonth(dpMonth,  1); dpInit(); }
+
+// Montant mensualisé d'un abonnement
+function dpMonthly(s) {
+  const a = Number(s.amount) || 0;
+  if (s.period === 'annuel') return a / 12;
+  if (s.period === 'trimestriel') return a / 3;
+  return a;
+}
+
+function dpFillCatSelects() {
+  const opts = Object.entries(DP_CATS).map(([k,v]) => `<option value="${k}">${v}</option>`).join('');
+  const a = document.getElementById('dp-cat'), b = document.getElementById('dp-sub-cat');
+  if (a && !a.options.length) a.innerHTML = opts;
+  if (b && !b.options.length) b.innerHTML = opts;
+}
+
+async function dpInit() {
+  dpFillCatSelects();
+  const lbl = document.getElementById('dp-month-label');
+  if (lbl) lbl.textContent = trMonthLabel(dpMonth);
+
+  const from12 = dpShiftMonth(dpMonth, -11) + '-01';
+  const to     = dpMonthEnd(dpMonth);
+
+  const [tx, subs] = await Promise.all([
+    sb.from('transactions').select('*').gte('date', from12).lte('date', to).order('date', { ascending: false }),
+    sb.from('subscriptions').select('*').order('amount', { ascending: false })
+  ]);
+
+  dpYearData = tx.data || [];
+  dpSubs     = subs.data || [];
+  const mFrom = dpMonth + '-01';
+  dpMonthData = dpYearData.filter(t => t.date >= mFrom && t.date <= to);
+
+  dpRenderKpis();
+  dpRenderLine();
+  dpRenderBar();
+  dpRenderSubs();
+  dpRenderList();
+}
+
+function dpRenderKpis() {
+  const out = dpMonthData.filter(t => t.type === 'sortie').reduce((s,t) => s + Number(t.amount||0), 0);
+  const inc = dpMonthData.filter(t => t.type === 'entree').reduce((s,t) => s + Number(t.amount||0), 0);
+  const net = inc - out;
+  const recu = dpSubs.filter(s => s.active).reduce((s,x) => s + dpMonthly(x), 0);
+
+  // Comparaison avec le mois précédent
+  const pm = dpShiftMonth(dpMonth, -1);
+  const prevOut = dpYearData
+    .filter(t => t.type === 'sortie' && (t.date||'').startsWith(pm))
+    .reduce((s,t) => s + Number(t.amount||0), 0);
+  let delta = '';
+  if (prevOut > 0) {
+    const pct = Math.round(((out - prevOut) / prevOut) * 100);
+    const col = pct > 0 ? '#f87171' : '#4ade80';
+    delta = `<span style="color:${col}">${pct>0?'+':''}${pct}%</span> vs mois préc.`;
+  } else {
+    delta = 'Pas d\'historique le mois précédent';
+  }
+
+  document.getElementById('dp-kpis').innerHTML = `
+    <div class="dp-kpi">
+      <div class="dp-kpi-label">Dépenses du mois</div>
+      <div class="dp-kpi-val dp-out">${dpEur(out)}</div>
+      <div class="dp-kpi-sub">${delta}</div>
+    </div>
+    <div class="dp-kpi">
+      <div class="dp-kpi-label">Entrées du mois</div>
+      <div class="dp-kpi-val dp-in">${dpEur(inc)}</div>
+      <div class="dp-kpi-sub">${dpMonthData.filter(t=>t.type==='entree').length} opération(s)</div>
+    </div>
+    <div class="dp-kpi">
+      <div class="dp-kpi-label">Résultat net</div>
+      <div class="dp-kpi-val" style="color:${net>=0?'#4ade80':'#f87171'}">${net>=0?'+':''}${dpEur(net)}</div>
+      <div class="dp-kpi-sub">Entrées − dépenses</div>
+    </div>
+    <div class="dp-kpi">
+      <div class="dp-kpi-label">Abonnements / mois</div>
+      <div class="dp-kpi-val" style="color:var(--accent)">${dpEur(recu)}</div>
+      <div class="dp-kpi-sub">${dpSubs.filter(s=>s.active).length} actif(s) · ${dpEur(recu*12)} / an</div>
+    </div>`;
+}
+
+function dpRenderLine() {
+  const cv = document.getElementById('dp-chart-line');
+  if (!cv) return;
+  const months = [];
+  for (let i = 11; i >= 0; i--) months.push(dpShiftMonth(dpMonth, -i));
+  const labels = months.map(m => TR_MOIS_FR[parseInt(m.split('-')[1])-1].slice(0,3) + ' ' + m.slice(2,4));
+  const sums = type => months.map(m =>
+    dpYearData.filter(t => t.type === type && (t.date||'').startsWith(m))
+              .reduce((s,t) => s + Number(t.amount||0), 0));
+
+  if (dpChartLine) dpChartLine.destroy();
+  dpChartLine = new Chart(cv.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label:'Entrées', data:sums('entree'), borderColor:'#4ade80', backgroundColor:'rgba(74,222,128,.10)',
+          fill:true, tension:.35, borderWidth:2, pointRadius:2, pointHoverRadius:5 },
+        { label:'Dépenses', data:sums('sortie'), borderColor:'#f87171', backgroundColor:'rgba(248,113,113,.10)',
+          fill:true, tension:.35, borderWidth:2, pointRadius:2, pointHoverRadius:5 }
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{
+        legend:{ labels:{ color:'#9ca3af', boxWidth:10, boxHeight:10, font:{ size:11 } } },
+        tooltip:{ callbacks:{ label: c => `${c.dataset.label} : ${dpEur(c.parsed.y)}` } }
+      },
+      scales:{
+        x:{ grid:{ color:'rgba(255,255,255,.04)' }, ticks:{ color:'#6b7280', font:{ size:10 } } },
+        y:{ grid:{ color:'rgba(255,255,255,.04)' }, ticks:{ color:'#6b7280', font:{ size:10 },
+            callback: v => v.toLocaleString('fr-FR') + ' €' }, beginAtZero:true }
+      }
+    }
+  });
+}
+
+function dpRenderBar() {
+  const cv = document.getElementById('dp-chart-bar');
+  if (!cv) return;
+  const byCat = {};
+  dpMonthData.filter(t => t.type === 'sortie').forEach(t => {
+    const c = t.category || 'autre';
+    byCat[c] = (byCat[c] || 0) + Number(t.amount||0);
+  });
+  const entries = Object.entries(byCat).sort((a,b) => b[1] - a[1]);
+
+  const sub = document.getElementById('dp-bar-sub');
+  if (sub) sub.textContent = entries.length ? `${trMonthLabel(dpMonth)} · ${entries.length} catégorie(s)` : 'Aucune dépense ce mois-ci';
+
+  if (dpChartBar) dpChartBar.destroy();
+  dpChartBar = new Chart(cv.getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: entries.map(([k]) => DP_CATS[k] || k),
+      datasets: [{
+        data: entries.map(([,v]) => v),
+        backgroundColor: entries.map(([k]) => DP_CAT_COLORS[k] || '#94a3b8'),
+        borderRadius: 6, borderSkipped: false, barThickness: 18
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{ display:false },
+        tooltip:{ callbacks:{ label: c => dpEur(c.parsed.x) } }
+      },
+      scales:{
+        x:{ grid:{ color:'rgba(255,255,255,.04)' }, ticks:{ color:'#6b7280', font:{ size:10 },
+            callback: v => v.toLocaleString('fr-FR') + ' €' }, beginAtZero:true },
+        y:{ grid:{ display:false }, ticks:{ color:'#9ca3af', font:{ size:11 } } }
+      }
+    }
+  });
+}
+
+function dpRenderSubs() {
+  const total = dpSubs.filter(s => s.active).reduce((s,x) => s + dpMonthly(x), 0);
+  const tot = document.getElementById('dp-sub-total');
+  if (tot) tot.textContent = `${dpEur(total)} par mois · ${dpEur(total*12)} par an`;
+
+  const el = document.getElementById('dp-subs');
+  if (!dpSubs.length) {
+    el.innerHTML = '<div style="padding:32px;text-align:center;color:var(--muted);font-size:13px">Aucun abonnement enregistré.</div>';
+    return;
+  }
+  el.innerHTML = dpSubs.map(s => {
+    const per = { mensuel:'/ mois', trimestriel:'/ trimestre', annuel:'/ an' }[s.period] || '';
+    const next = s.next_date ? new Date(s.next_date+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'}) : '—';
+    const col = DP_CAT_COLORS[s.category] || '#94a3b8';
+    return `<div class="dp-sub-row ${s.active?'':'off'}">
+      <div style="width:8px;height:8px;border-radius:50%;background:${col};flex-shrink:0"></div>
+      <div style="flex:1;min-width:0;cursor:pointer" onclick="dpOpenSub('${s.id}')">
+        <div class="dp-row-desc">${s.name||'—'}${s.active?'':'<span class="dp-tag">inactif</span>'}</div>
+        <div class="dp-row-meta">${DP_CATS[s.category]||s.category||''} · prochain : ${next}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="dp-row-amt">${dpEur(s.amount)} <span style="font-size:11px;color:var(--muted);font-weight:600">${per}</span></div>
+        ${s.period !== 'mensuel' ? `<div style="font-size:11px;color:var(--muted)">≈ ${dpEur(dpMonthly(s))} / mois</div>` : ''}
+      </div>
+      <button class="dp-mini-btn" title="Enregistrer une dépense depuis cet abonnement" onclick="dpChargeSub('${s.id}')">＋</button>
+    </div>`;
+  }).join('');
+}
+
+function dpRenderList() {
+  const rows = dpFilterVal === 'all' ? dpMonthData : dpMonthData.filter(t => t.type === dpFilterVal);
+  const el = document.getElementById('dp-list');
+  if (!rows.length) {
+    el.innerHTML = '<div style="padding:36px;text-align:center;color:var(--muted);font-size:13px">Aucune opération ce mois-ci.</div>';
+    return;
+  }
+  const sorted = [...rows].sort((a,b) => (b.date||'').localeCompare(a.date||''));
+  el.innerHTML = sorted.map(t => {
+    const sign = t.type === 'entree' ? '+' : '−';
+    const cls  = t.type === 'entree' ? 'dp-in' : 'dp-out';
+    const ds   = t.date ? new Date(t.date+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'}) : '';
+    const rec  = t.subscription_id ? '<span class="dp-tag dp-tag-rec">récurrent</span>' : '';
+    const bank = t.source === 'bancaire' ? '<span class="dp-tag">banque</span>' : '';
+    const notes = t.notes ? `<span style="color:var(--muted);font-size:11px"> — ${t.notes}</span>` : '';
+    return `<div class="dp-row" onclick="dpOpenEdit('${t.id}')">
+      <div style="flex:1;min-width:0">
+        <div class="dp-row-desc">${t.description||'—'}${rec}${bank}${notes}</div>
+        <div class="dp-row-meta">${DP_CATS[t.category]||t.category||''}${ds?' · '+ds:''}</div>
+      </div>
+      <div class="dp-row-amt ${cls}">${sign}${dpEur(t.amount)}</div>
+    </div>`;
+  }).join('');
+}
+
+function dpFilter(f, btn) {
+  dpFilterVal = f;
+  document.querySelectorAll('.dp-f').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  dpRenderList();
+}
+
+/* ── Dépenses : CRUD ── */
+function dpOpenAdd() {
+  dpFillCatSelects();
+  dpEditId = null;
+  document.getElementById('dp-modal-title').textContent = 'Nouvelle dépense';
+  document.getElementById('dp-type').value   = 'sortie';
+  document.getElementById('dp-amount').value = '';
+  document.getElementById('dp-cat').value    = 'outil';
+  document.getElementById('dp-date').value   = new Date().toISOString().slice(0,10);
+  document.getElementById('dp-desc').value   = '';
+  document.getElementById('dp-notes').value  = '';
+  document.getElementById('dp-del-btn').style.display = 'none';
+  document.getElementById('dp-modal').style.display = 'flex';
+}
+
+function dpOpenEdit(id) {
+  const t = dpMonthData.find(x => x.id === id);
+  if (!t) return;
+  dpFillCatSelects();
+  dpEditId = id;
+  document.getElementById('dp-modal-title').textContent = 'Modifier l\'opération';
+  document.getElementById('dp-type').value   = t.type || 'sortie';
+  document.getElementById('dp-amount').value = t.amount ?? '';
+  document.getElementById('dp-cat').value    = t.category || 'autre';
+  document.getElementById('dp-date').value   = t.date || '';
+  document.getElementById('dp-desc').value   = t.description || '';
+  document.getElementById('dp-notes').value  = t.notes || '';
+  document.getElementById('dp-del-btn').style.display = 'block';
+  document.getElementById('dp-modal').style.display = 'flex';
+}
+
+async function dpSave() {
+  const amount = parseFloat(document.getElementById('dp-amount').value);
+  if (!amount || amount <= 0) { alert('Montant requis.'); return; }
+  const row = {
+    type: document.getElementById('dp-type').value,
+    amount,
+    category: document.getElementById('dp-cat').value,
+    date: document.getElementById('dp-date').value || new Date().toISOString().slice(0,10),
+    description: document.getElementById('dp-desc').value.trim() || null,
+    notes: document.getElementById('dp-notes').value.trim() || null
+  };
+  const { error } = dpEditId
+    ? await sb.from('transactions').update(row).eq('id', dpEditId)
+    : await sb.from('transactions').insert([row]);
+  if (error) { alert('Erreur : ' + error.message); return; }
+  dpClose();
+  await dpInit();
+}
+
+async function dpDelete() {
+  if (!dpEditId || !confirm('Supprimer cette opération ?')) return;
+  const { error } = await sb.from('transactions').delete().eq('id', dpEditId);
+  if (error) { alert('Erreur : ' + error.message); return; }
+  dpClose();
+  await dpInit();
+}
+
+function dpClose() {
+  document.getElementById('dp-modal').style.display = 'none';
+  dpEditId = null;
+}
+
+/* ── Abonnements : CRUD ── */
+function dpOpenSub(id) {
+  dpFillCatSelects();
+  dpSubEditId = id || null;
+  const s = id ? dpSubs.find(x => x.id === id) : null;
+  document.getElementById('dp-sub-modal-title').textContent = s ? 'Modifier l\'abonnement' : 'Nouvel abonnement';
+  document.getElementById('dp-sub-name').value   = s?.name || '';
+  document.getElementById('dp-sub-amount').value = s?.amount ?? '';
+  document.getElementById('dp-sub-period').value = s?.period || 'mensuel';
+  document.getElementById('dp-sub-cat').value    = s?.category || 'outil';
+  document.getElementById('dp-sub-next').value   = s?.next_date || '';
+  document.getElementById('dp-sub-notes').value  = s?.notes || '';
+  document.getElementById('dp-sub-active').checked = s ? !!s.active : true;
+  document.getElementById('dp-sub-del-btn').style.display = s ? 'block' : 'none';
+  document.getElementById('dp-sub-modal').style.display = 'flex';
+}
+
+async function dpSaveSub() {
+  const name = document.getElementById('dp-sub-name').value.trim();
+  const amount = parseFloat(document.getElementById('dp-sub-amount').value);
+  if (!name) { alert('Nom requis.'); return; }
+  if (!amount || amount <= 0) { alert('Montant requis.'); return; }
+  const row = {
+    name, amount,
+    period: document.getElementById('dp-sub-period').value,
+    category: document.getElementById('dp-sub-cat').value,
+    next_date: document.getElementById('dp-sub-next').value || null,
+    notes: document.getElementById('dp-sub-notes').value.trim() || null,
+    active: document.getElementById('dp-sub-active').checked
+  };
+  const { error } = dpSubEditId
+    ? await sb.from('subscriptions').update(row).eq('id', dpSubEditId)
+    : await sb.from('subscriptions').insert([row]);
+  if (error) { alert('Erreur : ' + error.message); return; }
+  dpCloseSub();
+  await dpInit();
+}
+
+async function dpDeleteSub() {
+  if (!dpSubEditId || !confirm('Supprimer cet abonnement ? Les dépenses déjà enregistrées sont conservées.')) return;
+  const { error } = await sb.from('subscriptions').delete().eq('id', dpSubEditId);
+  if (error) { alert('Erreur : ' + error.message); return; }
+  dpCloseSub();
+  await dpInit();
+}
+
+function dpCloseSub() {
+  document.getElementById('dp-sub-modal').style.display = 'none';
+  dpSubEditId = null;
+}
+
+// Enregistre une dépense à partir d'un abonnement + avance la date du prochain prélèvement
+async function dpChargeSub(id) {
+  const s = dpSubs.find(x => x.id === id);
+  if (!s) return;
+  const date = s.next_date || new Date().toISOString().slice(0,10);
+  if (!confirm(`Enregistrer une dépense de ${dpEur(s.amount)} pour « ${s.name} » au ${new Date(date+'T12:00:00').toLocaleDateString('fr-FR')} ?`)) return;
+
+  const { error } = await sb.from('transactions').insert([{
+    type: 'sortie', amount: Number(s.amount), category: s.category || 'outil',
+    date, description: s.name, notes: s.notes || null, subscription_id: s.id
+  }]);
+  if (error) { alert('Erreur : ' + error.message); return; }
+
+  // Prochaine échéance
+  const step = { annuel:12, trimestriel:3, mensuel:1 }[s.period] || 1;
+  const d = new Date(date+'T12:00:00');
+  d.setMonth(d.getMonth() + step);
+  await sb.from('subscriptions').update({ next_date: d.toISOString().slice(0,10) }).eq('id', s.id);
+
+  await dpInit();
+}
+
+function dpBankInfo() {
+  alert(
+    "Connexion bancaire — pas encore active.\n\n" +
+    "Elle nécessite un compte chez un agrégateur bancaire (GoCardless Bank Account Data, Bridge ou Powens) " +
+    "et une clé API, qui doit vivre côté serveur et non dans cette page.\n\n" +
+    "La base est déjà prête : les colonnes source et external_id existent sur la table transactions " +
+    "pour importer les opérations sans doublon dès que le compte est ouvert."
+  );
 }
 
 // Session — si pas connecté ou pas admin, retour auth.html
