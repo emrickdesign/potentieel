@@ -2398,9 +2398,10 @@
               <div class="dp-modal-row" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
                 <div>
                   <label class="dp-lbl">Type</label>
-                  <select id="dp-type" class="dp-fld">
+                  <select id="dp-type" class="dp-fld" onchange="dpTypeChanged()">
                     <option value="sortie">↓ Dépense</option>
                     <option value="entree">↑ Entrée</option>
+                    <option value="abonnement">↻ Abonnement</option>
                   </select>
                 </div>
                 <div>
@@ -2414,8 +2415,20 @@
                   <select id="dp-cat" class="dp-fld"></select>
                 </div>
                 <div>
-                  <label class="dp-lbl">Date</label>
+                  <label class="dp-lbl" id="dp-date-lbl">Date</label>
                   <input id="dp-date" type="date" class="dp-fld">
+                </div>
+              </div>
+              <!-- Périodicité : visible seulement pour un abonnement -->
+              <div id="dp-period-row" style="display:none;margin-bottom:12px">
+                <label class="dp-lbl">Périodicité</label>
+                <select id="dp-period-inline" class="dp-fld">
+                  <option value="mensuel">Tous les mois</option>
+                  <option value="trimestriel">Tous les 3 mois</option>
+                  <option value="annuel">Tous les ans</option>
+                </select>
+                <div style="font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5">
+                  Le prélèvement sera compté automatiquement dans la trésorerie à chaque échéance, sans le ressaisir.
                 </div>
               </div>
               <label class="dp-lbl">Description</label>
@@ -8654,6 +8667,8 @@ async function trInit() {
   const to   = `${trCurrentMonth}-${String(last).padStart(2,'0')}`;
   const lbl = document.getElementById('tr-month-label');
   if (lbl) lbl.textContent = trMonthLabel(trCurrentMonth);
+  // Les abonnements comptent dans la trésorerie : on génère leurs échéances dues.
+  await dpMaterializeSubs();
   const [moisRes, cumulRes] = await Promise.all([
     sb.from('transactions').select('*').gte('date', from).lte('date', to).order('date', { ascending: false }),
     sb.rpc('treso_totaux')
@@ -8899,6 +8914,77 @@ function dpMonthly(s) {
   return a;
 }
 
+/* Génère automatiquement, dans la table transactions, les prélèvements dus de
+   chaque abonnement actif — depuis sa date de départ jusqu'au mois courant.
+   C'est ce qui fait qu'un abonnement « compte tout seul » dans la trésorerie
+   sans le ressaisir chaque mois.
+   Idempotent : chaque échéance a un external_id déterministe (subauto_<id>_<AAAA-MM>),
+   donc relancer n'insère jamais de doublon. Tourne une fois par session, plus
+   à la demande après création d'un abonnement. Ne bloque jamais l'affichage. */
+let _dpSubsSynced = false;
+async function dpMaterializeSubs(force = false) {
+  if (_dpSubsSynced && !force) return;
+  try {
+    const { data: subs, error } = await sb.from('subscriptions').select('*').eq('active', true);
+    if (error) { console.warn('dpMaterializeSubs:', error.message); return; }
+    if (!subs || !subs.length) { _dpSubsSynced = true; return; }
+
+    const today = new Date();
+    const curFirst = new Date(today.getFullYear(), today.getMonth(), 1);
+    const stepOf = p => ({ mensuel: 1, trimestriel: 3, annuel: 12 }[p] || 1);
+
+    const rows = [];
+    for (const s of subs) {
+      const anchor = s.start_date || s.next_date || (s.created_at ? String(s.created_at).slice(0, 10) : null);
+      const amount = Number(s.amount) || 0;
+      if (!anchor || amount <= 0) continue;
+      const [ay, am, ad] = anchor.split('-').map(Number);
+      const step = stepOf(s.period);
+      for (let k = 0; k < 120; k++) {
+        const d = new Date(ay, (am - 1) + k * step, 1); // 1er du mois d'échéance
+        if (d > curFirst) break;                        // jamais au-delà du mois courant
+        const last = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+        const day = Math.min(ad || 1, last);            // jour de prélèvement, borné
+        const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        rows.push({
+          type: 'sortie', amount, category: s.category || 'outil',
+          date: `${ym}-${String(day).padStart(2, '0')}`,
+          description: s.name || 'Abonnement', notes: s.notes || null,
+          subscription_id: s.id, source: 'abonnement',
+          external_id: `subauto_${s.id}_${ym}`
+        });
+      }
+    }
+    if (!rows.length) { _dpSubsSynced = true; return; }
+
+    // Dédup : on ne garde que les échéances pas encore en base.
+    const ids = rows.map(r => r.external_id);
+    const existing = new Set();
+    for (let i = 0; i < ids.length; i += 200) {
+      const { data } = await sb.from('transactions').select('external_id').in('external_id', ids.slice(i, i + 200));
+      (data || []).forEach(r => existing.add(r.external_id));
+    }
+    const fresh = rows.filter(r => !existing.has(r.external_id));
+    if (fresh.length) {
+      const { error: insErr } = await sb.from('transactions').insert(fresh);
+      if (insErr) { console.warn('dpMaterializeSubs insert:', insErr.message); return; }
+    }
+    _dpSubsSynced = true;
+  } catch (e) {
+    console.warn('dpMaterializeSubs:', e);
+  }
+}
+
+// Bascule l'affichage du modal selon le type choisi (Abonnement révèle la périodicité).
+function dpTypeChanged() {
+  const isAbo = document.getElementById('dp-type').value === 'abonnement';
+  document.getElementById('dp-period-row').style.display = isAbo ? 'block' : 'none';
+  const dlbl = document.getElementById('dp-date-lbl');
+  if (dlbl) dlbl.textContent = isAbo ? 'Depuis le' : 'Date';
+  const desc = document.getElementById('dp-desc');
+  if (desc) desc.placeholder = isAbo ? 'Nom de l’abonnement (Vercel, Adobe…)' : 'Vercel, Google Ads, URSSAF…';
+}
+
 function dpFillCatSelects() {
   const opts = Object.entries(DP_CATS).map(([k,v]) => `<option value="${k}">${v}</option>`).join('');
   const a = document.getElementById('dp-cat'), b = document.getElementById('dp-sub-cat');
@@ -8910,6 +8996,9 @@ async function dpInit() {
   dpFillCatSelects();
   const lbl = document.getElementById('dp-month-label');
   if (lbl) lbl.textContent = trMonthLabel(dpMonth);
+
+  // Génère les prélèvements d'abonnement dus avant de charger les données.
+  await dpMaterializeSubs();
 
   const from12 = dpShiftMonth(dpMonth, -11) + '-01';
   const to     = dpMonthEnd(dpMonth);
@@ -9093,7 +9182,7 @@ function dpRenderSubs() {
         <div class="dp-row-amt">${dpEur(s.amount)} <span style="font-size:11px;color:var(--muted);font-weight:600">${per}</span></div>
         ${s.period !== 'mensuel' ? `<div style="font-size:11px;color:var(--muted)">≈ ${dpEur(dpMonthly(s))} / mois</div>` : ''}
       </div>
-      <button class="dp-mini-btn" title="Enregistrer une dépense depuis cet abonnement" onclick="dpChargeSub('${s.id}')">＋</button>
+      <span class="dp-tag dp-tag-rec" title="Compté automatiquement dans la trésorerie à chaque échéance">auto</span>
     </div>`;
   }).join('');
 }
@@ -9144,6 +9233,7 @@ function dpOpenAdd() {
   document.getElementById('dp-desc').value   = '';
   document.getElementById('dp-notes').value  = '';
   document.getElementById('dp-del-btn').style.display = 'none';
+  dpTypeChanged();
   document.getElementById('dp-modal').style.display = 'flex';
 }
 
@@ -9160,14 +9250,40 @@ function dpOpenEdit(id) {
   document.getElementById('dp-desc').value   = t.description || '';
   document.getElementById('dp-notes').value  = t.notes || '';
   document.getElementById('dp-del-btn').style.display = 'block';
+  dpTypeChanged();
   document.getElementById('dp-modal').style.display = 'flex';
 }
 
 async function dpSave() {
+  const type = document.getElementById('dp-type').value;
   const amount = parseFloat(document.getElementById('dp-amount').value);
   if (!amount || amount <= 0) { alert('Montant requis.'); return; }
+
+  // Abonnement : on crée une ligne dans subscriptions, et la génération
+  // automatique se charge d'en tirer les prélèvements mensuels.
+  if (type === 'abonnement') {
+    if (dpEditId) { alert('Pour créer un abonnement, ferme et rouvre en « Nouvelle dépense ».'); return; }
+    const startDate = document.getElementById('dp-date').value || new Date().toISOString().slice(0,10);
+    const sub = {
+      name: document.getElementById('dp-desc').value.trim() || 'Abonnement',
+      amount,
+      period: document.getElementById('dp-period-inline').value,
+      category: document.getElementById('dp-cat').value,
+      start_date: startDate,
+      next_date: startDate,
+      active: true,
+      notes: document.getElementById('dp-notes').value.trim() || null
+    };
+    const { error } = await sb.from('subscriptions').insert([sub]);
+    if (error) { alert('Erreur : ' + error.message); return; }
+    await dpMaterializeSubs(true);   // matérialise tout de suite les échéances dues
+    dpClose();
+    await dpInit();
+    return;
+  }
+
   const row = {
-    type: document.getElementById('dp-type').value,
+    type,
     amount,
     category: document.getElementById('dp-cat').value,
     date: document.getElementById('dp-date').value || new Date().toISOString().slice(0,10),
@@ -9244,28 +9360,6 @@ async function dpDeleteSub() {
 function dpCloseSub() {
   document.getElementById('dp-sub-modal').style.display = 'none';
   dpSubEditId = null;
-}
-
-// Enregistre une dépense à partir d'un abonnement + avance la date du prochain prélèvement
-async function dpChargeSub(id) {
-  const s = dpSubs.find(x => x.id === id);
-  if (!s) return;
-  const date = s.next_date || new Date().toISOString().slice(0,10);
-  if (!confirm(`Enregistrer une dépense de ${dpEur(s.amount)} pour « ${s.name} » au ${new Date(date+'T12:00:00').toLocaleDateString('fr-FR')} ?`)) return;
-
-  const { error } = await sb.from('transactions').insert([{
-    type: 'sortie', amount: Number(s.amount), category: s.category || 'outil',
-    date, description: s.name, notes: s.notes || null, subscription_id: s.id
-  }]);
-  if (error) { alert('Erreur : ' + error.message); return; }
-
-  // Prochaine échéance
-  const step = { annuel:12, trimestriel:3, mensuel:1 }[s.period] || 1;
-  const d = new Date(date+'T12:00:00');
-  d.setMonth(d.getMonth() + step);
-  await sb.from('subscriptions').update({ next_date: d.toISOString().slice(0,10) }).eq('id', s.id);
-
-  await dpInit();
 }
 
 /* MRR et setup cumulé du dashboard, lus en direct chez Stripe via l'Edge
