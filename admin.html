@@ -631,8 +631,7 @@
         <div class="nav-item" data-page="documents" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> <span>Documents</span></div>
         <div class="nav-item" data-page="facturation" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> <span>Facturation</span></div>
         <div class="nav-item" data-page="devis" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> <span>Devis</span></div>
-        <div class="nav-item" data-page="tresorerie" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 110 7H6"/></svg> <span>Trésorerie</span></div>
-        <div class="nav-item" data-page="depenses" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><path d="M20 12V8H6a2 2 0 010-4h12v4"/><path d="M4 6v12a2 2 0 002 2h14v-4"/><path d="M18 12a2 2 0 000 4h4v-4z"/></svg> <span>Dépenses</span></div>
+        <div class="nav-item" data-page="depenses" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 110 7H6"/></svg> <span>Trésorerie</span></div>
       </nav>
       <div class="sb-bottom">
         <div class="sb-user">
@@ -2122,135 +2121,6 @@
         </div>
 
         <!-- ── TRÉSORERIE ── -->
-        <div id="page-tresorerie" class="page">
-          <style>
-            .tr-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:12px}
-            .tr-stat{min-width:0}
-            .tr-stat-val{overflow-wrap:anywhere}
-            /* Bande de cumul : volontairement plus discrète que les totaux du
-               mois, qui restent l'information principale de la page. */
-            .tr-cumul{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:12px 16px;margin-bottom:20px;
-                      display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px 16px;align-items:center}
-            .tr-cumul-head{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;font-weight:800}
-            .tr-cumul-item{min-width:0}
-            .tr-cumul-lbl{font-size:10.5px;color:var(--muted);margin-bottom:2px}
-            .tr-cumul-val{font-size:15px;font-weight:800;overflow-wrap:anywhere}
-            .tr-stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}
-            .tr-stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
-            .tr-stat-val{font-size:24px;font-weight:900}
-            .tr-row{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.04);gap:10px}
-            .tr-row:hover{background:rgba(255,255,255,.02)}
-            .tr-row-desc{font-size:13px;font-weight:600;color:#fff}
-            .tr-row-meta{font-size:11px;color:var(--muted);margin-top:2px}
-            .tr-row-amt{font-size:15px;font-weight:800;white-space:nowrap}
-            .tr-entree{color:#4ade80}
-            .tr-sortie{color:#f87171}
-            .tr-cats{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
-            .tr-cat-btn{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);transition:.15s}
-            .tr-cat-btn.active{background:rgba(244,146,106,.15);color:var(--accent);border-color:rgba(244,146,106,.3)}
-          </style>
-          <div class="page-header">
-            <div class="page-header-left">
-              <div class="page-eyebrow">Opérations</div>
-              <h1 class="page-title">Trésorerie</h1>
-              <p class="page-sub">Flux de trésorerie — espèces, virements et Stripe.</p>
-            </div>
-            <button onclick="trOpenAdd()" class="btn-newtask">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              Transaction
-            </button>
-          </div>
-          <!-- Totaux depuis le début, au-dessus de la navigation mensuelle -->
-          <div id="tr-cumul"></div>
-          <!-- Sélecteur de mois -->
-          <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:20px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 20px">
-            <button onclick="trPrevMonth()" class="btn-nav-arrow">‹</button>
-            <div style="text-align:center;min-width:140px">
-              <div id="tr-month-label" style="font-size:16px;font-weight:800;color:#fff"></div>
-            </div>
-            <button onclick="trNextMonth()" class="btn-nav-arrow">›</button>
-          </div>
-          <div class="tr-stats" id="tr-stats"></div>
-          <div class="tr-cats">
-            <button class="tr-cat-btn active" data-f="all" onclick="trFilter('all',this)">Tout</button>
-            <button class="tr-cat-btn" data-f="entree" onclick="trFilter('entree',this)">↑ Entrées</button>
-            <button class="tr-cat-btn" data-f="sortie" onclick="trFilter('sortie',this)">↓ Sorties</button>
-          </div>
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden">
-            <div id="tr-list"></div>
-          </div>
-
-          <!-- Modal -->
-          <div id="tr-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1100;align-items:center;justify-content:center;padding:16px" onclick="if(event.target.id==='tr-modal')trCloseModal()">
-            <div style="background:#18181f;border:1px solid var(--border);border-radius:18px;padding:26px 28px;width:100%;max-width:440px;position:relative">
-              <button onclick="trCloseModal()" style="position:absolute;top:14px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">×</button>
-              <h3 style="font-size:17px;font-weight:800;margin:0 0 16px">Transaction</h3>
-              <input type="hidden" id="tr-id">
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
-                <div>
-                  <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Type</label>
-                  <select id="tr-type" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
-                    <option value="entree">↑ Entrée</option>
-                    <option value="sortie">↓ Sortie</option>
-                  </select>
-                </div>
-                <div>
-                  <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Montant (€) *</label>
-                  <input id="tr-amount" type="number" step="0.01" placeholder="990" oninput="trUpdateSplitPreview()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
-                </div>
-              </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
-                <div>
-                  <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Catégorie</label>
-                  <select id="tr-cat" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
-                    <option value="ca">Chiffre d'affaires</option>
-                    <option value="pub">Publicité</option>
-                    <option value="outil">Outils / Abos</option>
-                    <option value="salaire">Salaire</option>
-                    <option value="autre">Autre</option>
-                  </select>
-                </div>
-                <div>
-                  <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Date</label>
-                  <input id="tr-date" type="date" oninput="trUpdateSplitPreview()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
-                </div>
-              </div>
-              <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Description</label>
-              <input id="tr-desc" placeholder="Client, raison…" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:12px;outline:none;box-sizing:border-box">
-              <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Notes</label>
-              <input id="tr-notes" placeholder="Détails, contexte…" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:14px;outline:none;box-sizing:border-box">
-              <!-- Fractionnement -->
-              <div id="tr-split-section" style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:16px">
-                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;font-weight:600;color:var(--muted)">
-                  <input type="checkbox" id="tr-split-check" onchange="trToggleSplit()" style="accent-color:var(--accent);width:15px;height:15px">
-                  Paiement fractionné (plusieurs versements)
-                </label>
-                <div id="tr-split-opts" style="display:none;margin-top:12px">
-                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-                    <div>
-                      <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Nombre de versements</label>
-                      <input id="tr-split-n" type="number" min="2" max="24" value="4" oninput="trUpdateSplitPreview()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
-                    </div>
-                    <div>
-                      <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Intervalle</label>
-                      <select id="tr-split-interval" onchange="trUpdateSplitPreview()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:#fff;font-size:13px;outline:none">
-                        <option value="month">Mensuel</option>
-                        <option value="2weeks">Toutes les 2 sem.</option>
-                        <option value="week">Hebdomadaire</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div id="tr-split-preview" style="margin-top:10px;font-size:11px;color:var(--muted)"></div>
-                </div>
-              </div>
-              <div style="display:flex;gap:10px">
-                <button id="tr-delete-btn" onclick="trDelete()" style="flex:1;padding:11px;border-radius:8px;border:none;background:rgba(239,68,68,.12);color:#f87171;font-size:13px;font-weight:700;cursor:pointer;display:none">Supprimer</button>
-                <button onclick="trSave()" style="flex:2;padding:11px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:700;cursor:pointer">Enregistrer</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <!-- ── DÉPENSES ── -->
         <div id="page-depenses" class="page">
           <style>
@@ -2281,14 +2151,25 @@
             .dp-lbl{font-size:11px;color:var(--muted);display:block;margin-bottom:5px}
             .dp-mini-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;padding:4px 6px;border-radius:6px}
             .dp-mini-btn:hover{background:rgba(255,255,255,.06);color:#fff}
+            /* Filtres d'opérations (repris de l'ancienne page Trésorerie) */
+            .tr-cats{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+            .tr-cat-btn{padding:5px 12px;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);transition:.15s}
+            .tr-cat-btn.active{background:rgba(244,146,106,.15);color:var(--accent);border-color:rgba(244,146,106,.3);box-shadow:inset 0 0 0 1px rgba(244,146,106,.3)}
+            /* Bande de cumul « depuis le début » */
+            .tr-cumul{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:12px 16px;margin-bottom:16px;
+                      display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px 16px;align-items:center}
+            .tr-cumul-head{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;font-weight:800}
+            .tr-cumul-item{min-width:0}
+            .tr-cumul-lbl{font-size:10.5px;color:var(--muted);margin-bottom:2px}
+            .tr-cumul-val{font-size:15px;font-weight:800;overflow-wrap:anywhere}
             @media(max-width:1100px){.dp-kpis{grid-template-columns:repeat(2,1fr)}.dp-grid{grid-template-columns:1fr}}
           </style>
 
           <div class="page-header">
             <div class="page-header-left">
               <div class="page-eyebrow">Opérations</div>
-              <h1 class="page-title">Dépenses</h1>
-              <p class="page-sub">Charges, abonnements et entrées — vue analytique.</p>
+              <h1 class="page-title">Trésorerie</h1>
+              <p class="page-sub">Entrées, dépenses, abonnements et charges — vue complète.</p>
             </div>
             <div class="dp-head-actions" style="display:flex;gap:8px;flex-wrap:wrap">
               <button id="dp-sync-btn" onclick="dpSyncStripe()" class="btn-newtask" style="background:rgba(255,255,255,.06);color:#fff">
@@ -2305,6 +2186,9 @@
               </button>
             </div>
           </div>
+
+          <!-- Totaux depuis le début, tous mois confondus -->
+          <div id="tr-cumul"></div>
 
           <!-- Sélecteur de mois -->
           <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:18px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 20px">
@@ -3513,7 +3397,7 @@ const sections = {
   objectifs:'PILOTAGE', planning:'PILOTAGE',
   clients:'BUSINESS', leads:'BUSINESS', ads:'BUSINESS',
   formulaire:'BUSINESS', appels:'BUSINESS',
-  documents:'OPÉRATIONS', facturation:'OPÉRATIONS', devis:'OPÉRATIONS', tresorerie:'OPÉRATIONS',
+  documents:'OPÉRATIONS', facturation:'OPÉRATIONS', devis:'OPÉRATIONS',
   depenses:'OPÉRATIONS'
 };
 const titles = {
@@ -3521,8 +3405,8 @@ const titles = {
   objectifs:'Objectifs', planning:'Planning',
   clients:'Clients', leads:'Leads', ads:'Google Ads',
   formulaire:'Formulaire', appels:'Appels',
-  documents:'Documents', facturation:'Facturation', devis:'Devis', tresorerie:'Trésorerie',
-  depenses:'Dépenses'
+  documents:'Documents', facturation:'Facturation', devis:'Devis',
+  depenses:'Trésorerie'
 };
 function nav(el) {
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
@@ -3541,7 +3425,6 @@ function nav(el) {
   if(p==='appels') apInit();
   if(p==='objectifs') obInit();
   if(p==='planning') plInit();
-  if(p==='tresorerie') trInit();
   if(p==='depenses') dpInit();
   if(p==='dashboard') { dashTreso(); dashStripe(); }
 }
@@ -9003,9 +8886,10 @@ async function dpInit() {
   const from12 = dpShiftMonth(dpMonth, -11) + '-01';
   const to     = dpMonthEnd(dpMonth);
 
-  const [tx, subs] = await Promise.all([
+  const [tx, subs, cumulRes] = await Promise.all([
     sb.from('transactions').select('*').gte('date', from12).lte('date', to).order('date', { ascending: false }),
-    sb.from('subscriptions').select('*').order('amount', { ascending: false })
+    sb.from('subscriptions').select('*').order('amount', { ascending: false }),
+    sb.rpc('treso_totaux')
   ]);
 
   dpYearData = tx.data || [];
@@ -9013,7 +8897,12 @@ async function dpInit() {
   const mFrom = dpMonth + '-01';
   dpMonthData = dpYearData.filter(t => t.date >= mFrom && t.date <= to);
 
+  // Totaux cumulés depuis le début (repris de l'ancienne page Trésorerie).
+  trCumul = cumulRes.error ? null : (Array.isArray(cumulRes.data) ? cumulRes.data[0] : cumulRes.data);
+  if (cumulRes.error) console.warn('treso_totaux:', cumulRes.error.message);
+
   dpRenderKpis();
+  trRenderCumul(n => n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' €');
   dpRenderLine();
   dpRenderBar();
   dpRenderSubs();
