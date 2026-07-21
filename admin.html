@@ -2318,7 +2318,30 @@
               <label class="dp-lbl">Description</label>
               <input id="dp-desc" placeholder="Vercel, Google Ads, URSSAF…" class="dp-fld" style="margin-bottom:12px">
               <label class="dp-lbl">Notes</label>
-              <input id="dp-notes" placeholder="Détails, contexte…" class="dp-fld" style="margin-bottom:16px">
+              <input id="dp-notes" placeholder="Détails, contexte…" class="dp-fld" style="margin-bottom:14px">
+              <!-- Paiement en plusieurs fois : pour un client qui règle en 4× par virement, etc. -->
+              <div id="dp-split-row" style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:16px">
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;font-weight:600;color:var(--muted)">
+                  <input type="checkbox" id="dp-split-check" onchange="dpSplitToggle()" style="accent-color:var(--accent);width:15px;height:15px">
+                  Paiement en plusieurs fois (ex. 4× par virement)
+                </label>
+                <div id="dp-split-opts" style="display:none;margin-top:12px">
+                  <div class="dp-modal-row" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                    <div>
+                      <label class="dp-lbl">Nombre de versements</label>
+                      <input id="dp-split-n" type="number" min="2" max="36" value="4" oninput="dpSplitPreview()" class="dp-fld">
+                    </div>
+                    <div>
+                      <label class="dp-lbl">Intervalle</label>
+                      <select id="dp-split-interval" onchange="dpSplitPreview()" class="dp-fld">
+                        <option value="mensuel">Mensuel</option>
+                        <option value="trimestriel">Trimestriel</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div id="dp-split-preview" style="font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5"></div>
+                </div>
+              </div>
               <div style="display:flex;gap:10px">
                 <button id="dp-del-btn" onclick="dpDelete()" style="flex:1;padding:11px;border-radius:8px;border:none;background:rgba(239,68,68,.12);color:#f87171;font-size:13px;font-weight:700;cursor:pointer;display:none">Supprimer</button>
                 <button onclick="dpSave()" style="flex:2;padding:11px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:700;cursor:pointer">Enregistrer</button>
@@ -8876,6 +8899,38 @@ function dpTypeChanged() {
   if (dlbl) dlbl.textContent = isAbo ? 'Depuis le' : 'Date';
   const desc = document.getElementById('dp-desc');
   if (desc) desc.placeholder = isAbo ? 'Nom de l’abonnement (Vercel, Adobe…)' : 'Vercel, Google Ads, URSSAF…';
+  // Défaut de catégorie utile : une entrée est du chiffre d'affaires (taxable),
+  // une dépense/abonnement un outil. On ne force qu'à la création.
+  if (!dpEditId) {
+    const cat = document.getElementById('dp-cat');
+    if (cat) cat.value = document.getElementById('dp-type').value === 'entree' ? 'ca' : 'outil';
+  }
+  // Le fractionné n'a de sens que pour une entrée/sortie ponctuelle, et pas en édition.
+  const splitRow = document.getElementById('dp-split-row');
+  if (splitRow) splitRow.style.display = (isAbo || dpEditId) ? 'none' : 'block';
+  if (isAbo || dpEditId) { document.getElementById('dp-split-check').checked = false; dpSplitToggle(); }
+}
+
+function dpSplitToggle() {
+  const on = document.getElementById('dp-split-check').checked;
+  document.getElementById('dp-split-opts').style.display = on ? 'block' : 'none';
+  if (on) dpSplitPreview();
+}
+
+// Aperçu « N versements de X € = total, de <mois> à <mois> ».
+function dpSplitPreview() {
+  const el = document.getElementById('dp-split-preview');
+  if (!el) return;
+  const n = parseInt(document.getElementById('dp-split-n').value) || 0;
+  const amt = parseFloat(document.getElementById('dp-amount').value) || 0;
+  const step = document.getElementById('dp-split-interval').value === 'trimestriel' ? 3 : 1;
+  const startStr = document.getElementById('dp-date').value;
+  if (n < 2 || amt <= 0 || !startStr) { el.textContent = 'Renseigne le montant par versement et la date du 1er.'; return; }
+  const [y, m] = startStr.split('-').map(Number);
+  const firstYm = trMonthLabel(`${y}-${String(m).padStart(2,'0')}`);
+  const end = new Date(y, (m - 1) + (n - 1) * step, 1);
+  const lastYm = trMonthLabel(`${end.getFullYear()}-${String(end.getMonth()+1).padStart(2,'0')}`);
+  el.innerHTML = `<strong style="color:#fff">${n} versements de ${dpEur(amt)}</strong> = ${dpEur(amt*n)} au total,<br>de ${firstYm.toLowerCase()} à ${lastYm.toLowerCase()}. Chacun compte dans son mois.`;
 }
 
 function dpFillCatSelects() {
@@ -9132,7 +9187,9 @@ function dpOpenAdd() {
   document.getElementById('dp-desc').value   = '';
   document.getElementById('dp-notes').value  = '';
   document.getElementById('dp-del-btn').style.display = 'none';
+  document.getElementById('dp-split-check').checked = false;
   dpTypeChanged();
+  dpSplitToggle();
   document.getElementById('dp-modal').style.display = 'flex';
 }
 
@@ -9181,14 +9238,40 @@ async function dpSave() {
     return;
   }
 
-  const row = {
-    type,
-    amount,
-    category: document.getElementById('dp-cat').value,
-    date: document.getElementById('dp-date').value || new Date().toISOString().slice(0,10),
-    description: document.getElementById('dp-desc').value.trim() || null,
-    notes: document.getElementById('dp-notes').value.trim() || null
-  };
+  const baseDate = document.getElementById('dp-date').value || new Date().toISOString().slice(0,10);
+  const desc = document.getElementById('dp-desc').value.trim() || null;
+  const notes = document.getElementById('dp-notes').value.trim() || null;
+  const category = document.getElementById('dp-cat').value;
+
+  // Paiement en plusieurs fois (ex. Tendance Raphia : 4× 147,50 par virement).
+  // On crée une opération par versement, datée mois par mois : chacune compte
+  // dans son propre mois. Réservé à la création d'une entrée/sortie ponctuelle.
+  const split = !dpEditId && document.getElementById('dp-split-check').checked;
+  if (split) {
+    const n = parseInt(document.getElementById('dp-split-n').value) || 0;
+    const step = document.getElementById('dp-split-interval').value === 'trimestriel' ? 3 : 1;
+    if (n < 2) { alert('Indique au moins 2 versements.'); return; }
+    const [y, m, d] = baseDate.split('-').map(Number);
+    const rows = [];
+    for (let i = 0; i < n; i++) {
+      const dt = new Date(y, (m - 1) + i * step, 1);
+      const last = new Date(dt.getFullYear(), dt.getMonth() + 1, 0).getDate();
+      const day = Math.min(d || 1, last);
+      rows.push({
+        type, amount, category,
+        date: `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`,
+        description: `${desc || 'Paiement'} (${i+1}/${n})`,
+        notes: notes || 'Paiement en plusieurs fois'
+      });
+    }
+    const { error } = await sb.from('transactions').insert(rows);
+    if (error) { alert('Erreur : ' + error.message); return; }
+    dpClose();
+    await dpInit();
+    return;
+  }
+
+  const row = { type, amount, category, date: baseDate, description: desc, notes };
   const { error } = dpEditId
     ? await sb.from('transactions').update(row).eq('id', dpEditId)
     : await sb.from('transactions').insert([row]);
