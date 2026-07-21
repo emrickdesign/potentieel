@@ -2354,9 +2354,19 @@
                   <select id="dp-sub-cat" class="dp-fld"></select>
                 </div>
                 <div>
+                  <label class="dp-lbl">Depuis le *</label>
+                  <input id="dp-sub-start" type="date" class="dp-fld">
+                </div>
+              </div>
+              <div class="dp-modal-row" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+                <div>
                   <label class="dp-lbl">Prochain prélèvement</label>
                   <input id="dp-sub-next" type="date" class="dp-fld">
                 </div>
+                <div></div>
+              </div>
+              <div style="font-size:11px;color:var(--muted);margin:-4px 0 12px;line-height:1.5">
+                « Depuis le » = date du premier prélèvement. C'est de là que l'abonnement est compté, chaque mois, dans les dépenses.
               </div>
               <label class="dp-lbl">Notes</label>
               <input id="dp-sub-notes" placeholder="Compte, offre…" class="dp-fld" style="margin-bottom:14px">
@@ -9210,6 +9220,7 @@ function dpOpenSub(id) {
   document.getElementById('dp-sub-amount').value = s?.amount ?? '';
   document.getElementById('dp-sub-period').value = s?.period || 'mensuel';
   document.getElementById('dp-sub-cat').value    = s?.category || 'outil';
+  document.getElementById('dp-sub-start').value  = s?.start_date || (s ? '' : new Date().toISOString().slice(0,10));
   document.getElementById('dp-sub-next').value   = s?.next_date || '';
   document.getElementById('dp-sub-notes').value  = s?.notes || '';
   document.getElementById('dp-sub-active').checked = s ? !!s.active : true;
@@ -9220,12 +9231,15 @@ function dpOpenSub(id) {
 async function dpSaveSub() {
   const name = document.getElementById('dp-sub-name').value.trim();
   const amount = parseFloat(document.getElementById('dp-sub-amount').value);
+  const start = document.getElementById('dp-sub-start').value;
   if (!name) { alert('Nom requis.'); return; }
   if (!amount || amount <= 0) { alert('Montant requis.'); return; }
+  if (!start) { alert('La date de départ (« Depuis le ») est requise : c\'est de là que l\'abonnement est compté.'); return; }
   const row = {
     name, amount,
     period: document.getElementById('dp-sub-period').value,
     category: document.getElementById('dp-sub-cat').value,
+    start_date: start,
     next_date: document.getElementById('dp-sub-next').value || null,
     notes: document.getElementById('dp-sub-notes').value.trim() || null,
     active: document.getElementById('dp-sub-active').checked
@@ -9235,6 +9249,7 @@ async function dpSaveSub() {
     : await sb.from('subscriptions').insert([row]);
   if (error) { alert('Erreur : ' + error.message); return; }
   dpCloseSub();
+  await dpMaterializeSubs(true);   // génère aussitôt les échéances dues
   await dpInit();
 }
 
