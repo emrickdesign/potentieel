@@ -8891,6 +8891,32 @@ async function dpMaterializeSubs(force = false) {
   }
 }
 
+/* Projette les prochaines échéances des abonnements Stripe (reste des paiements
+   en plusieurs fois + mensuels) en opérations futures taguées « prévu », via
+   l'Edge Function stripe-forecast. Une fois par session, plus après une synchro.
+   Ne bloque jamais l'affichage si Stripe est indisponible. */
+let _dpForecastDone = false;
+async function dpForecast(force = false) {
+  if (_dpForecastDone && !force) return;
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/stripe-forecast`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session?.access_token || SUPABASE_KEY}`,
+        'apikey': SUPABASE_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ horizon: 12 })
+    });
+    const out = await res.json();
+    if (!res.ok || out.error) throw new Error(out.error || `HTTP ${res.status}`);
+    _dpForecastDone = true;
+  } catch (e) {
+    console.warn('dpForecast:', e);
+  }
+}
+
 // Bascule l'affichage du modal selon le type choisi (Abonnement révèle la périodicité).
 function dpTypeChanged() {
   const isAbo = document.getElementById('dp-type').value === 'abonnement';
@@ -8945,8 +8971,9 @@ async function dpInit() {
   const lbl = document.getElementById('dp-month-label');
   if (lbl) lbl.textContent = trMonthLabel(dpMonth);
 
-  // Génère les prélèvements d'abonnement dus avant de charger les données.
-  await dpMaterializeSubs();
+  // Génère les prélèvements d'abonnement dus + projette les échéances Stripe à
+  // venir, avant de charger les données.
+  await Promise.all([dpMaterializeSubs(), dpForecast()]);
 
   const from12 = dpShiftMonth(dpMonth, -11) + '-01';
   const to     = dpMonthEnd(dpMonth);
@@ -9151,19 +9178,23 @@ function dpRenderList() {
   const sorted = [...rows].sort((a,b) => (b.date||'').localeCompare(a.date||''));
   el.innerHTML = sorted.map(t => {
     const isTr = t.type === 'transfert';
+    const isPrev = t.source === 'projection';   // échéance future prévue (non encaissée)
     const sign = isTr ? '⇄ ' : (t.type === 'entree' ? '+' : '−');
     const cls  = isTr ? '' : (t.type === 'entree' ? 'dp-in' : 'dp-out');
     const ds   = t.date ? new Date(t.date+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'}) : '';
     const rec  = t.subscription_id ? '<span class="dp-tag dp-tag-rec">récurrent</span>' : '';
+    const prev = isPrev ? '<span class="dp-tag" style="background:rgba(96,165,250,.15);color:#60a5fa">prévu</span>' : '';
     const bank = t.source === 'stripe' ? '<span class="dp-tag">Stripe</span>'
                : t.source === 'bancaire' ? '<span class="dp-tag">banque</span>' : '';
     const notes = t.notes ? `<span style="color:var(--muted);font-size:11px"> — ${t.notes}</span>` : '';
-    return `<div class="dp-row" onclick="dpOpenEdit('${t.id}')">
+    // Une projection n'est pas modifiable : elle est régénérée à chaque synchro.
+    const click = isPrev ? '' : `onclick="dpOpenEdit('${t.id}')"`;
+    return `<div class="dp-row" ${click} style="${isPrev?'cursor:default;opacity:.72':''}">
       <div style="flex:1;min-width:0">
-        <div class="dp-row-desc">${t.description||'—'}${rec}${bank}${notes}</div>
+        <div class="dp-row-desc">${t.description||'—'}${rec}${prev}${bank}${notes}</div>
         <div class="dp-row-meta">${DP_CATS[t.category]||t.category||''}${ds?' · '+ds:''}</div>
       </div>
-      <div class="dp-row-amt ${cls}" ${isTr?'style="color:var(--muted)"':''}>${sign}${dpEur(t.amount)}</div>
+      <div class="dp-row-amt ${cls}" ${(isTr||isPrev)?'style="color:var(--muted)"':''}>${sign}${dpEur(t.amount)}</div>
     </div>`;
   }).join('');
 }
@@ -9461,6 +9492,7 @@ async function dpSyncStripe() {
     const src = document.getElementById('dp-src-stripe');
     if (src) src.textContent = `Synchronisé à l'instant — ${out.imported} nouvelle(s) opération(s), ${out.skipped} déjà connue(s).`;
 
+    await dpForecast(true);   // rafraîchit le prévisionnel : les échéances encaissées sortent du « prévu »
     await dpInit();
     if (out.imported === 0) alert('Stripe est à jour, rien de nouveau à importer.');
   } catch (e) {
