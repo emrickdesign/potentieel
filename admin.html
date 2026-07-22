@@ -8861,6 +8861,9 @@ const _dpNow = new Date();
 let dpMonth = `${_dpNow.getFullYear()}-${String(_dpNow.getMonth()+1).padStart(2,'0')}`;
 
 const dpEur = n => (n||0).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' €';
+// Sources « prévu » (non encore réalisées) : revenus fiches à venir + abonnements à venir.
+const DP_PREVU_SOURCES = ['projection', 'abo_prevu'];
+const dpIsPrevu = t => DP_PREVU_SOURCES.includes(t.source);
 const dpMonthEnd = ym => {
   const [y,m] = ym.split('-').map(Number);
   return `${ym}-${String(new Date(y, m, 0).getDate()).padStart(2,'0')}`;
@@ -8898,6 +8901,7 @@ async function dpMaterializeSubs(force = false) {
 
     const today = new Date();
     const curFirst = new Date(today.getFullYear(), today.getMonth(), 1);
+    const horizonFirst = new Date(today.getFullYear(), today.getMonth() + 12, 1); // prévisionnel 12 mois
     const stepOf = p => ({ mensuel: 1, trimestriel: 3, annuel: 12 }[p] || 1);
 
     const rows = [];
@@ -8909,31 +8913,27 @@ async function dpMaterializeSubs(force = false) {
       const step = stepOf(s.period);
       for (let k = 0; k < 120; k++) {
         const d = new Date(ay, (am - 1) + k * step, 1); // 1er du mois d'échéance
-        if (d > curFirst) break;                        // jamais au-delà du mois courant
+        if (d > horizonFirst) break;                    // prévisionnel jusqu'à l'horizon
         const last = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
         const day = Math.min(ad || 1, last);            // jour de prélèvement, borné
         const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        const future = d > curFirst;                    // mois à venir → dépense prévue
         rows.push({
           type: 'sortie', amount, category: s.category || 'outil',
           date: `${ym}-${String(day).padStart(2, '0')}`,
-          description: s.name || 'Abonnement', notes: s.notes || null,
-          subscription_id: s.id, source: 'abonnement',
+          description: s.name || 'Abonnement',
+          notes: future ? 'Abonnement à venir (prévu)' : (s.notes || null),
+          subscription_id: s.id, source: future ? 'abo_prevu' : 'abonnement',
           external_id: `subauto_${s.id}_${ym}`
         });
       }
     }
-    if (!rows.length) { _dpSubsSynced = true; return; }
 
-    // Dédup : on ne garde que les échéances pas encore en base.
-    const ids = rows.map(r => r.external_id);
-    const existing = new Set();
-    for (let i = 0; i < ids.length; i += 200) {
-      const { data } = await sb.from('transactions').select('external_id').in('external_id', ids.slice(i, i + 200));
-      (data || []).forEach(r => existing.add(r.external_id));
-    }
-    const fresh = rows.filter(r => !existing.has(r.external_id));
-    if (fresh.length) {
-      const { error: insErr } = await sb.from('transactions').insert(fresh);
+    // Reconciliation : on remplace tout (passé matérialisé + prévisionnel).
+    const del = await sb.from('transactions').delete().in('source', ['abonnement', 'abo_prevu']);
+    if (del.error) { console.warn('dpMaterializeSubs delete:', del.error.message); return; }
+    if (rows.length) {
+      const { error: insErr } = await sb.from('transactions').insert(rows);
       if (insErr) { console.warn('dpMaterializeSubs insert:', insErr.message); return; }
     }
     _dpSubsSynced = true;
@@ -9055,47 +9055,55 @@ async function dpInit() {
 }
 
 function dpRenderKpis() {
-  // Reçu = opérations réelles ; prévu = source 'projection' (MRR/versements à venir).
-  const recus = dpMonthData.filter(t => t.source !== 'projection');
-  const out = recus.filter(t => t.type === 'sortie').reduce((s,t) => s + Number(t.amount||0), 0);
-  const inc = recus.filter(t => t.type === 'entree').reduce((s,t) => s + Number(t.amount||0), 0);
-  const incPrevu = dpMonthData.filter(t => t.type === 'entree' && t.source === 'projection').reduce((s,t) => s + Number(t.amount||0), 0);
-  const charges = chargesSur(recus);
-  const net = inc - out - charges;
+  // Reçu = opérations réelles ; prévu = revenus/dépenses à venir (sources prévu).
+  const rec  = dpMonthData.filter(t => !dpIsPrevu(t));
+  const prev = dpMonthData.filter(t => dpIsPrevu(t));
+  const sumT = (arr, ty) => arr.filter(t => t.type === ty).reduce((s,t) => s + Number(t.amount||0), 0);
 
-  // Comparaison avec le mois précédent
+  // Un mois entièrement à venir s'affiche en prévisionnel ; le mois courant et le
+  // passé s'affichent en réel, avec le prévu (reste à recevoir/payer) en sous-ligne.
+  const nowYm = new Date().toISOString().slice(0,7);
+  const isFuture = dpMonth > nowYm;
+
+  const out     = isFuture ? sumT(prev,'sortie') : sumT(rec,'sortie');
+  const inc     = isFuture ? sumT(prev,'entree') : sumT(rec,'entree');
+  const charges = isFuture ? chargesSur(prev)    : chargesSur(rec);
+  const net     = inc - out - charges;
+  const outPrevu = sumT(prev,'sortie');
+  const incPrevu = sumT(prev,'entree');
+  const prevuTag = isFuture ? '<span style="font-size:10px;font-weight:700;color:#60a5fa;vertical-align:middle;margin-left:6px">PRÉVU</span>' : '';
+
+  // Comparaison avec le mois précédent (sur les dépenses réelles)
   const pm = dpShiftMonth(dpMonth, -1);
-  const prevOut = dpYearData
-    .filter(t => t.type === 'sortie' && (t.date||'').startsWith(pm))
+  const prevMonthOut = dpYearData
+    .filter(t => t.type === 'sortie' && !dpIsPrevu(t) && (t.date||'').startsWith(pm))
     .reduce((s,t) => s + Number(t.amount||0), 0);
-  let delta = '';
-  if (prevOut > 0) {
-    const pct = Math.round(((out - prevOut) / prevOut) * 100);
-    const col = pct > 0 ? '#f87171' : '#4ade80';
-    delta = `<span style="color:${col}">${pct>0?'+':''}${pct}%</span> vs mois préc.`;
-  } else {
-    delta = 'Pas d\'historique le mois précédent';
-  }
+  let delta;
+  if (isFuture) delta = 'Abonnements + charges à venir';
+  else if (prevMonthOut > 0) {
+    const pct = Math.round(((out - prevMonthOut) / prevMonthOut) * 100);
+    delta = `<span style="color:${pct>0?'#f87171':'#4ade80'}">${pct>0?'+':''}${pct}%</span> vs mois préc.`;
+  } else delta = 'Pas d\'historique le mois précédent';
 
   document.getElementById('dp-kpis').innerHTML = `
     <div class="dp-kpi">
       <div class="dp-kpi-label">Dépenses du mois</div>
-      <div class="dp-kpi-val dp-out">${dpEur(out)}</div>
-      <div class="dp-kpi-sub">${delta}</div>
+      <div class="dp-kpi-val dp-out">${dpEur(out)}${prevuTag}</div>
+      <div class="dp-kpi-sub">${!isFuture && outPrevu > 0 ? `<span style="color:#60a5fa">+ ${dpEur(outPrevu)} prévu</span>` : delta}</div>
     </div>
     <div class="dp-kpi">
       <div class="dp-kpi-label">Entrées du mois</div>
-      <div class="dp-kpi-val dp-in">${dpEur(inc)}</div>
-      <div class="dp-kpi-sub">${incPrevu > 0 ? `<span style="color:#60a5fa">+ ${dpEur(incPrevu)} prévu</span> (pas encore reçu)` : recus.filter(t=>t.type==='entree').length + ' opération(s) reçue(s)'}</div>
+      <div class="dp-kpi-val dp-in">${dpEur(inc)}${prevuTag}</div>
+      <div class="dp-kpi-sub">${!isFuture && incPrevu > 0 ? `<span style="color:#60a5fa">+ ${dpEur(incPrevu)} prévu</span> (pas encore reçu)` : (isFuture ? 'Chiffre d\'affaires attendu' : rec.filter(t=>t.type==='entree').length + ' opération(s) reçue(s)')}</div>
     </div>
     <div class="dp-kpi">
       <div class="dp-kpi-label">Charges ${Math.round(TAUX_CHARGES*100)}%</div>
-      <div class="dp-kpi-val" style="color:#fbbf24">−${dpEur(charges)}</div>
-      <div class="dp-kpi-sub">À provisionner sur ${dpEur(caEncaisse(recus))} de CA reçu</div>
+      <div class="dp-kpi-val" style="color:#fbbf24">−${dpEur(charges)}${prevuTag}</div>
+      <div class="dp-kpi-sub">Sur ${dpEur(caEncaisse(isFuture ? prev : rec))} de CA${isFuture ? ' attendu' : ' reçu'}</div>
     </div>
     <div class="dp-kpi">
-      <div class="dp-kpi-label">Reste net</div>
-      <div class="dp-kpi-val" style="color:${net>=0?'#4ade80':'#f87171'}">${net>=0?'+':''}${dpEur(net)}</div>
+      <div class="dp-kpi-label">Reste net${isFuture ? ' prévu' : ''}</div>
+      <div class="dp-kpi-val" style="color:${net>=0?'#4ade80':'#f87171'}">${net>=0?'+':''}${dpEur(net)}${prevuTag}</div>
       <div class="dp-kpi-sub">Entrées − charges − dépenses</div>
     </div>`;
 
@@ -9228,7 +9236,7 @@ function dpRenderList() {
   const sorted = [...rows].sort((a,b) => (b.date||'').localeCompare(a.date||''));
   el.innerHTML = sorted.map(t => {
     const isTr = t.type === 'transfert';
-    const isPrev = t.source === 'projection';   // échéance future prévue (non encaissée)
+    const isPrev = dpIsPrevu(t);   // échéance future prévue (non encaissée / non payée)
     const sign = isTr ? '⇄ ' : (t.type === 'entree' ? '+' : '−');
     const cls  = isTr ? '' : (t.type === 'entree' ? 'dp-in' : 'dp-out');
     const ds   = t.date ? new Date(t.date+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'}) : '';
@@ -9496,7 +9504,7 @@ async function dashTreso() {
     return;
   }
 
-  const rows = (data || []).filter(r => r.source !== 'projection');   // reçu seulement
+  const rows = (data || []).filter(r => !dpIsPrevu(r));   // reçu seulement
   const sum = t => rows.filter(r => r.type === t).reduce((s,r) => s + Number(r.amount||0), 0);
   const inc = sum('entree'), out = sum('sortie'), tr = sum('transfert');
   const charges = chargesSur(rows);
