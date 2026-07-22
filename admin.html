@@ -679,6 +679,11 @@
 
         <!-- ── DASHBOARD ── -->
         <div id="page-dashboard" class="page active">
+          <!-- Alerte paiements de site imminents (versement dû sous 3 jours) -->
+          <div id="dash-pay-alert" style="display:none;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.4);border-radius:12px;padding:14px 18px;margin-bottom:18px;align-items:flex-start;gap:12px">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <div id="dash-pay-alert-body" style="font-size:13px;color:#fca5a5;line-height:1.6;font-weight:600"></div>
+          </div>
           <div class="page-header">
             <div class="page-header-left">
               <div class="page-eyebrow">Vue d'ensemble</div>
@@ -3485,7 +3490,7 @@ function nav(el) {
   if(p==='objectifs') obInit();
   if(p==='planning') plInit();
   if(p==='depenses') dpInit();
-  if(p==='dashboard') { dashTreso(); dashStripe(); }
+  if(p==='dashboard') { dashTreso(); dashStripe(); dashPaymentAlerts(); }
 }
 
 function toggleTask(cb) {
@@ -9485,6 +9490,44 @@ async function dashStripe() {
 /* Bloc trésorerie du dashboard — lit la même table `transactions` que les
    pages Trésorerie et Dépenses, pour qu'un chiffre corrigé quelque part se
    propage partout. Les transferts internes sont exclus des totaux. */
+/* Alerte en tête du dashboard : un versement de site est dû dans les 3 prochains
+   jours (et reste affichée jusqu'à 1 jour après la date). Recalculée à chaque
+   ouverture du dashboard avec la date du jour, à partir des fiches clients :
+   prochaine échéance = 1er versement non coché (siteFirstPayDate + son rang). */
+function dashPaymentAlerts() {
+  const el = document.getElementById('dash-pay-alert');
+  const body = document.getElementById('dash-pay-alert-body');
+  if (!el || !body) return;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const DAY = 86400000;
+
+  const alerts = [];
+  (clData || []).forEach(c => {
+    if (!c.sitePlan || !c.siteFirstPayDate) return;
+    const n = parseInt(c.sitePlan) || 0;
+    const vers = Array.isArray(c.siteVersements) ? c.siteVersements : [];
+    const nextIdx = vers.findIndex(v => !v);   // premier versement non reçu
+    if (nextIdx === -1) return;                 // tout est payé
+    const [fy, fm, fd] = c.siteFirstPayDate.split('-').map(Number);
+    const d = new Date(fy, (fm - 1) + nextIdx, fd); d.setHours(0,0,0,0);
+    const days = Math.round((d - today) / DAY);
+    // Fenêtre : dès 3 jours avant, jusqu'à 1 jour après la date d'échéance.
+    if (days <= 3 && days >= -1) alerts.push({ nom: c.nom || 'Client', d, days, num: nextIdx + 1, n });
+  });
+
+  if (!alerts.length) { el.style.display = 'none'; return; }
+  alerts.sort((a, b) => a.d - b.d);
+  body.innerHTML = alerts.map(a => {
+    const dateTxt = a.d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+    const quand = a.days > 1 ? `dans ${a.days} jours`
+                : a.days === 1 ? 'demain'
+                : a.days === 0 ? "aujourd'hui"
+                : 'hier — à encaisser';
+    return `⚠ Paiement site de <strong style="color:#fff">${a.nom}</strong> (versement ${a.num}/${a.n}) prévu le <strong style="color:#fff">${dateTxt}</strong> (${quand}).`;
+  }).join('<br>');
+  el.style.display = 'flex';
+}
+
 async function dashTreso() {
   const body = document.getElementById('dash-tr-body');
   if (!body) return;
