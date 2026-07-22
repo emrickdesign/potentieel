@@ -1175,6 +1175,24 @@
             <!-- Tab: Paiement -->
             <div id="cl-tab-paiement" class="cl-tab-pane" style="display:none">
 
+              <!-- Abonnement mensuel (MRR) : montant + date de départ. C'est de cette
+                   date que le MRR est compté chaque mois dans la trésorerie. -->
+              <div class="panel" style="margin-bottom:16px">
+                <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 16px">
+                  <span style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1px;white-space:nowrap;display:flex;align-items:center;gap:6px"><span style="color:var(--accent)">↻</span> ABONNEMENT (MRR)</span>
+                  <span style="display:flex;align-items:center;gap:5px;white-space:nowrap">
+                    <span style="font-size:12px;color:var(--muted)">Montant :</span>
+                    <input id="cl-mrr-input" type="number" min="0" step="0.01" placeholder="49" onchange="clSetMrr(this.value)" style="width:74px;background:#1a1a22;border:1px solid var(--border);border-radius:8px;padding:6px 8px;color:#fff;font-size:12px;outline:none">
+                    <span style="font-size:12px;color:var(--muted)">€/mois</span>
+                  </span>
+                  <span style="display:flex;align-items:center;gap:5px;white-space:nowrap">
+                    <span style="font-size:12px;color:var(--muted)">Actif depuis :</span>
+                    <input id="cl-mrrdepuis-input" type="date" onchange="clSetMrrDepuis(this.value)" style="background:#1a1a22;border:1px solid var(--border);border-radius:8px;padding:5px 8px;color:#fff;font-size:12px;outline:none;cursor:pointer">
+                  </span>
+                  <span id="cl-mrr-hint" style="font-size:11px;color:var(--muted);flex:1;min-width:160px"></span>
+                </div>
+              </div>
+
               <!-- Suivi du paiement du site (plan choisi + versements reçus) — compact, en haut -->
               <div class="panel" style="margin-bottom:16px">
                 <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 16px">
@@ -2247,29 +2265,37 @@
           <div class="dp-card" style="margin-top:14px">
             <h3 class="dp-card-title">Sources</h3>
             <div class="dp-card-sub">D'où viennent les opérations affichées ci-dessus</div>
-            <div class="dp-sources" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
+            <div class="dp-sources" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
               <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:14px">
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
                   <span style="width:8px;height:8px;border-radius:50%;background:#4ade80"></span>
-                  <span style="font-size:13px;font-weight:700;color:#fff">Stripe</span>
+                  <span style="font-size:13px;font-weight:700;color:#fff">Entrées — fiches clients</span>
                 </div>
                 <div style="font-size:11px;color:var(--muted);line-height:1.5" id="dp-src-stripe">
-                  Connecté — encaissements, frais et virements importés automatiquement.
+                  Le chiffre d'affaires vient des fiches clients : MRR mensuel + versements du site. Coche un versement reçu sur la fiche et il apparaît ici.
+                </div>
+              </div>
+              <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:14px">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                  <span style="width:8px;height:8px;border-radius:50%;background:#60a5fa"></span>
+                  <span style="font-size:13px;font-weight:700;color:#fff">Frais Stripe</span>
+                </div>
+                <div style="font-size:11px;color:var(--muted);line-height:1.5">
+                  « Sync Stripe » ne remonte plus que les frais (dépenses) et les virements vers ton compte pro. Plus d'encaissements (tenus par les fiches).
                 </div>
               </div>
               <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:14px">
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
                   <span style="width:8px;height:8px;border-radius:50%;background:#fbbf24"></span>
-                  <span style="font-size:13px;font-weight:700;color:#fff">Revolut Business</span>
+                  <span style="font-size:13px;font-weight:700;color:#fff">Dépenses & abonnements</span>
                 </div>
                 <div style="font-size:11px;color:var(--muted);line-height:1.5">
-                  Saisie manuelle — virements reçus directement et dépenses payées depuis le compte pro.
+                  Saisie manuelle : abonnements outils, charges, achats ponctuels, versements clients hors Stripe.
                 </div>
               </div>
             </div>
             <div style="font-size:11px;color:var(--muted);margin-top:12px;line-height:1.6">
-              Les virements Stripe → compte pro sont enregistrés en <strong style="color:var(--accent)">transfert</strong> et exclus des totaux :
-              le chiffre d'affaires est compté au moment du paiement, pas une deuxième fois à l'arrivée sur Revolut.
+              Les lignes <strong style="color:#60a5fa">prévu</strong> (grisées) sont les rentrées à venir — MRR et versements pas encore reçus. Elles n'entrent pas dans le cumul « depuis le début » tant qu'elles ne sont pas encaissées.
             </div>
           </div>
 
@@ -4126,6 +4152,8 @@ function clSave(deletedId) {
   // explicitement effacer un client (id passé ici en paramètre)
   if (deletedId !== undefined) { crmItemDelete('clients', deletedId); return; }
   slim.forEach(c => crmItemUpsert('clients', c.id, c));
+  // Une fiche a changé → la trésorerie doit régénérer les entrées à sa prochaine ouverture.
+  try { _dpClientsDone = false; } catch(_) {}
 }
 
 const CL_STATUT_LABELS = { actif:'Actif', encours:'En cours', pause:'En pause', termine:'Terminé', retard:'Retard paiement' };
@@ -6558,6 +6586,18 @@ function clDelPayLink(lid) {
 // Suivi du paiement du site (plan choisi + versements reçus) — compact, en haut de l'onglet Paiement
 function clRenderSitePlan(c) {
   const fmt = v => v.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  // Bloc MRR (montant + date de départ)
+  const mrrInput = document.getElementById('cl-mrr-input');
+  if (mrrInput && document.activeElement !== mrrInput) mrrInput.value = c.mrr || '';
+  const mrrDepuisInput = document.getElementById('cl-mrrdepuis-input');
+  if (mrrDepuisInput && document.activeElement !== mrrDepuisInput) mrrDepuisInput.value = c.mrrDepuis || '';
+  const mrrHint = document.getElementById('cl-mrr-hint');
+  if (mrrHint) {
+    const m = parseFloat(c.mrr) || 0;
+    mrrHint.textContent = (m > 0 && c.mrrDepuis)
+      ? `Compté chaque mois depuis le ${new Date(c.mrrDepuis+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})}.`
+      : (m > 0 ? '⚠ Renseigne « Actif depuis » pour que le MRR compte dans la trésorerie.' : '');
+  }
   const base = clSitePrixBase(c);
   const priceInput = document.getElementById('cl-siteprix-input');
   if (priceInput && document.activeElement !== priceInput) priceInput.value = (typeof c.sitePrix === 'number' && c.sitePrix > 0) ? c.sitePrix : '';
@@ -6622,6 +6662,17 @@ function clSetSitePrix(val) {
 function clSetSiteFirstPayDate(val) {
   const c = clData.find(x=>x.id===clCurrentId); if (!c) return;
   c.siteFirstPayDate = val || null;
+  clSave(); clRenderSitePlan(c);
+}
+function clSetMrr(val) {
+  const c = clData.find(x=>x.id===clCurrentId); if (!c) return;
+  const n = parseFloat(String(val).replace(',', '.'));
+  c.mrr = (!isNaN(n) && n > 0) ? n : '';
+  clSave(); clRenderSitePlan(c); clRenderInfos(c); clRenderGrid();
+}
+function clSetMrrDepuis(val) {
+  const c = clData.find(x=>x.id===clCurrentId); if (!c) return;
+  c.mrrDepuis = val || null;
   clSave(); clRenderSitePlan(c);
 }
 function clToggleVersement(i) {
@@ -8891,29 +8942,31 @@ async function dpMaterializeSubs(force = false) {
   }
 }
 
-/* Projette les prochaines échéances des abonnements Stripe (reste des paiements
-   en plusieurs fois + mensuels) en opérations futures taguées « prévu », via
-   l'Edge Function stripe-forecast. Une fois par session, plus après une synchro.
-   Ne bloque jamais l'affichage si Stripe est indisponible. */
-let _dpForecastDone = false;
-async function dpForecast(force = false) {
-  if (_dpForecastDone && !force) return;
+/* Les ENTRÉES viennent des fiches clients (MRR + versements de site), pas de
+   Stripe. L'Edge Function clients-income lit les fiches et (re)génère les
+   opérations : reçu = source 'client', prévu (MRR/versements à venir) = source
+   'projection' (grisé « prévu », exclu du cumul).
+   Rejouée à chaque affichage de la trésorerie et après toute modif de fiche
+   (le flag est remis à zéro par les setters de la fiche client). */
+let _dpClientsDone = false;
+async function dpClientsIncome(force = false) {
+  if (_dpClientsDone && !force) return;
   try {
     const { data: { session } } = await sb.auth.getSession();
-    const res = await fetch(`${SUPABASE_URL}/functions/v1/stripe-forecast`, {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/clients-income`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${session?.access_token || SUPABASE_KEY}`,
         'apikey': SUPABASE_KEY,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ horizon: 12 })
+      body: JSON.stringify({})
     });
     const out = await res.json();
     if (!res.ok || out.error) throw new Error(out.error || `HTTP ${res.status}`);
-    _dpForecastDone = true;
+    _dpClientsDone = true;
   } catch (e) {
-    console.warn('dpForecast:', e);
+    console.warn('dpClientsIncome:', e);
   }
 }
 
@@ -8971,9 +9024,9 @@ async function dpInit() {
   const lbl = document.getElementById('dp-month-label');
   if (lbl) lbl.textContent = trMonthLabel(dpMonth);
 
-  // Génère les prélèvements d'abonnement dus + projette les échéances Stripe à
-  // venir, avant de charger les données.
-  await Promise.all([dpMaterializeSubs(), dpForecast()]);
+  // Génère les prélèvements d'abonnement dus + les entrées depuis les fiches
+  // clients (MRR + versements), avant de charger les données.
+  await Promise.all([dpMaterializeSubs(), dpClientsIncome()]);
 
   const from12 = dpShiftMonth(dpMonth, -11) + '-01';
   const to     = dpMonthEnd(dpMonth);
@@ -9002,9 +9055,12 @@ async function dpInit() {
 }
 
 function dpRenderKpis() {
-  const out = dpMonthData.filter(t => t.type === 'sortie').reduce((s,t) => s + Number(t.amount||0), 0);
-  const inc = dpMonthData.filter(t => t.type === 'entree').reduce((s,t) => s + Number(t.amount||0), 0);
-  const charges = chargesSur(dpMonthData);
+  // Reçu = opérations réelles ; prévu = source 'projection' (MRR/versements à venir).
+  const recus = dpMonthData.filter(t => t.source !== 'projection');
+  const out = recus.filter(t => t.type === 'sortie').reduce((s,t) => s + Number(t.amount||0), 0);
+  const inc = recus.filter(t => t.type === 'entree').reduce((s,t) => s + Number(t.amount||0), 0);
+  const incPrevu = dpMonthData.filter(t => t.type === 'entree' && t.source === 'projection').reduce((s,t) => s + Number(t.amount||0), 0);
+  const charges = chargesSur(recus);
   const net = inc - out - charges;
   const recu = dpSubs.filter(s => s.active).reduce((s,x) => s + dpMonthly(x), 0);
 
@@ -9031,12 +9087,12 @@ function dpRenderKpis() {
     <div class="dp-kpi">
       <div class="dp-kpi-label">Entrées du mois</div>
       <div class="dp-kpi-val dp-in">${dpEur(inc)}</div>
-      <div class="dp-kpi-sub">${dpMonthData.filter(t=>t.type==='entree').length} opération(s)</div>
+      <div class="dp-kpi-sub">${incPrevu > 0 ? `<span style="color:#60a5fa">+ ${dpEur(incPrevu)} prévu</span> (pas encore reçu)` : recus.filter(t=>t.type==='entree').length + ' opération(s) reçue(s)'}</div>
     </div>
     <div class="dp-kpi">
       <div class="dp-kpi-label">Charges ${Math.round(TAUX_CHARGES*100)}%</div>
       <div class="dp-kpi-val" style="color:#fbbf24">−${dpEur(charges)}</div>
-      <div class="dp-kpi-sub">À provisionner sur ${dpEur(caEncaisse(dpMonthData))} de CA</div>
+      <div class="dp-kpi-sub">À provisionner sur ${dpEur(caEncaisse(recus))} de CA reçu</div>
     </div>
     <div class="dp-kpi">
       <div class="dp-kpi-label">Reste net</div>
@@ -9446,7 +9502,7 @@ async function dashTreso() {
     return;
   }
 
-  const rows = data || [];
+  const rows = (data || []).filter(r => r.source !== 'projection');   // reçu seulement
   const sum = t => rows.filter(r => r.type === t).reduce((s,r) => s + Number(r.amount||0), 0);
   const inc = sum('entree'), out = sum('sortie'), tr = sum('transfert');
   const charges = chargesSur(rows);
@@ -9489,12 +9545,10 @@ async function dpSyncStripe() {
     const out = await res.json();
     if (!res.ok || out.error) throw new Error(out.error || `HTTP ${res.status}`);
 
-    const src = document.getElementById('dp-src-stripe');
-    if (src) src.textContent = `Synchronisé à l'instant — ${out.imported} nouvelle(s) opération(s), ${out.skipped} déjà connue(s).`;
-
-    await dpForecast(true);   // rafraîchit le prévisionnel : les échéances encaissées sortent du « prévu »
     await dpInit();
-    if (out.imported === 0) alert('Stripe est à jour, rien de nouveau à importer.');
+    alert(out.imported === 0
+      ? 'Stripe à jour — aucun nouveau frais ni virement.'
+      : `${out.imported} frais / virement(s) importé(s) depuis Stripe.`);
   } catch (e) {
     alert('Synchronisation Stripe impossible :\n' + e.message);
   } finally {
