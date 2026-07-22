@@ -9062,7 +9062,6 @@ function dpRenderKpis() {
   const incPrevu = dpMonthData.filter(t => t.type === 'entree' && t.source === 'projection').reduce((s,t) => s + Number(t.amount||0), 0);
   const charges = chargesSur(recus);
   const net = inc - out - charges;
-  const recu = dpSubs.filter(s => s.active).reduce((s,x) => s + dpMonthly(x), 0);
 
   // Comparaison avec le mois précédent
   const pm = dpShiftMonth(dpMonth, -1);
@@ -9097,12 +9096,7 @@ function dpRenderKpis() {
     <div class="dp-kpi">
       <div class="dp-kpi-label">Reste net</div>
       <div class="dp-kpi-val" style="color:${net>=0?'#4ade80':'#f87171'}">${net>=0?'+':''}${dpEur(net)}</div>
-      <div class="dp-kpi-sub">Entrées − dépenses − charges</div>
-    </div>
-    <div class="dp-kpi">
-      <div class="dp-kpi-label">Abonnements / mois</div>
-      <div class="dp-kpi-val" style="color:var(--accent)">${dpEur(recu)}</div>
-      <div class="dp-kpi-sub">${dpSubs.filter(s=>s.active).length} actif(s) · ${dpEur(recu*12)} / an</div>
+      <div class="dp-kpi-sub">Entrées − charges − dépenses</div>
     </div>`;
 
   // Rappel discret : les transferts existent mais ne comptent nulle part.
