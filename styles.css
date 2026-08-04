@@ -384,16 +384,17 @@ body {
   position: relative;
   z-index: 2;
   width: 100%;
-  text-align: center;
+  max-width: 620px;
+  text-align: left;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .hero h1 {
-  font-size: clamp(52px, 6.2vw, 92px);
+  font-size: clamp(46px, 5vw, 76px);
   font-weight: 800;
-  line-height: 1.0;
+  line-height: 1.02;
   letter-spacing: -0.03em;
   margin-bottom: 28px;
 }
@@ -401,23 +402,23 @@ body {
 .hero-sub {
   font-size: 17px;
   color: var(--gray-light);
-  max-width: 560px;
+  max-width: 540px;
   line-height: 1.65;
   margin-bottom: 36px;
-  text-align: center;
+  text-align: left;
 }
 
 .hero-ctas {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 14px;
   flex-wrap: wrap;
 }
 
 .hero-stats {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   flex-wrap: wrap;
   row-gap: 16px;
   gap: 0;
@@ -425,11 +426,14 @@ body {
   border-top: 1px solid var(--border);
   padding-top: 28px;
   width: 100%;
+  max-width: 560px;
+  flex-wrap: nowrap;
 }
 .hero-stat {
-  padding-right: 32px;
-  margin-right: 32px;
+  padding-right: 26px;
+  margin-right: 26px;
   border-right: 1px solid var(--border);
+  white-space: nowrap;
 }
 .hero-stat:last-child { border-right: none; }
 .hero-stat .val {
@@ -452,13 +456,13 @@ body {
   right: 0;
   bottom: 0;
   height: 100%;
-  width: 70%;
+  width: 60%;
   object-fit: cover;
-  object-position: center center;
+  object-position: 52% center;
   z-index: 1;
   opacity: 0.45;
-  mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.15) 8%, rgba(0,0,0,0.7) 22%, black 42%);
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.15) 8%, rgba(0,0,0,0.7) 22%, black 42%);
+  mask-image: linear-gradient(to right, transparent 0%, transparent 42%, rgba(0,0,0,0.28) 60%, rgba(0,0,0,0.78) 80%, black 94%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, transparent 42%, rgba(0,0,0,0.28) 60%, rgba(0,0,0,0.78) 80%, black 94%);
   pointer-events: none;
 }
 
