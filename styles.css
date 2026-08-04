@@ -380,6 +380,14 @@ body {
   overflow: hidden;
 }
 
+/* Hero content flush to left edge of section, not centered container */
+.hero > .container {
+  max-width: none;
+  margin: 0;
+  padding-left: 64px;
+  padding-right: 64px;
+}
+
 .hero-content {
   position: relative;
   z-index: 2;
