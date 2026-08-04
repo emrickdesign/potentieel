@@ -380,13 +380,10 @@ body {
   overflow: hidden;
 }
 
-/* Hero content flush to left edge of section, not centered container */
-.hero > .container {
-  max-width: none;
-  margin: 0;
-  padding-left: 64px;
-  padding-right: 64px;
-}
+/* Hero uses flex: force .container to full width so it centres like other
+   sections (block containers), aligning hero-content's left edge with the
+   sections below (social-proof, etc.) instead of shrinking to content. */
+.hero > .container { width: 100%; }
 
 .hero-content {
   position: relative;
