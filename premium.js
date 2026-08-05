@@ -134,6 +134,11 @@
   function initSectionReveals() {
     if (!hasST) return;
 
+    // Chargé en arrière-plan (onglet masqué) : on ne cache aucun contenu.
+    // Les reveals dépendent du rAF ; sans lui, l'état caché resterait figé et
+    // la section s'afficherait blanche. On préfère le contenu visible sans anim.
+    if (document.hidden) return;
+
     document.querySelectorAll('[data-reveal]').forEach(function (el) {
       gsap.from(el, {
         y: 34,
@@ -155,6 +160,18 @@
         stagger: 0.06,
         scrollTrigger: { trigger: group, start: 'top 82%', once: true },
       });
+    });
+
+    // Filet de sécurité : si l'onglet est masqué en cours d'animation puis
+    // ré-affiché, on garantit que rien ne reste invisible.
+    document.addEventListener('visibilitychange', function onVis() {
+      if (!document.hidden) {
+        gsap.set('[data-reveal]', { opacity: 1, y: 0 });
+        document.querySelectorAll('[data-reveal-group]').forEach(function (g) {
+          gsap.set(g.children, { opacity: 1, y: 0 });
+        });
+        document.removeEventListener('visibilitychange', onVis);
+      }
     });
   }
 
