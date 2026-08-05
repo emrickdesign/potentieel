@@ -5,3 +5,7 @@ assets/.DS_Store
 __pycache__/
 push.command
 *.bak*
+
+# Fichiers de test / junk locaux
+testfile*.txt
+.git_junk_holder/
