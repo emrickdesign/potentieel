@@ -82,13 +82,32 @@
     if (!h1 || !hasSplit) return;
     var split = SplitText.create(h1, { type: 'words', wordsClass: 'pm-word' });
     gsap.set(h1, { opacity: 1 }); // le fondu .hero-entry gère l'apparition du bloc
-    gsap.from(split.words, {
-      yPercent: 45,
-      opacity: 0,
+
+    // LCP critique : le titre ne doit JAMAIS rester invisible. Si l'onglet
+    // n'est pas visible au chargement (ouverture en arrière-plan), on n'entre
+    // pas dans l'état caché — les mots restent affichés tels quels.
+    if (document.hidden) return;
+
+    gsap.set(split.words, { yPercent: 45, opacity: 0 });
+    gsap.to(split.words, {
+      yPercent: 0,
+      opacity: 1,
       duration: 0.7,
       ease: 'power3.out',
       stagger: 0.055,
       delay: 0.12,
+    });
+
+    // Filet de sécurité : si l'animation est interrompue (onglet masqué en
+    // cours de route puis re-affiché), on garantit l'état final visible.
+    gsap.delayedCall(1.8, function () {
+      gsap.set(split.words, { opacity: 1, yPercent: 0 });
+    });
+    document.addEventListener('visibilitychange', function onVis() {
+      if (!document.hidden) {
+        gsap.set(split.words, { opacity: 1, yPercent: 0 });
+        document.removeEventListener('visibilitychange', onVis);
+      }
     });
   }
 
