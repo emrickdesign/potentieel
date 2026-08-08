@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Votre site + votre outil de gestion — Potentieel</title>
+  <meta name="description" content="Un site professionnel + un outil de gestion (CRM) sur-mesure pour piloter votre entreprise. Première version offerte, sans engagement. On vous rappelle sous 24h.">
+  <meta name="robots" content="noindex, follow">
+  <link rel="canonical" href="https://potentieel.fr/formulaire-crm.html">
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+
+  <!-- Meta Pixel Code -->
+  <script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '834746582999499');
+  fbq('track', 'PageView');
+  </script>
+  <noscript>
+  <img height="1" width="1" style="display:none"
+  src="https://www.facebook.com/tr?id=834746582999499&ev=PageView&noscript=1"/>
+  </noscript>
+  <!-- End Meta Pixel Code -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #fdf7f4;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 560px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: clamp(26px, 5vw, 36px);
+      font-weight: 700;
+      color: #111;
+      line-height: 1.15;
+      margin-bottom: 8px;
+    }
+    h1 em {
+      font-style: italic;
+      font-weight: 900;
+      color: #f4926a;
+      display: block;
+      font-size: clamp(30px, 6vw, 44px);
+    }
+    .subtitle-italic {
+      font-size: 16px;
+      font-style: italic;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 10px;
+    }
+    .subtitle-desc {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 28px;
+      line-height: 1.6;
+      text-wrap: balance;
+    }
+
+    @media (max-width: 360px) {
+      body { padding: 28px 12px; }
+      .subtitle-desc { font-size: 13px; }
+    }
+
+    .form-card {
+      background: #fff;
+      border: 1.5px solid #f4ddd3;
+      border-radius: 20px;
+      padding: 28px 28px 24px;
+      text-align: left;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+    .field label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+    }
+    .field label span {
+      color: #f4926a;
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 13px;
+      letter-spacing: .3px;
+    }
+    .field input {
+      width: 100%;
+      border: 2px solid #ddccc2;
+      border-radius: 10px;
+      padding: 13px 16px;
+      font-size: 14px;
+      color: #111;
+      background: #fff;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .field input::placeholder { color: #bbb; }
+    .field input:hover { border-color: #f4b894; }
+    .field input:focus { border-color: #f4926a; box-shadow: 0 0 0 3px rgba(244,146,106,.15); }
+
+    .btn-submit {
+      width: 100%;
+      background: #f4926a;
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 16px;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: .5px;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background .2s, transform .1s;
+    }
+    .btn-submit:hover { background: #e87d54; }
+    .btn-submit:active { transform: scale(.99); }
+    .btn-submit:disabled { background: #ccc; cursor: default; }
+
+    .legal {
+      font-size: 12px;
+      color: #aaa;
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    /* Success state */
+    .success-screen {
+      display: none;
+      text-align: center;
+      padding: 40px 0;
+    }
+    .success-icon {
+      width: 64px; height: 64px;
+      background: rgba(244,146,106,.15);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 28px;
+    }
+    .success-screen h2 {
+      font-size: 22px; font-weight: 800; color: #111; margin-bottom: 8px;
+    }
+    .success-screen p {
+      font-size: 14px; color: #888; line-height: 1.7;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Votre site + votre<em>OUTIL DE GESTION</em></h1>
+  <p class="subtitle-italic">un CRM sur-mesure pour piloter votre entreprise.</p>
+  <p class="subtitle-desc">On vous rappelle sous 24h pour comprendre votre activité et vous présenter votre solution : un site pro + un outil pour centraliser vos clients, devis et suivi au même endroit.</p>
+
+  <div class="form-card">
+
+    <!-- Formulaire -->
+    <div id="form-content">
+      <div class="field">
+        <label>Votre <span>Prénom</span></label>
+        <input id="f-prenom" type="text" placeholder="ex : Thomas" autocomplete="given-name" oninput="trackField('prenom')">
+      </div>
+      <div class="field">
+        <label>Nom de votre <span>Entreprise</span></label>
+        <input id="f-entreprise" type="text" placeholder="ex : Martin BTP" autocomplete="organization" oninput="trackField('entreprise')">
+      </div>
+      <div class="field">
+        <label>Domaine d'activité</label>
+        <input id="f-domaine" type="text" placeholder="ex : travaux, sport, événementiel..." oninput="trackField('domaine')">
+      </div>
+      <div class="field">
+        <label>Numéro de <span>Téléphone</span></label>
+        <input id="f-telephone" type="tel" placeholder="ex : 06 12 34 56 78" autocomplete="tel" oninput="trackField('telephone')">
+      </div>
+      <button class="btn-submit" id="submit-btn" onclick="submitForm()">JE VEUX MA SOLUTION SUR-MESURE</button>
+      <p class="legal">Aucune carte bancaire demandée. Vos données restent confidentielles.</p>
+    </div>
+
+    <!-- Succès -->
+    <div class="success-screen" id="success-screen">
+      <div class="success-icon">🎉</div>
+      <h2>C'est enregistré !</h2>
+      <p>On vous rappelle <strong>sous 24 h</strong>.<br>En attendant, gardez votre téléphone à portée 😊</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://alpzagoprkpzirgtrdup.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFscHphZ29wcmtwemlyZ3RyZHVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3OTg2MDEsImV4cCI6MjA5MjM3NDYwMX0.R7R6esDFce1W4k_wK-aBtAG20oUtK2SmSNCVKENS91g';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Session tracking
+const sessionId = 'sess_' + Math.random().toString(36).slice(2) + '_' + Date.now();
+const startTime = Date.now();
+const filledFields = new Set();
+let visitId = null;
+let clickedSubmit = false;
+
+// Attribution publicitaire (utm / fbclid) — capturée à l'arrivée depuis une pub,
+// persistée en session pour survivre aux reloads et à la redirection /merci.
+const _qp = new URLSearchParams(window.location.search);
+function pickParam(...keys) {
+  for (const k of keys) {
+    const v = _qp.get(k);
+    if (v) { try { sessionStorage.setItem('ptl_' + k, v); } catch {} return v; }
+  }
+  for (const k of keys) {
+    try { const s = sessionStorage.getItem('ptl_' + k); if (s) return s; } catch {}
+  }
+  return null;
+}
+const tracking = {
+  campagne:  pickParam('utm_campaign', 'utm_id'),
+  publicite: pickParam('utm_content', 'utm_term'),
+  fbclid:    pickParam('fbclid')
+};
+
+// Enregistrer la visite
+async function trackVisit() {
+  const { data } = await sb.from('form_visits').insert({
+    session_id: sessionId,
+    fields_filled: 0,
+    clicked_submit: false,
+    converted: false,
+    campagne: tracking.campagne,
+    publicite: tracking.publicite,
+    fbclid: tracking.fbclid
+  }).select().single();
+  if (data) visitId = data.id;
+}
+
+// Tracker remplissage champ
+function trackField(field) {
+  const val = document.getElementById('f-' + field)?.value?.trim();
+  if (val) filledFields.add(field);
+  else filledFields.delete(field);
+  updateVisit();
+}
+
+// Mettre à jour la visite en cours
+async function updateVisit() {
+  if (!visitId) return;
+  await sb.from('form_visits').update({
+    fields_filled: filledFields.size,
+    clicked_submit: clickedSubmit,
+    time_on_page: Math.round((Date.now() - startTime) / 1000)
+  }).eq('id', visitId);
+}
+
+// Soumettre le formulaire
+async function submitForm() {
+  const prenom = document.getElementById('f-prenom').value.trim();
+  const entreprise = document.getElementById('f-entreprise').value.trim();
+  const domaine = document.getElementById('f-domaine').value.trim();
+  const telephone = document.getElementById('f-telephone').value.trim();
+
+  if (!prenom) { document.getElementById('f-prenom').focus(); return; }
+  if (!telephone) { document.getElementById('f-telephone').focus(); return; }
+
+  clickedSubmit = true;
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Envoi en cours...';
+
+  const { error } = await sb.from('form_submissions').insert({
+    prenom, entreprise, domaine, telephone,
+    fields_filled: filledFields.size,
+    source: _qp.get('src') || 'formulaire-crm',
+    campagne: tracking.campagne,
+    publicite: tracking.publicite,
+    fbclid: tracking.fbclid
+  });
+
+  // En cas d'échec : pas de redirection, donc l'événement Lead n'est PAS déclenché.
+  if (error) {
+    btn.disabled = false;
+    btn.textContent = 'Réessayer';
+    return;
+  }
+
+  if (visitId) {
+    await sb.from('form_visits').update({
+      converted: true,
+      clicked_submit: true,
+      fields_filled: filledFields.size,
+      time_on_page: Math.round((Date.now() - startTime) / 1000)
+    }).eq('id', visitId);
+  }
+
+  // Redirection vers la page de remerciement (l'événement Meta "Lead" y est déclenché
+  // une seule fois, au chargement de /merci, après une soumission réussie).
+  window.location.href = '/merci';
+}
+
+// Temps sur page à la fermeture
+window.addEventListener('beforeunload', () => {
+  if (!visitId) return;
+  const payload = JSON.stringify({
+    fields_filled: filledFields.size,
+    clicked_submit: clickedSubmit,
+    time_on_page: Math.round((Date.now() - startTime) / 1000)
+  });
+  navigator.sendBeacon(`${SUPABASE_URL}/rest/v1/form_visits?id=eq.${visitId}`,
+    new Blob([payload], { type: 'application/json' }));
+});
+
+trackVisit();
+</script>
+<!-- Socle animation premium (Lenis + GSAP ScrollTrigger + SplitText) -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1/dist/lenis.min.js"></script>
+<script src="premium.js?v=3"></script>
+</body>
+</html>
