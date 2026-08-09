@@ -1926,7 +1926,7 @@
               </div>
               <div style="display:flex;gap:10px">
                 <button onclick="apCloseManual()" class="btn-modal-cancel">Annuler</button>
-                <button onclick="apSaveManual()" style="flex:2;padding:11px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:700;cursor:pointer">+ Ajouter</button>
+                <button id="ap-m-save-btn" onclick="apSaveManual()" style="flex:2;padding:11px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:700;cursor:pointer">+ Ajouter</button>
               </div>
             </div>
           </div>
@@ -7670,11 +7670,42 @@ function apRenderDebriefHtml(d) {
 
 /* ── Manual call ── */
 function apOpenManual() {
+  // Pré-remplit avec l'heure locale (et non UTC) pour un affichage correct dans <input datetime-local>
   const now=new Date(); now.setMinutes(0,0,0);
-  document.getElementById('ap-m-date').value=now.toISOString().slice(0,16);
+  const local=new Date(now.getTime()-now.getTimezoneOffset()*60000);
+  document.getElementById('ap-m-date').value=local.toISOString().slice(0,16);
   document.getElementById('ap-manual-modal').style.display='flex';
 }
 function apCloseManual() { document.getElementById('ap-manual-modal').style.display='none'; }
+
+const AP_CONFIRM_FN_URL = 'https://alpzagoprkpzirgtrdup.supabase.co/functions/v1/send-call-confirmation';
+
+// Envoi de l'email de confirmation de RDV (même canal que les devis).
+// Ne bloque jamais l'ajout : en cas d'échec, on prévient sans annuler l'appel.
+async function apSendConfirmation(name, email, iso) {
+  if (!email) return;
+  try {
+    const d = new Date(iso);
+    const dateTxt = d.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+    const timeTxt = d.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
+    const { data: { session } } = await sb.auth.getSession();
+    const resp = await fetch(AP_CONFIRM_FN_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session?.access_token || SUPABASE_KEY}`,
+        'apikey': SUPABASE_KEY
+      },
+      body: JSON.stringify({ to: email, clientName: name, dateTxt, timeTxt, scheduledAt: iso })
+    });
+    const out = await resp.json().catch(()=>({}));
+    if (!resp.ok || out.error) throw new Error(out.error || `Erreur ${resp.status}`);
+  } catch(e) {
+    console.error('Confirmation email:', e);
+    alert("Appel ajouté ✓ — mais l'email de confirmation n'a pas pu être envoyé :\n" + (e.message||e));
+  }
+}
+
 async function apSaveManual() {
   const name=document.getElementById('ap-m-name').value.trim();
   const email=document.getElementById('ap-m-email').value.trim();
@@ -7682,11 +7713,34 @@ async function apSaveManual() {
   if(!name){document.getElementById('ap-m-name').focus();return;}
   const sch=dv?new Date(dv).toISOString():new Date().toISOString();
   const isUp=new Date(sch)>new Date();
-  const {data}=await sb.from('calls').insert({source:'manuel',name,email:email||null,scheduled_at:sch,status:isUp?'upcoming':'past'}).select().single();
-  if(data){apCalls.unshift(data);apSetTab(isUp?'avenir':'passes');apSelectCall(data.id);}
+
+  const btn=document.getElementById('ap-m-save-btn');
+  if(btn){ btn.disabled=true; btn.textContent='Ajout…'; }
+
+  const { data, error } = await sb.from('calls')
+    .insert({source:'manuel',name,email:email||null,scheduled_at:sch,status:isUp?'upcoming':'past'})
+    .select().single();
+
+  if (error || !data) {
+    if(btn){ btn.disabled=false; btn.textContent='+ Ajouter'; }
+    alert("Impossible d'ajouter l'appel : " + (error?.message || 'erreur inconnue') +
+          "\n\nSi le problème persiste, déconnecte-toi puis reconnecte-toi.");
+    return;
+  }
+
+  // Recharge depuis la base pour rester cohérent avec le realtime, puis sélectionne le nouvel appel
+  await apLoadCalls();
+  apSetTab(isUp?'avenir':'passes');
+  apSelectCall(data.id);
+
+  if(btn){ btn.disabled=false; btn.textContent='+ Ajouter'; }
   apCloseManual();
   document.getElementById('ap-m-name').value='';
   document.getElementById('ap-m-email').value='';
+  document.getElementById('ap-m-date').value='';
+
+  // Email de confirmation au client (date + heure + personnalisation)
+  apSendConfirmation(name, email, sch);
 }
 
 /* ── API key modal ── */
@@ -8234,7 +8288,6 @@ function prCardHTML(p) {
     <div style="margin-bottom:14px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
         <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Devis</div>
-        <button onclick="prOpenDevis('${p.id}')" style="background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.2);color:#60a5fa;border-radius:6px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer">+ Créer un devis</button>
       </div>
       ${dvHtml}
     </div>
