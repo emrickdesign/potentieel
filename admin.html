@@ -1294,6 +1294,29 @@
                     </button>
                   </div>
                 </div>
+
+                <!-- Abonnement personnalisé -->
+                <div style="margin:0 16px 16px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:18px">
+                  <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px;display:flex;align-items:center;gap:8px"><span style="color:var(--accent)">↻</span> Abonnement personnalisé — lien de paiement</div>
+                  <p style="font-size:12px;color:var(--muted);margin:0 0 14px">Montant libre + jour de renouvellement. Le client paie le <strong>montant plein aujourd'hui</strong>, puis est prélevé chaque mois le jour choisi.</p>
+                  <div style="display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap">
+                    <div>
+                      <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Montant mensuel</label>
+                      <div style="display:flex;align-items:center;gap:6px">
+                        <input id="pay-sub-amount" type="number" min="1" step="0.01" placeholder="20" style="width:110px;background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:#fff;font-size:14px;outline:none">
+                        <span style="font-size:13px;color:var(--muted)">€/mois</span>
+                      </div>
+                    </div>
+                    <div>
+                      <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Renouvellement le</label>
+                      <div style="display:flex;align-items:center;gap:6px">
+                        <input id="pay-sub-day" type="number" min="1" max="28" step="1" placeholder="7" style="width:80px;background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:#fff;font-size:14px;outline:none">
+                        <span style="font-size:13px;color:var(--muted)">du mois</span>
+                      </div>
+                    </div>
+                    <button onclick="clGenerateSubCustom()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px"><span>+</span> Générer le lien</button>
+                  </div>
+                </div>
               </div>
 
               <!-- Liens générés -->
@@ -1415,10 +1438,19 @@
                 <div id="fa-abo-email" style="font-size:12px;color:var(--muted);margin-top:2px"></div>
               </div>
 
-              <!-- Période -->
+              <!-- Période (modifiable) -->
               <div style="margin-bottom:18px">
                 <div style="font-size:12px;color:var(--muted);margin-bottom:5px">Période couverte</div>
-                <div id="fa-abo-periode-display" style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:13px;font-weight:600;color:#fff"></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                  <div>
+                    <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:4px">Début</label>
+                    <input id="fa-abo-periode-start" type="date" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                  </div>
+                  <div>
+                    <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:4px">Fin</label>
+                    <input id="fa-abo-periode-end" type="date" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                  </div>
+                </div>
               </div>
 
               <!-- Montant -->
@@ -5127,12 +5159,13 @@ function faOpenAboModal(clientId) {
   document.getElementById('fa-abo-nom').textContent = c.nom || cid;
   document.getElementById('fa-abo-email').textContent = c.email || '';
   document.getElementById('fa-abo-montant').value = '49';
-  // Période 7 du mois actuel → 7 du mois suivant
+  // Période par défaut : 7 du mois actuel → 7 du mois suivant (modifiable)
   const now = new Date();
   const start = new Date(now.getFullYear(), now.getMonth(), 7);
   const end   = new Date(now.getFullYear(), now.getMonth()+1, 7);
-  const fmt = d => d.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
-  document.getElementById('fa-abo-periode-display').textContent = `Du ${fmt(start)} au ${fmt(end)}`;
+  const toISO = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  document.getElementById('fa-abo-periode-start').value = toISO(start);
+  document.getElementById('fa-abo-periode-end').value   = toISO(end);
   document.getElementById('fa-abo-modal').style.display = 'flex';
 }
 // Modale complète : depuis la page Facturation (sans client) ou depuis une fiche client (client pré-rempli et verrouillé)
@@ -5219,9 +5252,12 @@ function faCreateAbo(){
   const aboVal=document.getElementById('fa-abo-montant').value;
   const aPrix={'20':'20,00 €/mois','49':'49,00 €/mois'};
   const now=new Date();
-  const start=new Date(now.getFullYear(),now.getMonth(),7);
-  const end=new Date(now.getFullYear(),now.getMonth()+1,7);
   const fmt=d=>d.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
+  // Période lue depuis les champs modifiables (fallback : 7 → 7 du mois suivant)
+  const sIn=document.getElementById('fa-abo-periode-start').value;
+  const eIn=document.getElementById('fa-abo-periode-end').value;
+  const start=sIn?new Date(sIn+'T00:00:00'):new Date(now.getFullYear(),now.getMonth(),7);
+  const end=eIn?new Date(eIn+'T00:00:00'):new Date(now.getFullYear(),now.getMonth()+1,7);
   const periode=`Du ${fmt(start)} au ${fmt(end)}`;
   const allFa=clData.flatMap(x=>x.factures||[]);
   const ref='FA-'+String(now.getMonth()+1).padStart(2,'0')+'-'+now.getFullYear()+'-'+String(allFa.length+1).padStart(3,'0');
@@ -6735,6 +6771,19 @@ function clSavePayLink(url, label) {
 
 async function clGenerateStripe(type, label) {
   const url = await clCallStripe(type);
+  if (url) { clSavePayLink(url, label); window.open(url, '_blank'); }
+}
+
+// Abonnement personnalisé : montant mensuel libre + jour de renouvellement.
+// Montant plein prélevé aujourd'hui, puis chaque mois le jour choisi.
+async function clGenerateSubCustom() {
+  const amt = parseFloat((document.getElementById('pay-sub-amount').value || '').replace(',', '.'));
+  const day = parseInt(document.getElementById('pay-sub-day').value, 10);
+  if (isNaN(amt) || amt <= 0) { alert('Saisis un montant mensuel valide.'); document.getElementById('pay-sub-amount').focus(); return; }
+  if (isNaN(day) || day < 1 || day > 28) { alert('Saisis un jour de renouvellement entre 1 et 28.'); document.getElementById('pay-sub-day').focus(); return; }
+  const amtTxt = amt.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const label = `Abo ${amtTxt} €/m · renouv. le ${day}`;
+  const url = await clCallStripe('sub_custom', { customAmount: amt, anchorDay: day });
   if (url) { clSavePayLink(url, label); window.open(url, '_blank'); }
 }
 
