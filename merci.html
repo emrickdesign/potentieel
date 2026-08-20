@@ -18,25 +18,58 @@
   t.src=v;s=b.getElementsByTagName(e)[0];
   s.parentNode.insertBefore(t,s)}(window, document,'script',
   'https://connect.facebook.net/en_US/fbevents.js');
-  fbq('init', '834746582999499');
+  // Données du prospect qui vient de valider le formulaire, déposées en session
+  // par /formulaire. Le pixel les hache en SHA-256 avant envoi : rien ne part en clair.
+  var _lead = null;
+  try {
+    var _raw = sessionStorage.getItem('ptl_lead');
+    if (_raw) {
+      sessionStorage.removeItem('ptl_lead'); // consommation unique : pas de doublon au refresh
+      _lead = JSON.parse(_raw);
+    }
+  } catch (e) {}
+
+  // Filet de sécurité : arrivée depuis le formulaire alors que le sessionStorage
+  // est indisponible (navigation privée stricte, ITP…). Le lead compte quand même.
+  if (!_lead && /\/formulaire/.test(document.referrer || '')) {
+    _lead = { eventID: 'lead_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10) };
+  }
+
+  // Correspondance avancée (fait monter la "qualité de correspondance" côté Meta).
+  var _ptlAm = {};
+  if (_lead) {
+    if (_lead.ph) _ptlAm.ph = _lead.ph;                     // téléphone normalisé 33XXXXXXXXX
+    if (_lead.fn) _ptlAm.fn = _lead.fn;                     // prénom normalisé
+    if (_lead.external_id) _ptlAm.external_id = _lead.external_id;
+  }
+  if (!_ptlAm.external_id) {
+    try {
+      var _uid = localStorage.getItem('ptl_uid');
+      if (_uid) _ptlAm.external_id = _uid;
+    } catch (e) {}
+  }
+
+  fbq('init', '834746582999499', _ptlAm);
   fbq('track', 'PageView');
+
+  // Évènement STANDARD "Lead" — affiché "Prospect" dans l'interface Meta en français.
+  // C'est celui-là, et lui seul, que les campagnes peuvent choisir comme
+  // évènement de conversion. Il remplace l'ancien évènement PERSONNALISÉ "Prospect",
+  // que Meta ne voyait pas comme un évènement d'optimisation (d'où l'alerte
+  // "Aucun évènement de conversion n'est configuré" dans l'ensemble de publicités).
+  // Déclenché une seule fois : ni au refresh, ni sur un accès direct à /merci.
+  if (_lead) {
+    fbq('track', 'Lead', {
+      content_name: _lead.source || 'formulaire',
+      content_category: 'lead_generation'
+    }, { eventID: _lead.eventID });
+  }
   </script>
   <noscript>
   <img height="1" width="1" style="display:none"
   src="https://www.facebook.com/tr?id=834746582999499&ev=PageView&noscript=1"/>
   </noscript>
   <!-- End Meta Pixel Code -->
-
-  <!-- Meta Pixel — événement personnalisé "Prospect" (déclenché uniquement sur cette
-       page de remerciement, après une soumission de formulaire réussie.
-       Aucune donnée personnelle envoyée). -->
-  <script>
-  fbq('trackCustom', 'Prospect', {
-    content_name: 'formulaire_demande_site_internet',
-    content_category: 'lead_generation',
-    source: 'meta_ads'
-  });
-  </script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }

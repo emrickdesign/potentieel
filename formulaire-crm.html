@@ -19,7 +19,25 @@
   t.src=v;s=b.getElementsByTagName(e)[0];
   s.parentNode.insertBefore(t,s)}(window, document,'script',
   'https://connect.facebook.net/en_US/fbevents.js');
-  fbq('init', '834746582999499');
+  // Identifiant stable et anonyme du navigateur (external_id).
+  // C'est un paramètre de correspondance accepté par Meta : il fait monter la
+  // "qualité de correspondance" des évènements sans transmettre aucune donnée
+  // personnelle (ni email, ni téléphone).
+  function ptlExternalId() {
+    try {
+      var v = localStorage.getItem('ptl_uid');
+      if (!v) {
+        v = 'ptl_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+        localStorage.setItem('ptl_uid', v);
+      }
+      return v;
+    } catch (e) { return null; }
+  }
+  var _ptlAm = {};
+  var _ptlUid = ptlExternalId();
+  if (_ptlUid) _ptlAm.external_id = _ptlUid;
+
+  fbq('init', '834746582999499', _ptlAm);
   fbq('track', 'PageView');
   </script>
   <noscript>
@@ -257,10 +275,19 @@ async function trackVisit() {
 }
 
 // Tracker remplissage champ
+let formStartSent = false;
 function trackField(field) {
   const val = document.getElementById('f-' + field)?.value?.trim();
   if (val) filledFields.add(field);
   else filledFields.delete(field);
+
+  // Évènement personnalisé : le visiteur a commencé à remplir.
+  // Sert à créer une audience de retargeting "a commencé mais n'a pas validé".
+  if (!formStartSent && filledFields.size > 0 && window.fbq) {
+    formStartSent = true;
+    fbq('trackCustom', 'FormulaireDemarre', { content_name: 'formulaire_site_plus_crm' });
+  }
+
   updateVisit();
 }
 
@@ -272,6 +299,37 @@ async function updateVisit() {
     clicked_submit: clickedSubmit,
     time_on_page: Math.round((Date.now() - startTime) / 1000)
   }).eq('id', visitId);
+}
+
+// --- Meta Pixel : préparation de l'évènement standard "Lead" ---------------
+// Meta n'accepte comme évènement d'optimisation que ses évènements STANDARD.
+// "Lead" est affiché "Prospect" dans l'interface Meta en français.
+// Il est déclenché une seule fois, sur /merci, après une soumission réussie.
+// Les données de correspondance avancée sont hachées en SHA-256 par le pixel
+// lui-même avant tout envoi : rien ne quitte le navigateur en clair.
+function ptlNormText(s) {
+  return (s || '').toString().trim().toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+function ptlNormPhone(p) {
+  var d = (p || '').replace(/\D/g, '');
+  if (d.indexOf('00') === 0) d = d.slice(2);
+  if (d.indexOf('33') === 0) return d;
+  if (d.indexOf('0') === 0) return '33' + d.slice(1);
+  if (d.length === 9) return '33' + d;
+  return d;
+}
+function prepareLeadEvent(prenom, telephone) {
+  var payload = {
+    // eventID : clé de déduplication. Indispensable si l'API Conversions
+    // (envoi serveur) est ajoutée plus tard — Meta ne comptera qu'un lead.
+    eventID: 'lead_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10),
+    fn: ptlNormText(prenom) || null,
+    ph: ptlNormPhone(telephone) || null,
+    external_id: (typeof ptlExternalId === 'function' ? ptlExternalId() : null),
+    source: 'formulaire_site_plus_crm'
+  };
+  try { sessionStorage.setItem('ptl_lead', JSON.stringify(payload)); } catch (e) {}
 }
 
 // Soumettre le formulaire
@@ -314,8 +372,10 @@ async function submitForm() {
     }).eq('id', visitId);
   }
 
-  // Redirection vers la page de remerciement (l'événement Meta "Lead" y est déclenché
-  // une seule fois, au chargement de /merci, après une soumission réussie).
+  // Dépose les données de l'évènement "Lead" pour /merci, puis redirige.
+  // Firing sur la page de remerciement (et pas ici) : aucune course entre
+  // la requête du pixel et la navigation, l'évènement part toujours en entier.
+  prepareLeadEvent(prenom, telephone);
   window.location.href = '/merci';
 }
 
