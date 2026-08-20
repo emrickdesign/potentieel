@@ -276,10 +276,20 @@ async function trackVisit() {
 
 // Tracker remplissage champ
 let formStartSent = false;
-function trackField(field) {
-  const val = document.getElementById('f-' + field)?.value?.trim();
-  if (val) filledFields.add(field);
-  else filledFields.delete(field);
+const FORM_FIELDS = ['prenom', 'entreprise', 'domaine', 'telephone'];
+
+// Relit l'état réel des champs directement dans le DOM.
+// Passer par le DOM et pas seulement par l'évènement `input` est indispensable :
+// le remplissage automatique du navigateur, la restauration des champs au retour
+// arrière et le rechargement de page ne déclenchent aucun `input`. Sans ça, un
+// formulaire pré-rempli remontait "0 champ rempli" et l'évènement de début de
+// remplissage n'était jamais envoyé.
+function syncFields() {
+  for (const f of FORM_FIELDS) {
+    const val = document.getElementById('f-' + f)?.value?.trim();
+    if (val) filledFields.add(f);
+    else filledFields.delete(f);
+  }
 
   // Évènement personnalisé : le visiteur a commencé à remplir.
   // Sert à créer une audience de retargeting "a commencé mais n'a pas validé".
@@ -287,9 +297,15 @@ function trackField(field) {
     formStartSent = true;
     fbq('trackCustom', 'FormulaireDemarre', { content_name: 'formulaire_site_internet' });
   }
+}
 
+function trackField() {
+  syncFields();
   updateVisit();
 }
+
+// Champs déjà remplis à l'arrivée (autofill, retour arrière, bfcache).
+window.addEventListener('pageshow', syncFields);
 
 // Mettre à jour la visite en cours
 async function updateVisit() {
@@ -334,6 +350,7 @@ function prepareLeadEvent(prenom, telephone) {
 
 // Soumettre le formulaire
 async function submitForm() {
+  syncFields(); // compte des champs fiable, même si rien n'a transité par `input`
   const prenom = document.getElementById('f-prenom').value.trim();
   const entreprise = document.getElementById('f-entreprise').value.trim();
   const domaine = document.getElementById('f-domaine').value.trim();
