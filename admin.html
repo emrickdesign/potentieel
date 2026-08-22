@@ -1719,6 +1719,9 @@
             <select id="ld-filter-campagne" onchange="ldRender()" style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:#fff;font-size:13px;outline:none">
               <option value="">Toutes campagnes</option>
             </select>
+            <select id="ld-filter-publicite" onchange="ldRender()" style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:#fff;font-size:13px;outline:none">
+              <option value="">Toutes publicités</option>
+            </select>
           </div>
           <!-- Liste -->
           <div id="ld-list"></div>
@@ -1753,6 +1756,10 @@
                 <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Campagne</label>
                 <input id="ld-add-campagne" placeholder="META ADS — V1..." style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
               </div>
+              <div style="margin-bottom:20px">
+                <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Publicité</label>
+                <input id="ld-add-publicite" placeholder="4 EXT - SITE GRATUIT..." style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+              </div>
               <div style="display:flex;gap:10px">
                 <button onclick="ldCloseAdd()" class="btn-modal-cancel">Annuler</button>
                 <button onclick="ldAddManual()" class="btn-modal-confirm">+ Ajouter le lead</button>
@@ -1780,6 +1787,12 @@
                 <input id="ld-edit-entreprise" placeholder="Nom société" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
                 <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Domaine d'activité</label>
                 <input id="ld-edit-metier" placeholder="Hôtellerie, BTP..." style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+                <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Campagne</label>
+                <input id="ld-edit-campagne" placeholder="Renseignée automatiquement" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
+                <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Publicité</label>
+                <input id="ld-edit-publicite" placeholder="Renseignée automatiquement" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
               </div>
               <div id="ld-edit-message-wrap" style="display:none;margin-bottom:16px">
                 <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Message du formulaire</label>
@@ -1851,6 +1864,13 @@
               <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Pour détecter les abandons</div>
               <canvas id="fm-chart-abandon" height="160"></canvas>
             </div>
+          </div>
+
+          <!-- Performance par publicité (attribution Meta) -->
+          <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px">
+            <div style="font-size:14px;font-weight:700;margin-bottom:4px">Performance par publicité</div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Campagne et publicité Meta d'où viennent les visites et les leads</div>
+            <div id="fm-ads"></div>
           </div>
 
           <!-- Recent submissions -->
@@ -6922,7 +6942,14 @@ async function ldInit() {
     (_subs || []).forEach(s => {
       const fid = 'ld_fs_' + s.id;
       if (ldDeleted.has(fid)) return;              // respecte les suppressions manuelles
-      if (ldData.find(l => l.id === fid)) return;  // déjà importé
+      const _known = ldData.find(l => l.id === fid);
+      if (_known) {
+        // Déjà importé : on complète l'attribution manquante. Sans ça, les leads
+        // arrivés avant l'ajout du nom de publicité resteraient sans publicité.
+        if (!_known.campagne)  _known.campagne  = ldAttr(s.campagne);
+        if (!_known.publicite) _known.publicite = ldAttr(s.publicite);
+        return;
+      }
       ldData.unshift({
         id: fid,
         nom: s.prenom || '',
@@ -6931,7 +6958,8 @@ async function ldInit() {
         metier: s.domaine || '',
         entreprise: s.entreprise || '',
         source: 'formulaire',
-        campagne: s.campagne || '',
+        campagne: ldAttr(s.campagne),
+        publicite: ldAttr(s.publicite),
         statut: 'nouveau',
         notes: '',
         createdAt: s.submitted_at || new Date().toISOString(),
@@ -6952,6 +6980,14 @@ async function ldInit() {
   ldRender();
 }
 
+// Nettoie une valeur d'attribution Meta. Ouvrir l'aperçu d'une publicité (au lieu
+// de cliquer la vraie pub) envoie les variables non remplacées telles quelles
+// ("{{ad.name}}") : on les traite comme une absence d'attribution.
+function ldAttr(v) {
+  const t = (v == null ? '' : String(v)).trim();
+  return t.includes('{{') ? '' : t;
+}
+
 function ldSave(deletedIds) {
   localStorage.setItem(LD_KEY, JSON.stringify(ldData));
   if (deletedIds !== undefined) {
@@ -6969,6 +7005,7 @@ function ldRender() {
   const search = (document.getElementById('ld-search')?.value || '').toLowerCase();
   const filtStatut = document.getElementById('ld-filter-statut')?.value || '';
   const filtCampagne = document.getElementById('ld-filter-campagne')?.value || '';
+  const filtPublicite = document.getElementById('ld-filter-publicite')?.value || '';
 
   // Update source tabs counts
   ['all','formulaire','site','csv','scraping','manuel'].forEach(src => {
@@ -6985,12 +7022,22 @@ function ldRender() {
       camps.map(c => `<option value="${c}" ${c===current?'selected':''}>${c}</option>`).join('');
   }
 
+  // Update publicité filter options
+  const pubEl = document.getElementById('ld-filter-publicite');
+  if (pubEl) {
+    const current = pubEl.value;
+    const pubs = [...new Set(ldData.map(l => l.publicite).filter(Boolean))];
+    pubEl.innerHTML = '<option value="">Toutes publicités</option>' +
+      pubs.map(c => `<option value="${c}" ${c===current?'selected':''}>${c}</option>`).join('');
+  }
+
   let filtered = ldData.filter(l => {
     if (ldCurrentSource !== 'all' && l.source !== ldCurrentSource) return false;
     if (filtStatut && l.statut !== filtStatut) return false;
     if (filtCampagne && l.campagne !== filtCampagne) return false;
+    if (filtPublicite && l.publicite !== filtPublicite) return false;
     if (search) {
-      const hay = [l.nom,l.email,l.tel,l.metier,l.entreprise,l.message,l.campagne].join(' ').toLowerCase();
+      const hay = [l.nom,l.email,l.tel,l.metier,l.entreprise,l.message,l.campagne,l.publicite].join(' ').toLowerCase();
       if (!hay.includes(search)) return false;
     }
     return true;
@@ -7021,7 +7068,8 @@ function ldCardHTML(l) {
           <span style="font-size:16px;font-weight:800;color:#fff">${l.nom||'(sans nom)'}</span>
           <span class="ld-badge ${src.cls}" style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px">${src.label}</span>
           <span class="ld-badge ${s.cls}" style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px">${s.label}</span>
-          ${l.campagne ? `<span style="font-size:10px;color:var(--muted);background:rgba(255,255,255,.06);padding:2px 8px;border-radius:20px">${l.campagne}</span>` : ''}
+          ${l.campagne ? `<span title="Campagne" style="font-size:10px;color:var(--muted);background:rgba(255,255,255,.06);padding:2px 8px;border-radius:20px">${l.campagne}</span>` : ''}
+          ${l.publicite ? `<span title="Publicité" style="font-size:10px;font-weight:600;color:#b5d0f7;background:rgba(181,208,247,.12);border:1px solid rgba(181,208,247,.2);padding:2px 8px;border-radius:20px">${l.publicite}</span>` : ''}
           <span style="margin-left:auto;font-size:11px;color:var(--muted);white-space:nowrap">${dt}</span>
         </div>
         <div style="display:flex;gap:14px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
@@ -7057,6 +7105,8 @@ function ldOpenDetail(id) {
   document.getElementById('ld-edit-email').value = l.email || '';
   document.getElementById('ld-edit-entreprise').value = l.entreprise || '';
   document.getElementById('ld-edit-metier').value = l.metier || '';
+  document.getElementById('ld-edit-campagne').value = l.campagne || '';
+  document.getElementById('ld-edit-publicite').value = l.publicite || '';
   const msgWrap = document.getElementById('ld-edit-message-wrap');
   const msgEl = document.getElementById('ld-edit-message');
   if (l.message) { msgWrap.style.display = 'block'; msgEl.textContent = l.message; }
@@ -7082,6 +7132,8 @@ function ldSaveDetail() {
   l.email = document.getElementById('ld-edit-email').value.trim();
   l.entreprise = document.getElementById('ld-edit-entreprise').value.trim();
   l.metier = document.getElementById('ld-edit-metier').value.trim();
+  l.campagne = document.getElementById('ld-edit-campagne').value.trim();
+  l.publicite = document.getElementById('ld-edit-publicite').value.trim();
   ldSave();
   ldRender();
   ldCloseDetail();
@@ -7201,7 +7253,7 @@ function ldOpenAdd() {
 
 function ldCloseAdd() {
   document.getElementById('ld-add-modal').style.display = 'none';
-  ['ld-add-nom','ld-add-tel','ld-add-email','ld-add-metier','ld-add-entreprise','ld-add-campagne'].forEach(id => {
+  ['ld-add-nom','ld-add-tel','ld-add-email','ld-add-metier','ld-add-entreprise','ld-add-campagne','ld-add-publicite'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
@@ -7220,6 +7272,7 @@ function ldAddManual() {
     entreprise: document.getElementById('ld-add-entreprise').value.trim(),
     source:     document.getElementById('ld-add-source').value,
     campagne:   document.getElementById('ld-add-campagne').value.trim(),
+    publicite:  document.getElementById('ld-add-publicite')?.value.trim() || '',
     message: '',
     statut: 'nouveau',
     notes: '',
@@ -7295,6 +7348,7 @@ async function fmLoad() {
   fmRenderFieldsChart(S);
   fmRenderDailyChart(V, S);
   fmRenderAbandonChart(V);
+  fmRenderAds(V, S);
   fmRenderRecent(S);
 }
 
@@ -7398,6 +7452,46 @@ function fmRenderAbandonChart(V) {
   });
 }
 
+// Regroupe visites et leads par couple campagne / publicité.
+// Les valeurs "{{ad.name}}" viennent de l'aperçu d'une pub (variables non
+// remplacées par Meta) : elles sont comptées comme du trafic non attribué.
+function fmRenderAds(V, S) {
+  const el = document.getElementById('fm-ads');
+  if (!el) return;
+  const rows = new Map();
+  const bucket = (r) => {
+    const camp = ldAttr(r.campagne), pub = ldAttr(r.publicite);
+    const key = camp + '||' + pub;
+    if (!rows.has(key)) rows.set(key, { camp, pub, visites: 0, leads: 0 });
+    return rows.get(key);
+  };
+  V.forEach(v => bucket(v).visites++);
+  S.forEach(s => bucket(s).leads++);
+
+  const list = [...rows.values()].sort((a,b) => b.leads - a.leads || b.visites - a.visites);
+  if (!list.length) { el.innerHTML = `<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">Aucune donnée sur cette période.</div>`; return; }
+
+  const th = 'text-align:left;font-size:11px;color:var(--muted);font-weight:700;padding:8px 12px;text-transform:uppercase;letter-spacing:.5px';
+  el.innerHTML = `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;min-width:520px">
+    <thead><tr style="border-bottom:1px solid var(--border)">
+      <th style="${th}">Campagne</th>
+      <th style="${th}">Publicité</th>
+      <th style="${th};text-align:right">Visites</th>
+      <th style="${th};text-align:right">Leads</th>
+      <th style="${th};text-align:right">Conversion</th>
+    </tr></thead><tbody>` +
+    list.map(r => {
+      const taux = r.visites > 0 ? ((r.leads / r.visites) * 100).toFixed(1) + '%' : '—';
+      return `<tr style="border-bottom:1px solid rgba(255,255,255,.04)">
+        <td style="padding:10px 12px;font-size:13px;color:var(--muted)">${r.camp || '<span style="opacity:.55">Hors publicité</span>'}</td>
+        <td style="padding:10px 12px;font-size:13px;font-weight:600;color:#fff">${r.pub || '<span style="color:var(--muted);font-weight:400;opacity:.55">—</span>'}</td>
+        <td style="padding:10px 12px;font-size:13px;color:var(--muted);text-align:right">${r.visites}</td>
+        <td style="padding:10px 12px;font-size:13px;font-weight:700;color:#d4f07a;text-align:right">${r.leads}</td>
+        <td style="padding:10px 12px;font-size:13px;color:var(--muted);text-align:right">${taux}</td>
+      </tr>`;
+    }).join('') + `</tbody></table></div>`;
+}
+
 function fmRenderRecent(S) {
   const el = document.getElementById('fm-recent');
   if (!el) return;
@@ -7409,6 +7503,7 @@ function fmRenderRecent(S) {
       <th style="text-align:left;font-size:11px;color:var(--muted);font-weight:700;padding:8px 12px;text-transform:uppercase;letter-spacing:.5px">Entreprise</th>
       <th style="text-align:left;font-size:11px;color:var(--muted);font-weight:700;padding:8px 12px;text-transform:uppercase;letter-spacing:.5px">Domaine</th>
       <th style="text-align:left;font-size:11px;color:var(--muted);font-weight:700;padding:8px 12px;text-transform:uppercase;letter-spacing:.5px">Téléphone</th>
+      <th style="text-align:left;font-size:11px;color:var(--muted);font-weight:700;padding:8px 12px;text-transform:uppercase;letter-spacing:.5px">Publicité</th>
       <th style="text-align:left;font-size:11px;color:var(--muted);font-weight:700;padding:8px 12px;text-transform:uppercase;letter-spacing:.5px">Date</th>
     </tr></thead>
     <tbody>` +
@@ -7417,6 +7512,7 @@ function fmRenderRecent(S) {
     <td style="padding:10px 12px;font-size:13px;color:var(--muted)">${s.entreprise||'—'}</td>
     <td style="padding:10px 12px;font-size:13px;color:var(--muted)">${s.domaine||'—'}</td>
     <td style="padding:10px 12px;font-size:13px;color:var(--muted)">${s.telephone||'—'}</td>
+    <td style="padding:10px 12px;font-size:13px;color:var(--muted)">${ldAttr(s.publicite) || '—'}</td>
     <td style="padding:10px 12px;font-size:12px;color:var(--muted)">${new Date(s.submitted_at).toLocaleDateString('fr-FR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</td>
   </tr>`).join('') +
   `</tbody></table>`;
@@ -8637,7 +8733,7 @@ function ldAddToClient(id) {
   const l = ldData.find(x=>x.id===id); if (!l) return;
   clData.push({ id:'cl'+Date.now(), nom:l.entreprise||l.nom, secteur:l.metier||'', tel:l.tel||'', email:l.email||'',
     statut:'encours', mrr:0, setup:990, depuis:'', url:'', adresse:'', siret:'', siren:'',
-    notes:'Converti depuis Leads. Campagne : '+(l.campagne||'—')+'. '+(l.notes||''),
+    notes:'Converti depuis Leads. Campagne : '+(l.campagne||'—')+' · Publicité : '+(l.publicite||'—')+'. '+(l.notes||''),
     docs:[], assets:[], paiements:[], devis:[], factures:[], messages:[] });
   clSave();
   ldDeleted.add(id); ldSaveDeleted();
@@ -8648,7 +8744,7 @@ function ldAddToClient(id) {
 function ldAddToProject(id) {
   const l = ldData.find(x=>x.id===id); if (!l) return;
   prData.push({ id:'pr'+Date.now(), nom:l.nom, entreprise:l.entreprise||'', metier:l.metier||'',
-    tel:l.tel||'', email:l.email||'', statut:'reflexion', notes:'', source:'leads', campagne:l.campagne||'',
+    tel:l.tel||'', email:l.email||'', statut:'reflexion', notes:'', source:'leads', campagne:l.campagne||'', publicite:l.publicite||'',
     createdAt: new Date().toISOString() });
   prSave();
   ldDeleted.add(id); ldSaveDeleted();
