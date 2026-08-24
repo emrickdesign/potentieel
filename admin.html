@@ -6879,6 +6879,7 @@ async function clGenerateAds() {
 // ── LEADS ─────────────────────────────────────────────────
 const LD_KEY = 'ld_v1';
 const LD_DELETED_KEY = 'ld_deleted_v1';
+const LD_DELETED_SECTION = 'leads_deleted'; // tombstones persistés côté serveur (crm_items), synchro multi-appareils
 let ldDeleted = new Set();
 let ldData = [];
 let ldCurrentSource = 'all';
@@ -6929,6 +6930,18 @@ async function ldInit() {
     const del = JSON.parse(localStorage.getItem(LD_DELETED_KEY));
     ldDeleted = new Set(Array.isArray(del) ? del : []);
   } catch { ldDeleted = new Set(); }
+  // Charge aussi les suppressions confirmées côté serveur : sans ça, une suppression
+  // faite sur un appareil (tombstone stocké uniquement en localStorage) n'était pas
+  // vue par un autre appareil, qui réimportait alors le lead depuis form_submissions
+  // quelques heures/jours plus tard — c'était le bug des leads supprimés qui "revenaient".
+  try {
+    const remoteDel = await crmItemsLoadAll(LD_DELETED_SECTION);
+    if (Array.isArray(remoteDel)) {
+      let changed = false;
+      remoteDel.forEach(r => { if (r && r.id !== undefined && !ldDeleted.has(r.id)) { ldDeleted.add(r.id); changed = true; } });
+      if (changed) ldSaveDeleted();
+    }
+  } catch(e) { console.warn('load leads_deleted:', e); }
   // Migration : injecter leads historiques manquants (sauf ceux supprimés/convertis)
   LD_DEFAULT.forEach(def => {
     if (!ldDeleted.has(def.id) && !ldData.find(l => l.id === def.id)) {
@@ -6997,6 +7010,14 @@ function ldSave(deletedIds) {
   ldData.forEach(l => crmItemUpsert('leads', l.id, l)); // jamais de suppression de masse ici
 }
 function ldSaveDeleted() { localStorage.setItem(LD_DELETED_KEY, JSON.stringify([...ldDeleted])); }
+// Marque un lead comme supprimé, en local ET côté serveur (crm_items/leads_deleted).
+// Utiliser cette fonction (jamais ldDeleted.add() seul) pour toute suppression : sans la
+// persistance serveur, le lead réapparaissait sur un autre appareil au prochain chargement.
+function ldMarkDeleted(id) {
+  ldDeleted.add(id);
+  ldSaveDeleted();
+  crmItemUpsert(LD_DELETED_SECTION, id, { id, deletedAt: new Date().toISOString() });
+}
 
 function ldRender() {
   const listEl = document.getElementById('ld-list');
@@ -7168,8 +7189,7 @@ function ldSetStatus(id, statut) {
 
 function ldDelete(id) {
   if (!confirm('Supprimer ce lead ?')) return;
-  ldDeleted.add(id);
-  ldSaveDeleted();
+  ldMarkDeleted(id);
   ldData = ldData.filter(x => x.id !== id);
   ldSave(id);
   ldRender();
@@ -8736,7 +8756,7 @@ function ldAddToClient(id) {
     notes:'Converti depuis Leads. Campagne : '+(l.campagne||'—')+' · Publicité : '+(l.publicite||'—')+'. '+(l.notes||''),
     docs:[], assets:[], paiements:[], devis:[], factures:[], messages:[] });
   clSave();
-  ldDeleted.add(id); ldSaveDeleted();
+  ldMarkDeleted(id);
   ldData = ldData.filter(x=>x.id!==id); ldSave(id); ldRender();
   alert('Client créé ✓');
   nav(document.querySelector('[data-page="clients"]'));
@@ -8747,7 +8767,7 @@ function ldAddToProject(id) {
     tel:l.tel||'', email:l.email||'', statut:'reflexion', notes:'', source:'leads', campagne:l.campagne||'', publicite:l.publicite||'',
     createdAt: new Date().toISOString() });
   prSave();
-  ldDeleted.add(id); ldSaveDeleted();
+  ldMarkDeleted(id);
   ldData = ldData.filter(x=>x.id!==id); ldSave(id); ldRender();
   alert('Ajouté aux Projets ✓');
   nav(document.querySelector('[data-page="projets"]'));
