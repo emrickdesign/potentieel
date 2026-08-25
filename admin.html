@@ -1043,6 +1043,13 @@
               </button>
             </div>
 
+            <!-- Entité tabs -->
+            <div style="display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:16px;overflow-x:auto">
+              <button class="ld-stab cl-stab active" data-owner="all" onclick="clTabOwner('all',this)">Tous <span id="cl-cnt-all" class="ld-cnt">0</span></button>
+              <button class="ld-stab cl-stab" data-owner="emrick" onclick="clTabOwner('emrick',this)">👤 Emrick <span id="cl-cnt-emrick" class="ld-cnt">0</span></button>
+              <button class="ld-stab cl-stab" data-owner="eloise" onclick="clTabOwner('eloise',this)">👤 Éloïse <span id="cl-cnt-eloise" class="ld-cnt">0</span></button>
+            </div>
+
             <!-- KPIs -->
             <div style="display:flex;gap:0;margin-bottom:16px;border:1px solid var(--border);border-radius:12px;overflow:hidden">
               <div style="flex:1;padding:14px 16px;border-right:1px solid var(--border)">
@@ -4171,6 +4178,7 @@ const CL_DEFAULT = [
 
 let clData = [];
 let clCurrentId = null;
+let clCurrentOwner = 'all';
 let clEditMode = false;
 
 async function clLoad() {
@@ -4227,11 +4235,27 @@ function clInitials(nom) {
   return nom.slice(0,2).toUpperCase();
 }
 
+function clTabOwner(owner, btn) {
+  clCurrentOwner = owner;
+  document.querySelectorAll('.cl-stab').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  clRenderGrid();
+}
+
 function clRenderGrid() {
   const grid = document.getElementById('cl-grid');
   if (!grid) return;
   grid.innerHTML = '';
-  clData.forEach(c => {
+
+  // Update entité tabs counts (toujours sur l'ensemble, pas la vue filtrée)
+  ['all','emrick','eloise'].forEach(o => {
+    const el = document.getElementById('cl-cnt-' + o);
+    if (el) el.textContent = o === 'all' ? clData.length : clData.filter(c => (c.owner||'emrick') === o).length;
+  });
+
+  const view = clCurrentOwner === 'all' ? clData : clData.filter(c => (c.owner||'emrick') === clCurrentOwner);
+
+  view.forEach(c => {
     const div = document.createElement('div');
     div.className = 'cl-card';
     div.onclick = () => clOpenDetail(c.id);
@@ -4246,6 +4270,7 @@ function clRenderGrid() {
           <div class="cl-card-secteur">${c.secteur||'—'}</div>
         </div>
         <div style="margin-left:auto;display:flex;align-items:center;gap:6px">
+          <span style="font-size:10px;color:var(--muted);background:rgba(255,255,255,.06);padding:2px 8px;border-radius:20px;white-space:nowrap">👤 ${(c.owner||'emrick')==='eloise'?'Éloïse':'Emrick'}</span>
           <span class="badge ${CL_STATUT_BADGE[c.statut]||'badge-gray'}">${CL_STATUT_LABELS[c.statut]||c.statut}</span>
           <button onclick="clDeleteClient('${c.id}', event)" style="background:none;border:none;color:var(--muted);cursor:pointer;opacity:.5;padding:2px;display:flex" title="Supprimer le client"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>
         </div>
@@ -4259,11 +4284,11 @@ function clRenderGrid() {
     grid.appendChild(div);
   });
 
-  // KPIs
-  const actifs = clData.filter(c=>c.statut==='actif').length;
-  const encours = clData.filter(c=>c.statut==='encours').length;
-  const mrr = clData.filter(c => c.statut === 'actif' || c.statut === 'retard').reduce((s,c) => s + (parseInt(c.mrr)||0), 0);
-  document.getElementById('cl-kpi-total').textContent = clData.length;
+  // KPIs (sur la vue filtrée par entité, pour suivre le CA de chacun vers son plafond)
+  const actifs = view.filter(c=>c.statut==='actif').length;
+  const encours = view.filter(c=>c.statut==='encours').length;
+  const mrr = view.filter(c => c.statut === 'actif' || c.statut === 'retard').reduce((s,c) => s + (parseInt(c.mrr)||0), 0);
+  document.getElementById('cl-kpi-total').textContent = view.length;
   document.getElementById('cl-kpi-actifs').textContent = actifs;
   document.getElementById('cl-kpi-encours').textContent = encours;
   document.getElementById('cl-kpi-mrr').textContent = mrr+'€';
