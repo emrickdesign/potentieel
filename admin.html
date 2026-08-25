@@ -3449,6 +3449,16 @@ function setupRealtime() {
         if (i >= 0) arr[i] = item; else arr.unshift(item);
         return arr;
       };
+      // Une note en cours de frappe (textarea encore focus, pas encore blur) ne doit
+      // jamais être écrasée par un événement realtime venant d'un autre appareil/onglet
+      // (ex: Emrick tape une note pendant qu'Éloïse sauvegarde autre chose ailleurs).
+      // ldRender()/prRender() régénèrent tout le HTML de la liste (innerHTML), donc même
+      // un événement sur UN AUTRE lead/projet effacerait la frappe en cours sur celui-ci
+      // s'il est affiché dans la même liste : on diffère alors tout le bloc (data + rendu)
+      // tant qu'une note de cette section est en cours d'édition — c'est ce qui faisait
+      // disparaître des notes de suivi sur les leads/projets.
+      const active = document.activeElement;
+      const isEditingNoteIn = (prefix) => !!(active && active.id && active.id.indexOf(prefix) === 0);
       switch(section) {
         case 'tasks':
           tcData = isDelete ? tcData.filter(t => String(t.id) !== String(id)) : patch(tcData, row.payload);
@@ -3459,6 +3469,7 @@ function setupRealtime() {
           localStorage.setItem(PL_KEY, JSON.stringify(plData));
           renderPipeline(); break;
         case 'clients':
+          if (active && active.id === 'cl-notes-area' && clCurrentId === id) break;
           clData = isDelete ? clData.filter(c => String(c.id) !== String(id)) : patch(clData, row.payload);
           localStorage.setItem(CL_KEY, JSON.stringify(clData));
           clRenderGrid(); break;
@@ -3468,10 +3479,12 @@ function setupRealtime() {
           if (document.getElementById('page-documents')?.classList.contains('active')) dcRender();
           break;
         case 'leads':
+          if (isEditingNoteIn('ld-notes-')) break;
           ldData = isDelete ? ldData.filter(l => String(l.id) !== String(id)) : patch(ldData, row.payload);
           localStorage.setItem(LD_KEY, JSON.stringify(ldData));
           ldRender(); break;
         case 'projects':
+          if (isEditingNoteIn('pr-notes-')) break;
           prData = isDelete ? prData.filter(p => String(p.id) !== String(id)) : patch(prData, row.payload);
           localStorage.setItem(PR_KEY, JSON.stringify(prData));
           if (document.getElementById('page-projets')?.classList.contains('active')) prRender();
@@ -8837,7 +8850,7 @@ function ldAddToClient(id) {
 function ldAddToProject(id) {
   const l = ldData.find(x=>x.id===id); if (!l) return;
   prData.push({ id:'pr'+Date.now(), nom:l.nom, entreprise:l.entreprise||'', metier:l.metier||'',
-    tel:l.tel||'', email:l.email||'', statut:'reflexion', notes:'', source:'leads', campagne:l.campagne||'', publicite:l.publicite||'',
+    tel:l.tel||'', email:l.email||'', statut:'reflexion', notes:l.notes||'', source:'leads', campagne:l.campagne||'', publicite:l.publicite||'',
     createdAt: new Date().toISOString() });
   prSave();
   ldMarkDeleted(id);
