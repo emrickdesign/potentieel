@@ -4326,7 +4326,12 @@ function clRow(label, val) {
 
 function clRenderInfos(c) {
   const depuisTxt = c.depuis ? new Date(c.depuis).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'}) : '—';
+  const ownerSelect = `<select onchange="clSetOwner(this.value)" title="Entité qui facture ce client (devis/factures)" style="background:#1a1a22;border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:#fff;font-size:12px;outline:none;cursor:pointer">
+    <option value="emrick"${(c.owner||'emrick')==='emrick'?' selected':''}>👤 Emrick</option>
+    <option value="eloise"${c.owner==='eloise'?' selected':''}>👤 Éloïse</option>
+  </select>`;
   document.getElementById('cl-info-fields').innerHTML =
+    clRow('Entité (devis/factures)', ownerSelect) +
     clRow('Nom', c.nom) +
     clRow('Secteur', c.secteur) +
     clRow('Téléphone', c.tel ? `<a href="tel:${c.tel}" style="color:var(--blue)">${c.tel}</a>` : '—') +
@@ -4345,6 +4350,11 @@ function clRenderInfos(c) {
   document.getElementById('cl-notes-area').value = c.notes || '';
 }
 
+function clSetOwner(val) {
+  if (!clCurrentId) return;
+  const c = clData.find(x=>x.id===clCurrentId);
+  if (c) { c.owner = val; clSave(); }
+}
 function clSaveNotes() {
   if (!clCurrentId) return;
   const c = clData.find(x=>x.id===clCurrentId);
@@ -4848,7 +4858,8 @@ function dvCreate() {
   const dv={id:'dv'+Date.now(),ref,date:new Date().toLocaleDateString('fr-FR'),statut:'envoyé',totalTxt,
     data:{entreprise,tel:document.getElementById('dv-tel').value.trim(),email:document.getElementById('dv-email').value.trim(),
       adresse:document.getElementById('dv-adresse').value.trim(),idType:document.getElementById('dv-id-type').value,
-      idNum:document.getElementById('dv-id-num').value.trim(),creation,abo,creationAmt,creationPerInstallment,aboAmt:parseInt(abo)||0}};
+      idNum:document.getElementById('dv-id-num').value.trim(),creation,abo,creationAmt,creationPerInstallment,aboAmt:parseInt(abo)||0,
+      owner:(c&&c.owner)||'emrick'}};
   if(c){
     if(!c.devis)c.devis=[];c.devis.unshift(dv);clSave();clRenderDevis(c);
   } else {
@@ -4887,6 +4898,24 @@ function openImportedFile(data, fileName) {
   }
   setTimeout(()=>URL.revokeObjectURL(url), 10000);
 }
+
+// Infos légales des deux entités de l'agence (micro-entreprises distinctes, chacune
+// facture ses propres clients pour pouvoir cumuler les deux plafonds de CA avant
+// passage en société). Choisi via owner sur le projet/client, figé sur chaque
+// devis/facture à la création pour ne jamais changer un document déjà émis.
+const COMPANY_INFO = {
+  emrick: {
+    firstName: 'Emrick',
+    signName: 'PERILLIAT EMRICK',
+    detailHtml: 'PERILLIAT EMRICK — Entrepreneur individuel<br>SIREN : 990 572 117 · SIRET : 990 572 117 00010<br>RCS Chambéry · TVA non applicable (art. 293B CGI)<br>potentieel.web@gmail.com · potentieel.fr',
+  },
+  eloise: {
+    firstName: 'Éloïse',
+    signName: 'CESAR-LE DREAU ELOISE',
+    detailHtml: 'CESAR-LE DREAU ELOISE — Entrepreneur individuel<br>SIREN : 106 848 245 · SIRET : 106 848 245 00010<br>RCS Chambéry · TVA non applicable (art. 293B CGI)<br>potentieel.web@gmail.com · potentieel.fr',
+  },
+};
+function companyInfo(owner) { return COMPANY_INFO[owner] || COMPANY_INFO.emrick; }
 
 function dvQuoteHtml(dv, withPrintBtn) {
   const d=dv.data||{};
@@ -4999,7 +5028,7 @@ ${withPrintBtn ? '<button class="btn no-print" onclick="window.print()"><svg wid
   <div class="party-card prest">
     <div class="party-label">Prestataire</div>
     <div class="party-name">Potentieel</div>
-    <div class="party-detail">PERILLIAT EMRICK — Entrepreneur individuel<br>SIREN : 990 572 117 · SIRET : 990 572 117 00010<br>RCS Chambéry · TVA non applicable (art. 293B CGI)<br>potentieel.web@gmail.com · potentieel.fr</div>
+    <div class="party-detail">${companyInfo(d.owner).detailHtml}</div>
   </div>
   <div class="party-card client">
     <div class="party-label">Client</div>
@@ -5032,7 +5061,7 @@ ${withPrintBtn ? '<button class="btn no-print" onclick="window.print()"><svg wid
   </div>
   <div class="sig-box">
     <div class="sig-title">Potentieel — Émetteur</div>
-    <div class="sig-field">PERILLIAT EMRICK</div>
+    <div class="sig-field">${companyInfo(d.owner).signName}</div>
     <div class="sig-field">Date : ${today}</div>
     <div class="sig-space"></div>
   </div>
@@ -5258,7 +5287,7 @@ function faCreate(){
       adresse:document.getElementById('fa-adresse').value.trim(),idType:document.getElementById('fa-id-type').value,
       idNum:document.getElementById('fa-id-num').value.trim(),creation,abo,
       versementMontant:hasVersement?versementMontant:null,versementNote:versementNote,
-      reglement:document.getElementById('fa-reglement').value}};
+      reglement:document.getElementById('fa-reglement').value,owner:c.owner||'emrick'}};
   if(!c.factures)c.factures=[];
   c.factures.unshift(fa);clSave();clRenderFactures(c);
   if(document.getElementById('page-facturation')?.classList.contains('active')) renderGlobalFactures();
@@ -5285,7 +5314,7 @@ function faCreateAbo(){
     totalTxt:aPrix[aboVal],montantNum:parseInt(aboVal),
     data:{entreprise:c.nom||'',email:c.email||'',tel:c.tel||'',adresse:c.adresse||'',
       idType:c.siret?'SIRET':c.siren?'SIREN':'',idNum:c.siret||c.siren||'',
-      abo:aboVal,reglement:'stripe',periode}};
+      abo:aboVal,reglement:'stripe',periode,owner:c.owner||'emrick'}};
   if(!c.factures)c.factures=[];
   c.factures.unshift(fa);clSave();clRenderFactures(c);
   faAboCloseModal();faPrintFa(fa);
@@ -5386,6 +5415,7 @@ async function faSendEmail(fid){
         ref: fa.ref,
         totalTxt: fa.totalTxt || '',
         fileName: `facture-${fa.ref||'potentieel'}.pdf`,
+        senderName: companyInfo(fa.data&&fa.data.owner).firstName,
         pdfBase64
       })
     });
@@ -5443,6 +5473,7 @@ async function dvSendEmailCore(dv, did, fallbackEmail){
         ref: dv.ref,
         totalTxt: dv.totalTxt || '',
         fileName: `devis-${dv.ref||'potentieel'}.pdf`,
+        senderName: companyInfo(dv.data&&dv.data.owner).firstName,
         pdfBase64
       })
     });
@@ -6458,7 +6489,7 @@ ${withPrintBtn ? '<button class="btn no-print" onclick="window.print()"><svg wid
   <div class="party-card prest">
     <div class="party-label">Prestataire</div>
     <div class="party-name">Potentieel</div>
-    <div class="party-detail">PERILLIAT EMRICK — Entrepreneur individuel<br>SIREN : 990 572 117 · SIRET : 990 572 117 00010<br>RCS Chambéry · TVA non applicable (art. 293B CGI)<br>potentieel.web@gmail.com · potentieel.fr</div>
+    <div class="party-detail">${companyInfo(d.owner).detailHtml}</div>
   </div>
   <div class="party-card client">
     <div class="party-label">Client</div>
@@ -6936,11 +6967,19 @@ async function ldInit() {
   // quelques heures/jours plus tard — c'était le bug des leads supprimés qui "revenaient".
   try {
     const remoteDel = await crmItemsLoadAll(LD_DELETED_SECTION);
+    const remoteDelIds = new Set(Array.isArray(remoteDel) ? remoteDel.filter(r => r && r.id !== undefined).map(r => r.id) : []);
     if (Array.isArray(remoteDel)) {
       let changed = false;
       remoteDel.forEach(r => { if (r && r.id !== undefined && !ldDeleted.has(r.id)) { ldDeleted.add(r.id); changed = true; } });
       if (changed) ldSaveDeleted();
     }
+    // Pousse vers le serveur les suppressions qui n'existaient jusque-là qu'en local sur cet
+    // appareil (faites avant l'ajout de la persistance serveur) : sans ça, elles restaient un
+    // tombstone fantôme invisible des autres appareils, avec le même risque de réapparition
+    // que le bug déjà corrigé — ici pour de vieilles suppressions au lieu de nouvelles.
+    ldDeleted.forEach(id => {
+      if (!remoteDelIds.has(id)) crmItemUpsert(LD_DELETED_SECTION, id, { id, deletedAt: new Date().toISOString() });
+    });
   } catch(e) { console.warn('load leads_deleted:', e); }
   // Migration : injecter leads historiques manquants (sauf ceux supprimés/convertis)
   LD_DEFAULT.forEach(def => {
@@ -8412,6 +8451,10 @@ function prCardHTML(p) {
           <span style="margin-left:auto;font-size:11px;color:var(--muted);white-space:nowrap">${dt}</span>
         </div>
       </div>
+      <select onchange="prSetOwner('${p.id}',this.value)" title="Entité qui facturera ce projet (devis/factures)" style="background:#1a1a22;border:1px solid var(--border);border-radius:8px;padding:7px 12px;color:#fff;font-size:12px;outline:none;cursor:pointer;flex-shrink:0">
+        <option value="emrick"${(p.owner||'emrick')==='emrick'?' selected':''}>👤 Emrick</option>
+        <option value="eloise"${p.owner==='eloise'?' selected':''}>👤 Éloïse</option>
+      </select>
       <select onchange="prSetStatus('${p.id}',this.value)" style="background:#1a1a22;border:1px solid var(--border);border-radius:8px;padding:7px 12px;color:#fff;font-size:12px;outline:none;cursor:pointer;flex-shrink:0">${statusOpts}</select>
     </div>
 
@@ -8473,6 +8516,10 @@ function prCardHTML(p) {
 function prSetStatus(id, val) {
   const p = prData.find(x=>x.id===id); if (!p) return;
   p.statut = val; prSave(); prRender();
+}
+function prSetOwner(id, val) {
+  const p = prData.find(x=>x.id===id); if (!p) return;
+  p.owner = val; prSave(); prRender();
 }
 function prSaveNotes(id) {
   const p = prData.find(x=>x.id===id);
@@ -8734,6 +8781,7 @@ function prConvertToClient(id) {
     adresse: p.adresse||'',
     siret:   '',
     siren:   '',
+    owner:   p.owner||'emrick',
     notes:   'Converti depuis Projets. '+(p.notes||''),
     docs:    [],
     assets:  (p.assets||[]).map(a=>({...a})),
