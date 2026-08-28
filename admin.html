@@ -2664,7 +2664,7 @@
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
                 <div>
                   <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Création (paiement unique)</label>
-                  <select id="dv-creation" onchange="dvUpdateCreationPreview()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
+                  <select id="dv-creation" onchange="dvCreationChanged()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
                     <option value="">Aucun</option>
                     <option value="1x">Création site web — 1 fois</option>
                     <option value="2x">Création site web — 2 fois</option>
@@ -2674,7 +2674,7 @@
                 </div>
                 <div>
                   <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Abonnement mensuel</label>
-                  <select id="dv-abo" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
+                  <select id="dv-abo" onchange="dvAboChanged()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
                     <option value="">Aucun abonnement</option>
                     <option value="20">Assistant Digital — 20 €/mois</option>
                     <option value="49">Gestion complète — 49 €/mois</option>
@@ -2682,11 +2682,18 @@
                 </div>
               </div>
 
-              <!-- Prix personnalisé (remplace le tarif standard 990 € pour ce client) -->
+              <!-- Prix création — toujours modifiable à la main (pré-rempli au tarif standard 990 €) -->
               <div id="dv-creation-prix-wrap" style="margin-bottom:14px;display:none">
-                <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Prix personnalisé <span style="font-weight:400">(laisser vide pour garder le tarif standard 990 €)</span></label>
+                <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Prix du site (€ total) <span style="font-weight:400">— modifiable, vide = tarif standard 990 €</span></label>
                 <input id="dv-creation-prix" type="number" min="0" step="0.01" placeholder="ex: 700" oninput="dvUpdateCreationPreview()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
                 <div id="dv-creation-preview" style="font-size:12px;color:var(--accent);margin-top:6px;font-weight:600"></div>
+              </div>
+
+              <!-- Prix abonnement — toujours modifiable à la main (pré-rempli au tarif de la formule) -->
+              <div id="dv-abo-prix-wrap" style="margin-bottom:14px;display:none">
+                <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Prix de l'abonnement (€ / mois) <span style="font-weight:400">— modifiable, vide = tarif de la formule</span></label>
+                <input id="dv-abo-prix" type="number" min="0" step="0.01" placeholder="ex: 39" oninput="dvUpdateAboPreview()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                <div id="dv-abo-preview" style="font-size:12px;color:var(--accent);margin-top:6px;font-weight:600"></div>
               </div>
 
               <!-- Note -->
@@ -4824,7 +4831,8 @@ function dvOpenModal(clientId) {
   document.getElementById('dv-creation').value='';
   document.getElementById('dv-abo').value='';
   document.getElementById('dv-creation-prix').value='';
-  dvUpdateCreationPreview();
+  const _aboPrix=document.getElementById('dv-abo-prix'); if(_aboPrix)_aboPrix.value='';
+  dvUpdateCreationPreview(); dvUpdateAboPreview();
   if (fromClient) {
     // Depuis fiche client : bannière + champs auto, masquer le sélecteur
     const c = clData.find(x=>x.id===cid);
@@ -4851,6 +4859,34 @@ function dvPrefill() {
   set('dv-adresse',c.adresse); set('dv-id-num',c.siret||c.siren);
   if(c.siret)document.getElementById('dv-id-type').value='SIRET';
   else if(c.siren)document.getElementById('dv-id-type').value='SIREN';
+}
+
+// Sélection d'une formule : on pré-remplit le champ prix pour qu'il soit
+// directement modifiable au clavier (vide = on retombe sur le tarif standard).
+function dvCreationChanged() {
+  const creation=document.getElementById('dv-creation').value;
+  const inp=document.getElementById('dv-creation-prix');
+  if(inp){ if(!creation) inp.value=''; else if(!inp.value) inp.value='990'; }
+  dvUpdateCreationPreview();
+}
+function dvAboChanged() {
+  const abo=document.getElementById('dv-abo').value;
+  const inp=document.getElementById('dv-abo-prix');
+  if(inp) inp.value = abo ? abo : '';
+  dvUpdateAboPreview();
+}
+
+function dvUpdateAboPreview() {
+  const abo=document.getElementById('dv-abo').value;
+  const wrap=document.getElementById('dv-abo-prix-wrap');
+  const preview=document.getElementById('dv-abo-preview');
+  if(!wrap||!preview)return;
+  if(!abo){ wrap.style.display='none'; preview.textContent=''; return; }
+  wrap.style.display='block';
+  const fmt=v=>Number(v).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+  const raw=parseFloat((document.getElementById('dv-abo-prix').value||'').replace(',','.'));
+  if(isNaN(raw)||raw<=0){ preview.textContent='Tarif standard : '+fmt(parseFloat(abo))+'/mois (laisser vide pour garder ce tarif)'; return; }
+  preview.textContent='= '+fmt(raw)+'/mois';
 }
 
 function dvUpdateCreationPreview() {
@@ -4884,10 +4920,11 @@ function dvCreate() {
   const creationAmt=hasCustom?customRaw:({'1x':990,'2x':990,'3x':990,'4x':990}[creation]||0);
   const creationPerInstallment=creation?(creationAmt/n):0;
   const creationMap=creation?{[creation]: n===1?('Création site — '+fmt(creationPerInstallment)):('Création site — '+n+'×'+fmt(creationPerInstallment))}:{};
-  const aboMap={'20':'Abonnement 20 €/m','49':'Abonnement 49 €/m'};
+  const aboCustomRaw=parseFloat((document.getElementById('dv-abo-prix').value||'').replace(',','.'));
+  const aboAmt=abo?((!isNaN(aboCustomRaw)&&aboCustomRaw>0)?aboCustomRaw:(parseFloat(abo)||0)):0;
   const parts=[];
   if(creation)parts.push(creationMap[creation]);
-  if(abo)parts.push(aboMap[abo]);
+  if(abo)parts.push('Abonnement '+fmt(aboAmt)+'/m');
   const totalTxt=parts.join(' + ')||'—';
   const cid=document.getElementById('dv-cl-select').value||clCurrentId;
   const c=clData.find(x=>x.id===cid);
@@ -4896,7 +4933,7 @@ function dvCreate() {
   const dv={id:'dv'+Date.now(),ref,date:new Date().toLocaleDateString('fr-FR'),statut:'envoyé',totalTxt,
     data:{entreprise,tel:document.getElementById('dv-tel').value.trim(),email:document.getElementById('dv-email').value.trim(),
       adresse:document.getElementById('dv-adresse').value.trim(),idType:document.getElementById('dv-id-type').value,
-      idNum:document.getElementById('dv-id-num').value.trim(),creation,abo,creationAmt,creationPerInstallment,aboAmt:parseInt(abo)||0,
+      idNum:document.getElementById('dv-id-num').value.trim(),creation,abo,creationAmt,creationPerInstallment,aboAmt,
       owner:(c&&c.owner)||'emrick'}};
   if(c){
     if(!c.devis)c.devis=[];c.devis.unshift(dv);clSave();clRenderDevis(c);
@@ -4969,16 +5006,18 @@ function dvQuoteHtml(dv, withPrintBtn) {
   const cLblVal='Création de site web';
   const aLbl={'20':'Abonnement mensuel — Assistant Digital','49':'Abonnement mensuel — Gestion & Tranquillité'};
   const aDesc={'20':'Hébergement inclus, support WhatsApp, modifications de contenu illimitées sous 48 h.','49':'Hébergement, sécurité SSL, support VIP WhatsApp, modifications illimitées sous 48 h, sauvegardes automatiques, surveillance technique.'};
-  const aPrix={'20':'20,00 €/mois','49':'49,00 €/mois'};
+  // Montant d'abonnement saisi à la création du devis ; fallback = tarif de la formule
+  const aboAmt=(d.aboAmt!=null&&Number(d.aboAmt)>0)?Number(d.aboAmt):(parseFloat(d.abo)||0);
+  const aboPrixTxt=d.abo?(fmtP(aboAmt)+'/mois'):'';
   let lignes='';
   if(d.creation)lignes+=`<tr><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0"><div style="font-weight:700;font-size:14px;color:#111;margin-bottom:4px">${cLblVal}</div><div style="font-size:12px;color:#777;line-height:1.6">${cDescVal}</div></td><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0;text-align:right;vertical-align:top;white-space:nowrap"><span style="font-size:16px;font-weight:800;color:#f4926a">${cPrixVal}</span></td></tr>`;
-  if(d.abo)lignes+=`<tr><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0"><div style="font-weight:700;font-size:14px;color:#111;margin-bottom:4px">${aLbl[d.abo]}</div><div style="font-size:12px;color:#777;line-height:1.6">${aDesc[d.abo]||''}</div></td><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0;text-align:right;vertical-align:top;white-space:nowrap"><span style="font-size:16px;font-weight:800;color:#f4926a">${aPrix[d.abo]}</span></td></tr>`;
+  if(d.abo)lignes+=`<tr><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0"><div style="font-weight:700;font-size:14px;color:#111;margin-bottom:4px">${aLbl[d.abo]}</div><div style="font-size:12px;color:#777;line-height:1.6">${aDesc[d.abo]||''}</div></td><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0;text-align:right;vertical-align:top;white-space:nowrap"><span style="font-size:16px;font-weight:800;color:#f4926a">${aboPrixTxt}</span></td></tr>`;
   if(!lignes)lignes=`<tr><td colspan="2" style="padding:20px;color:#aaa;text-align:center;font-size:13px">Aucune prestation sélectionnée</td></tr>`;
   const idLine=d.idNum?`<br><span style="font-size:11px;color:#aaa">${d.idType||'SIRET'} : ${d.idNum}</span>`:'';
   const valid=new Date();valid.setDate(valid.getDate()+5);
   const validTxt=valid.toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
   const today=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
-  const totalCell=`${d.creation?cPrixVal:''}${d.creation&&d.abo?' + ':''}${d.abo?(aPrix[d.abo]||''):''}`;
+  const totalCell=`${d.creation?cPrixVal:''}${d.creation&&d.abo?' + ':''}${d.abo?aboPrixTxt:''}`;
 
   // Conditions de paiement
   let cond='';
@@ -4990,9 +5029,13 @@ function dvQuoteHtml(dv, withPrintBtn) {
   }
   if(d.abo){
     const aboTxt=d.creation
-      ?`Aucun prélèvement d'abonnement pendant la phase de création. L'abonnement de <strong>${aPrix[d.abo]}</strong> démarre automatiquement le 7 du mois suivant le dernier versement de création. <em>Les mois de création sont offerts.</em>`
-      :`Abonnement de <strong>${aPrix[d.abo]}</strong> — premier prélèvement à la validation de ce devis. Résiliable à tout moment par simple message.`;
+      ?`Aucun prélèvement d'abonnement pendant la phase de création. L'abonnement de <strong>${aboPrixTxt}</strong> démarre automatiquement le 7 du mois suivant le dernier versement de création. <em>Les mois de création sont offerts.</em>`
+      :`Abonnement de <strong>${aboPrixTxt}</strong> — premier prélèvement à la validation de ce devis.`;
     cond+=`<div class="cond-item"><span class="cond-dot"></span>${aboTxt}</div>`;
+    cond+=`<div class="cond-item"><span class="cond-dot"></span><strong>Aucun engagement de durée.</strong> L'abonnement est sans durée minimale : le client peut l'arrêter quand il le souhaite, même après plusieurs années, par simple message, sans préavis ni frais de résiliation. Seul le mois en cours reste dû, aucun prélèvement n'intervient ensuite.</div>`;
+  }
+  if(d.creation||d.abo){
+    cond+=`<div class="cond-item"><span class="cond-dot"></span><strong>Le client reste propriétaire de son site et de son nom de domaine.</strong> En cas d'arrêt${d.abo?" de l'abonnement":' de la collaboration'}, Potentieel remet au client l'intégralité des fichiers de son site et lui transfère la propriété de son nom de domaine, sans frais. Le site peut ainsi être hébergé ailleurs librement.</div>`;
   }
   cond+=`<div class="cond-item"><span class="cond-dot" style="background:#f4926a"></span>Devis valable <strong>5 jours</strong> à compter de la date d'émission (jusqu'au ${validTxt}).</div>`;
   cond+=`<div class="cond-item"><span class="cond-dot" style="background:#999"></span>TVA non applicable — art. 293B du CGI (micro-entreprise). Pas de TVA à récupérer.</div>`;
