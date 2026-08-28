@@ -2682,19 +2682,19 @@
                 </div>
               </div>
 
-              <!-- Prix création — toujours modifiable à la main (pré-rempli au tarif standard 990 €) -->
-              <div id="dv-creation-prix-wrap" style="margin-bottom:14px;display:none">
-                <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Prix du site (€ total) <span style="font-weight:400">— modifiable, vide = tarif standard 990 €</span></label>
-                <input id="dv-creation-prix" type="number" min="0" step="0.01" placeholder="ex: 700" oninput="dvUpdateCreationPreview()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
-                <div id="dv-creation-preview" style="font-size:12px;color:var(--accent);margin-top:6px;font-weight:600"></div>
+              <!-- Prix libres — toujours affichés et saisissables au clavier -->
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:6px">
+                <div id="dv-creation-prix-wrap">
+                  <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Prix du site (€ total)</label>
+                  <input id="dv-creation-prix" type="number" min="0" step="0.01" placeholder="990" oninput="dvUpdateCreationPreview()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                </div>
+                <div id="dv-abo-prix-wrap">
+                  <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Prix abonnement (€ / mois)</label>
+                  <input id="dv-abo-prix" type="number" min="0" step="0.01" placeholder="49" oninput="dvUpdateAboPreview()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
+                </div>
               </div>
-
-              <!-- Prix abonnement — toujours modifiable à la main (pré-rempli au tarif de la formule) -->
-              <div id="dv-abo-prix-wrap" style="margin-bottom:14px;display:none">
-                <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Prix de l'abonnement (€ / mois) <span style="font-weight:400">— modifiable, vide = tarif de la formule</span></label>
-                <input id="dv-abo-prix" type="number" min="0" step="0.01" placeholder="ex: 39" oninput="dvUpdateAboPreview()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
-                <div id="dv-abo-preview" style="font-size:12px;color:var(--accent);margin-top:6px;font-weight:600"></div>
-              </div>
+              <div id="dv-creation-preview" style="font-size:12px;color:var(--accent);margin-bottom:4px;font-weight:600"></div>
+              <div id="dv-abo-preview" style="font-size:12px;color:var(--accent);margin-bottom:14px;font-weight:600"></div>
 
               <!-- Note -->
               <p style="font-size:11px;color:var(--muted);margin:0 0 20px;background:rgba(255,255,255,.03);padding:10px;border-radius:8px">Si abonnement combiné : aucun prélèvement d'abonnement tant que la création n'est pas intégralement réglée (mois d'abonnement offerts).</p>
@@ -3142,6 +3142,17 @@ tr { transition: background .12s; }
 input[type="date"], input[type="time"] {
   color-scheme: dark;
   cursor: pointer;
+}
+
+/* ══ SELECTS — liste déroulante lisible ══
+   Les <select> ont un fond translucide + color:#fff : le menu natif héritait
+   d'un fond blanc avec du texte blanc (options invisibles hors survol).
+   color-scheme dit au navigateur de dessiner le menu en sombre, et on force
+   aussi les couleurs des <option> pour les navigateurs qui l'ignorent. */
+select { color-scheme: dark; }
+select option, select optgroup {
+  background-color: #1a1a22;
+  color: #fff;
 }
 
 /* ══ SPACING GLOBAL — panels et sections ══ */
@@ -4872,39 +4883,37 @@ function dvCreationChanged() {
 function dvAboChanged() {
   const abo=document.getElementById('dv-abo').value;
   const inp=document.getElementById('dv-abo-prix');
-  if(inp) inp.value = abo ? abo : '';
+  // On ne remplace la valeur que si le champ est vide ou porte encore le tarif
+  // d'une formule : un montant tapé à la main n'est jamais écrasé.
+  if(inp && (!inp.value || ['20','49'].includes(inp.value))) inp.value = abo || '';
   dvUpdateAboPreview();
 }
 
 function dvUpdateAboPreview() {
   const abo=document.getElementById('dv-abo').value;
-  const wrap=document.getElementById('dv-abo-prix-wrap');
   const preview=document.getElementById('dv-abo-preview');
-  if(!wrap||!preview)return;
-  if(!abo){ wrap.style.display='none'; preview.textContent=''; return; }
-  wrap.style.display='block';
+  if(!preview)return;
   const fmt=v=>Number(v).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
   const raw=parseFloat((document.getElementById('dv-abo-prix').value||'').replace(',','.'));
-  if(isNaN(raw)||raw<=0){ preview.textContent='Tarif standard : '+fmt(parseFloat(abo))+'/mois (laisser vide pour garder ce tarif)'; return; }
-  preview.textContent='= '+fmt(raw)+'/mois';
+  if(!abo){ preview.textContent = (!isNaN(raw)&&raw>0) ? 'Choisis une formule d\'abonnement pour appliquer ce prix.' : ''; return; }
+  if(isNaN(raw)||raw<=0){ preview.textContent='Abonnement : tarif de la formule ('+fmt(parseFloat(abo))+'/mois)'; return; }
+  preview.textContent='Abonnement : '+fmt(raw)+'/mois';
 }
 
 function dvUpdateCreationPreview() {
   const creation=document.getElementById('dv-creation').value;
-  const wrap=document.getElementById('dv-creation-prix-wrap');
   const preview=document.getElementById('dv-creation-preview');
-  if(!wrap||!preview)return;
-  if(!creation){ wrap.style.display='none'; preview.textContent=''; return; }
-  wrap.style.display='block';
-  const n={'1x':1,'2x':2,'3x':3,'4x':4}[creation]||1;
-  const fmt=v=>v.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+  if(!preview)return;
+  const fmt=v=>Number(v).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
   const raw=parseFloat((document.getElementById('dv-creation-prix').value||'').replace(',','.'));
+  if(!creation){ preview.textContent = (!isNaN(raw)&&raw>0) ? 'Choisis une formule de création pour appliquer ce prix.' : ''; return; }
+  const n={'1x':1,'2x':2,'3x':3,'4x':4}[creation]||1;
   if(isNaN(raw)||raw<=0){
-    preview.textContent='Tarif standard : '+(n===1?fmt(990):(n+' × '+fmt(990/n)))+' (laisser vide pour garder ce tarif)';
+    preview.textContent='Site : tarif standard '+(n===1?fmt(990):(n+' × '+fmt(990/n)+' = '+fmt(990)));
     return;
   }
   const per=raw/n;
-  preview.textContent = n===1 ? ('= '+fmt(raw)+' en 1 fois') : ('= '+n+' × '+fmt(per)+'/mois (total '+fmt(raw)+')');
+  preview.textContent = n===1 ? ('Site : '+fmt(raw)+' en 1 fois') : ('Site : '+n+' × '+fmt(per)+' = '+fmt(raw));
 }
 
 function dvCreate() {
