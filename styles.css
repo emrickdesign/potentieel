@@ -3160,3 +3160,26 @@ button { touch-action: manipulation; }
   .tools-flow-arrow { flex-direction: row; justify-content: center; transform: rotate(90deg); padding: 4px 0; }
   .tools-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ══ OFFRE UNIQUE — création de site ══
+   Carte pleine largeur : "toujours inclus" / "options qui font évoluer le budget".
+   Une seule colonne sous 900px (même point de rupture que le reste du site). */
+.offer-single { grid-template-columns: 1fr; }
+.offer-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-top: 28px;
+  align-items: start;
+}
+.offer-price-note {
+  font-size: 16px;
+  color: var(--gray);
+  font-weight: 400;
+  display: block;
+  margin-top: 10px;
+  line-height: 1.6;
+}
+@media (max-width: 900px) {
+  .offer-split { grid-template-columns: 1fr; gap: 24px; }
+}
