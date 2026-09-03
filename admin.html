@@ -2,8 +2,15 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Potentieel OS — Admin</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#f4926a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Potentieel">
+  <link rel="apple-touch-icon" href="/assets/icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
@@ -1688,6 +1695,10 @@
               <p class="page-sub">Site, CSV (Google/Meta Ads), scraping — tout au même endroit.</p>
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+              <button id="ld-notif-btn" onclick="pushToggle()" class="btn-back" title="Recevoir une notification à chaque nouveau lead">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+                <span id="ld-notif-label">Notifications</span>
+              </button>
               <label for="ld-csv-input" class="btn-back" style="cursor:pointer">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
                 Importer CSV
@@ -10000,6 +10011,150 @@ sb.auth.getSession().then(({ data: { session } }) => {
   // getSession a échoué (réseau, CDN) → tenter d'ouvrir quand même
   bootApp('');
 });
+</script>
+
+<!-- ══════════ NOTIFICATIONS PUSH — nouveau lead ══════════ -->
+<script>
+const PUSH_VAPID_PUBLIC = 'BNbQNuhCzoatf8yJfEhE7rtUU9CtP_e02MLInL7J5RHkuFmexp0DsOeeJFGsh6L2OaY4s3UXHGyTJyRqXZQTvT8';
+let _pushReg = null;
+
+function _b64ToUint8(base64) {
+  const pad = '='.repeat((4 - base64.length % 4) % 4);
+  const b64 = (base64 + pad).replace(/-/g, '+').replace(/_/g, '/');
+  const raw = atob(b64);
+  const arr = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
+  return arr;
+}
+
+const _pushSupported = () =>
+  'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+
+// iOS n'autorise le push QUE si l'app est ajoutée à l'écran d'accueil (mode standalone).
+const _isiOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent);
+const _isStandalone = () =>
+  window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+async function pushInit() {
+  if (!_pushSupported()) { pushUpdateBtn(); return; }
+  try {
+    _pushReg = await navigator.serviceWorker.register('/sw.js');
+    await navigator.serviceWorker.ready;
+  } catch (e) { console.warn('SW register:', e); }
+  // Clic sur une notif alors que l'app est déjà ouverte → ouvrir le lead
+  navigator.serviceWorker.addEventListener('message', (ev) => {
+    if (ev.data && ev.data.type === 'open-lead' && ev.data.url) {
+      const h = ev.data.url.split('#')[1];
+      if (h) { location.hash = h; openLeadFromHash(); }
+    }
+  });
+  pushUpdateBtn();
+  // App ouverte via un clic de notif (app était fermée) : le hash est déjà là
+  if (location.hash.indexOf('lead=') !== -1) setTimeout(openLeadFromHash, 300);
+}
+
+function pushUpdateBtn() {
+  const btn = document.getElementById('ld-notif-btn');
+  const lbl = document.getElementById('ld-notif-label');
+  if (!btn || !lbl) return;
+  if (!_pushSupported()) { lbl.textContent = 'Notifs non dispo'; btn.disabled = true; btn.style.opacity = '.5'; return; }
+  if (Notification.permission === 'denied') { lbl.textContent = 'Notifs bloquées'; btn.style.opacity = '.7'; return; }
+  (_pushReg ? _pushReg.pushManager.getSubscription() : Promise.resolve(null)).then(sub => {
+    if (sub) {
+      lbl.textContent = 'Notifs activées';
+      btn.style.background = 'rgba(74,222,128,.14)';
+      btn.style.borderColor = 'rgba(74,222,128,.35)';
+      btn.style.color = '#4ade80';
+    } else {
+      lbl.textContent = 'Notifications';
+      btn.style.background = '';
+      btn.style.borderColor = '';
+      btn.style.color = '';
+    }
+  }).catch(()=>{});
+}
+
+async function pushToggle() {
+  if (!_pushSupported()) {
+    if (_isiOS() && !_isStandalone())
+      alert("Sur iPhone : ouvre ce site dans Safari, appuie sur Partager → « Sur l'écran d'accueil ». Ouvre ensuite l'app depuis l'icône, puis réactive les notifications ici.");
+    else
+      alert("Ton navigateur ne supporte pas les notifications push.");
+    return;
+  }
+  if (_isiOS() && !_isStandalone()) {
+    alert("Pour recevoir les notifications sur iPhone, ajoute d'abord l'app à l'écran d'accueil (Partager → Sur l'écran d'accueil), puis ouvre-la depuis l'icône.");
+    return;
+  }
+  try {
+    if (!_pushReg) { _pushReg = await navigator.serviceWorker.register('/sw.js'); await navigator.serviceWorker.ready; }
+    const existing = await _pushReg.pushManager.getSubscription();
+    if (existing) {
+      // Désactiver
+      try { await sb.from('crm_push_subscriptions').delete().eq('endpoint', existing.endpoint); } catch(_) {}
+      await existing.unsubscribe();
+      pushUpdateBtn();
+      return;
+    }
+    // Activer
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') { pushUpdateBtn(); return; }
+    const sub = await _pushReg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: _b64ToUint8(PUSH_VAPID_PUBLIC)
+    });
+    const j = sub.toJSON();
+    await sb.from('crm_push_subscriptions').upsert({
+      endpoint: sub.endpoint,
+      p256dh: j.keys.p256dh,
+      auth: j.keys.auth,
+      label: (document.getElementById('sb-email')?.textContent || '') + ' · ' + (navigator.platform || 'appareil')
+    }, { onConflict: 'endpoint' });
+    pushUpdateBtn();
+    // Confirmation immédiate (prouve que tout marche, sans attendre un vrai lead)
+    try { _pushReg.showNotification('✅ Notifications activées', {
+      body: 'Tu recevras une alerte 🔥 à chaque nouveau lead.',
+      icon: '/assets/icon-192.png', badge: '/assets/icon-192.png'
+    }); } catch(_) {}
+  } catch (e) {
+    console.warn('pushToggle:', e);
+    alert("Impossible d'activer les notifications : " + (e && e.message ? e.message : e));
+  }
+}
+
+// Ouvre le lead ciblé par le hash (#lead=ld_fs_xxx) : va sur Leads, le met en évidence, prêt à appeler.
+function openLeadFromHash() {
+  const m = (location.hash || '').match(/lead=([^&]+)/);
+  if (!m) return;
+  const id = decodeURIComponent(m[1]);
+  const leadNav = document.querySelector('[data-page="leads"]');
+  if (leadNav) { try { ldCurrentSource = 'all'; } catch(_) {}
+    const s = document.getElementById('ld-search'); if (s) s.value = '';
+    nav(leadNav);
+  }
+  let tries = 0;
+  const timer = setInterval(() => {
+    tries++;
+    const card = document.getElementById('ld-card-' + id);
+    if (card) {
+      clearInterval(timer);
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      card.style.transition = 'box-shadow .3s, background .3s';
+      const prev = card.style.boxShadow;
+      card.style.boxShadow = '0 0 0 2px #f4926a, 0 0 24px rgba(244,146,106,.5)';
+      setTimeout(() => { card.style.boxShadow = prev; }, 2600);
+      history.replaceState(null, '', location.pathname); // nettoie le hash
+    } else if (tries > 30) {
+      clearInterval(timer);
+    }
+  }, 250);
+}
+
+window.addEventListener('hashchange', openLeadFromHash);
+if (document.readyState === 'loading')
+  document.addEventListener('DOMContentLoaded', pushInit);
+else
+  pushInit();
 </script>
 </body>
 </html>
