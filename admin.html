@@ -1365,6 +1365,24 @@
                 </div>
               </div>
 
+              <!-- Ce qui marche : classement issu des statistiques Metricool -->
+              <div class="panel" style="margin-bottom:16px">
+                <div style="padding:14px 16px">
+                  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                    <div style="font-size:13px;font-weight:800">Ce qui marche</div>
+                    <span id="so-stats-count" style="font-size:11px;color:var(--muted)"></span>
+                    <button onclick="soMajStats()" class="btn-proposer" style="margin-left:auto">
+                      Mettre à jour les stats</button>
+                  </div>
+                  <div style="font-size:11px;color:var(--muted);margin-top:6px">
+                    Classement des posts publiés. Score : une sauvegarde ou un partage vaut 3 points,
+                    un commentaire 2, un nouvel abonné 5, un like 1 — parce qu'un like n'engage à rien.
+                    Les meilleurs servent de modèle à la prochaine génération.
+                  </div>
+                  <div id="so-stats" style="margin-top:12px"></div>
+                </div>
+              </div>
+
               <!-- Planning -->
               <div class="panel">
                 <div style="padding:14px 16px">
@@ -4670,6 +4688,7 @@ async function soOpen() {
   soLogoPreview();
   soRenderPhotos();
   soLoadPosts();
+  soLoadStats();
 }
 
 function soLogoPreview() {
@@ -4874,6 +4893,55 @@ async function soCopyBrief() {
   const ok = await soCopier(JSON.stringify(brief, null, 2));
   _soState('so-req-state',
     ok ? 'Brief copié — colle-le dans Claude' : 'Copie impossible (autorise le presse-papier)', ok);
+}
+
+/** Classement des posts publiés, d'après les statistiques Metricool. */
+async function soLoadStats() {
+  const c = clData.find(x=>x.id===clCurrentId);
+  const box = _soEl('so-stats'); if (!box || !c) return;
+  const { data, error } = await sb.from('social_top_posts').select('*')
+    .eq('client_id', String(c.id)).order('rang').limit(20);
+  if (error) { box.innerHTML = `<div style="font-size:12px;color:#ef4444">${error.message}</div>`; return; }
+  if (!data || !data.length) {
+    _soState('so-stats-count','');
+    box.innerHTML = `<div style="font-size:12px;color:var(--muted)">
+      Aucune statistique. Clique « Mettre à jour les stats » : la phrase à donner à Claude sera copiée.</div>`;
+    return;
+  }
+  _soState('so-stats-count', `${data.length} post(s) mesuré(s)`);
+  const cell = (v,w) => `<td style="padding:7px 6px;text-align:right;font-variant-numeric:tabular-nums;${w||''}">${v ?? '—'}</td>`;
+  box.innerHTML = `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px;min-width:560px">
+    <thead><tr style="color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.05em">
+      <th style="text-align:left;padding:6px">#</th><th style="text-align:left;padding:6px">Post</th>
+      <th style="padding:6px">Angle</th><th style="padding:6px">Vu</th><th style="padding:6px">Sauv.</th>
+      <th style="padding:6px">Part.</th><th style="padding:6px">Abo.</th><th style="padding:6px">Score</th>
+    </tr></thead><tbody>
+    ${data.map(r=>`<tr style="border-top:1px solid var(--border)">
+      <td style="padding:7px 6px;color:var(--muted)">${r.rang}</td>
+      <td style="padding:7px 6px;max-width:230px">
+        ${r.post_url ? `<a href="${r.post_url}" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none">` : ''}
+        <div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${(r.extrait||'—')}</div>
+        ${r.post_url ? '</a>' : ''}
+      </td>
+      <td style="padding:7px 6px;text-align:center;color:var(--muted)">${r.angle||'—'}</td>
+      ${cell(r.reach)}${cell(r.saves)}${cell(r.partages)}${cell(r.abonnes_gagnes)}
+      <td style="padding:7px 6px;text-align:right;font-weight:800;color:var(--orange)">${r.score}</td>
+    </tr>`).join('')}
+    </tbody></table></div>`;
+}
+
+/** Demande la remontée des stats Metricool et copie la phrase pour Claude. */
+async function soMajStats() {
+  const c = clData.find(x=>x.id===clCurrentId); if (!c) return;
+  if (!_soVal('so-metricool')) {
+    _soState('so-stats-count','Renseigne d\'abord la marque Metricool (blogId).', false);
+    _soEl('so-metricool')?.focus(); return;
+  }
+  await soSave();
+  const ok = await soCopier(`remonte les stats réseaux sociaux de ${c.nom}`);
+  _soState('so-stats-count',
+    ok ? `« remonte les stats réseaux sociaux de ${c.nom} » copié — colle-le dans Claude`
+       : `Dans Claude : « remonte les stats réseaux sociaux de ${c.nom} »`, true);
 }
 
 /** Liste des posts du client. */
