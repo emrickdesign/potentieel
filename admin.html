@@ -1293,6 +1293,18 @@
                   </div>
                   <label style="font-size:11px;color:var(--muted)">Site du client
                     <input id="so-site" class="inp" style="width:100%;margin-top:4px" placeholder="https://…"></label>
+
+                  <!-- Remplissage automatique : lit le site, en tire la charte et le brief,
+                       et va chercher le logo dans les fichiers de l'ordinateur. -->
+                  <div style="margin-top:12px;padding:12px 14px;border:1px dashed var(--border);border-radius:10px">
+                    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+                      <button onclick="soAnalyse()" class="btn-primary" style="padding:9px 16px;font-size:12px">
+                        Analyser le site et tout remplir</button>
+                      <span style="font-size:11px;color:var(--muted)">
+                        Remplit la charte <b>et</b> le brief. Tu n'as plus qu'à relire et ajouter tes consignes.</span>
+                    </div>
+                    <div id="so-analyse-state" style="font-size:12px;margin-top:10px"></div>
+                  </div>
                   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
                     <label style="font-size:11px;color:var(--muted)">Prestations (une par ligne)
                       <textarea id="so-prestations" class="inp" rows="4" style="width:100%;margin-top:4px;resize:vertical"></textarea></label>
@@ -4727,6 +4739,55 @@ function soPickLogo() {
       _soState('so-save-state','Logo envoyé — pense à enregistrer', true);
     } catch(e) { _soState('so-save-state','Échec du logo : '+e.message, false); }
   });
+}
+
+/**
+ * Demande l'analyse automatique du site du client.
+ * Le travail est fait dans Claude (skill social-kit) : il lit le site, en tire
+ * la charte et le brief, cherche le logo dans les fichiers locaux, puis remplit
+ * social_profiles. Le CRM n'a ni accès au disque ni moteur d'analyse.
+ */
+async function soAnalyse() {
+  const c = clData.find(x=>x.id===clCurrentId); if (!c) return;
+  const site = _soVal('so-site');
+  if (!site) {
+    _soState('so-analyse-state','Renseigne d\'abord le lien du site.', false);
+    _soEl('so-site')?.focus();
+    return;
+  }
+  const rempli = ['so-prestations','so-douleurs','so-zone','so-avatar','so-ton'].some(i=>_soVal(i));
+  if (rempli && !confirm('Des champs sont déjà remplis.\n\nL\'analyse va les remplacer. Continuer ?')) return;
+
+  await soSave();                       // le site doit être en base avant l'analyse
+  _soState('so-analyse-state','Envoi de la demande…');
+  const { error } = await sb.from('social_requests').insert({
+    client_id: String(c.id), periode: 'analyse', consignes: null,
+  });
+  if (error) { _soState('so-analyse-state','Échec : '+error.message, false); return; }
+  _soState('so-analyse-state',
+    'Demande envoyée. Dans Claude : « traite les analyses réseaux sociaux en attente ». '
+  + 'Reviens ici et clique Rafraîchir quand c\'est fait.', true);
+  soAnalysePoll(0);
+}
+
+/** Guette le résultat de l'analyse pendant quelques minutes, sans bloquer. */
+function soAnalysePoll(n) {
+  if (n > 40) return;                                    // ~5 min puis on lâche
+  const idAttendu = clCurrentId;
+  setTimeout(async () => {
+    if (clCurrentId !== idAttendu) return;               // fiche changée entre-temps
+    try {
+      const { data } = await sb.from('social_profiles')
+        .select('analyse_le').eq('client_id', String(idAttendu)).maybeSingle();
+      const fait = data?.analyse_le && (!soProfile?.analyse_le || data.analyse_le !== soProfile.analyse_le);
+      if (fait) {
+        await soOpen();
+        _soState('so-analyse-state','Analyse terminée — champs remplis. Relis-les avant de générer.', true);
+        return;
+      }
+    } catch(_) {}
+    soAnalysePoll(n+1);
+  }, 8000);
 }
 
 /** Contrôles avant de lancer une génération. */
