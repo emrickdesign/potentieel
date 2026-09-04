@@ -1219,7 +1219,7 @@
                   <div style="font-size:13px;font-weight:800;margin-bottom:12px">Abonnement réseaux sociaux</div>
                   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px">
                     <label style="font-size:11px;color:var(--muted)">Formule
-                      <select id="so-formule" class="inp" style="width:100%;margin-top:4px">
+                      <select id="so-formule" style="width:100%;margin-top:4px">
                         <option value="">— aucune —</option>
                         <option value="social">Social</option>
                         <option value="social_plus">Social +</option>
@@ -1227,13 +1227,13 @@
                       </select>
                     </label>
                     <label style="font-size:11px;color:var(--muted)">Prix (€/mois)
-                      <input id="so-prix" type="number" step="1" class="inp" style="width:100%;margin-top:4px" placeholder="149">
+                      <input id="so-prix" type="number" step="1" style="width:100%;margin-top:4px" placeholder="149">
                     </label>
                     <label style="font-size:11px;color:var(--muted)">Posts / mois
-                      <input id="so-ppm" type="number" step="1" class="inp" style="width:100%;margin-top:4px" placeholder="8">
+                      <input id="so-ppm" type="number" step="1" style="width:100%;margin-top:4px" placeholder="8">
                     </label>
                     <label style="font-size:11px;color:var(--muted)">Marque Metricool (blogId)
-                      <input id="so-metricool" class="inp" style="width:100%;margin-top:4px" placeholder="5844590">
+                      <input id="so-metricool" style="width:100%;margin-top:4px" placeholder="5844590">
                     </label>
                   </div>
                   <div style="display:flex;gap:16px;margin-top:12px;font-size:12px;flex-wrap:wrap">
@@ -1245,9 +1245,25 @@
                 </div>
               </div>
 
-              <!-- Charte visuelle -->
+              <!-- Identité & contenu : charte visuelle + brief éditorial réunis,
+                   parce qu'un seul bouton les remplit tous les deux. -->
               <div class="panel" style="margin-bottom:16px">
                 <div style="padding:14px 16px">
+                  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px">
+                    <div style="font-size:14px;font-weight:800">Identité &amp; contenu</div>
+                    <button onclick="soAnalyse()" class="btn-newtask" style="margin-left:auto">
+                      Analyser le tout</button>
+                  </div>
+                  <div style="font-size:11px;color:var(--muted);margin-bottom:10px">
+                    Un seul bouton lit le site du client et remplit la charte <b>et</b> le brief.
+                    Il te reste à relire et à écrire tes consignes.
+                  </div>
+                  <label style="font-size:11px;color:var(--muted)">Site du client
+                    <input id="so-site" style="width:100%;margin-top:4px" placeholder="https://…"></label>
+                  <div id="so-analyse-state" style="font-size:12px;margin-top:10px"></div>
+
+                  <div style="height:1px;background:var(--border);margin:16px 0"></div>
+
                   <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
                     <div style="font-size:13px;font-weight:800">Charte visuelle</div>
                     <span style="font-size:11px;color:var(--muted)">alimente le générateur de visuels</span>
@@ -1267,63 +1283,46 @@
                   </div>
                   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:12px">
                     <label style="font-size:11px;color:var(--muted)">Police titres
-                      <input id="so-f-display" class="inp" style="width:100%;margin-top:4px" placeholder="Anton"></label>
+                      <input id="so-f-display" style="width:100%;margin-top:4px" placeholder="Anton"></label>
                     <label style="font-size:11px;color:var(--muted)">Police accent
-                      <input id="so-f-hand" class="inp" style="width:100%;margin-top:4px" placeholder="Permanent Marker"></label>
+                      <input id="so-f-hand" style="width:100%;margin-top:4px" placeholder="Permanent Marker"></label>
                     <label style="font-size:11px;color:var(--muted)">Police texte
-                      <input id="so-f-body" class="inp" style="width:100%;margin-top:4px" placeholder="Inter"></label>
+                      <input id="so-f-body" style="width:100%;margin-top:4px" placeholder="Inter"></label>
                     <label style="font-size:11px;color:var(--muted)">Police surtitre
-                      <input id="so-f-kicker" class="inp" style="width:100%;margin-top:4px" placeholder="Playfair Display"></label>
+                      <input id="so-f-kicker" style="width:100%;margin-top:4px" placeholder="Playfair Display"></label>
                   </div>
                   <div style="display:flex;gap:10px;align-items:flex-end;margin-top:12px;flex-wrap:wrap">
                     <label style="font-size:11px;color:var(--muted);flex:1;min-width:220px">Logo (URL)
-                      <input id="so-logo" class="inp" style="width:100%;margin-top:4px" placeholder="https://…"></label>
-                    <button onclick="soPickLogo()" class="btn-ghost" style="padding:9px 14px;font-size:12px">Téléverser un logo</button>
+                      <input id="so-logo" style="width:100%;margin-top:4px" placeholder="https://…"></label>
+                    <button onclick="soPickLogo()" class="btn-proposer">Téléverser un logo</button>
                     <img id="so-logo-preview" style="height:34px;display:none;border-radius:6px;background:#0002;padding:4px">
                   </div>
-                </div>
-              </div>
 
-              <!-- Brief éditorial -->
-              <div class="panel" style="margin-bottom:16px">
-                <div style="padding:14px 16px">
+                  <div style="height:1px;background:var(--border);margin:16px 0"></div>
+
                   <div style="font-size:13px;font-weight:800;margin-bottom:4px">Brief éditorial</div>
                   <div style="font-size:11px;color:var(--muted);margin-bottom:12px">
-                    C'est ce qui rend les posts spécifiques à ce client. Le lien du site est le minimum : le reste peut en être déduit.
-                  </div>
-                  <label style="font-size:11px;color:var(--muted)">Site du client
-                    <input id="so-site" class="inp" style="width:100%;margin-top:4px" placeholder="https://…"></label>
-
-                  <!-- Remplissage automatique : lit le site, en tire la charte et le brief,
-                       et va chercher le logo dans les fichiers de l'ordinateur. -->
-                  <div style="margin-top:12px;padding:12px 14px;border:1px dashed var(--border);border-radius:10px">
-                    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-                      <button onclick="soAnalyse()" class="btn-primary" style="padding:9px 16px;font-size:12px">
-                        Analyser le site et tout remplir</button>
-                      <span style="font-size:11px;color:var(--muted)">
-                        Remplit la charte <b>et</b> le brief. Tu n'as plus qu'à relire et ajouter tes consignes.</span>
-                    </div>
-                    <div id="so-analyse-state" style="font-size:12px;margin-top:10px"></div>
+                    C'est ce qui rend les posts spécifiques à ce client, plutôt que génériques pour son métier.
                   </div>
                   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
                     <label style="font-size:11px;color:var(--muted)">Prestations (une par ligne)
-                      <textarea id="so-prestations" class="inp" rows="4" style="width:100%;margin-top:4px;resize:vertical"></textarea></label>
+                      <textarea id="so-prestations" rows="4" style="width:100%;margin-top:4px;resize:vertical"></textarea></label>
                     <label style="font-size:11px;color:var(--muted)">Douleurs du client final (une par ligne)
-                      <textarea id="so-douleurs" class="inp" rows="4" style="width:100%;margin-top:4px;resize:vertical"></textarea></label>
+                      <textarea id="so-douleurs" rows="4" style="width:100%;margin-top:4px;resize:vertical"></textarea></label>
                   </div>
                   <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:12px">
                     <label style="font-size:11px;color:var(--muted)">Zone d'intervention
-                      <input id="so-zone" class="inp" style="width:100%;margin-top:4px" placeholder="Chambéry et Savoie"></label>
+                      <input id="so-zone" style="width:100%;margin-top:4px" placeholder="Chambéry et Savoie"></label>
                     <label style="font-size:11px;color:var(--muted)">Avatar client
-                      <input id="so-avatar" class="inp" style="width:100%;margin-top:4px" placeholder="Propriétaire 40-65 ans"></label>
+                      <input id="so-avatar" style="width:100%;margin-top:4px" placeholder="Propriétaire 40-65 ans"></label>
                     <label style="font-size:11px;color:var(--muted)">Ton
-                      <input id="so-ton" class="inp" style="width:100%;margin-top:4px" placeholder="Vouvoiement, direct"></label>
+                      <input id="so-ton" style="width:100%;margin-top:4px" placeholder="Vouvoiement, direct"></label>
                   </div>
                   <label style="font-size:11px;color:var(--muted);display:block;margin-top:12px">Consignes libres (facultatif)
-                    <textarea id="so-consignes" class="inp" rows="3" style="width:100%;margin-top:4px;resize:vertical"
+                    <textarea id="so-consignes" rows="3" style="width:100%;margin-top:4px;resize:vertical"
                       placeholder="Ex. : mettre en avant le dépannage d'urgence ce mois-ci. Ne pas parler de prix."></textarea></label>
                   <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
-                    <button onclick="soSave()" class="btn-primary" style="padding:9px 16px;font-size:12px">Enregistrer</button>
+                    <button onclick="soSave()" class="btn-newtask">Enregistrer</button>
                     <span id="so-save-state" style="font-size:11px;color:var(--muted);align-self:center"></span>
                   </div>
                 </div>
@@ -1335,7 +1334,7 @@
                   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
                     <div style="font-size:13px;font-weight:800">Photos utilisables</div>
                     <span id="so-photos-count" style="font-size:11px;color:var(--muted)"></span>
-                    <button onclick="soMigrateAssets()" class="btn-ghost" style="margin-left:auto;padding:8px 13px;font-size:12px">
+                    <button onclick="soMigrateAssets()" class="btn-proposer" style="margin-left:auto">
                       Envoyer les photos vers le cloud</button>
                   </div>
                   <div style="font-size:11px;color:var(--muted);margin-top:6px">
@@ -1355,11 +1354,11 @@
                     fabrique les visuels à la charte puis les programme dans Metricool.
                   </div>
                   <div style="display:flex;gap:10px;flex-wrap:wrap">
-                    <button onclick="soRequest('semaine')" class="btn-primary" style="padding:10px 16px;font-size:12px">
+                    <button onclick="soRequest('semaine')" class="btn-newtask">
                       Générer 1 semaine</button>
-                    <button onclick="soRequest('trimestre')" class="btn-ghost" style="padding:10px 16px;font-size:12px">
+                    <button onclick="soRequest('trimestre')" class="btn-proposer">
                       Générer 3 mois</button>
-                    <button onclick="soCopyBrief()" class="btn-ghost" style="padding:10px 16px;font-size:12px">
+                    <button onclick="soCopyBrief()" class="btn-proposer">
                       Copier le brief</button>
                   </div>
                   <div id="so-req-state" style="font-size:12px;margin-top:12px"></div>
@@ -1371,7 +1370,7 @@
                 <div style="padding:14px 16px">
                   <div style="display:flex;align-items:center;gap:10px">
                     <div style="font-size:13px;font-weight:800">Posts</div>
-                    <button onclick="soLoadPosts()" class="btn-ghost" style="margin-left:auto;padding:7px 12px;font-size:11px">Rafraîchir</button>
+                    <button onclick="soLoadPosts()" class="btn-proposer" style="margin-left:auto">Rafraîchir</button>
                   </div>
                   <div id="so-posts" style="margin-top:12px"></div>
                 </div>
@@ -4575,6 +4574,52 @@ function clTab(tab, btn) {
 const SO_BUCKET = 'crm-assets';
 let soProfile = null;
 
+/**
+ * Copie un texte dans le presse-papier.
+ * navigator.clipboard exige un contexte sécurisé (https) ET un geste utilisateur ;
+ * on garde donc une reprise par execCommand, sinon la copie échoue silencieusement
+ * sur certains navigateurs ou en http local.
+ */
+async function soCopier(texte) {
+  try {
+    await navigator.clipboard.writeText(texte);
+    return true;
+  } catch (_) {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = texte;
+      Object.assign(ta.style, { position:'fixed', top:'0', left:'0', opacity:'0' });
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      const ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      return ok;
+    } catch (_) { return false; }
+  }
+}
+
+/** Dépose la demande ET met la phrase à donner à Claude dans le presse-papier. */
+async function soDemande(periode, nb, elState) {
+  const c = clData.find(x=>x.id===clCurrentId); if (!c) return false;
+  const phrase = periode === 'analyse'
+    ? 'traite les analyses réseaux sociaux en attente'
+    : 'traite les demandes réseaux sociaux en attente';
+
+  _soState(elState, 'Envoi de la demande…');
+  const { error } = await sb.from('social_requests').insert({
+    client_id: String(c.id), periode,
+    nb_posts: nb ?? null,
+    consignes: _soVal('so-consignes') || null,
+  });
+  if (error) { _soState(elState, 'Échec : ' + error.message, false); return false; }
+
+  const copie = await soCopier(phrase);
+  _soState(elState,
+    copie ? `Demande envoyée. « ${phrase} » est dans ton presse-papier — colle-le dans Claude.`
+          : `Demande envoyée. Dans Claude : « ${phrase} »`,
+    true);
+  return true;
+}
+
 const _soEl = id => document.getElementById(id);
 const _soVal = id => (_soEl(id)?.value || '').trim();
 const _soLines = id => _soVal(id).split('\n').map(s=>s.trim()).filter(Boolean);
@@ -4759,15 +4804,7 @@ async function soAnalyse() {
   if (rempli && !confirm('Des champs sont déjà remplis.\n\nL\'analyse va les remplacer. Continuer ?')) return;
 
   await soSave();                       // le site doit être en base avant l'analyse
-  _soState('so-analyse-state','Envoi de la demande…');
-  const { error } = await sb.from('social_requests').insert({
-    client_id: String(c.id), periode: 'analyse', consignes: null,
-  });
-  if (error) { _soState('so-analyse-state','Échec : '+error.message, false); return; }
-  _soState('so-analyse-state',
-    'Demande envoyée. Dans Claude : « traite les analyses réseaux sociaux en attente ». '
-  + 'Reviens ici et clique Rafraîchir quand c\'est fait.', true);
-  soAnalysePoll(0);
+  if (await soDemande('analyse', null, 'so-analyse-state')) soAnalysePoll(0);
 }
 
 /** Guette le résultat de l'analyse pendant quelques minutes, sans bloquer. */
@@ -4808,15 +4845,7 @@ async function soRequest(periode) {
   await soSave();
   const ppm = Number(_soVal('so-ppm') || 8);
   const nb  = periode === 'trimestre' ? ppm * 3 : Math.max(1, Math.round(ppm / 4));
-
-  _soState('so-req-state','Envoi de la demande…');
-  const { error } = await sb.from('social_requests').insert({
-    client_id: String(c.id), periode, nb_posts: nb,
-    consignes: _soVal('so-consignes') || null,
-  });
-  if (error) { _soState('so-req-state','Échec : '+error.message, false); return; }
-  _soState('so-req-state',
-    `Demande enregistrée — ${nb} post(s). Dans Claude : « traite les demandes réseaux sociaux en attente ».`, true);
+  await soDemande(periode, nb, 'so-req-state');
 }
 
 /** Brief complet dans le presse-papier, pour coller dans Claude. */
@@ -4842,10 +4871,9 @@ async function soCopyBrief() {
     posts_par_mois: Number(_soVal('so-ppm') || 8),
     metricool_brand_id: _soVal('so-metricool') || null,
   };
-  try {
-    await navigator.clipboard.writeText(JSON.stringify(brief, null, 2));
-    _soState('so-req-state','Brief copié — colle-le dans Claude', true);
-  } catch { _soState('so-req-state','Copie impossible (autorise le presse-papier)', false); }
+  const ok = await soCopier(JSON.stringify(brief, null, 2));
+  _soState('so-req-state',
+    ok ? 'Brief copié — colle-le dans Claude' : 'Copie impossible (autorise le presse-papier)', ok);
 }
 
 /** Liste des posts du client. */
