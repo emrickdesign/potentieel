@@ -1113,6 +1113,7 @@
               <button class="cl-tab" data-tab="paiement" onclick="clTab('paiement',this)">Paiement</button>
               <button class="cl-tab" data-tab="devis" onclick="clTab('devis',this)">Devis</button>
               <button class="cl-tab" data-tab="factures" onclick="clTab('factures',this)">Factures</button>
+              <button class="cl-tab" data-tab="social" onclick="clTab('social',this);soOpen()">Réseaux</button>
             </div>
 
             <!-- Tab: Infos -->
@@ -1188,6 +1189,180 @@
                 <img id="cl-lb-img" style="max-width:90vw;max-height:85vh;border-radius:10px;object-fit:contain" src="">
                 <video id="cl-lb-vid" controls style="display:none;max-width:90vw;max-height:85vh;border-radius:10px" src=""></video>
                 <p id="cl-lb-name" style="color:rgba(255,255,255,.6);font-size:12px;margin-top:12px"></p>
+              </div>
+            </div>
+
+            <!-- Tab: Réseaux sociaux -->
+            <style>
+              /* Champs de cet onglet : la classe .inp n'est définie nulle part dans
+                 la feuille de style, on habille donc les champs par leur conteneur. */
+              #cl-tab-social input[type=text], #cl-tab-social input[type=number],
+              #cl-tab-social input:not([type]), #cl-tab-social select, #cl-tab-social textarea {
+                background: var(--field); color: var(--text);
+                border: 1px solid var(--border); border-radius: 9px;
+                padding: 9px 11px; font-size: 13px; font-family: var(--font-ui);
+                outline: none;
+              }
+              #cl-tab-social input:focus, #cl-tab-social select:focus, #cl-tab-social textarea:focus {
+                border-color: var(--orange);
+              }
+              #cl-tab-social input::placeholder, #cl-tab-social textarea::placeholder { color: #6b6f8e; }
+              #cl-tab-social label { display: block; }
+              #cl-tab-social input[type=checkbox] { accent-color: var(--orange); margin-right: 5px; }
+              #cl-tab-social input[type=color] { padding: 2px; }
+            </style>
+            <div id="cl-tab-social" class="cl-tab-pane" style="display:none">
+
+              <!-- Abonnement social -->
+              <div class="panel" style="margin-bottom:16px">
+                <div style="padding:14px 16px">
+                  <div style="font-size:13px;font-weight:800;margin-bottom:12px">Abonnement réseaux sociaux</div>
+                  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px">
+                    <label style="font-size:11px;color:var(--muted)">Formule
+                      <select id="so-formule" class="inp" style="width:100%;margin-top:4px">
+                        <option value="">— aucune —</option>
+                        <option value="social">Social</option>
+                        <option value="social_plus">Social +</option>
+                        <option value="pme">PME / B2B</option>
+                      </select>
+                    </label>
+                    <label style="font-size:11px;color:var(--muted)">Prix (€/mois)
+                      <input id="so-prix" type="number" step="1" class="inp" style="width:100%;margin-top:4px" placeholder="149">
+                    </label>
+                    <label style="font-size:11px;color:var(--muted)">Posts / mois
+                      <input id="so-ppm" type="number" step="1" class="inp" style="width:100%;margin-top:4px" placeholder="8">
+                    </label>
+                    <label style="font-size:11px;color:var(--muted)">Marque Metricool (blogId)
+                      <input id="so-metricool" class="inp" style="width:100%;margin-top:4px" placeholder="5844590">
+                    </label>
+                  </div>
+                  <div style="display:flex;gap:16px;margin-top:12px;font-size:12px;flex-wrap:wrap">
+                    <label><input type="checkbox" id="so-r-ig"> Instagram</label>
+                    <label><input type="checkbox" id="so-r-fb"> Facebook</label>
+                    <label><input type="checkbox" id="so-r-li"> LinkedIn</label>
+                    <label style="margin-left:auto"><input type="checkbox" id="so-actif"> Abonnement actif</label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Charte visuelle -->
+              <div class="panel" style="margin-bottom:16px">
+                <div style="padding:14px 16px">
+                  <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+                    <div style="font-size:13px;font-weight:800">Charte visuelle</div>
+                    <span style="font-size:11px;color:var(--muted)">alimente le générateur de visuels</span>
+                  </div>
+                  <div style="font-size:11px;color:var(--muted);margin-bottom:12px">
+                    Les couleurs et polices du site du client. Les polices doivent exister sur Google Fonts.
+                  </div>
+                  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px">
+                    <label style="font-size:11px;color:var(--muted)">Fond
+                      <input id="so-c-bg" type="color" value="#EDEDEE" style="width:100%;height:34px;margin-top:4px;background:none;border:1px solid var(--border);border-radius:8px;cursor:pointer"></label>
+                    <label style="font-size:11px;color:var(--muted)">Texte
+                      <input id="so-c-ink" type="color" value="#111111" style="width:100%;height:34px;margin-top:4px;background:none;border:1px solid var(--border);border-radius:8px;cursor:pointer"></label>
+                    <label style="font-size:11px;color:var(--muted)">Accent 1
+                      <input id="so-c-accent" type="color" value="#F5883F" style="width:100%;height:34px;margin-top:4px;background:none;border:1px solid var(--border);border-radius:8px;cursor:pointer"></label>
+                    <label style="font-size:11px;color:var(--muted)">Accent 2
+                      <input id="so-c-accent2" type="color" value="#E8402A" style="width:100%;height:34px;margin-top:4px;background:none;border:1px solid var(--border);border-radius:8px;cursor:pointer"></label>
+                  </div>
+                  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:12px">
+                    <label style="font-size:11px;color:var(--muted)">Police titres
+                      <input id="so-f-display" class="inp" style="width:100%;margin-top:4px" placeholder="Anton"></label>
+                    <label style="font-size:11px;color:var(--muted)">Police accent
+                      <input id="so-f-hand" class="inp" style="width:100%;margin-top:4px" placeholder="Permanent Marker"></label>
+                    <label style="font-size:11px;color:var(--muted)">Police texte
+                      <input id="so-f-body" class="inp" style="width:100%;margin-top:4px" placeholder="Inter"></label>
+                    <label style="font-size:11px;color:var(--muted)">Police surtitre
+                      <input id="so-f-kicker" class="inp" style="width:100%;margin-top:4px" placeholder="Playfair Display"></label>
+                  </div>
+                  <div style="display:flex;gap:10px;align-items:flex-end;margin-top:12px;flex-wrap:wrap">
+                    <label style="font-size:11px;color:var(--muted);flex:1;min-width:220px">Logo (URL)
+                      <input id="so-logo" class="inp" style="width:100%;margin-top:4px" placeholder="https://…"></label>
+                    <button onclick="soPickLogo()" class="btn-ghost" style="padding:9px 14px;font-size:12px">Téléverser un logo</button>
+                    <img id="so-logo-preview" style="height:34px;display:none;border-radius:6px;background:#0002;padding:4px">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Brief éditorial -->
+              <div class="panel" style="margin-bottom:16px">
+                <div style="padding:14px 16px">
+                  <div style="font-size:13px;font-weight:800;margin-bottom:4px">Brief éditorial</div>
+                  <div style="font-size:11px;color:var(--muted);margin-bottom:12px">
+                    C'est ce qui rend les posts spécifiques à ce client. Le lien du site est le minimum : le reste peut en être déduit.
+                  </div>
+                  <label style="font-size:11px;color:var(--muted)">Site du client
+                    <input id="so-site" class="inp" style="width:100%;margin-top:4px" placeholder="https://…"></label>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+                    <label style="font-size:11px;color:var(--muted)">Prestations (une par ligne)
+                      <textarea id="so-prestations" class="inp" rows="4" style="width:100%;margin-top:4px;resize:vertical"></textarea></label>
+                    <label style="font-size:11px;color:var(--muted)">Douleurs du client final (une par ligne)
+                      <textarea id="so-douleurs" class="inp" rows="4" style="width:100%;margin-top:4px;resize:vertical"></textarea></label>
+                  </div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:12px">
+                    <label style="font-size:11px;color:var(--muted)">Zone d'intervention
+                      <input id="so-zone" class="inp" style="width:100%;margin-top:4px" placeholder="Chambéry et Savoie"></label>
+                    <label style="font-size:11px;color:var(--muted)">Avatar client
+                      <input id="so-avatar" class="inp" style="width:100%;margin-top:4px" placeholder="Propriétaire 40-65 ans"></label>
+                    <label style="font-size:11px;color:var(--muted)">Ton
+                      <input id="so-ton" class="inp" style="width:100%;margin-top:4px" placeholder="Vouvoiement, direct"></label>
+                  </div>
+                  <label style="font-size:11px;color:var(--muted);display:block;margin-top:12px">Consignes libres (facultatif)
+                    <textarea id="so-consignes" class="inp" rows="3" style="width:100%;margin-top:4px;resize:vertical"
+                      placeholder="Ex. : mettre en avant le dépannage d'urgence ce mois-ci. Ne pas parler de prix."></textarea></label>
+                  <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
+                    <button onclick="soSave()" class="btn-primary" style="padding:9px 16px;font-size:12px">Enregistrer</button>
+                    <span id="so-save-state" style="font-size:11px;color:var(--muted);align-self:center"></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Photos disponibles -->
+              <div class="panel" style="margin-bottom:16px">
+                <div style="padding:14px 16px">
+                  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                    <div style="font-size:13px;font-weight:800">Photos utilisables</div>
+                    <span id="so-photos-count" style="font-size:11px;color:var(--muted)"></span>
+                    <button onclick="soMigrateAssets()" class="btn-ghost" style="margin-left:auto;padding:8px 13px;font-size:12px">
+                      Envoyer les photos vers le cloud</button>
+                  </div>
+                  <div style="font-size:11px;color:var(--muted);margin-top:6px">
+                    Les photos de l'onglet Assets ne sont visibles que sur cet ordinateur tant qu'elles n'ont pas été envoyées.
+                    Seules celles du cloud peuvent servir aux posts.
+                  </div>
+                  <div id="so-photos" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:12px"></div>
+                </div>
+              </div>
+
+              <!-- Génération -->
+              <div class="panel" style="margin-bottom:16px">
+                <div style="padding:14px 16px">
+                  <div style="font-size:13px;font-weight:800;margin-bottom:4px">Générer du contenu</div>
+                  <div style="font-size:11px;color:var(--muted);margin-bottom:12px">
+                    La demande part dans la file. Elle est traitée dans Claude avec le skill <b>social-kit</b>, qui écrit les textes,
+                    fabrique les visuels à la charte puis les programme dans Metricool.
+                  </div>
+                  <div style="display:flex;gap:10px;flex-wrap:wrap">
+                    <button onclick="soRequest('semaine')" class="btn-primary" style="padding:10px 16px;font-size:12px">
+                      Générer 1 semaine</button>
+                    <button onclick="soRequest('trimestre')" class="btn-ghost" style="padding:10px 16px;font-size:12px">
+                      Générer 3 mois</button>
+                    <button onclick="soCopyBrief()" class="btn-ghost" style="padding:10px 16px;font-size:12px">
+                      Copier le brief</button>
+                  </div>
+                  <div id="so-req-state" style="font-size:12px;margin-top:12px"></div>
+                </div>
+              </div>
+
+              <!-- Planning -->
+              <div class="panel">
+                <div style="padding:14px 16px">
+                  <div style="display:flex;align-items:center;gap:10px">
+                    <div style="font-size:13px;font-weight:800">Posts</div>
+                    <button onclick="soLoadPosts()" class="btn-ghost" style="margin-left:auto;padding:7px 12px;font-size:11px">Rafraîchir</button>
+                  </div>
+                  <div id="so-posts" style="margin-top:12px"></div>
+                </div>
               </div>
             </div>
 
@@ -4378,6 +4553,266 @@ function clTab(tab, btn) {
   btn.classList.add('active');
   const pane = document.getElementById('cl-tab-'+tab);
   if (pane) { pane.style.display='block'; pane.classList.add('active'); }
+}
+
+// ══════════════════════════════════════════════════════════
+// RÉSEAUX SOCIAUX — charte, brief, photos, file de génération
+// Tables : social_profiles / social_requests / social_posts
+// Bucket : crm-assets (public)
+// ══════════════════════════════════════════════════════════
+const SO_BUCKET = 'crm-assets';
+let soProfile = null;
+
+const _soEl = id => document.getElementById(id);
+const _soVal = id => (_soEl(id)?.value || '').trim();
+const _soLines = id => _soVal(id).split('\n').map(s=>s.trim()).filter(Boolean);
+function _soSet(id, v) { const e=_soEl(id); if (e) e.value = v ?? ''; }
+function _soState(id, msg, ok) {
+  const e=_soEl(id); if (!e) return;
+  e.textContent = msg;
+  e.style.color = ok === false ? '#ef4444' : ok === true ? '#22c55e' : 'var(--muted)';
+}
+
+/** Ouverture de l'onglet : charge le profil, les photos et les posts. */
+async function soOpen() {
+  const c = clData.find(x=>x.id===clCurrentId); if (!c) return;
+  _soState('so-save-state','');
+  _soState('so-req-state','');
+  try {
+    const { data } = await sb.from('social_profiles').select('*').eq('client_id', String(c.id)).maybeSingle();
+    soProfile = data || null;
+  } catch(e) { console.warn('soOpen:', e); soProfile = null; }
+
+  const p = soProfile || {};
+  const co = p.couleurs || {}, po = p.polices || {};
+  _soSet('so-formule', p.formule || '');
+  _soSet('so-prix', p.prix ?? '');
+  _soSet('so-ppm', p.posts_par_mois ?? 8);
+  _soSet('so-metricool', p.metricool_brand_id || '');
+  _soSet('so-site', p.site_url || c.url || '');
+  _soSet('so-zone', p.zone || '');
+  _soSet('so-avatar', p.avatar_client || '');
+  _soSet('so-ton', p.ton || '');
+  _soSet('so-consignes', p.consignes || '');
+  _soSet('so-prestations', (p.prestations || []).join('\n'));
+  _soSet('so-douleurs', (p.douleurs || []).join('\n'));
+  _soSet('so-c-bg', co.bg || '#EDEDEE');
+  _soSet('so-c-ink', co.ink || '#111111');
+  _soSet('so-c-accent', co.accent || '#F5883F');
+  _soSet('so-c-accent2', co.accent2 || '#E8402A');
+  _soSet('so-f-display', po.display || '');
+  _soSet('so-f-hand', po.hand || '');
+  _soSet('so-f-body', po.body || '');
+  _soSet('so-f-kicker', po.kicker || '');
+  _soSet('so-logo', p.logo_url || '');
+  const res = p.reseaux || ['instagram','facebook'];
+  if (_soEl('so-r-ig')) _soEl('so-r-ig').checked = res.includes('instagram');
+  if (_soEl('so-r-fb')) _soEl('so-r-fb').checked = res.includes('facebook');
+  if (_soEl('so-r-li')) _soEl('so-r-li').checked = res.includes('linkedin');
+  if (_soEl('so-actif')) _soEl('so-actif').checked = p.actif !== false;
+  soLogoPreview();
+  soRenderPhotos();
+  soLoadPosts();
+}
+
+function soLogoPreview() {
+  const img = _soEl('so-logo-preview'), url = _soVal('so-logo');
+  if (!img) return;
+  if (url) { img.src = url; img.style.display = 'block'; } else { img.style.display = 'none'; }
+}
+
+/** Enregistre le profil (upsert sur client_id). */
+async function soSave() {
+  const c = clData.find(x=>x.id===clCurrentId); if (!c) return;
+  const reseaux = [];
+  if (_soEl('so-r-ig')?.checked) reseaux.push('instagram');
+  if (_soEl('so-r-fb')?.checked) reseaux.push('facebook');
+  if (_soEl('so-r-li')?.checked) reseaux.push('linkedin');
+  const prix = _soVal('so-prix'), ppm = _soVal('so-ppm');
+
+  const row = {
+    client_id: String(c.id),
+    nom: c.nom || '',
+    site_url: _soVal('so-site') || null,
+    couleurs: { bg:_soVal('so-c-bg'), ink:_soVal('so-c-ink'),
+                accent:_soVal('so-c-accent'), accent2:_soVal('so-c-accent2') },
+    polices:  { display:_soVal('so-f-display'), hand:_soVal('so-f-hand'),
+                body:_soVal('so-f-body'), kicker:_soVal('so-f-kicker') },
+    logo_url: _soVal('so-logo') || null,
+    prestations: _soLines('so-prestations'),
+    douleurs: _soLines('so-douleurs'),
+    zone: _soVal('so-zone') || null,
+    avatar_client: _soVal('so-avatar') || null,
+    ton: _soVal('so-ton') || null,
+    consignes: _soVal('so-consignes') || null,
+    formule: _soVal('so-formule') || null,
+    prix: prix === '' ? null : Number(prix),
+    posts_par_mois: ppm === '' ? 8 : Number(ppm),
+    reseaux,
+    metricool_brand_id: _soVal('so-metricool') || null,
+    actif: !!_soEl('so-actif')?.checked,
+  };
+  _soState('so-save-state','Enregistrement…');
+  const { error } = await sb.from('social_profiles').upsert(row, { onConflict:'client_id' });
+  if (error) { _soState('so-save-state','Échec : '+error.message, false); return; }
+  soProfile = row;
+  soLogoPreview();
+  _soState('so-save-state','Enregistré', true);
+  setTimeout(()=>_soState('so-save-state',''), 2500);
+}
+
+/** Photos déjà dans le cloud pour ce client. */
+function soCloudPhotos() {
+  const c = clData.find(x=>x.id===clCurrentId); if (!c) return [];
+  return (c.assets||[]).filter(a => a.url && (!a.type || a.type.startsWith('image/')));
+}
+
+function soRenderPhotos() {
+  const c = clData.find(x=>x.id===clCurrentId);
+  const box = _soEl('so-photos'); if (!box || !c) return;
+  const all = (c.assets||[]).filter(a => !a.type || a.type.startsWith('image/'));
+  const cloud = all.filter(a=>a.url);
+  const local = all.length - cloud.length;
+  _soState('so-photos-count',
+    `${cloud.length} dans le cloud${local ? ` · ${local} encore locale(s)` : ''}`,
+    local ? false : (cloud.length ? true : null));
+  box.innerHTML = cloud.length
+    ? cloud.map(a=>`<div style="position:relative"><img src="${a.url}" title="${a.nom||''}"
+        style="width:100%;height:84px;object-fit:cover;border-radius:8px;display:block"></div>`).join('')
+    : `<div style="grid-column:1/-1;font-size:12px;color:var(--muted)">Aucune photo dans le cloud pour l'instant.</div>`;
+}
+
+/** Téléverse les photos locales (IndexedDB) vers Supabase Storage. */
+async function soMigrateAssets() {
+  const c = clData.find(x=>x.id===clCurrentId); if (!c) return;
+  await clLoadFilesFromIDB(c);
+  const aFaire = (c.assets||[]).filter(a => !a.url && a.data);
+  if (!aFaire.length) { _soState('so-photos-count','Tout est déjà dans le cloud', true); return; }
+  if (!confirm(`Envoyer ${aFaire.length} fichier(s) vers le cloud ?\n\nIls resteront aussi sur cet ordinateur.`)) return;
+
+  let ok = 0, ko = 0;
+  for (const a of aFaire) {
+    try {
+      const blob = await (await fetch(a.data)).blob();
+      const ext  = (a.nom||'').split('.').pop().toLowerCase() || 'jpg';
+      const path = `clients/${c.id}/${a.id}.${ext}`;
+      const { error } = await sb.storage.from(SO_BUCKET)
+        .upload(path, blob, { upsert:true, contentType: a.type || blob.type || 'image/jpeg' });
+      if (error) throw error;
+      const { data:pub } = sb.storage.from(SO_BUCKET).getPublicUrl(path);
+      a.url = pub.publicUrl; a.path = path; ok++;
+    } catch(e) { console.warn('upload', a.nom, e); ko++; }
+    _soState('so-photos-count', `Envoi… ${ok}/${aFaire.length}`);
+  }
+  clSave();               // persiste les url (le champ data reste retiré à la sauvegarde)
+  soRenderPhotos();
+  _soState('so-photos-count', ko ? `${ok} envoyée(s), ${ko} en échec` : `${ok} photo(s) envoyée(s)`, !ko);
+}
+
+/** Téléverse un logo et remplit le champ URL. */
+function soPickLogo() {
+  clTriggerFilePick('image/*', async files => {
+    const c = clData.find(x=>x.id===clCurrentId);
+    const f = files && files[0]; if (!f || !c) return;
+    _soState('so-save-state','Envoi du logo…');
+    try {
+      const ext = (f.name.split('.').pop() || 'png').toLowerCase();
+      const path = `clients/${c.id}/logo.${ext}`;
+      const { error } = await sb.storage.from(SO_BUCKET)
+        .upload(path, f, { upsert:true, contentType:f.type || 'image/png' });
+      if (error) throw error;
+      const { data:pub } = sb.storage.from(SO_BUCKET).getPublicUrl(path);
+      _soSet('so-logo', pub.publicUrl + '?v=' + Date.now());
+      soLogoPreview();
+      _soState('so-save-state','Logo envoyé — pense à enregistrer', true);
+    } catch(e) { _soState('so-save-state','Échec du logo : '+e.message, false); }
+  });
+}
+
+/** Contrôles avant de lancer une génération. */
+function soCheck() {
+  const manques = [];
+  if (!_soVal('so-site')) manques.push('le lien du site');
+  if (!_soVal('so-f-display') || !_soVal('so-f-body')) manques.push('les polices');
+  if (!_soVal('so-prestations')) manques.push('les prestations');
+  return manques;
+}
+
+/** Dépose une demande dans la file. */
+async function soRequest(periode) {
+  const c = clData.find(x=>x.id===clCurrentId); if (!c) return;
+  const manques = soCheck();
+  if (manques.length && !confirm(`Il manque ${manques.join(', ')}.\n\nLancer quand même ? Le contenu sera moins précis.`)) return;
+
+  await soSave();
+  const ppm = Number(_soVal('so-ppm') || 8);
+  const nb  = periode === 'trimestre' ? ppm * 3 : Math.max(1, Math.round(ppm / 4));
+
+  _soState('so-req-state','Envoi de la demande…');
+  const { error } = await sb.from('social_requests').insert({
+    client_id: String(c.id), periode, nb_posts: nb,
+    consignes: _soVal('so-consignes') || null,
+  });
+  if (error) { _soState('so-req-state','Échec : '+error.message, false); return; }
+  _soState('so-req-state',
+    `Demande enregistrée — ${nb} post(s). Dans Claude : « traite les demandes réseaux sociaux en attente ».`, true);
+}
+
+/** Brief complet dans le presse-papier, pour coller dans Claude. */
+async function soCopyBrief() {
+  const c = clData.find(x=>x.id===clCurrentId); if (!c) return;
+  await soSave();
+  const brief = {
+    client: c.nom, client_id: String(c.id), secteur: c.secteur || null,
+    site: _soVal('so-site'),
+    charte: {
+      couleurs: { bg:_soVal('so-c-bg'), ink:_soVal('so-c-ink'),
+                  accent:_soVal('so-c-accent'), accent2:_soVal('so-c-accent2') },
+      polices: { display:_soVal('so-f-display'), hand:_soVal('so-f-hand'),
+                 body:_soVal('so-f-body'), kicker:_soVal('so-f-kicker') },
+      logo: _soVal('so-logo') || null,
+    },
+    brief: {
+      prestations: _soLines('so-prestations'), zone: _soVal('so-zone'),
+      avatar: _soVal('so-avatar'), douleurs: _soLines('so-douleurs'), ton: _soVal('so-ton'),
+    },
+    consignes: _soVal('so-consignes') || null,
+    photos: soCloudPhotos().map(a=>a.url),
+    posts_par_mois: Number(_soVal('so-ppm') || 8),
+    metricool_brand_id: _soVal('so-metricool') || null,
+  };
+  try {
+    await navigator.clipboard.writeText(JSON.stringify(brief, null, 2));
+    _soState('so-req-state','Brief copié — colle-le dans Claude', true);
+  } catch { _soState('so-req-state','Copie impossible (autorise le presse-papier)', false); }
+}
+
+/** Liste des posts du client. */
+async function soLoadPosts() {
+  const c = clData.find(x=>x.id===clCurrentId);
+  const box = _soEl('so-posts'); if (!box || !c) return;
+  box.innerHTML = '<div style="font-size:12px;color:var(--muted)">Chargement…</div>';
+  const { data, error } = await sb.from('social_posts').select('*')
+    .eq('client_id', String(c.id)).order('date_prevue', { ascending:true, nullsFirst:false }).limit(60);
+  if (error) { box.innerHTML = `<div style="font-size:12px;color:#ef4444">${error.message}</div>`; return; }
+  if (!data || !data.length) {
+    box.innerHTML = '<div style="font-size:12px;color:var(--muted)">Aucun post pour l\'instant. Lance une génération ci-dessus.</div>';
+    return;
+  }
+  const teinte = { brouillon:'#94a3b8', valide:'#3b82f6', programme:'#f59e0b', publie:'#22c55e', rejete:'#ef4444' };
+  box.innerHTML = data.map(p => {
+    const d = p.date_prevue ? new Date(p.date_prevue).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}) : '—';
+    const aVerifier = (p.verifier || []).length;
+    return `<div style="display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)">
+      ${p.visuel_url ? `<img src="${p.visuel_url}" style="width:44px;height:44px;object-fit:cover;border-radius:6px;flex:none">`
+                     : `<div style="width:44px;height:44px;border-radius:6px;background:#ffffff10;flex:none"></div>`}
+      <div style="min-width:0;flex:1">
+        <div style="font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${(p.titre||'(sans titre)').replace(/<br\s*\/?>/gi,' ')}</div>
+        <div style="font-size:11px;color:var(--muted)">${d} · ${p.layout||'—'} · ${p.ratio||''}${aVerifier?` · <span style="color:#ef4444">${aVerifier} à vérifier</span>`:''}</div>
+      </div>
+      <span style="font-size:10px;font-weight:800;text-transform:uppercase;color:${teinte[p.statut]||'#94a3b8'};flex:none">${p.statut}</span>
+    </div>`;
+  }).join('');
 }
 
 function clBack() {
