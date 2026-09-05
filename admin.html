@@ -2937,7 +2937,22 @@
               </div>
 
               <!-- Note -->
-              <p style="font-size:11px;color:var(--muted);margin:0 0 20px;background:rgba(255,255,255,.03);padding:10px;border-radius:8px">Si abonnement combiné : aucun prélèvement d'abonnement tant que la création n'est pas intégralement réglée (mois d'abonnement offerts).</p>
+              <p style="font-size:11px;color:var(--muted);margin:0 0 16px;background:rgba(255,255,255,.03);padding:10px;border-radius:8px">Si abonnement combiné : aucun prélèvement d'abonnement tant que la création n'est pas intégralement réglée (mois d'abonnement offerts).</p>
+
+              <!-- Conditions de paiement : ouvrable, chaque ligne cochable/décochable,
+                   éditable au stylo (✎) et on peut ajouter une ligne. Si le panneau
+                   n'est jamais ouvert, le devis garde les conditions générées auto. -->
+              <div style="margin:0 0 18px">
+                <button type="button" id="dv-cond-toggle" onclick="dvToggleConditions()" style="width:100%;display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;font-weight:600;cursor:pointer">
+                  <span>Conditions de paiement <span style="color:var(--muted);font-weight:400">— personnaliser</span></span>
+                  <span id="dv-cond-caret" style="color:var(--muted);transition:transform .15s">▸</span>
+                </button>
+                <div id="dv-cond-panel" style="display:none;margin-top:10px">
+                  <div style="font-size:11px;color:var(--muted);margin-bottom:8px;line-height:1.5">Décoche une ligne pour la retirer du devis, clique <strong style="color:#ddd">✎</strong> pour modifier le texte, ou ajoute une ligne. Les montants reflètent le devis au moment de l'ouverture — <a href="#" onclick="dvResetConditions();return false" style="color:var(--accent);text-decoration:none">↻ recalculer</a>.</div>
+                  <div id="dv-cond-list"></div>
+                  <button type="button" onclick="dvAddCondLine()" style="background:rgba(244,146,106,.12);border:1px solid rgba(244,146,106,.35);color:var(--accent);border-radius:7px;padding:5px 10px;font-size:12px;font-weight:700;cursor:pointer;margin-top:4px">+ Ajouter une ligne</button>
+                </div>
+              </div>
 
               <div style="display:flex;gap:10px">
                 <button onclick="dvCloseModal()" class="btn-modal-cancel">Annuler</button>
@@ -5472,6 +5487,11 @@ function dvOpenModal(clientId) {
   document.getElementById('dv-creation-prix').value='';
   const _aboPrix=document.getElementById('dv-abo-prix'); if(_aboPrix)_aboPrix.value='';
   const _extras=document.getElementById('dv-extras-list'); if(_extras)_extras.innerHTML='';
+  // Conditions : replier le panneau, vider les lignes, repartir « non édité ».
+  const _condList=document.getElementById('dv-cond-list'); if(_condList)_condList.innerHTML='';
+  const _condPanel=document.getElementById('dv-cond-panel'); if(_condPanel)_condPanel.style.display='none';
+  const _condCaret=document.getElementById('dv-cond-caret'); if(_condCaret)_condCaret.style.transform='';
+  dvCondDirty=false;
   const _owner=document.getElementById('dv-owner'); if(_owner)_owner.value='emrick';
   const _ownerWrap=document.getElementById('dv-owner-wrap');
   dvUpdateCreationPreview(); dvUpdateAboPreview(); dvUpdateExtrasPreview();
@@ -5530,6 +5550,7 @@ function dvAboChanged() {
 }
 
 function dvUpdateAboPreview() {
+  if(typeof dvRenderConditions==='function')dvRenderConditions();
   const abo=document.getElementById('dv-abo').value;
   const preview=document.getElementById('dv-abo-preview');
   if(!preview)return;
@@ -5603,6 +5624,130 @@ function dvUpdateExtrasPreview(){
   preview.textContent = n===1
     ? ('Site + prestations : '+fmt(oneTime)+' en 1 fois')
     : ('Site + prestations : '+n+' × '+fmt(per)+' = '+fmt(oneTime));
+  dvRenderConditions();
+}
+
+// ── Conditions de paiement personnalisables ────────────────────────────
+// Le panneau du formulaire et le devis imprimé partagent le même générateur
+// (dvConditionLines). Tant que l'utilisateur n'a rien édité, le panneau se
+// resynchronise sur les montants du formulaire ; dès qu'il coche/édite/ajoute,
+// dvCondDirty passe à true et on ne réécrit plus par-dessus ses choix.
+let dvCondDirty=false;
+function dvCondMarkDirty(){ dvCondDirty=true; }
+function dvPlaceCaretEnd(el){ try{ const r=document.createRange();r.selectNodeContents(el);r.collapse(false);const s=window.getSelection();s.removeAllRanges();s.addRange(r); }catch(e){} }
+
+// État courant du formulaire, forme minimale attendue par dvConditionLines.
+function dvFormState(){
+  const creation=document.getElementById('dv-creation').value;
+  const abo=document.getElementById('dv-abo').value;
+  const n={'1x':1,'2x':2,'3x':3,'4x':4}[creation]||1;
+  const rawC=parseFloat((document.getElementById('dv-creation-prix').value||'').replace(',','.'));
+  const creationAmt=(!isNaN(rawC)&&rawC>0)?rawC:(creation?990:0);
+  const rawA=parseFloat((document.getElementById('dv-abo-prix').value||'').replace(',','.'));
+  const aboAmt=abo?((!isNaN(rawA)&&rawA>0)?rawA:(parseFloat(abo)||0)):0;
+  return {creation,abo,creationAmt,creationPerInstallment:creation?(creationAmt/n):0,aboAmt,extras:dvCollectExtras()};
+}
+
+// Génère la liste des lignes de conditions par défaut à partir d'un devis (ou
+// d'un état de formulaire). Retourne [{text:htmlInterne, dot:couleurPuce?}].
+function dvConditionLines(d){
+  const nMap={'1x':1,'2x':2,'3x':3,'4x':4};
+  const fmtP=v=>Number(v).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+  const creationN=nMap[d.creation]||1;
+  const creationPer=(d.creationPerInstallment!=null)?d.creationPerInstallment:({'1x':990,'2x':495,'3x':330,'4x':247.50}[d.creation]);
+  const creationTotal=(d.creationAmt!=null)?d.creationAmt:(creationPer*creationN);
+  const extras=Array.isArray(d.extras)?d.extras.filter(e=>e&&(e.desc||Number(e.prix)>0)):[];
+  const extrasTotal=extras.reduce((s,e)=>s+(parseFloat(e.prix)||0),0);
+  const hasExtras=extras.length>0;
+  const oneTimeTotal=(d.creation?creationTotal:0)+extrasTotal;
+  const perInstallment=creationN>0?(oneTimeTotal/creationN):oneTimeTotal;
+  const aboAmt=(d.aboAmt!=null&&Number(d.aboAmt)>0)?Number(d.aboAmt):(parseFloat(d.abo)||0);
+  const aboPrixTxt=d.abo?(fmtP(aboAmt)+'/mois'):'';
+  const valid=new Date();valid.setDate(valid.getDate()+5);
+  const validTxt=valid.toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+  const lines=[];
+  if(d.creation||hasExtras){
+    const n=creationN;
+    const amt=fmtP(perInstallment).replace(' €','');
+    const label=d.creation?(hasExtras?'Création du site et prestations':'Création du site'):'Prestations';
+    const freeNote=d.creation?' La 1ère version du site est présentée gratuitement avant tout paiement.':'';
+    lines.push({text: n===1
+      ? `${label} : <strong>${fmtP(oneTimeTotal)} à la validation de ce devis.</strong>${freeNote}`
+      : `${label} : <strong>${n} versements de ${amt} €</strong>, espacés de 30 jours. Le 1er versement est déclenché à la validation de ce devis.${freeNote}`});
+  }
+  if(d.abo){
+    const aboTxt=d.creation
+      ?`Aucun prélèvement d'abonnement pendant la phase de création. L'abonnement de <strong>${aboPrixTxt}</strong> démarre automatiquement le 7 du mois suivant le dernier versement de création. <em>Les mois de création sont offerts.</em>`
+      :`Abonnement de <strong>${aboPrixTxt}</strong> — premier prélèvement à la validation de ce devis.`;
+    lines.push({text:aboTxt});
+    lines.push({text:`<strong>Aucun engagement de durée.</strong> L'abonnement est sans durée minimale : le client peut l'arrêter quand il le souhaite, même après plusieurs années, par simple message, sans préavis ni frais de résiliation. Seul le mois en cours reste dû, aucun prélèvement n'intervient ensuite.`});
+  }
+  if(d.creation||d.abo||hasExtras){
+    lines.push({text:`<strong>Le client reste propriétaire de son site et de son nom de domaine.</strong> En cas d'arrêt${d.abo?" de l'abonnement":' de la collaboration'}, Potentieel remet au client l'intégralité des fichiers de son site et lui transfère la propriété de son nom de domaine, sans frais. Le site peut ainsi être hébergé ailleurs librement.`});
+  }
+  lines.push({text:`Devis valable <strong>5 jours</strong> à compter de la date d'émission (jusqu'au ${validTxt}).`, dot:'#f4926a'});
+  lines.push({text:`TVA non applicable — art. 293B du CGI (micro-entreprise). Pas de TVA à récupérer.`, dot:'#999'});
+  return lines;
+}
+
+function dvToggleConditions(){
+  const panel=document.getElementById('dv-cond-panel');
+  const caret=document.getElementById('dv-cond-caret');
+  if(!panel)return;
+  const open=panel.style.display==='none';
+  panel.style.display=open?'block':'none';
+  if(caret)caret.style.transform=open?'rotate(90deg)':'';
+  if(open && !document.querySelector('#dv-cond-list .dv-cond-row')){ dvCondDirty=false; dvRenderConditions(true); }
+}
+function dvResetConditions(){ dvCondDirty=false; dvRenderConditions(true); }
+function dvRenderConditions(force){
+  const list=document.getElementById('dv-cond-list');
+  const panel=document.getElementById('dv-cond-panel');
+  if(!list||!panel||panel.style.display==='none')return; // panneau fermé
+  if(dvCondDirty && !force)return;                        // édité → on n'écrase pas
+  list.innerHTML='';
+  dvConditionLines(dvFormState()).forEach(l=>dvAddCondLine(l.text, l.dot, l.on!==false));
+}
+// text===undefined → ligne ajoutée par l'utilisateur (vide, éditable, cochée).
+function dvAddCondLine(text, dot, checked){
+  const list=document.getElementById('dv-cond-list'); if(!list)return null;
+  const userAdded=(text===undefined);
+  const on=checked!==false;
+  const row=document.createElement('div');
+  row.className='dv-cond-row'; row.dataset.dot=dot||'';
+  row.style.cssText='display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:8px 10px';
+  const cb=document.createElement('input');
+  cb.type='checkbox'; cb.className='dv-cond-cb'; cb.checked=on;
+  cb.style.cssText='margin-top:2px;cursor:pointer;accent-color:var(--accent);flex:0 0 auto';
+  const txt=document.createElement('div');
+  txt.className='dv-cond-text'; txt.contentEditable='true';
+  txt.innerHTML=(text!==undefined?text:'');
+  txt.style.cssText='flex:1 1 auto;font-size:12px;color:#ddd;line-height:1.5;outline:none;min-height:18px;opacity:'+(on?'1':'.45');
+  txt.oninput=dvCondMarkDirty;
+  cb.onchange=()=>{ dvCondMarkDirty(); txt.style.opacity=cb.checked?'1':'.45'; };
+  const pen=document.createElement('button');
+  pen.type='button'; pen.title='Modifier le texte'; pen.textContent='✎';
+  pen.style.cssText='flex:0 0 auto;background:none;border:none;color:var(--muted);font-size:14px;cursor:pointer;padding:2px 3px';
+  pen.onclick=()=>{ txt.focus(); dvPlaceCaretEnd(txt); };
+  const del=document.createElement('button');
+  del.type='button'; del.title='Supprimer la ligne'; del.textContent='×';
+  del.style.cssText='flex:0 0 auto;background:none;border:none;color:var(--muted);font-size:16px;line-height:1;cursor:pointer;padding:0 3px';
+  del.onclick=()=>{ row.remove(); dvCondMarkDirty(); };
+  row.appendChild(cb); row.appendChild(txt); row.appendChild(pen); row.appendChild(del);
+  list.appendChild(row);
+  if(userAdded){ dvCondMarkDirty(); txt.focus(); }
+  return row;
+}
+// Retourne null si le panneau n'a jamais été ouvert (→ conditions auto), sinon
+// la liste des lignes cochées (éventuellement vide si tout décoché).
+function dvCollectConditions(){
+  const list=document.getElementById('dv-cond-list');
+  if(!list)return null;
+  const rows=Array.from(list.querySelectorAll('.dv-cond-row'));
+  if(!rows.length)return null;
+  return rows.filter(r=>r.querySelector('.dv-cond-cb').checked)
+    .map(r=>({text:(r.querySelector('.dv-cond-text').innerHTML||'').trim(), dot:r.dataset.dot||''}))
+    .filter(l=>l.text);
 }
 
 function dvCreate() {
@@ -5632,6 +5777,8 @@ function dvCreate() {
   }
   if(abo)parts.push('Abonnement '+fmt(aboAmt)+'/m');
   const totalTxt=parts.join(' + ')||'—';
+  // Conditions personnalisées (null si le panneau n'a jamais été ouvert).
+  const conds=dvCollectConditions();
   const cid=document.getElementById('dv-cl-select').value||clCurrentId;
   const c=clData.find(x=>x.id===cid);
   const allDevis=clData.flatMap(x=>x.devis||[]).concat(dvStandalone);
@@ -5640,6 +5787,7 @@ function dvCreate() {
     data:{entreprise,tel:document.getElementById('dv-tel').value.trim(),email:document.getElementById('dv-email').value.trim(),
       adresse:document.getElementById('dv-adresse').value.trim(),idType:document.getElementById('dv-id-type').value,
       idNum:document.getElementById('dv-id-num').value.trim(),creation,abo,creationAmt,creationPerInstallment,aboAmt,extras,
+      conditions:conds||[],conditionsCustom:conds!==null,
       owner:(document.getElementById('dv-owner')&&document.getElementById('dv-owner').value)||(c&&c.owner)||'emrick'}};
   if(c){
     if(!c.devis)c.devis=[];c.devis.unshift(dv);clSave();clRenderDevis(c);
@@ -5746,29 +5894,16 @@ function dvQuoteHtml(dv, withPrintBtn) {
   if(d.abo)oneTimeParts.push(aboPrixTxt);
   const totalCell=oneTimeParts.join(' + ');
 
-  // Conditions de paiement
+  // Conditions de paiement : personnalisées si le panneau du formulaire a été
+  // utilisé (d.conditionsCustom), sinon générées automatiquement. Même
+  // générateur (dvConditionLines) que le panneau, pour rester cohérent.
   let cond='';
-  if(d.creation||hasExtras){
-    const n=creationN;
-    // Échéancier calculé sur le total (site + prestations supplémentaires).
-    const amt=fmtP(perInstallment).replace(' €','');
-    const label=d.creation?(hasExtras?'Création du site et prestations':'Création du site'):'Prestations';
-    const freeNote=d.creation?' La 1ère version du site est présentée gratuitement avant tout paiement.':'';
-    if(n===1)cond+=`<div class="cond-item"><span class="cond-dot"></span>${label} : <strong>${fmtP(oneTimeTotal)} à la validation de ce devis.</strong>${freeNote}</div>`;
-    else cond+=`<div class="cond-item"><span class="cond-dot"></span>${label} : <strong>${n} versements de ${amt} €</strong>, espacés de 30 jours. Le 1er versement est déclenché à la validation de ce devis.${freeNote}</div>`;
-  }
-  if(d.abo){
-    const aboTxt=d.creation
-      ?`Aucun prélèvement d'abonnement pendant la phase de création. L'abonnement de <strong>${aboPrixTxt}</strong> démarre automatiquement le 7 du mois suivant le dernier versement de création. <em>Les mois de création sont offerts.</em>`
-      :`Abonnement de <strong>${aboPrixTxt}</strong> — premier prélèvement à la validation de ce devis.`;
-    cond+=`<div class="cond-item"><span class="cond-dot"></span>${aboTxt}</div>`;
-    cond+=`<div class="cond-item"><span class="cond-dot"></span><strong>Aucun engagement de durée.</strong> L'abonnement est sans durée minimale : le client peut l'arrêter quand il le souhaite, même après plusieurs années, par simple message, sans préavis ni frais de résiliation. Seul le mois en cours reste dû, aucun prélèvement n'intervient ensuite.</div>`;
-  }
-  if(d.creation||d.abo||hasExtras){
-    cond+=`<div class="cond-item"><span class="cond-dot"></span><strong>Le client reste propriétaire de son site et de son nom de domaine.</strong> En cas d'arrêt${d.abo?" de l'abonnement":' de la collaboration'}, Potentieel remet au client l'intégralité des fichiers de son site et lui transfère la propriété de son nom de domaine, sans frais. Le site peut ainsi être hébergé ailleurs librement.</div>`;
-  }
-  cond+=`<div class="cond-item"><span class="cond-dot" style="background:#f4926a"></span>Devis valable <strong>5 jours</strong> à compter de la date d'émission (jusqu'au ${validTxt}).</div>`;
-  cond+=`<div class="cond-item"><span class="cond-dot" style="background:#999"></span>TVA non applicable — art. 293B du CGI (micro-entreprise). Pas de TVA à récupérer.</div>`;
+  const condLines = d.conditionsCustom ? (Array.isArray(d.conditions)?d.conditions:[]) : dvConditionLines(d);
+  condLines.forEach(l=>{
+    if(!l||!l.text)return;
+    const dotStyle=l.dot?` style="background:${l.dot}"`:'';
+    cond+=`<div class="cond-item"><span class="cond-dot"${dotStyle}></span>${l.text}</div>`;
+  });
 
   const html=`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">
   <link rel="manifest" href="/manifest.json">
