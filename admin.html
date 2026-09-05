@@ -2839,6 +2839,18 @@
               </select>
               </div>
 
+              <!-- Micro-entreprise qui émet/facture ce devis. Masqué quand le devis
+                   est créé depuis une fiche client : l'entité vient alors de la
+                   fiche (champ « Entité »). Un client choisi dans le sélecteur
+                   ci-dessus pré-remplit cette valeur, modifiable. -->
+              <div id="dv-owner-wrap" style="margin-bottom:16px">
+                <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Facturé par (micro-entreprise) *</label>
+                <select id="dv-owner" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
+                  <option value="emrick">👤 Emrick — PERILLIAT EMRICK</option>
+                  <option value="eloise">👤 Éloïse — CESAR-LE DREAU ELOISE</option>
+                </select>
+              </div>
+
               <!-- Entreprise + Contact -->
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
                 <div>
@@ -5460,17 +5472,26 @@ function dvOpenModal(clientId) {
   document.getElementById('dv-creation-prix').value='';
   const _aboPrix=document.getElementById('dv-abo-prix'); if(_aboPrix)_aboPrix.value='';
   const _extras=document.getElementById('dv-extras-list'); if(_extras)_extras.innerHTML='';
+  const _owner=document.getElementById('dv-owner'); if(_owner)_owner.value='emrick';
+  const _ownerWrap=document.getElementById('dv-owner-wrap');
   dvUpdateCreationPreview(); dvUpdateAboPreview(); dvUpdateExtrasPreview();
   if (fromClient) {
-    // Depuis fiche client : bannière + champs auto, masquer le sélecteur
+    // Depuis fiche client : bannière + champs auto, masquer le sélecteur.
+    // L'entité qui facture vient de la fiche client (champ « Entité »), donc
+    // on masque le sélecteur d'entité et on le cale sur celle du client.
     const c = clData.find(x=>x.id===cid);
     if(c){ sel.value=cid; dvPrefill();
       document.getElementById('dv-client-name-display').textContent=c.nom||cid;
       document.getElementById('dv-client-email-display').textContent=c.email||'';
+      if(_owner)_owner.value=c.owner||'emrick';
     }
+    if(_ownerWrap)_ownerWrap.style.display='none';
     banner.style.display='block'; clSection.style.display='none';
     document.getElementById('dv-modal-title').textContent='Nouveau devis';
   } else {
+    // Page Devis simple : on choisit l'entité à la main (pré-remplie si un
+    // client existant est sélectionné dans le menu déroulant).
+    if(_ownerWrap)_ownerWrap.style.display='block';
     banner.style.display='none'; clSection.style.display='block';
     document.getElementById('dv-modal-title').textContent='Nouveau devis';
   }
@@ -5487,6 +5508,8 @@ function dvPrefill() {
   set('dv-adresse',c.adresse); set('dv-id-num',c.siret||c.siren);
   if(c.siret)document.getElementById('dv-id-type').value='SIRET';
   else if(c.siren)document.getElementById('dv-id-type').value='SIREN';
+  // L'entité qui facture suit le client choisi (modifiable ensuite à la main).
+  const _owner=document.getElementById('dv-owner'); if(_owner)_owner.value=c.owner||'emrick';
 }
 
 // Sélection d'une formule : on pré-remplit le champ prix pour qu'il soit
@@ -5617,7 +5640,7 @@ function dvCreate() {
     data:{entreprise,tel:document.getElementById('dv-tel').value.trim(),email:document.getElementById('dv-email').value.trim(),
       adresse:document.getElementById('dv-adresse').value.trim(),idType:document.getElementById('dv-id-type').value,
       idNum:document.getElementById('dv-id-num').value.trim(),creation,abo,creationAmt,creationPerInstallment,aboAmt,extras,
-      owner:(c&&c.owner)||'emrick'}};
+      owner:(document.getElementById('dv-owner')&&document.getElementById('dv-owner').value)||(c&&c.owner)||'emrick'}};
   if(c){
     if(!c.devis)c.devis=[];c.devis.unshift(dv);clSave();clRenderDevis(c);
   } else {
