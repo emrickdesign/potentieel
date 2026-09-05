@@ -2911,6 +2911,19 @@
               <div id="dv-creation-preview" style="font-size:12px;color:var(--accent);margin-bottom:4px;font-weight:600"></div>
               <div id="dv-abo-preview" style="font-size:12px;color:var(--accent);margin-bottom:14px;font-weight:600"></div>
 
+              <!-- Prestations supplémentaires : lignes libres (description + prix).
+                   Elles s'additionnent au prix du site puis le total est étalé sur
+                   le même nombre de versements que la création (sélecteur ci-dessus). -->
+              <div style="border-top:1px solid var(--border);margin:2px 0 14px;padding-top:14px">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                  <label style="font-size:12px;color:var(--muted)">Prestations supplémentaires</label>
+                  <button type="button" onclick="dvAddExtraLine()" style="background:rgba(244,146,106,.12);border:1px solid rgba(244,146,106,.35);color:var(--accent);border-radius:7px;padding:5px 10px;font-size:12px;font-weight:700;cursor:pointer">+ Ajouter une ligne</button>
+                </div>
+                <div id="dv-extras-list"></div>
+                <div id="dv-extras-empty" style="font-size:11px;color:var(--muted);padding:2px 0 0">Aucune prestation extra. Ex : transmission du site, page supplémentaire, shooting photo…</div>
+                <div id="dv-extras-preview" style="font-size:12px;color:var(--accent);margin-top:8px;font-weight:600"></div>
+              </div>
+
               <!-- Note -->
               <p style="font-size:11px;color:var(--muted);margin:0 0 20px;background:rgba(255,255,255,.03);padding:10px;border-radius:8px">Si abonnement combiné : aucun prélèvement d'abonnement tant que la création n'est pas intégralement réglée (mois d'abonnement offerts).</p>
 
@@ -5446,7 +5459,8 @@ function dvOpenModal(clientId) {
   document.getElementById('dv-abo').value='';
   document.getElementById('dv-creation-prix').value='';
   const _aboPrix=document.getElementById('dv-abo-prix'); if(_aboPrix)_aboPrix.value='';
-  dvUpdateCreationPreview(); dvUpdateAboPreview();
+  const _extras=document.getElementById('dv-extras-list'); if(_extras)_extras.innerHTML='';
+  dvUpdateCreationPreview(); dvUpdateAboPreview(); dvUpdateExtrasPreview();
   if (fromClient) {
     // Depuis fiche client : bannière + champs auto, masquer le sélecteur
     const c = clData.find(x=>x.id===cid);
@@ -5517,6 +5531,55 @@ function dvUpdateCreationPreview() {
   }
   const per=raw/n;
   preview.textContent = n===1 ? ('Site : '+fmt(raw)+' en 1 fois') : ('Site : '+n+' × '+fmt(per)+' = '+fmt(raw));
+  dvUpdateExtrasPreview();
+}
+
+// ── Prestations supplémentaires (lignes libres) ────────────────────────
+// Petit échappement HTML : les descriptions sont saisies à la main et
+// réinjectées dans le HTML du devis (fenêtre d'impression).
+function dvEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function dvGetN(){ return {'1x':1,'2x':2,'3x':3,'4x':4}[document.getElementById('dv-creation').value]||1; }
+function dvCollectExtras(){
+  return Array.from(document.querySelectorAll('#dv-extras-list .dv-extra-row')).map(row=>{
+    const desc=(row.querySelector('.dv-extra-desc').value||'').trim();
+    const prix=parseFloat((row.querySelector('.dv-extra-prix').value||'').replace(',','.'));
+    return {desc, prix:(!isNaN(prix)&&prix>0)?prix:0};
+  }).filter(e=>e.desc||e.prix>0);
+}
+function dvAddExtraLine(desc, prix){
+  const list=document.getElementById('dv-extras-list'); if(!list)return;
+  const row=document.createElement('div');
+  row.className='dv-extra-row';
+  row.style.cssText='display:grid;grid-template-columns:1fr 108px 34px;gap:8px;margin-bottom:8px;align-items:center';
+  const inpStyle='background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:9px 10px;color:#fff;font-size:13px;outline:none;box-sizing:border-box;width:100%';
+  const descAttr = desc!=null ? dvEsc(desc) : '';
+  const prixAttr = (prix!=null && prix!=='') ? dvEsc(prix) : '';
+  row.innerHTML=
+    '<input class="dv-extra-desc" type="text" placeholder="Description (ex : Transmission du site)" value="'+descAttr+'" oninput="dvUpdateExtrasPreview()" style="'+inpStyle+'">'+
+    '<input class="dv-extra-prix" type="number" min="0" step="0.01" placeholder="€ total" value="'+prixAttr+'" oninput="dvUpdateExtrasPreview()" style="'+inpStyle+'">'+
+    '<button type="button" onclick="dvRemoveExtraLine(this)" title="Supprimer la ligne" style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:16px;line-height:1;cursor:pointer;height:36px">×</button>';
+  list.appendChild(row);
+  dvUpdateExtrasPreview();
+  const di=row.querySelector('.dv-extra-desc'); if(di)di.focus();
+}
+function dvRemoveExtraLine(btn){ const row=btn.closest('.dv-extra-row'); if(row)row.remove(); dvUpdateExtrasPreview(); }
+function dvUpdateExtrasPreview(){
+  const empty=document.getElementById('dv-extras-empty');
+  const nRows=document.querySelectorAll('#dv-extras-list .dv-extra-row').length;
+  if(empty)empty.style.display=nRows?'none':'block';
+  const preview=document.getElementById('dv-extras-preview'); if(!preview)return;
+  const fmt=v=>Number(v).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+  const extras=dvCollectExtras().reduce((s,e)=>s+e.prix,0);
+  if(!extras){ preview.textContent=''; return; }
+  const creation=document.getElementById('dv-creation').value;
+  const site=parseFloat((document.getElementById('dv-creation-prix').value||'').replace(',','.'))||0;
+  if(!creation){ preview.textContent='Prestations : '+fmt(extras)+' — choisis une formule de création pour définir l\'échéancier.'; return; }
+  const n=dvGetN();
+  const oneTime=site+extras;
+  const per=oneTime/n;
+  preview.textContent = n===1
+    ? ('Site + prestations : '+fmt(oneTime)+' en 1 fois')
+    : ('Site + prestations : '+n+' × '+fmt(per)+' = '+fmt(oneTime));
 }
 
 function dvCreate() {
@@ -5531,11 +5594,19 @@ function dvCreate() {
   const hasCustom=!!creation && !isNaN(customRaw) && customRaw>0;
   const creationAmt=hasCustom?customRaw:({'1x':990,'2x':990,'3x':990,'4x':990}[creation]||0);
   const creationPerInstallment=creation?(creationAmt/n):0;
-  const creationMap=creation?{[creation]: n===1?('Création site — '+fmt(creationPerInstallment)):('Création site — '+n+'×'+fmt(creationPerInstallment))}:{};
+  // Prestations supplémentaires : s'additionnent au site puis le total est
+  // étalé sur le même nombre de versements que la création.
+  const extras=dvCollectExtras();
+  const extrasTotal=extras.reduce((s,e)=>s+(parseFloat(e.prix)||0),0);
+  const oneTimeTotal=(creation?creationAmt:0)+extrasTotal;
+  const perAll=n>0?(oneTimeTotal/n):oneTimeTotal;
   const aboCustomRaw=parseFloat((document.getElementById('dv-abo-prix').value||'').replace(',','.'));
   const aboAmt=abo?((!isNaN(aboCustomRaw)&&aboCustomRaw>0)?aboCustomRaw:(parseFloat(abo)||0)):0;
   const parts=[];
-  if(creation)parts.push(creationMap[creation]);
+  if(creation||extras.length){
+    const lbl=extras.length?'Site + prestations':'Création site';
+    parts.push(n===1?(lbl+' — '+fmt(oneTimeTotal)):(lbl+' — '+n+'×'+fmt(perAll)));
+  }
   if(abo)parts.push('Abonnement '+fmt(aboAmt)+'/m');
   const totalTxt=parts.join(' + ')||'—';
   const cid=document.getElementById('dv-cl-select').value||clCurrentId;
@@ -5545,7 +5616,7 @@ function dvCreate() {
   const dv={id:'dv'+Date.now(),ref,date:new Date().toLocaleDateString('fr-FR'),statut:'envoyé',totalTxt,
     data:{entreprise,tel:document.getElementById('dv-tel').value.trim(),email:document.getElementById('dv-email').value.trim(),
       adresse:document.getElementById('dv-adresse').value.trim(),idType:document.getElementById('dv-id-type').value,
-      idNum:document.getElementById('dv-id-num').value.trim(),creation,abo,creationAmt,creationPerInstallment,aboAmt,
+      idNum:document.getElementById('dv-id-num').value.trim(),creation,abo,creationAmt,creationPerInstallment,aboAmt,extras,
       owner:(c&&c.owner)||'emrick'}};
   if(c){
     if(!c.devis)c.devis=[];c.devis.unshift(dv);clSave();clRenderDevis(c);
@@ -5611,9 +5682,20 @@ function dvQuoteHtml(dv, withPrintBtn) {
   const creationN=nMap[d.creation]||1;
   const creationPer=(d.creationPerInstallment!=null)?d.creationPerInstallment:({'1x':990,'2x':495,'3x':330,'4x':247.50}[d.creation]);
   const creationTotal=(d.creationAmt!=null)?d.creationAmt:(creationPer*creationN);
-  const cPrixVal=d.creation?(creationN===1?fmtP(creationPer):(creationN+' × '+fmtP(creationPer)+' = '+fmtP(creationTotal))):'';
-  const cDescVal=d.creation?(creationN===1
-    ?'Conception, développement et mise en ligne. Site multi-pages, responsive, SEO local, boutons d\'action (appel, WhatsApp), formulaire de contact. 1ère version présentée gratuitement avant tout engagement.'
+  // Prestations supplémentaires : additionnées au site puis étalées sur le même
+  // nombre de versements. Le détail de l'échéancier passe dans les conditions.
+  const extras=Array.isArray(d.extras)?d.extras.filter(e=>e&&(e.desc||Number(e.prix)>0)):[];
+  const extrasTotal=extras.reduce((s,e)=>s+(parseFloat(e.prix)||0),0);
+  const hasExtras=extras.length>0;
+  const oneTimeTotal=(d.creation?creationTotal:0)+extrasTotal;
+  const perInstallment=creationN>0?(oneTimeTotal/creationN):oneTimeTotal;
+  const cDescBase='Conception, développement et mise en ligne. Site multi-pages, responsive, SEO local, boutons d\'action (appel, WhatsApp), formulaire de contact. 1ère version présentée gratuitement avant tout engagement.';
+  // Avec extras, la case prix de chaque ligne montre le montant TOTAL de la ligne
+  // (site plein tarif + chaque prestation) et l'échéancier combiné est décrit
+  // dans les conditions de paiement.
+  const cPrixVal=d.creation?(hasExtras?fmtP(creationTotal):(creationN===1?fmtP(creationPer):(creationN+' × '+fmtP(creationPer)+' = '+fmtP(creationTotal)))):'';
+  const cDescVal=d.creation?((creationN===1||hasExtras)
+    ?cDescBase
     :('Idem — règlement en '+creationN+' versements de '+fmtP(creationPer)+' espacés de 30 jours.')):'';
   const cLblVal='Création de site web';
   const aLbl={'20':'Abonnement mensuel — Assistant Digital','49':'Abonnement mensuel — Gestion & Tranquillité'};
@@ -5623,21 +5705,34 @@ function dvQuoteHtml(dv, withPrintBtn) {
   const aboPrixTxt=d.abo?(fmtP(aboAmt)+'/mois'):'';
   let lignes='';
   if(d.creation)lignes+=`<tr><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0"><div style="font-weight:700;font-size:14px;color:#111;margin-bottom:4px">${cLblVal}</div><div style="font-size:12px;color:#777;line-height:1.6">${cDescVal}</div></td><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0;text-align:right;vertical-align:top;white-space:nowrap"><span style="font-size:16px;font-weight:800;color:#f4926a">${cPrixVal}</span></td></tr>`;
+  extras.forEach(e=>{
+    const p=parseFloat(e.prix)||0;
+    const eDesc=(e.desc||'').trim();
+    const titleHtml=eDesc?dvEsc(eDesc):'Prestation supplémentaire';
+    const noteHtml=(d.creation&&creationN>1)?`<div style="font-size:12px;color:#777;line-height:1.6">Prestation ponctuelle, réglée avec le site selon l'échéancier ci-dessous.</div>`:'';
+    lignes+=`<tr><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0"><div style="font-weight:700;font-size:14px;color:#111;margin-bottom:4px">${titleHtml}</div>${noteHtml}</td><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0;text-align:right;vertical-align:top;white-space:nowrap"><span style="font-size:16px;font-weight:800;color:#f4926a">${p>0?fmtP(p):'—'}</span></td></tr>`;
+  });
   if(d.abo)lignes+=`<tr><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0"><div style="font-weight:700;font-size:14px;color:#111;margin-bottom:4px">${aLbl[d.abo]}</div><div style="font-size:12px;color:#777;line-height:1.6">${aDesc[d.abo]||''}</div></td><td style="padding:14px 12px;border-bottom:1px solid #f0f0f0;text-align:right;vertical-align:top;white-space:nowrap"><span style="font-size:16px;font-weight:800;color:#f4926a">${aboPrixTxt}</span></td></tr>`;
   if(!lignes)lignes=`<tr><td colspan="2" style="padding:20px;color:#aaa;text-align:center;font-size:13px">Aucune prestation sélectionnée</td></tr>`;
   const idLine=d.idNum?`<br><span style="font-size:11px;color:#aaa">${d.idType||'SIRET'} : ${d.idNum}</span>`:'';
   const valid=new Date();valid.setDate(valid.getDate()+5);
   const validTxt=valid.toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
   const today=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
-  const totalCell=`${d.creation?cPrixVal:''}${d.creation&&d.abo?' + ':''}${d.abo?aboPrixTxt:''}`;
+  const oneTimeParts=[];
+  if(d.creation||hasExtras)oneTimeParts.push(fmtP(oneTimeTotal));
+  if(d.abo)oneTimeParts.push(aboPrixTxt);
+  const totalCell=oneTimeParts.join(' + ');
 
   // Conditions de paiement
   let cond='';
-  if(d.creation){
+  if(d.creation||hasExtras){
     const n=creationN;
-    const amt=fmtP(creationPer).replace(' €','');
-    if(n===1)cond+=`<div class="cond-item"><span class="cond-dot"></span>Création du site : <strong>${amt} € à la validation de ce devis.</strong> La 1ère version du site est présentée gratuitement avant tout paiement.</div>`;
-    else cond+=`<div class="cond-item"><span class="cond-dot"></span>Création du site : <strong>${n} versements de ${amt} €</strong>, espacés de 30 jours. Le 1er versement est déclenché à la validation de ce devis. La 1ère version du site est présentée gratuitement avant tout paiement.</div>`;
+    // Échéancier calculé sur le total (site + prestations supplémentaires).
+    const amt=fmtP(perInstallment).replace(' €','');
+    const label=d.creation?(hasExtras?'Création du site et prestations':'Création du site'):'Prestations';
+    const freeNote=d.creation?' La 1ère version du site est présentée gratuitement avant tout paiement.':'';
+    if(n===1)cond+=`<div class="cond-item"><span class="cond-dot"></span>${label} : <strong>${fmtP(oneTimeTotal)} à la validation de ce devis.</strong>${freeNote}</div>`;
+    else cond+=`<div class="cond-item"><span class="cond-dot"></span>${label} : <strong>${n} versements de ${amt} €</strong>, espacés de 30 jours. Le 1er versement est déclenché à la validation de ce devis.${freeNote}</div>`;
   }
   if(d.abo){
     const aboTxt=d.creation
@@ -5646,7 +5741,7 @@ function dvQuoteHtml(dv, withPrintBtn) {
     cond+=`<div class="cond-item"><span class="cond-dot"></span>${aboTxt}</div>`;
     cond+=`<div class="cond-item"><span class="cond-dot"></span><strong>Aucun engagement de durée.</strong> L'abonnement est sans durée minimale : le client peut l'arrêter quand il le souhaite, même après plusieurs années, par simple message, sans préavis ni frais de résiliation. Seul le mois en cours reste dû, aucun prélèvement n'intervient ensuite.</div>`;
   }
-  if(d.creation||d.abo){
+  if(d.creation||d.abo||hasExtras){
     cond+=`<div class="cond-item"><span class="cond-dot"></span><strong>Le client reste propriétaire de son site et de son nom de domaine.</strong> En cas d'arrêt${d.abo?" de l'abonnement":' de la collaboration'}, Potentieel remet au client l'intégralité des fichiers de son site et lui transfère la propriété de son nom de domaine, sans frais. Le site peut ainsi être hébergé ailleurs librement.</div>`;
   }
   cond+=`<div class="cond-item"><span class="cond-dot" style="background:#f4926a"></span>Devis valable <strong>5 jours</strong> à compter de la date d'émission (jusqu'au ${validTxt}).</div>`;
