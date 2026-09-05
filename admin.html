@@ -5650,7 +5650,12 @@ function dvFormState(){
 
 // Génère la liste des lignes de conditions par défaut à partir d'un devis (ou
 // d'un état de formulaire). Retourne [{text:htmlInterne, dot:couleurPuce?}].
-function dvConditionLines(d){
+// opts.panel=true → mode panneau du formulaire : on affiche TOUJOURS les lignes
+// de base (paiement + propriété + validité + TVA) même si le formulaire est
+// encore vide, pour que l'utilisateur puisse toutes les éditer/supprimer. Le
+// rendu automatique du devis (panel=false) garde la logique conditionnelle.
+function dvConditionLines(d, opts){
+  const panel=!!(opts&&opts.panel);
   const nMap={'1x':1,'2x':2,'3x':3,'4x':4};
   const fmtP=v=>Number(v).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
   const creationN=nMap[d.creation]||1;
@@ -5666,6 +5671,7 @@ function dvConditionLines(d){
   const valid=new Date();valid.setDate(valid.getDate()+5);
   const validTxt=valid.toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
   const lines=[];
+  // 1) Paiement / échéancier
   if(d.creation||hasExtras){
     const n=creationN;
     const amt=fmtP(perInstallment).replace(' €','');
@@ -5674,7 +5680,11 @@ function dvConditionLines(d){
     lines.push({text: n===1
       ? `${label} : <strong>${fmtP(oneTimeTotal)} à la validation de ce devis.</strong>${freeNote}`
       : `${label} : <strong>${n} versements de ${amt} €</strong>, espacés de 30 jours. Le 1er versement est déclenché à la validation de ce devis.${freeNote}`});
+  } else if(panel){
+    // Panneau sans montant saisi : clause générique éditable.
+    lines.push({text:`Création du site : <strong>réglée à la validation de ce devis.</strong> La 1ère version du site est présentée gratuitement avant tout paiement.`});
   }
+  // 2) Abonnement (uniquement si un abonnement est choisi)
   if(d.abo){
     const aboTxt=d.creation
       ?`Aucun prélèvement d'abonnement pendant la phase de création. L'abonnement de <strong>${aboPrixTxt}</strong> démarre automatiquement le 7 du mois suivant le dernier versement de création. <em>Les mois de création sont offerts.</em>`
@@ -5682,9 +5692,11 @@ function dvConditionLines(d){
     lines.push({text:aboTxt});
     lines.push({text:`<strong>Aucun engagement de durée.</strong> L'abonnement est sans durée minimale : le client peut l'arrêter quand il le souhaite, même après plusieurs années, par simple message, sans préavis ni frais de résiliation. Seul le mois en cours reste dû, aucun prélèvement n'intervient ensuite.`});
   }
-  if(d.creation||d.abo||hasExtras){
+  // 3) Propriété du site (toujours dans le panneau ; sinon si prestation choisie)
+  if(panel||d.creation||d.abo||hasExtras){
     lines.push({text:`<strong>Le client reste propriétaire de son site et de son nom de domaine.</strong> En cas d'arrêt${d.abo?" de l'abonnement":' de la collaboration'}, Potentieel remet au client l'intégralité des fichiers de son site et lui transfère la propriété de son nom de domaine, sans frais. Le site peut ainsi être hébergé ailleurs librement.`});
   }
+  // 4) Validité + 5) TVA (toujours)
   lines.push({text:`Devis valable <strong>5 jours</strong> à compter de la date d'émission (jusqu'au ${validTxt}).`, dot:'#f4926a'});
   lines.push({text:`TVA non applicable — art. 293B du CGI (micro-entreprise). Pas de TVA à récupérer.`, dot:'#999'});
   return lines;
@@ -5706,7 +5718,7 @@ function dvRenderConditions(force){
   if(!list||!panel||panel.style.display==='none')return; // panneau fermé
   if(dvCondDirty && !force)return;                        // édité → on n'écrase pas
   list.innerHTML='';
-  dvConditionLines(dvFormState()).forEach(l=>dvAddCondLine(l.text, l.dot, l.on!==false));
+  dvConditionLines(dvFormState(), {panel:true}).forEach(l=>dvAddCondLine(l.text, l.dot, l.on!==false));
 }
 // text===undefined → ligne ajoutée par l'utilisateur (vide, éditable, cochée).
 function dvAddCondLine(text, dot, checked){
