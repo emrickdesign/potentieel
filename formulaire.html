@@ -372,25 +372,17 @@ function onEntrepriseInput() {
 
 async function runCompanySearch() {
   const nom = document.getElementById('f-entreprise').value.trim();
-  const ville = document.getElementById('f-ville').value.trim();
   if (nom.length < 3) { hideAc(); return; }
   showAc('<div class="ac-hint">Recherche…</div>');
   try {
     if (acCtrl) acCtrl.abort();
     acCtrl = new AbortController();
-    const q = encodeURIComponent(ville ? nom + ' ' + ville : nom);
+    const q = encodeURIComponent(nom);
     const url = 'https://recherche-entreprises.api.gouv.fr/search?q=' + q + '&page=1&per_page=6';
     const res = await fetch(url, { signal: acCtrl.signal });
     if (!res.ok) throw new Error('http ' + res.status);
     const data = await res.json();
-    let results = Array.isArray(data.results) ? data.results : [];
-    // Si une ville est saisie, on remonte en priorité les établissements de cette ville.
-    if (ville) {
-      const v = ville.toLowerCase();
-      results.sort((a, b) =>
-        ((b.siege && b.siege.libelle_commune || '').toLowerCase().includes(v) ? 1 : 0)
-        - ((a.siege && a.siege.libelle_commune || '').toLowerCase().includes(v) ? 1 : 0));
-    }
+    const results = Array.isArray(data.results) ? data.results : [];
     acResults = results;
     renderAc(results);
   } catch (e) {
