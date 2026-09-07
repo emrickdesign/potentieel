@@ -244,7 +244,7 @@
         <p class="field-hint" id="entreprise-hint" hidden></p>
         <label class="no-company"><input type="checkbox" id="f-no-company" onchange="toggleNoCompany()"> Je n'ai pas d'entreprise</label>
       </div>
-      <div class="field">
+      <div class="field" id="prenom-field" style="display:none">
         <label>Votre <span>Prénom</span></label>
         <input id="f-prenom" type="text" placeholder="ex : Thomas" autocomplete="given-name" oninput="trackField('prenom')">
       </div>
@@ -491,6 +491,8 @@ function toggleNoCompany() {
   const on = document.getElementById('f-no-company').checked;
   const inp = document.getElementById('f-entreprise');
   inp.disabled = on;
+  // Le prénom n'est demandé que sans entreprise (sinon on a le dirigeant via le registre).
+  document.getElementById('prenom-field').style.display = on ? 'block' : 'none';
   if (on) {
     inp.value = '';
     document.getElementById('f-siren').value = '';
@@ -499,8 +501,10 @@ function toggleNoCompany() {
     document.getElementById('entreprise-hint').hidden = true;
     hideAc();
     inp.placeholder = 'Sans entreprise';
+    document.getElementById('f-prenom').focus();
   } else {
     inp.placeholder = 'Commencez à taper : ex Martin BTP';
+    document.getElementById('f-prenom').value = '';
   }
   syncFields();
   updateVisit();
@@ -573,8 +577,12 @@ async function submitForm() {
   const dirigeant = document.getElementById('f-dirigeant').value.trim();
   const naf = document.getElementById('f-naf').value.trim();
 
-  if (!prenom) { document.getElementById('f-prenom').focus(); return; }
   if (!telephone) { document.getElementById('f-telephone').focus(); return; }
+  if (noCompany) {
+    if (!prenom) { document.getElementById('f-prenom').focus(); return; }
+  } else if (!entreprise) {
+    document.getElementById('f-entreprise').focus(); return;
+  }
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { document.getElementById('f-email').focus(); return; }
 
   clickedSubmit = true;

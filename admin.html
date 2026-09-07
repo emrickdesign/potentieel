@@ -7965,7 +7965,7 @@ async function ldInit() {
       }
       ldData.unshift({
         id: fid,
-        nom: s.prenom || '',
+        nom: s.prenom || s.dirigeant || s.entreprise || '',
         tel: s.telephone || '',
         email: s.email || '',
         metier: s.domaine || '',
