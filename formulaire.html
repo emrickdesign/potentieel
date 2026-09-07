@@ -111,6 +111,7 @@
 
     .field {
       margin-bottom: 18px;
+      position: relative;
     }
     .field label {
       display: block;
@@ -140,6 +141,37 @@
     .field input::placeholder { color: #bbb; }
     .field input:hover { border-color: #f4b894; }
     .field input:focus { border-color: #f4926a; box-shadow: 0 0 0 3px rgba(244,146,106,.15); }
+
+    /* Recherche d'entreprise en direct (liste de suggestions sous le champ) */
+    .ac-box {
+      position: absolute;
+      left: 0; right: 0;
+      top: calc(100% + 4px);
+      background: #fff;
+      border: 1.5px solid #f4ddd3;
+      border-radius: 12px;
+      box-shadow: 0 14px 34px rgba(20,10,5,.12);
+      z-index: 60;
+      max-height: 280px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .ac-item {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: none;
+      border: none;
+      border-bottom: 1px solid #f6ece6;
+      padding: 11px 14px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .ac-item:last-child { border-bottom: none; }
+    .ac-item:hover, .ac-item:focus { background: #fdf2ec; }
+    .ac-name { display: block; font-size: 13.5px; font-weight: 700; color: #222; }
+    .ac-loc { display: block; font-size: 12px; color: #999; margin-top: 2px; }
+    .ac-hint, .ac-empty { padding: 12px 14px; font-size: 12.5px; color: #999; }
 
     .btn-submit {
       width: 100%;
@@ -203,9 +235,15 @@
         <label>Votre <span>Prénom</span></label>
         <input id="f-prenom" type="text" placeholder="ex : Thomas" autocomplete="given-name" oninput="trackField('prenom')">
       </div>
-      <div class="field">
+      <div class="field" id="entreprise-field">
         <label>Nom de votre <span>Entreprise</span></label>
-        <input id="f-entreprise" type="text" placeholder="ex : Martin BTP" autocomplete="organization" oninput="trackField('entreprise')">
+        <input id="f-entreprise" type="text" placeholder="ex : Martin BTP" autocomplete="off" oninput="onEntrepriseInput()">
+        <input type="hidden" id="f-siren">
+        <div class="ac-box" id="ac-box" hidden></div>
+      </div>
+      <div class="field">
+        <label>Votre <span>Ville</span></label>
+        <input id="f-ville" type="text" placeholder="ex : Melun" autocomplete="address-level2" oninput="trackField('ville')">
       </div>
       <div class="field">
         <label>Domaine d'activité</label>
@@ -214,6 +252,10 @@
       <div class="field">
         <label>Numéro de <span>Téléphone</span></label>
         <input id="f-telephone" type="tel" placeholder="ex : 06 12 34 56 78" autocomplete="tel" oninput="trackField('telephone')">
+      </div>
+      <div class="field">
+        <label>Votre <span>Email</span></label>
+        <input id="f-email" type="email" placeholder="ex : thomas@martinbtp.fr" autocomplete="email" inputmode="email" oninput="trackField('email')">
       </div>
       <button class="btn-submit" id="submit-btn" onclick="submitForm()">JE VEUX MA V1 GRATUITE</button>
       <p class="legal">Aucune carte bancaire demandée. Vos données restent confidentielles.</p>
@@ -276,7 +318,7 @@ async function trackVisit() {
 
 // Tracker remplissage champ
 let formStartSent = false;
-const FORM_FIELDS = ['prenom', 'entreprise', 'domaine', 'telephone'];
+const FORM_FIELDS = ['prenom', 'entreprise', 'ville', 'domaine', 'telephone', 'email'];
 
 // Relit l'état réel des champs directement dans le DOM.
 // Passer par le DOM et pas seulement par l'évènement `input` est indispensable :
@@ -307,6 +349,112 @@ function trackField() {
 // Champs déjà remplis à l'arrivée (autofill, retour arrière, bfcache).
 window.addEventListener('pageshow', syncFields);
 
+// ---------------------------------------------------------------------------
+// Recherche d'entreprise EN DIRECT (autocomplete) via l'API publique et
+// gratuite recherche-entreprises.api.gouv.fr (base Sirene/INSEE).
+// Aucune clé, CORS ouvert : l'appel part directement du navigateur.
+// Se déclenche À LA FRAPPE dans le champ "Entreprise" (dès ~3 caractères) ;
+// si la ville est renseignée, elle fait remonter les bons établissements.
+// Si le visiteur ne choisit aucune suggestion, sa saisie libre est conservée.
+// ---------------------------------------------------------------------------
+let acTimer = null;
+let acCtrl = null;
+let acResults = [];
+
+function onEntrepriseInput() {
+  // Saisie manuelle => on oublie l'entreprise éventuellement sélectionnée avant.
+  document.getElementById('f-siren').value = '';
+  trackField();
+  clearTimeout(acTimer);
+  const q = document.getElementById('f-entreprise').value.trim();
+  if (q.length < 3) { hideAc(); return; }
+  acTimer = setTimeout(runCompanySearch, 320); // léger debounce pour ne pas spammer l'API
+}
+
+async function runCompanySearch() {
+  const nom = document.getElementById('f-entreprise').value.trim();
+  const ville = document.getElementById('f-ville').value.trim();
+  if (nom.length < 3) { hideAc(); return; }
+  showAc('<div class="ac-hint">Recherche…</div>');
+  try {
+    if (acCtrl) acCtrl.abort();
+    acCtrl = new AbortController();
+    const q = encodeURIComponent(ville ? nom + ' ' + ville : nom);
+    const url = 'https://recherche-entreprises.api.gouv.fr/search?q=' + q + '&page=1&per_page=6';
+    const res = await fetch(url, { signal: acCtrl.signal });
+    if (!res.ok) throw new Error('http ' + res.status);
+    const data = await res.json();
+    let results = Array.isArray(data.results) ? data.results : [];
+    // Si une ville est saisie, on remonte en priorité les établissements de cette ville.
+    if (ville) {
+      const v = ville.toLowerCase();
+      results.sort((a, b) =>
+        ((b.siege && b.siege.libelle_commune || '').toLowerCase().includes(v) ? 1 : 0)
+        - ((a.siege && a.siege.libelle_commune || '').toLowerCase().includes(v) ? 1 : 0));
+    }
+    acResults = results;
+    renderAc(results);
+  } catch (e) {
+    if (e && e.name === 'AbortError') return;
+    hideAc(); // souci réseau : on n'embête pas le visiteur, la saisie libre suffit.
+  }
+}
+
+function renderAc(results) {
+  if (!results.length) {
+    showAc('<div class="ac-empty">Aucune entreprise trouvée — gardez le nom que vous avez saisi 👍</div>');
+    return;
+  }
+  const html = results.map((r, i) => {
+    const nom = r.nom_complet || r.nom_raison_sociale || '';
+    const loc = [r.siege && r.siege.code_postal, r.siege && r.siege.libelle_commune].filter(Boolean).join(' ');
+    return '<button type="button" class="ac-item" data-i="' + i + '">'
+      + '<span class="ac-name">' + esc(nom) + '</span>'
+      + (loc ? '<span class="ac-loc">' + esc(loc) + '</span>' : '')
+      + '</button>';
+  }).join('');
+  showAc(html);
+  document.querySelectorAll('#ac-box .ac-item').forEach((el) => {
+    // mousedown + preventDefault : on capte le choix avant que le blur du champ
+    // ne referme la liste (piège classique des autocompletes).
+    el.addEventListener('mousedown', (ev) => {
+      ev.preventDefault();
+      pickCompany(acResults[+el.dataset.i]);
+    });
+  });
+}
+
+function pickCompany(r) {
+  if (!r) return;
+  const nom = r.nom_complet || r.nom_raison_sociale || '';
+  if (nom) document.getElementById('f-entreprise').value = nom;
+  document.getElementById('f-siren').value = r.siren || '';
+  const vEl = document.getElementById('f-ville');
+  if (!vEl.value.trim() && r.siege && r.siege.libelle_commune) vEl.value = r.siege.libelle_commune;
+  hideAc();
+  syncFields();
+  updateVisit();
+}
+
+function showAc(html) {
+  const box = document.getElementById('ac-box');
+  box.innerHTML = html;
+  box.hidden = false;
+}
+function hideAc() {
+  const box = document.getElementById('ac-box');
+  box.hidden = true;
+  box.innerHTML = '';
+}
+function esc(s) {
+  return (s || '').replace(/[&<>"']/g, (c) =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+// Referme la liste si on clique en dehors du champ entreprise.
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('#entreprise-field')) hideAc();
+});
+
 // Mettre à jour la visite en cours
 async function updateVisit() {
   if (!visitId) return;
@@ -324,8 +472,13 @@ async function updateVisit() {
 // Les données de correspondance avancée sont hachées en SHA-256 par le pixel
 // lui-même avant tout envoi : rien ne quitte le navigateur en clair.
 function ptlNormText(s) {
-  return (s || '').toString().trim().toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  s = (s || '').toString().trim().toLowerCase().normalize('NFD');
+  var out = '';
+  for (var i = 0; i < s.length; i++) {
+    var c = s.charCodeAt(i);
+    if (c < 768 || c > 879) out += s[i]; // 768..879 = marques diacritiques combinantes
+  }
+  return out;
 }
 function ptlNormPhone(p) {
   var d = (p || '').replace(/\D/g, '');
@@ -335,13 +488,22 @@ function ptlNormPhone(p) {
   if (d.length === 9) return '33' + d;
   return d;
 }
-function prepareLeadEvent(prenom, telephone) {
+function ptlNormEmail(e) {
+  return (e || '').toString().trim().toLowerCase() || null;
+}
+function ptlNormCity(c) {
+  // Meta attend la ville en minuscules, sans accents, espaces ni ponctuation.
+  return ptlNormText(c).replace(/[^a-z]/g, '') || null;
+}
+function prepareLeadEvent(prenom, telephone, email, ville) {
   var payload = {
     // eventID : clé de déduplication. Indispensable si l'API Conversions
     // (envoi serveur) est ajoutée plus tard — Meta ne comptera qu'un lead.
     eventID: 'lead_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10),
     fn: ptlNormText(prenom) || null,
     ph: ptlNormPhone(telephone) || null,
+    em: ptlNormEmail(email),
+    ct: ptlNormCity(ville),
     external_id: (typeof ptlExternalId === 'function' ? ptlExternalId() : null),
     source: 'formulaire_site_internet'
   };
@@ -353,11 +515,15 @@ async function submitForm() {
   syncFields(); // compte des champs fiable, même si rien n'a transité par `input`
   const prenom = document.getElementById('f-prenom').value.trim();
   const entreprise = document.getElementById('f-entreprise').value.trim();
+  const ville = document.getElementById('f-ville').value.trim();
   const domaine = document.getElementById('f-domaine').value.trim();
   const telephone = document.getElementById('f-telephone').value.trim();
+  const email = document.getElementById('f-email').value.trim();
+  const siren = document.getElementById('f-siren').value.trim();
 
   if (!prenom) { document.getElementById('f-prenom').focus(); return; }
   if (!telephone) { document.getElementById('f-telephone').focus(); return; }
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { document.getElementById('f-email').focus(); return; }
 
   clickedSubmit = true;
   const btn = document.getElementById('submit-btn');
@@ -366,6 +532,9 @@ async function submitForm() {
 
   const { error } = await sb.from('form_submissions').insert({
     prenom, entreprise, domaine, telephone,
+    ville: ville || null,
+    email: email || null,
+    siren: siren || null,
     fields_filled: filledFields.size,
     source: _qp.get('src') || 'formulaire',
     campagne: tracking.campagne,
@@ -392,7 +561,7 @@ async function submitForm() {
   // Dépose les données de l'évènement "Lead" pour /merci, puis redirige.
   // Firing sur la page de remerciement (et pas ici) : aucune course entre
   // la requête du pixel et la navigation, l'évènement part toujours en entier.
-  prepareLeadEvent(prenom, telephone);
+  prepareLeadEvent(prenom, telephone, email, ville);
   window.location.href = '/merci';
 }
 

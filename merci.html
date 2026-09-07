@@ -40,6 +40,8 @@
   if (_lead) {
     if (_lead.ph) _ptlAm.ph = _lead.ph;                     // téléphone normalisé 33XXXXXXXXX
     if (_lead.fn) _ptlAm.fn = _lead.fn;                     // prénom normalisé
+    if (_lead.em) _ptlAm.em = _lead.em;                     // email normalisé
+    if (_lead.ct) _ptlAm.ct = _lead.ct;                     // ville normalisée
     if (_lead.external_id) _ptlAm.external_id = _lead.external_id;
   }
   if (!_ptlAm.external_id) {
