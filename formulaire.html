@@ -173,6 +173,8 @@
     .ac-loc { display: block; font-size: 12px; color: #999; margin-top: 2px; }
     .ac-hint, .ac-empty { padding: 12px 14px; font-size: 12.5px; color: #999; }
     .field-hint { margin-top: 8px; font-size: 12.5px; font-weight: 600; color: #2e9e6b; line-height: 1.4; }
+    .no-company { display: flex; align-items: center; gap: 7px; margin-top: 10px; font-size: 13px; font-weight: 500; color: #888; cursor: pointer; }
+    .no-company input { width: auto; border: none; padding: 0; box-shadow: none; accent-color: #f4926a; }
 
     .btn-submit {
       width: 100%;
@@ -240,18 +242,11 @@
         <input type="hidden" id="f-naf">
         <div class="ac-box" id="ac-box" hidden></div>
         <p class="field-hint" id="entreprise-hint" hidden></p>
+        <label class="no-company"><input type="checkbox" id="f-no-company" onchange="toggleNoCompany()"> Je n'ai pas d'entreprise</label>
       </div>
       <div class="field">
         <label>Votre <span>Prénom</span></label>
         <input id="f-prenom" type="text" placeholder="ex : Thomas" autocomplete="given-name" oninput="trackField('prenom')">
-      </div>
-      <div class="field">
-        <label>Votre <span>Ville</span></label>
-        <input id="f-ville" type="text" placeholder="ex : Melun" autocomplete="address-level2" oninput="trackField('ville')">
-      </div>
-      <div class="field">
-        <label>Domaine d'activité</label>
-        <input id="f-domaine" type="text" placeholder="ex : travaux, sport, événementiel..." oninput="trackField('domaine')">
       </div>
       <div class="field">
         <label>Numéro de <span>Téléphone</span></label>
@@ -322,7 +317,7 @@ async function trackVisit() {
 
 // Tracker remplissage champ
 let formStartSent = false;
-const FORM_FIELDS = ['prenom', 'entreprise', 'ville', 'domaine', 'telephone', 'email'];
+const FORM_FIELDS = ['entreprise', 'prenom', 'telephone', 'email'];
 
 // Relit l'état réel des champs directement dans le DOM.
 // Passer par le DOM et pas seulement par l'évènement `input` est indispensable :
@@ -428,32 +423,6 @@ function renderAc(results) {
   });
 }
 
-// Grandes categories NAF (lettre de section -> libelle lisible) pour pre-remplir
-// le domaine d'activite a partir du code officiel renvoye par l'API.
-const NAF_SECTIONS = {
-  "A": "Agriculture, sylviculture et pêche",
-  "B": "Industries extractives",
-  "C": "Industrie manufacturière",
-  "D": "Production et distribution d'électricité et de gaz",
-  "E": "Eau, assainissement, gestion des déchets",
-  "F": "Construction",
-  "G": "Commerce, réparation d'automobiles et de motocycles",
-  "H": "Transports et entreposage",
-  "I": "Hébergement et restauration",
-  "J": "Information et communication",
-  "K": "Activités financières et d'assurance",
-  "L": "Activités immobilières",
-  "M": "Activités spécialisées, scientifiques et techniques",
-  "N": "Services administratifs et de soutien",
-  "O": "Administration publique",
-  "P": "Enseignement",
-  "Q": "Santé humaine et action sociale",
-  "R": "Arts, spectacles et activités récréatives",
-  "S": "Autres activités de services",
-  "T": "Activités des ménages en tant qu'employeurs",
-  "U": "Activités extra-territoriales"
-};
-
 function titleCase(str) {
   return (str || '').toLowerCase().split(' ').map(function (w) {
     return w.split('-').map(function (x) {
@@ -492,22 +461,13 @@ function pickCompany(r) {
   document.getElementById('f-siren').value = r.siren || '';
   document.getElementById('f-naf').value = r.activite_principale || '';
 
-  // Ville depuis le siège (si le champ est vide)
-  const vEl = document.getElementById('f-ville');
-  if (!vEl.value.trim() && r.siege && r.siege.libelle_commune) vEl.value = r.siege.libelle_commune;
-
-  // Domaine d'activité : grande catégorie NAF (si le champ est vide) — éditable ensuite
-  const secLabel = NAF_SECTIONS[r.section_activite_principale];
-  const dEl = document.getElementById('f-domaine');
-  if (!dEl.value.trim() && secLabel) dEl.value = secLabel;
-
-  // Dirigeant : capturé en silence pour l'agence (non affiché au prospect, non imposé)
+  // Dirigeant : capturé en silence pour l'agence (non affiché au prospect)
   const dir = pickMainDirigeant(r.dirigeants);
   document.getElementById('f-dirigeant').value = dir ? dir.full : '';
 
   // Petit repère rassurant pour le visiteur
   const hint = document.getElementById('entreprise-hint');
-  hint.textContent = '✓ Entreprise reconnue' + (secLabel ? ' — ' + secLabel : '');
+  hint.textContent = '✓ Entreprise reconnue';
   hint.hidden = false;
 
   hideAc();
@@ -533,6 +493,26 @@ function esc(s) {
 document.addEventListener('click', (e) => {
   if (!e.target.closest('#entreprise-field')) hideAc();
 });
+
+// Option "Je n'ai pas d'entreprise" : desactive la recherche et vide les infos liees.
+function toggleNoCompany() {
+  const on = document.getElementById('f-no-company').checked;
+  const inp = document.getElementById('f-entreprise');
+  inp.disabled = on;
+  if (on) {
+    inp.value = '';
+    document.getElementById('f-siren').value = '';
+    document.getElementById('f-dirigeant').value = '';
+    document.getElementById('f-naf').value = '';
+    document.getElementById('entreprise-hint').hidden = true;
+    hideAc();
+    inp.placeholder = 'Sans entreprise';
+  } else {
+    inp.placeholder = 'Commencez à taper : ex Martin BTP';
+  }
+  syncFields();
+  updateVisit();
+}
 
 // Mettre à jour la visite en cours
 async function updateVisit() {
@@ -592,10 +572,9 @@ function prepareLeadEvent(prenom, telephone, email, ville) {
 // Soumettre le formulaire
 async function submitForm() {
   syncFields(); // compte des champs fiable, même si rien n'a transité par `input`
+  const noCompany = document.getElementById('f-no-company').checked;
   const prenom = document.getElementById('f-prenom').value.trim();
-  const entreprise = document.getElementById('f-entreprise').value.trim();
-  const ville = document.getElementById('f-ville').value.trim();
-  const domaine = document.getElementById('f-domaine').value.trim();
+  const entreprise = noCompany ? '' : document.getElementById('f-entreprise').value.trim();
   const telephone = document.getElementById('f-telephone').value.trim();
   const email = document.getElementById('f-email').value.trim();
   const siren = document.getElementById('f-siren').value.trim();
@@ -612,12 +591,13 @@ async function submitForm() {
   btn.textContent = 'Envoi en cours...';
 
   const { error } = await sb.from('form_submissions').insert({
-    prenom, entreprise, domaine, telephone,
-    ville: ville || null,
+    prenom, telephone,
+    entreprise: entreprise || null,
     email: email || null,
     siren: siren || null,
     dirigeant: dirigeant || null,
     naf: naf || null,
+    sans_entreprise: noCompany,
     fields_filled: filledFields.size,
     source: _qp.get('src') || 'formulaire',
     campagne: tracking.campagne,
@@ -644,7 +624,7 @@ async function submitForm() {
   // Dépose les données de l'évènement "Lead" pour /merci, puis redirige.
   // Firing sur la page de remerciement (et pas ici) : aucune course entre
   // la requête du pixel et la navigation, l'évènement part toujours en entier.
-  prepareLeadEvent(prenom, telephone, email, ville);
+  prepareLeadEvent(prenom, telephone, email, '');
   window.location.href = '/merci';
 }
 
