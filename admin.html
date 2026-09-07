@@ -6268,7 +6268,7 @@ function faCreateAbo(){
   const periode=`Du ${fmt(start)} au ${fmt(end)}`;
   const allFa=clData.flatMap(x=>x.factures||[]);
   const ref='FA-'+String(now.getMonth()+1).padStart(2,'0')+'-'+now.getFullYear()+'-'+String(allFa.length+1).padStart(3,'0');
-  const fa={id:'fa'+Date.now(),ref,date:now.toLocaleDateString('fr-FR'),echeance:fmt(end),statut:'payee',
+  const fa={id:'fa'+Date.now(),ref,date:now.toLocaleDateString('fr-FR'),echeance:fmt(start),statut:'payee',
     totalTxt:aPrix[aboVal],montantNum:parseInt(aboVal),
     data:{entreprise:c.nom||'',email:c.email||'',tel:c.tel||'',adresse:c.adresse||'',
       idType:c.siret?'SIRET':c.siren?'SIREN':'',idNum:c.siret||c.siren||'',
