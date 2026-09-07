@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Connexion — Potentieel</title>
+  <title>Nouveau mot de passe — Potentieel</title>
+  <meta name="robots" content="noindex, nofollow">
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
@@ -44,6 +45,7 @@
     .auth-err { color: #c8433f; font-size: 12px; margin-top: 10px; display: none; }
     .auth-footer { margin-top: 24px; text-align: center; font-size: 13px; color: var(--gray); }
     .auth-footer a { color: var(--orange); text-decoration: none; }
+    .auth-state { color: var(--gray); font-size: 13px; text-align: center; }
   </style>
 </head>
 <body>
@@ -61,28 +63,28 @@
       </a>
     </div>
 
-    <h2>Se connecter</h2>
-    <p class="auth-sub">Accédez à votre espace personnel.</p>
+    <h2>Nouveau mot de passe</h2>
+    <p class="auth-sub">Choisissez un nouveau mot de passe pour votre compte.</p>
 
-    <form id="loginForm" onsubmit="handleLogin(event)">
+    <!-- Chargement / vérification du lien -->
+    <p class="auth-state" id="stateMsg">Vérification du lien…</p>
+
+    <!-- Formulaire (affiché seulement si le lien de réinitialisation est valide) -->
+    <form id="resetForm" onsubmit="handleReset(event)" style="display:none">
       <div class="form-group">
-        <label for="loginEmail">Adresse email</label>
-        <input type="email" id="loginEmail" placeholder="vous@exemple.fr" required autocomplete="email">
+        <label for="pwd1">Nouveau mot de passe</label>
+        <input type="password" id="pwd1" placeholder="••••••••" required autocomplete="new-password" minlength="6">
       </div>
       <div class="form-group">
-        <label for="loginPwd">Mot de passe</label>
-        <input type="password" id="loginPwd" placeholder="••••••••" required autocomplete="current-password">
+        <label for="pwd2">Confirmez le mot de passe</label>
+        <input type="password" id="pwd2" placeholder="••••••••" required autocomplete="new-password" minlength="6">
       </div>
-      <button type="submit" class="btn-login" id="loginBtn">Se connecter →</button>
-      <div class="auth-err" id="loginErr"></div>
+      <button type="submit" class="btn-login" id="resetBtn">Enregistrer →</button>
+      <div class="auth-err" id="resetErr"></div>
     </form>
 
-    <p style="text-align:center;margin-top:16px">
-      <a href="#" id="forgotLink" onclick="handleForgot(event)" style="color:var(--gray);font-size:12px;text-decoration:underline">Mot de passe oublié ?</a>
-    </p>
-
     <p class="auth-footer">
-      Pas encore client ? <a href="contact.html">Prendre rendez-vous</a>
+      <a href="auth.html">← Retour à la connexion</a>
     </p>
   </div>
 </div>
@@ -90,70 +92,68 @@
 <script>
 const SUPABASE_URL = 'https://alpzagoprkpzirgtrdup.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFscHphZ29wcmtwemlyZ3RyZHVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3OTg2MDEsImV4cCI6MjA5MjM3NDYwMX0.R7R6esDFce1W4k_wK-aBtAG20oUtK2SmSNCVKENS91g';
-const ADMIN_EMAILS = ['emrick.perilliat2006@gmail.com', 'eloisecld73@gmail.com'];
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// Si déjà connecté, rediriger directement
-sb.auth.getSession().then(({ data: { session } }) => {
-  if (session?.user) {
-    redirect(session.user.email);
-  }
+const stateMsg = document.getElementById('stateMsg');
+const resetForm = document.getElementById('resetForm');
+let ready = false;
+
+function showForm() {
+  if (ready) return;
+  ready = true;
+  stateMsg.style.display = 'none';
+  resetForm.style.display = 'block';
+  document.getElementById('pwd1').focus();
+}
+function showInvalid() {
+  if (ready) return;
+  stateMsg.textContent = "Ce lien est invalide ou expiré. Redemandez un email depuis la page de connexion.";
+}
+
+// supabase-js détecte automatiquement le jeton de récupération dans l'URL et
+// émet l'évènement PASSWORD_RECOVERY : c'est là qu'on autorise le changement.
+sb.auth.onAuthStateChange((event, session) => {
+  if (event === 'PASSWORD_RECOVERY') showForm();
+  else if (session && session.user) showForm();
 });
 
-function redirect(email) {
-  if (ADMIN_EMAILS.includes(email)) {
-    window.location.href = 'admin.html';
-  } else {
-    window.location.href = 'espace-client.html';
-  }
-}
+// Filet de sécurité : si l'évènement a déjà été consommé au chargement.
+setTimeout(async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session && session.user) showForm();
+  else showInvalid();
+}, 1400);
 
-async function handleLogin(e) {
+async function handleReset(e) {
   e.preventDefault();
-  const email = document.getElementById('loginEmail').value.trim();
-  const pwd = document.getElementById('loginPwd').value;
-  const btn = document.getElementById('loginBtn');
-  const err = document.getElementById('loginErr');
+  const p1 = document.getElementById('pwd1').value;
+  const p2 = document.getElementById('pwd2').value;
+  const btn = document.getElementById('resetBtn');
+  const err = document.getElementById('resetErr');
+  err.style.display = 'none';
+  err.style.color = '#c8433f';
+
+  if (p1.length < 6) { err.textContent = "Le mot de passe doit faire au moins 6 caractères."; err.style.display = 'block'; return; }
+  if (p1 !== p2) { err.textContent = "Les deux mots de passe ne correspondent pas."; err.style.display = 'block'; return; }
 
   btn.disabled = true;
-  btn.textContent = 'Connexion…';
-  err.style.display = 'none';
+  btn.textContent = 'Enregistrement…';
 
-  const { data, error } = await sb.auth.signInWithPassword({ email, password: pwd });
+  const { error } = await sb.auth.updateUser({ password: p1 });
 
   if (error) {
-    err.textContent = 'Email ou mot de passe incorrect.';
+    err.textContent = "Impossible d'enregistrer. Le lien a peut-être expiré — redemandez un email.";
     err.style.display = 'block';
     btn.disabled = false;
-    btn.textContent = 'Se connecter →';
+    btn.textContent = 'Enregistrer →';
     return;
   }
 
-  redirect(data.user.email);
-}
-
-// Mot de passe oublié : envoie un email de réinitialisation vers /reset,
-// où l'utilisateur choisit lui-même son nouveau mot de passe.
-async function handleForgot(e) {
-  e.preventDefault();
-  const email = document.getElementById('loginEmail').value.trim();
-  const err = document.getElementById('loginErr');
-  err.style.color = '#c8433f';
-  if (!email) {
-    err.textContent = "Entrez d'abord votre adresse email ci-dessus, puis recliquez.";
-    err.style.display = 'block';
-    document.getElementById('loginEmail').focus();
-    return;
-  }
-  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + '/reset' });
-  if (error) {
-    err.textContent = "Impossible d'envoyer l'email pour le moment. Réessayez.";
-    err.style.display = 'block';
-    return;
-  }
-  err.style.color = '#3a9d5d';
-  err.textContent = "Email de réinitialisation envoyé ! Ouvrez-le et suivez le lien.";
-  err.style.display = 'block';
+  stateMsg.style.display = 'block';
+  stateMsg.style.color = '#3a9d5d';
+  stateMsg.textContent = "Mot de passe mis à jour ! Redirection vers la connexion…";
+  resetForm.style.display = 'none';
+  setTimeout(() => { window.location.href = 'auth.html'; }, 1600);
 }
 </script>
 </body>
