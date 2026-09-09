@@ -2247,7 +2247,12 @@ button { touch-action: manipulation; }
   .navbar { padding: 16px 24px; }
   .navbar-links { display: none; }
   .hero h1 { font-size: 48px; letter-spacing: -0.02em; }
-  .hero-image { height: 55%; width: 100%; opacity: 0.25; object-position: 78% center; }
+  .hero-image {
+    height: 70%; width: 100%; opacity: 0.52; object-position: 62% 27%;
+    /* Mobile : fondu vertical (photo remontee, visible plus bas, titre lisible en haut) */
+    mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.30) 22%, #000 48%, #000 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.30) 22%, #000 48%, #000 100%);
+  }
   .circuit-grid { grid-template-columns: 1fr; }
   .circuit-divider { padding: 16px 0; transform: rotate(90deg); }
   .testimonials-grid { grid-template-columns: 1fr; }
