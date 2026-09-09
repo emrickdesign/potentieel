@@ -2283,6 +2283,7 @@ button { touch-action: manipulation; }
   .guarantee-grid { grid-template-columns: 1fr; }
   .compare-grid { grid-template-columns: 1fr; }
   .garantie-split { grid-template-columns: 1fr; gap: 32px; }
+  .hide-mobile { display: none !important; }
 
   .mobile-tabbar {
     display: flex;
