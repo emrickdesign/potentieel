@@ -609,7 +609,38 @@
 
 <!-- ══ APP ════════════════════════════════════════════════════ -->
 <div id="app" style="display:none">
+  <style id="mobile-nav-css">
+    /* ===== Navigation mobile : la sidebar devient un tiroir coulissant ===== */
+    .nav-toggle{ display:none; align-items:center; justify-content:center; width:38px; height:38px; margin-right:2px; background:var(--card2); border:1px solid var(--border); border-radius:9px; color:var(--text); cursor:pointer; flex-shrink:0; padding:0; }
+    .nav-toggle svg{ width:20px; height:20px; }
+    .nav-backdrop{ display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:1900; }
+    @media (max-width: 700px){
+      .nav-toggle{ display:flex; }
+      .nav-backdrop.open{ display:block; }
+      .sidebar{
+        display:flex !important;
+        position:fixed; top:0; left:0; bottom:0;
+        width:82vw; max-width:300px;
+        z-index:2000;
+        transform:translateX(-100%);
+        transition:transform .25s ease;
+        box-shadow:0 0 40px rgba(0,0,0,.55);
+      }
+      .sidebar.open{ transform:translateX(0); }
+      /* Topbar allégée pour laisser la place au titre de page */
+      .topbar{ padding:0 14px !important; gap:8px; }
+      .topbar-section{ display:none; }
+      .topbar-left > span.topbar-section + span{ display:none; } /* le séparateur "·" */
+      .topbar-left{ min-width:0; flex:1; }
+      .topbar-title{ font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+      .tb-btn-ghost, .tb-mode-admin{ display:none !important; }
+      .topbar-right{ gap:6px; flex-shrink:0; }
+    }
+  </style>
   <div class="layout">
+
+    <!-- Overlay du menu mobile -->
+    <div class="nav-backdrop" id="navBackdrop" onclick="closeNav()"></div>
 
     <!-- SIDEBAR -->
     <aside class="sidebar">
@@ -661,6 +692,7 @@
       <!-- TOPBAR -->
       <div class="topbar">
         <div class="topbar-left">
+          <button class="nav-toggle" onclick="toggleNav()" aria-label="Ouvrir le menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
           <span class="topbar-section" id="tb-section">VUE D'ENSEMBLE</span>
           <span style="color:var(--border)">·</span>
           <span class="topbar-title" id="tb-title">Dashboard</span>
@@ -3830,9 +3862,24 @@ const titles = {
   documents:'Documents', facturation:'Facturation', devis:'Devis',
   depenses:'Trésorerie'
 };
+// ── Menu mobile (tiroir coulissant) ──
+function toggleNav(){
+  const sb=document.querySelector('.sidebar');
+  const bd=document.getElementById('navBackdrop');
+  if(!sb) return;
+  const open=!sb.classList.contains('open');
+  sb.classList.toggle('open', open);
+  if(bd) bd.classList.toggle('open', open);
+}
+function closeNav(){
+  document.querySelector('.sidebar')?.classList.remove('open');
+  document.getElementById('navBackdrop')?.classList.remove('open');
+}
+
 function nav(el) {
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   el.classList.add('active');
+  closeNav(); // referme le tiroir mobile après le choix d'une page
   const p = el.dataset.page;
   document.querySelectorAll('.page').forEach(pg=>pg.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
