@@ -5433,10 +5433,12 @@ function clImportFacture(files) {
     reader.onload = e => {
       const idbKey = 'fa_'+Date.now()+Math.random().toString(36).slice(2);
       idbPut(idbKey, e.target.result).catch(()=>{});
-      c.factures.unshift({ id:'fai'+Date.now()+Math.random().toString(36).slice(2),
+      const fa = { id:'fai'+Date.now()+Math.random().toString(36).slice(2),
         ref:file.name.replace(/\.pdf$/i,'').replace(/\.jpg$/i,'').replace(/\.png$/i,''),
         date:new Date().toLocaleDateString('fr-FR'), montant:'—', totalTxt:'—', statut:'importée',
-        type:'import', fileName:file.name, fileType:file.type, idbKey, data:e.target.result });
+        type:'import', fileName:file.name, fileType:file.type, idbKey, data:e.target.result };
+      c.factures.unshift(fa);
+      faUploadImport(fa, e.target.result); // → lisible/téléchargeable depuis n'importe quel appareil
       res();
     };
     reader.readAsDataURL(file);
@@ -6337,9 +6339,10 @@ async function faView(fid){
   const c=clData.find(x=>(x.factures||[]).find(f=>f.id===fid));if(!c)return;
   const fa=c.factures.find(f=>f.id===fid);if(!fa)return;
   if(fa.type==='import'){
-    let data=fa.data;
-    if(!data && fa.idbKey){ try{data=await idbGet(fa.idbKey);}catch{} }
+    if(fa.url){ window.open(fa.url,'_blank'); return; }
+    const data=await faImportBytes(fa);
     if(data) openImportedFile(data, fa.fileName||fa.ref||'facture');
+    else alert("Fichier introuvable sur cet appareil. Réimporte la facture pour la synchroniser.");
     return;
   }
   faPrintFa(fa);
@@ -6392,9 +6395,44 @@ async function faDownloadPdf(fa) {
     frame.remove();
   }
 }
+// ── Factures importées : upload storage + octets + téléchargement du vrai fichier ──
+async function faUploadImport(fa, dataUrl){
+  try{
+    if(!sb || !dataUrl || !fa) return;
+    let ext=((fa.fileName||fa.ref||'file').split('.').pop()||'pdf').toLowerCase();
+    if(!/^[a-z0-9]{1,5}$/.test(ext)) ext='pdf';
+    const blob=dvDataUrlToBlob(dataUrl);
+    const path=`imports/factures/${fa.id}.${ext}`;
+    const { error }=await sb.storage.from(SO_BUCKET).upload(path, blob, { upsert:true, contentType:blob.type });
+    if(error) return;
+    fa.url=sb.storage.from(SO_BUCKET).getPublicUrl(path).data.publicUrl;
+    clSave();
+  }catch(_){}
+}
+async function faImportBytes(fa){
+  let data=fa.data;
+  if(!data && fa.idbKey){ try{ data=await idbGet(fa.idbKey); }catch{} }
+  if(data && !fa.url) faUploadImport(fa, data);
+  return data;
+}
+async function faDownloadImport(fa){
+  const name=fa.fileName||((fa.ref||'facture')+'.pdf');
+  try{
+    let blobUrl;
+    if(fa.url){ const r=await fetch(fa.url); blobUrl=URL.createObjectURL(await r.blob()); }
+    else {
+      const data=await faImportBytes(fa);
+      if(!data){ alert("Fichier introuvable sur cet appareil. Réimporte la facture pour la synchroniser."); return; }
+      blobUrl=URL.createObjectURL(dvDataUrlToBlob(data));
+    }
+    const a=document.createElement('a'); a.href=blobUrl; a.download=name; a.click();
+    setTimeout(()=>URL.revokeObjectURL(blobUrl),10000);
+  }catch(_){ if(fa.url) window.open(fa.url,'_blank'); }
+}
 function faDownload(fid){
   const c=clData.find(x=>(x.factures||[]).find(f=>f.id===fid)); if(!c)return;
   const fa=c.factures.find(f=>f.id===fid); if(!fa)return;
+  if(fa.type==='import'){ faDownloadImport(fa); return; }
   faDownloadPdf(fa);
 }
 function faDownloadFromGlobal(fid){faDownload(fid);}
@@ -6592,9 +6630,11 @@ function faGlobalImportExec(input) {
     // Use selected faMonth/faYear for the date
     const d = String(1).padStart(2,'0')+'/'+String(faMonth+1).padStart(2,'0')+'/'+faYear;
     if (!c.factures) c.factures = [];
-    c.factures.unshift({ id:'fai'+Date.now()+Math.random().toString(36).slice(2),
+    const fa = { id:'fai'+Date.now()+Math.random().toString(36).slice(2),
       ref, date:d, totalTxt:montantTxt||'—', montant:montantTxt||'—', statut:'payee',
-      type:'import', fileName:file.name, fileType:file.type, idbKey, data:e.target.result });
+      type:'import', fileName:file.name, fileType:file.type, idbKey, data:e.target.result };
+    c.factures.unshift(fa);
+    faUploadImport(fa, e.target.result); // → lisible/téléchargeable depuis n'importe quel appareil
     clSave();
     faGlobalImportClose();
     renderGlobalFactures();
@@ -6616,9 +6656,10 @@ async function faViewFromGlobal(fid) {
   const c = clData.find(x=>(x.factures||[]).find(f=>f.id===fid)); if (!c) return;
   const fa = c.factures.find(f=>f.id===fid); if (!fa) return;
   if (fa.type === 'import') {
-    let data = fa.data;
-    if (!data && fa.idbKey) { try { data = await idbGet(fa.idbKey); } catch {} }
+    if(fa.url){ window.open(fa.url,'_blank'); return; }
+    const data = await faImportBytes(fa);
     if (data) openImportedFile(data, fa.fileName||fa.ref||'facture');
+    else alert("Fichier introuvable sur cet appareil. Réimporte la facture pour la synchroniser.");
     return;
   }
   faPrintFa(fa);
