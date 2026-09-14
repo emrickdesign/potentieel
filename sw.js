@@ -1,4 +1,4 @@
-const CACHE = 'potentieel-v5';
+const CACHE = 'potentieel-v6';
 const ASSETS = ['/admin.html', '/styles.css', '/scripts.js', '/manifest.json'];
 
 self.addEventListener('install', e => {
