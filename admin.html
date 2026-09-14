@@ -235,13 +235,8 @@
     .ld-status-wrap{position:relative;display:inline-block}
     .ld-status-btn{border-radius:8px;padding:8px 14px;font-weight:700;cursor:pointer;min-width:140px;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px}
     .ld-s-nouveau{background:rgba(163,230,53,.1);color:#a3e635;border:1px solid rgba(163,230,53,.3)}
-    .ld-s-appele{background:rgba(96,165,250,.1);color:#60a5fa;border:1px solid rgba(96,165,250,.3)}
-    .ld-s-v1_encours{background:rgba(167,139,250,.1);color:#a78bfa;border:1px solid rgba(167,139,250,.3)}
-    .ld-s-v1_envoyee{background:rgba(125,211,252,.1);color:#7dd3fc;border:1px solid rgba(125,211,252,.3)}
-    .ld-s-sans_reponse{background:rgba(251,191,36,.1);color:#fbbf24;border:1px solid rgba(251,191,36,.3)}
-    .ld-s-closing{background:rgba(244,146,106,.12);color:var(--accent);border:1px solid rgba(244,146,106,.3)}
-    .ld-s-signe{background:rgba(74,222,128,.1);color:#4ade80;border:1px solid rgba(74,222,128,.3)}
-    .ld-s-perdu{background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.3)}
+    .ld-s-appele_sr{background:rgba(251,191,36,.1);color:#fbbf24;border:1px solid rgba(251,191,36,.3)}
+    .ld-s-appele_refuse{background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.3)}
     .ld-status-menu{position:absolute;right:0;top:calc(100%+4px);background:#1c1c26;border:1px solid var(--border);border-radius:12px;padding:6px;min-width:160px;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,.5)}
     .ld-status-opt{padding:10px 14px;border-radius:8px;cursor:pointer;font-size:13px;color:#fff;display:flex;align-items:center;gap:8px}
     .ld-status-opt:hover{background:rgba(255,255,255,.07)}
@@ -1811,10 +1806,11 @@
             .pr-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:12px;transition:border-color .15s}
             .pr-card:hover{border-color:rgba(96,165,250,.35)}
             .pr-badge{font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;white-space:nowrap}
-            .pr-s-reflexion{background:rgba(250,204,21,.1);color:#fbbf24}
-            .pr-s-version{background:rgba(96,165,250,.12);color:#60a5fa}
-            .pr-s-attente{background:rgba(244,146,106,.12);color:var(--accent)}
-            .pr-s-valide{background:rgba(74,222,128,.1);color:#4ade80}
+            .pr-s-v1_encours{background:rgba(96,165,250,.12);color:#60a5fa}
+            .pr-s-v1_envoyee{background:rgba(251,191,36,.1);color:#fbbf24}
+            .pr-s-closing{background:rgba(244,146,106,.12);color:var(--accent)}
+            .pr-s-signe{background:rgba(74,222,128,.1);color:#4ade80}
+            .pr-s-perdu{background:rgba(239,68,68,.1);color:#f87171}
             .pr-dv-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
             .pr-dv-brouillon{background:rgba(255,255,255,.07);color:var(--muted)}
             .pr-dv-envoye{background:rgba(96,165,250,.12);color:#60a5fa}
@@ -1903,10 +1899,11 @@
               <input id="pr-add-url" placeholder="www.client.fr" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
               <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Statut</label>
               <select id="pr-add-statut" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
-                <option value="reflexion">En réflexion</option>
-                <option value="version">Première version</option>
-                <option value="attente">En attente</option>
-                <option value="valide">Validé</option>
+                <option value="v1_encours">V1 en cours</option>
+                <option value="v1_envoyee">V1 envoyée — sans réponse</option>
+                <option value="closing">Closing</option>
+                <option value="signe">Signé ✓</option>
+                <option value="perdu">Perdu</option>
               </select></div>
             </div>
             <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Adresse</label>
@@ -1975,13 +1972,8 @@
             <select id="ld-filter-statut" onchange="ldRender()" style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:#fff;font-size:13px;outline:none">
               <option value="">Tous statuts</option>
               <option value="nouveau">Nouveau</option>
-              <option value="appele">Appelé</option>
-              <option value="v1_encours">V1 en cours</option>
-              <option value="v1_envoyee">V1 envoyée</option>
-              <option value="sans_reponse">Sans réponse</option>
-              <option value="closing">Closing</option>
-              <option value="signe">Signé</option>
-              <option value="perdu">Perdu</option>
+              <option value="appele_sans_reponse">Appelé — sans réponse</option>
+              <option value="appele_refuse">Appelé — refusé</option>
             </select>
             <select id="ld-filter-campagne" onchange="ldRender()" style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:#fff;font-size:13px;outline:none">
               <option value="">Toutes campagnes</option>
@@ -3839,7 +3831,7 @@ async function bootApp(email) {
   // Chargement des données depuis crm_items (Supabase) — prLoad avant ldInit (dépendance)
   try { await prLoad(); } catch(_) { console.warn('prLoad:', _); }
   try {
-    await Promise.all([tcLoad(), plLoad(), clLoad(), dcLoad(), ldInit()]);
+    await Promise.all([tcLoad(), plLoad(), clLoad(), dcLoad(), prLoad(), ldInit()]);
   } catch(_) { console.warn('load all:', _); }
   try { tcRender(); } catch(_) { console.warn('tcRender:', _); }
   try { renderPipeline(); } catch(_) { console.warn('renderPipeline:', _); }
@@ -8030,18 +8022,20 @@ let ldDeleted = new Set();
 let ldData = [];
 let ldCurrentSource = 'all';
 
+// Étapes AVANT-VENTE (page Leads). Les étapes de production/closing vivent dans Projets (PR_STATUT).
 const LD_STATUT_LABELS = {
-  nouveau:      {label:'Nouveau',      cls:'ld-s-nouveau'},
-  appele:       {label:'Appelé',       cls:'ld-s-appele'},
-  v1_encours:   {label:'V1 en cours',  cls:'ld-s-v1_encours'},
-  v1_envoyee:   {label:'V1 envoyée',   cls:'ld-s-v1_envoyee'},
-  sans_reponse: {label:'Sans réponse', cls:'ld-s-sans_reponse'},
-  closing:      {label:'Closing',      cls:'ld-s-closing'},
-  signe:        {label:'Signé',        cls:'ld-s-signe'},
-  perdu:        {label:'Perdu',        cls:'ld-s-perdu'},
+  nouveau:             {label:'Nouveau',             cls:'ld-s-nouveau'},
+  appele_sans_reponse: {label:'Appelé — sans réponse',cls:'ld-s-appele_sr'},
+  appele_refuse:       {label:'Appelé — refusé',     cls:'ld-s-appele_refuse'},
 };
-// Remap des anciens statuts génériques vers le tunnel de vente réel (migration à chaud).
-const LD_STATUT_MIGRATION = { qualifie:'appele', contacte:'appele', converti:'signe' };
+// Remap des anciens statuts vers le nouveau modèle Leads (migration à chaud).
+const LD_STATUT_MIGRATION = {
+  appele:'appele_sans_reponse', sans_reponse:'appele_sans_reponse',
+  qualifie:'appele_sans_reponse', contacte:'appele_sans_reponse',
+  v1_encours:'appele_sans_reponse', v1_envoyee:'appele_sans_reponse',
+  closing:'appele_sans_reponse', converti:'appele_sans_reponse', signe:'appele_sans_reponse',
+  perdu:'appele_refuse',
+};
 const LD_SOURCE_LABELS = {
   formulaire:{label:'Formulaire',cls:'ld-badge-formulaire'},
   site:      {label:'Site',       cls:'ld-badge-site'},
@@ -8188,49 +8182,55 @@ function ldMarkDeleted(id) {
 // Tunnel de vente : montre combien de leads ont atteint chaque étape et OÙ tu en perds le plus.
 // Progression : un lead à une étape avancée est réputé avoir passé les précédentes.
 // « Perdu » n'est pas une étape mais une sortie : compté à part.
+// Tunnel de vente COMPLET : agrège les étapes Leads (avant-vente) + Projets (production/closing).
+// Nombre de personnes à chaque étape + pourcentage du total. Reste affiché en haut de la page Leads.
 function ldRenderFunnel() {
   const el = document.getElementById('ld-funnel');
   if (!el) return;
-  const base = ldData.filter(l => ldCurrentSource === 'all' || l.source === ldCurrentSource);
-  const total = base.length;
-  if (!total) { el.innerHTML = ''; return; }
-  const order = ['nouveau','appele','v1_encours','v1_envoyee','sans_reponse','closing','signe'];
-  const idxOf = s => order.indexOf(s);
-  // reached[i] = leads dont le statut actuel est à l'étape i ou au-delà (les « perdu » ont idx -1 → exclus).
-  const reached = order.map((s, i) => base.filter(l => idxOf(l.statut) >= i).length);
-  const perdu = base.filter(l => l.statut === 'perdu').length;
-  const signe = base.filter(l => l.statut === 'signe').length;
-  const colors = {nouveau:'#a3e635',appele:'#60a5fa',v1_encours:'#a78bfa',v1_envoyee:'#7dd3fc',sans_reponse:'#fbbf24',closing:'#f4926a',signe:'#4ade80'};
-  // Plus gros décrochage entre deux étapes consécutives.
-  let maxDrop = -1, dropAt = -1;
-  for (let i = 1; i < order.length; i++) { const d = reached[i-1] - reached[i]; if (d > maxDrop) { maxDrop = d; dropAt = i; } }
-  const topW = reached[0] || 1;
-  const bars = order.map((s, i) => {
-    const val = reached[i];
-    const w = Math.max(3, Math.round((val / topW) * 100));
-    const drop = i > 0 ? reached[i-1] - reached[i] : 0;
-    const leak = (i === dropAt && maxDrop > 0)
-      ? `<span style="color:#f87171;font-weight:700"> · ↓ ${drop} ici</span>`
-      : (drop > 0 ? `<span style="color:var(--muted)"> · ↓ ${drop}</span>` : '');
+  const leads = Array.isArray(ldData) ? ldData : [];
+  const projs = (typeof prData !== 'undefined' && Array.isArray(prData)) ? prData : [];
+  const stages = [
+    { key:'nouveau',             from:'lead', label:'Nouveau',                  color:'#a3e635' },
+    { key:'appele_sans_reponse', from:'lead', label:'Appelé — sans réponse',    color:'#fbbf24' },
+    { key:'appele_refuse',       from:'lead', label:'Appelé — refusé',          color:'#f87171' },
+    { key:'v1_encours',          from:'proj', label:'V1 en cours',              color:'#60a5fa' },
+    { key:'v1_envoyee',          from:'proj', label:'V1 envoyée — sans réponse',color:'#7dd3fc' },
+    { key:'closing',             from:'proj', label:'Closing',                  color:'#f4926a' },
+    { key:'signe',               from:'proj', label:'Signé',                    color:'#4ade80' },
+    { key:'perdu',               from:'proj', label:'Perdu',                    color:'#ef4444' },
+  ];
+  const counts = stages.map(s => (s.from === 'lead' ? leads : projs).filter(x => x.statut === s.key).length);
+  const grand = counts.reduce((a, b) => a + b, 0);
+  if (!grand) { el.innerHTML = ''; return; }
+  const maxC = Math.max(...counts, 1);
+  const signeN = counts[6], perduN = counts[7];
+  const rowHtml = (s, i) => {
+    const v = counts[i];
+    const w = Math.max(3, Math.round((v / maxC) * 100));
     return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:7px">
-      <div style="min-width:104px;font-size:12px;color:#ccc;text-align:right">${LD_STATUT_LABELS[s].label}</div>
-      <div style="flex:1;background:rgba(255,255,255,.05);border-radius:6px;overflow:hidden;height:26px">
-        <div style="width:${w}%;background:${colors[s]};height:100%;border-radius:6px;display:flex;align-items:center;padding-left:9px;min-width:24px">
-          <span style="font-size:12px;font-weight:800;color:#111">${val}</span>
+      <div style="min-width:150px;font-size:12px;color:#ccc;text-align:right">${s.label}</div>
+      <div style="flex:1;background:rgba(255,255,255,.05);border-radius:6px;overflow:hidden;height:24px">
+        <div style="width:${w}%;background:${s.color};height:100%;border-radius:6px;display:flex;align-items:center;padding-left:9px;min-width:22px">
+          <span style="font-size:12px;font-weight:800;color:#111">${v}</span>
         </div>
       </div>
-      <div style="min-width:96px;font-size:11px;color:var(--muted)">${Math.round(val/total*100)}%${leak}</div>
+      <div style="min-width:44px;font-size:11px;color:var(--muted)">${Math.round(v / grand * 100)}%</div>
     </div>`;
-  }).join('');
-  const convRate = Math.round(signe / total * 100);
+  };
+  const sub = t => `<div style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.6px;margin:10px 0 6px">${t}</div>`;
+  let body = '';
+  stages.forEach((s, i) => {
+    if (i === 0) body += sub('Leads — avant-vente');
+    if (i === 3) body += sub('Projets — production & closing');
+    body += rowHtml(s, i);
+  });
   el.innerHTML = `
     <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:14px;padding:18px 20px">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:14px">
-        <div style="font-size:14px;font-weight:800;color:#fff">Tunnel de vente${ldCurrentSource!=='all' ? ' · ' + (LD_SOURCE_LABELS[ldCurrentSource]?.label || ldCurrentSource) : ''}</div>
-        <div style="font-size:12px;color:var(--muted)">${total} leads · <span style="color:#4ade80;font-weight:700">${signe} signé(s) — ${convRate}%</span> · <span style="color:#f87171;font-weight:700">${perdu} perdu(s)</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:6px">
+        <div style="font-size:14px;font-weight:800;color:#fff">Tunnel de vente complet</div>
+        <div style="font-size:12px;color:var(--muted)">${grand} au total · <span style="color:#4ade80;font-weight:700">${signeN} signé(s)</span> · <span style="color:#f87171;font-weight:700">${perduN} perdu(s)</span></div>
       </div>
-      ${bars}
-      ${maxDrop>0 ? `<div style="margin-top:12px;font-size:12px;color:#f87171;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:8px;padding:8px 12px">🔎 Plus grosse perte au passage vers « ${LD_STATUT_LABELS[order[dropAt]].label} » : ${maxDrop} lead(s).</div>` : ''}
+      ${body}
     </div>`;
 }
 
@@ -8330,8 +8330,8 @@ function ldCardHTML(l) {
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0" onclick="event.stopPropagation()">
         <label style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">Étape du tunnel</label>
-        <select onchange="ldSetStatus('${l.id}', this.value)" title="Faire avancer ce lead dans le tunnel" style="background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;outline:none;min-width:150px">${statusOpts}</select>
-        <button onclick="ldAddToProject('${l.id}')" style="background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.2);color:#60a5fa;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer">+ Projet</button>
+        <select onchange="ldSetStatus('${l.id}', this.value)" title="Étape avant-vente" style="background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;outline:none;min-width:170px">${statusOpts}</select>
+        <button onclick="ldAddToProject('${l.id}')" title="Appel validé : bascule en Projet (V1 en cours)" style="background:rgba(74,222,128,.14);border:1px solid rgba(74,222,128,.3);color:#4ade80;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer">✓ Validé → Projet</button>
         <button onclick="ldDelete('${l.id}')" style="background:none;border:none;color:#f87171;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:5px;padding:4px 0"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg> Supprimer</button>
       </div>
     </div>
@@ -9508,12 +9508,16 @@ let prData = [];
 let _prDevisProjectId = null;
 let _prDvLines = [];
 
+// Étapes PRODUCTION & CLOSING (page Projets). Suite du tunnel après « Appelé validé » côté Leads.
 const PR_STATUT = {
-  reflexion: { label:'En réflexion',    cls:'pr-s-reflexion' },
-  version:   { label:'Première version',cls:'pr-s-version' },
-  attente:   { label:'En attente',      cls:'pr-s-attente' },
-  valide:    { label:'Validé ✓',        cls:'pr-s-valide' },
+  v1_encours: { label:'V1 en cours',              cls:'pr-s-v1_encours' },
+  v1_envoyee: { label:'V1 envoyée — sans réponse',cls:'pr-s-v1_envoyee' },
+  closing:    { label:'Closing',                  cls:'pr-s-closing' },
+  signe:      { label:'Signé ✓',                  cls:'pr-s-signe' },
+  perdu:      { label:'Perdu',                    cls:'pr-s-perdu' },
 };
+// Remap des anciens statuts projets vers le nouveau modèle (migration à chaud).
+const PR_STATUT_MIGRATION = { reflexion:'v1_encours', version:'v1_encours', attente:'v1_envoyee', valide:'closing' };
 
 const PR_DV_STATUT = {
   brouillon: { label:'Brouillon', cls:'pr-dv-brouillon' },
@@ -9525,11 +9529,11 @@ const PR_DV_STATUT = {
 const PR_DEFAULT = [
   { id:'pr_cl3', nom:'Chakir', entreprise:'Transpro Chakir', metier:'Transport / VTC',
     tel:'0624872333', email:'chakirben33@gmail.com', adresse:'à renseigner', siret:'à voir', siren:'à voir',
-    budget:'', url:'', statut:'reflexion', notes:'Devis en attente. À relancer.', devis:[], assets:[], source:'manuel',
+    budget:'', url:'', statut:'v1_encours', notes:'Devis en attente. À relancer.', devis:[], assets:[], source:'manuel',
     createdAt:'2026-05-15T00:00:00.000Z' },
   { id:'pr_cl4', nom:'MONSIEUR CLAUDE SONGUE', entreprise:'Channel 3 Zones', metier:'Services de nettoyage et installation événementiel',
     tel:'0637079160', email:'', adresse:'6 allée des hauts bois 93160', siret:'52005409900012', siren:'520054099',
-    budget:'', url:'', statut:'reflexion', notes:'', devis:[], assets:[], source:'manuel',
+    budget:'', url:'', statut:'v1_encours', notes:'', devis:[], assets:[], source:'manuel',
     createdAt:'2026-04-20T00:00:00.000Z' },
 ];
 
@@ -9548,6 +9552,8 @@ async function prLoad() {
   PR_DEFAULT.forEach(def => {
     if (!prData.find(p => p.id === def.id)) { prData.push({...def}); changed = true; }
   });
+  // Migration : remap des anciens statuts projets vers le nouveau tunnel.
+  prData.forEach(p => { if (PR_STATUT_MIGRATION[p.statut]) { p.statut = PR_STATUT_MIGRATION[p.statut]; changed = true; } });
   if (changed) prSave();
   // Supprimer cl3 et cl4 du localStorage clients si présents
   try {
@@ -9600,7 +9606,7 @@ function prRender() {
 }
 
 function prCardHTML(p) {
-  const s = PR_STATUT[p.statut] || PR_STATUT.reflexion;
+  const s = PR_STATUT[p.statut] || PR_STATUT.v1_encours;
   const dt = p.createdAt ? new Date(p.createdAt).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'}) : '';
   const statusOpts = Object.entries(PR_STATUT).map(([v,o])=>`<option value="${v}"${p.statut===v?' selected':''}>${o.label}</option>`).join('');
   const devis = p.devis || [];
@@ -9795,7 +9801,7 @@ function prOpenAdd() {
   ['nom','entreprise','tel','email','metier','budget','url','adresse','notes'].forEach(f=>{
     const el = document.getElementById('pr-add-'+f); if(el) el.value='';
   });
-  document.getElementById('pr-add-statut').value = 'reflexion';
+  document.getElementById('pr-add-statut').value = 'v1_encours';
   document.getElementById('pr-add-modal-title').textContent = 'Nouveau projet';
   document.getElementById('pr-add-save-btn').textContent = 'Créer le projet';
   document.getElementById('pr-add-modal').style.display = 'flex';
@@ -9847,7 +9853,7 @@ function prOpenEdit(projId) {
   fields.forEach(f => {
     const el = document.getElementById('pr-add-'+f); if(el) el.value = p[f]||'';
   });
-  document.getElementById('pr-add-statut').value = p.statut||'reflexion';
+  document.getElementById('pr-add-statut').value = p.statut||'v1_encours';
   document.getElementById('pr-add-modal-title').textContent = 'Modifier — ' + (p.entreprise||p.nom||'');
   document.getElementById('pr-add-save-btn').textContent = 'Enregistrer';
   document.getElementById('pr-add-modal').style.display = 'flex';
@@ -9994,7 +10000,7 @@ function ldAddToClient(id) {
 function ldAddToProject(id) {
   const l = ldData.find(x=>x.id===id); if (!l) return;
   prData.push({ id:'pr'+Date.now(), nom:l.nom, entreprise:l.entreprise||'', metier:l.metier||'',
-    tel:l.tel||'', email:l.email||'', statut:'reflexion', notes:l.notes||'', source:'leads', campagne:l.campagne||'', publicite:l.publicite||'',
+    tel:l.tel||'', email:l.email||'', statut:'v1_encours', notes:l.notes||'', source:'leads', campagne:l.campagne||'', publicite:l.publicite||'',
     createdAt: new Date().toISOString() });
   prSave();
   ldMarkDeleted(id);
