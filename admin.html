@@ -11137,7 +11137,8 @@ function pushUpdateBtn() {
   const btn = document.getElementById('ld-notif-btn');
   const lbl = document.getElementById('ld-notif-label');
   if (!btn || !lbl) return;
-  if (!_pushSupported()) { lbl.textContent = 'Notifs non dispo'; btn.disabled = true; btn.style.opacity = '.5'; return; }
+  // On ne désactive JAMAIS le bouton : un tap doit toujours donner une explication claire.
+  if (!_pushSupported()) { lbl.textContent = 'Notifications'; btn.style.opacity = '1'; return; }
   if (Notification.permission === 'denied') { lbl.textContent = 'Notifs bloquées'; btn.style.opacity = '.7'; return; }
   (_pushReg ? _pushReg.pushManager.getSubscription() : Promise.resolve(null)).then(sub => {
     if (sub) {
@@ -11154,51 +11155,85 @@ function pushUpdateBtn() {
   }).catch(()=>{});
 }
 
+// S'abonne au push et enregistre l'abonnement en base.
+async function _pushSubscribeAndSave() {
+  if (!_pushReg) { _pushReg = await navigator.serviceWorker.register('/sw.js'); await navigator.serviceWorker.ready; }
+  const sub = await _pushReg.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: _b64ToUint8(PUSH_VAPID_PUBLIC)
+  });
+  const j = sub.toJSON();
+  await sb.from('crm_push_subscriptions').upsert({
+    endpoint: sub.endpoint,
+    p256dh: j.keys.p256dh,
+    auth: j.keys.auth,
+    label: (document.getElementById('sb-email')?.textContent || '') + ' · ' + (navigator.platform || 'appareil')
+  }, { onConflict: 'endpoint' });
+}
+
+function _pushConfirmActive() {
+  pushUpdateBtn();
+  try { _pushReg.showNotification('✅ Notifications activées', {
+    body: 'Tu recevras une alerte 🔥 à chaque nouveau lead.',
+    icon: '/assets/icon-192.png', badge: '/assets/icon-192.png'
+  }); } catch(_) {}
+  alert('✅ Notifications activées sur cet appareil. Un test vient de t’être envoyé.');
+}
+
 async function pushToggle() {
+  // 1) Diagnostics clairs (toujours un message, jamais un tap sans réaction).
   if (!_pushSupported()) {
     if (_isiOS() && !_isStandalone())
-      alert("Sur iPhone : ouvre ce site dans Safari, appuie sur Partager → « Sur l'écran d'accueil ». Ouvre ensuite l'app depuis l'icône, puis réactive les notifications ici.");
+      alert("Sur iPhone, les notifications ne marchent QUE depuis l'app installée : ouvre-la en appuyant sur l'ICÔNE de l'écran d'accueil (pas via Safari), puis reviens ici.");
+    else if (_isiOS())
+      alert("Ton iPhone doit être en iOS 16.4 ou plus récent pour les notifications web. Mets à jour iOS (Réglages → Général → Mise à jour), puis réessaie.");
     else
-      alert("Ton navigateur ne supporte pas les notifications push.");
+      alert("Ce navigateur ne supporte pas les notifications push.");
     return;
   }
   if (_isiOS() && !_isStandalone()) {
-    alert("Pour recevoir les notifications sur iPhone, ajoute d'abord l'app à l'écran d'accueil (Partager → Sur l'écran d'accueil), puis ouvre-la depuis l'icône.");
+    alert("Ouvre l'app depuis l'ICÔNE de l'écran d'accueil (pas dans Safari) pour activer les notifications.");
     return;
   }
+  if (Notification.permission === 'denied') {
+    alert("Les notifications sont bloquées pour cette app. Va dans Réglages iPhone → Potentieel → Notifications et autorise-les, puis reviens appuyer ici.");
+    return;
+  }
+
+  // 2) Permission pas encore accordée → LA DEMANDER EN PREMIER, avant tout await
+  //    (sur iOS, requestPermission doit partir dans le geste du tap, sinon aucun popup).
+  if (Notification.permission !== 'granted') {
+    let perm;
+    try { perm = await Notification.requestPermission(); }
+    catch(_) { perm = Notification.permission; }
+    if (perm !== 'granted') {
+      pushUpdateBtn();
+      alert(perm === 'denied'
+        ? "Tu as refusé les notifications. Pour les réactiver : Réglages iPhone → Potentieel → Notifications."
+        : "Notifications non activées (aucune autorisation donnée).");
+      return;
+    }
+    try { await _pushSubscribeAndSave(); _pushConfirmActive(); }
+    catch (e) { console.warn('pushToggle sub:', e); alert("Impossible d'activer les notifications : " + (e && e.message ? e.message : e)); }
+    return;
+  }
+
+  // 3) Permission déjà accordée → bascule l'abonnement (aucun popup nécessaire ici).
   try {
     if (!_pushReg) { _pushReg = await navigator.serviceWorker.register('/sw.js'); await navigator.serviceWorker.ready; }
     const existing = await _pushReg.pushManager.getSubscription();
     if (existing) {
-      // Désactiver
       try { await sb.from('crm_push_subscriptions').delete().eq('endpoint', existing.endpoint); } catch(_) {}
       await existing.unsubscribe();
       pushUpdateBtn();
-      return;
+      alert('🔕 Notifications désactivées sur cet appareil.');
+    } else {
+      await _pushSubscribeAndSave();
+      _pushConfirmActive();
     }
-    // Activer
-    const perm = await Notification.requestPermission();
-    if (perm !== 'granted') { pushUpdateBtn(); return; }
-    const sub = await _pushReg.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: _b64ToUint8(PUSH_VAPID_PUBLIC)
-    });
-    const j = sub.toJSON();
-    await sb.from('crm_push_subscriptions').upsert({
-      endpoint: sub.endpoint,
-      p256dh: j.keys.p256dh,
-      auth: j.keys.auth,
-      label: (document.getElementById('sb-email')?.textContent || '') + ' · ' + (navigator.platform || 'appareil')
-    }, { onConflict: 'endpoint' });
-    pushUpdateBtn();
-    // Confirmation immédiate (prouve que tout marche, sans attendre un vrai lead)
-    try { _pushReg.showNotification('✅ Notifications activées', {
-      body: 'Tu recevras une alerte 🔥 à chaque nouveau lead.',
-      icon: '/assets/icon-192.png', badge: '/assets/icon-192.png'
-    }); } catch(_) {}
   } catch (e) {
     console.warn('pushToggle:', e);
-    alert("Impossible d'activer les notifications : " + (e && e.message ? e.message : e));
+    alert("Erreur notifications : " + (e && e.message ? e.message : e));
   }
 }
 
