@@ -1,4 +1,4 @@
-const CACHE = 'potentieel-v2';
+const CACHE = 'potentieel-v3';
 const ASSETS = ['/admin.html', '/styles.css', '/scripts.js', '/manifest.json'];
 
 self.addEventListener('install', e => {
@@ -24,6 +24,7 @@ self.addEventListener('push', event => {
   catch (_) { try { d = { body: event.data.text() }; } catch (__) {} }
 
   const title = d.title || '🔥 Nouveau lead';
+  const tel = d.tel || '';
   const options = {
     body: d.body || "Un nouveau lead vient d'arriver.",
     icon: '/assets/icon-192.png',
@@ -32,14 +33,28 @@ self.addEventListener('push', event => {
     renotify: true,
     requireInteraction: true,
     vibrate: [200, 100, 200, 100, 200],
-    data: { url: d.url || '/admin.html#leads', tel: d.tel || '' }
+    // Boutons d'action (Android/desktop). iOS les ignore → le tap sur le corps ouvre la fiche.
+    actions: tel
+      ? [{ action: 'call', title: '📞 Appeler' }, { action: 'open', title: 'Voir le lead' }]
+      : [{ action: 'open', title: 'Voir le lead' }],
+    data: { url: d.url || '/admin.html#leads', tel }
   };
   event.waitUntil(self.registration.showNotification(title, options));
 });
 
 self.addEventListener('notificationclick', event => {
   event.notification.close();
-  const url = (event.notification.data && event.notification.data.url) || '/admin.html#leads';
+  const data = event.notification.data || {};
+  const url = data.url || '/admin.html#leads';
+  const tel = data.tel || '';
+
+  // Clic sur « Appeler » → ouvre directement le numéro (compté comme un appel sur mobile).
+  if (event.action === 'call' && tel) {
+    event.waitUntil(self.clients.openWindow ? self.clients.openWindow('tel:' + tel) : Promise.resolve());
+    return;
+  }
+
+  // Sinon (corps de la notif ou « Voir le lead ») → ouvre/focus le CRM sur la fiche du lead.
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
       for (const c of list) {

@@ -235,9 +235,12 @@
     .ld-status-wrap{position:relative;display:inline-block}
     .ld-status-btn{border-radius:8px;padding:8px 14px;font-weight:700;cursor:pointer;min-width:140px;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px}
     .ld-s-nouveau{background:rgba(163,230,53,.1);color:#a3e635;border:1px solid rgba(163,230,53,.3)}
-    .ld-s-qualifie{background:rgba(96,165,250,.1);color:#60a5fa;border:1px solid rgba(96,165,250,.3)}
-    .ld-s-contacte{background:rgba(244,146,106,.1);color:var(--accent);border:1px solid rgba(244,146,106,.3)}
-    .ld-s-converti{background:rgba(74,222,128,.1);color:#4ade80;border:1px solid rgba(74,222,128,.3)}
+    .ld-s-appele{background:rgba(96,165,250,.1);color:#60a5fa;border:1px solid rgba(96,165,250,.3)}
+    .ld-s-v1_encours{background:rgba(167,139,250,.1);color:#a78bfa;border:1px solid rgba(167,139,250,.3)}
+    .ld-s-v1_envoyee{background:rgba(125,211,252,.1);color:#7dd3fc;border:1px solid rgba(125,211,252,.3)}
+    .ld-s-sans_reponse{background:rgba(251,191,36,.1);color:#fbbf24;border:1px solid rgba(251,191,36,.3)}
+    .ld-s-closing{background:rgba(244,146,106,.12);color:var(--accent);border:1px solid rgba(244,146,106,.3)}
+    .ld-s-signe{background:rgba(74,222,128,.1);color:#4ade80;border:1px solid rgba(74,222,128,.3)}
     .ld-s-perdu{background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.3)}
     .ld-status-menu{position:absolute;right:0;top:calc(100%+4px);background:#1c1c26;border:1px solid var(--border);border-radius:12px;padding:6px;min-width:160px;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,.5)}
     .ld-status-opt{padding:10px 14px;border-radius:8px;cursor:pointer;font-size:13px;color:#fff;display:flex;align-items:center;gap:8px}
@@ -1933,9 +1936,12 @@
             <select id="ld-filter-statut" onchange="ldRender()" style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:#fff;font-size:13px;outline:none">
               <option value="">Tous statuts</option>
               <option value="nouveau">Nouveau</option>
-              <option value="qualifie">Qualifié</option>
-              <option value="contacte">Contacté</option>
-              <option value="converti">Converti</option>
+              <option value="appele">Appelé</option>
+              <option value="v1_encours">V1 en cours</option>
+              <option value="v1_envoyee">V1 envoyée</option>
+              <option value="sans_reponse">Sans réponse</option>
+              <option value="closing">Closing</option>
+              <option value="signe">Signé</option>
               <option value="perdu">Perdu</option>
             </select>
             <select id="ld-filter-campagne" onchange="ldRender()" style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:#fff;font-size:13px;outline:none">
@@ -1945,6 +1951,8 @@
               <option value="">Toutes publicités</option>
             </select>
           </div>
+          <!-- Tunnel de vente -->
+          <div id="ld-funnel" style="margin-bottom:20px"></div>
           <!-- Liste -->
           <div id="ld-list"></div>
 
@@ -7969,12 +7977,17 @@ let ldData = [];
 let ldCurrentSource = 'all';
 
 const LD_STATUT_LABELS = {
-  nouveau:  {label:'Nouveau',  cls:'ld-s-nouveau'},
-  qualifie: {label:'Qualifié', cls:'ld-s-qualifie'},
-  contacte: {label:'Contacté', cls:'ld-s-contacte'},
-  converti: {label:'Converti', cls:'ld-s-converti'},
-  perdu:    {label:'Perdu',    cls:'ld-s-perdu'},
+  nouveau:      {label:'Nouveau',      cls:'ld-s-nouveau'},
+  appele:       {label:'Appelé',       cls:'ld-s-appele'},
+  v1_encours:   {label:'V1 en cours',  cls:'ld-s-v1_encours'},
+  v1_envoyee:   {label:'V1 envoyée',   cls:'ld-s-v1_envoyee'},
+  sans_reponse: {label:'Sans réponse', cls:'ld-s-sans_reponse'},
+  closing:      {label:'Closing',      cls:'ld-s-closing'},
+  signe:        {label:'Signé',        cls:'ld-s-signe'},
+  perdu:        {label:'Perdu',        cls:'ld-s-perdu'},
 };
+// Remap des anciens statuts génériques vers le tunnel de vente réel (migration à chaud).
+const LD_STATUT_MIGRATION = { qualifie:'appele', contacte:'appele', converti:'signe' };
 const LD_SOURCE_LABELS = {
   formulaire:{label:'Formulaire',cls:'ld-badge-formulaire'},
   site:      {label:'Site',       cls:'ld-badge-site'},
@@ -8086,6 +8099,8 @@ async function ldInit() {
   });
   ldSaveDeleted();
   _ldRemovedIds.forEach(rid => crmItemDelete('leads', rid));
+  // Migration statuts : remap des anciens statuts génériques vers le tunnel de vente réel.
+  ldData.forEach(l => { if (LD_STATUT_MIGRATION[l.statut]) l.statut = LD_STATUT_MIGRATION[l.statut]; });
   ldSave();
   ldRender();
 }
@@ -8116,9 +8131,60 @@ function ldMarkDeleted(id) {
   crmItemUpsert(LD_DELETED_SECTION, id, { id, deletedAt: new Date().toISOString() });
 }
 
+// Tunnel de vente : montre combien de leads ont atteint chaque étape et OÙ tu en perds le plus.
+// Progression : un lead à une étape avancée est réputé avoir passé les précédentes.
+// « Perdu » n'est pas une étape mais une sortie : compté à part.
+function ldRenderFunnel() {
+  const el = document.getElementById('ld-funnel');
+  if (!el) return;
+  const base = ldData.filter(l => ldCurrentSource === 'all' || l.source === ldCurrentSource);
+  const total = base.length;
+  if (!total) { el.innerHTML = ''; return; }
+  const order = ['nouveau','appele','v1_encours','v1_envoyee','sans_reponse','closing','signe'];
+  const idxOf = s => order.indexOf(s);
+  // reached[i] = leads dont le statut actuel est à l'étape i ou au-delà (les « perdu » ont idx -1 → exclus).
+  const reached = order.map((s, i) => base.filter(l => idxOf(l.statut) >= i).length);
+  const perdu = base.filter(l => l.statut === 'perdu').length;
+  const signe = base.filter(l => l.statut === 'signe').length;
+  const colors = {nouveau:'#a3e635',appele:'#60a5fa',v1_encours:'#a78bfa',v1_envoyee:'#7dd3fc',sans_reponse:'#fbbf24',closing:'#f4926a',signe:'#4ade80'};
+  // Plus gros décrochage entre deux étapes consécutives.
+  let maxDrop = -1, dropAt = -1;
+  for (let i = 1; i < order.length; i++) { const d = reached[i-1] - reached[i]; if (d > maxDrop) { maxDrop = d; dropAt = i; } }
+  const topW = reached[0] || 1;
+  const bars = order.map((s, i) => {
+    const val = reached[i];
+    const w = Math.max(3, Math.round((val / topW) * 100));
+    const drop = i > 0 ? reached[i-1] - reached[i] : 0;
+    const leak = (i === dropAt && maxDrop > 0)
+      ? `<span style="color:#f87171;font-weight:700"> · ↓ ${drop} ici</span>`
+      : (drop > 0 ? `<span style="color:var(--muted)"> · ↓ ${drop}</span>` : '');
+    return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:7px">
+      <div style="min-width:104px;font-size:12px;color:#ccc;text-align:right">${LD_STATUT_LABELS[s].label}</div>
+      <div style="flex:1;background:rgba(255,255,255,.05);border-radius:6px;overflow:hidden;height:26px">
+        <div style="width:${w}%;background:${colors[s]};height:100%;border-radius:6px;display:flex;align-items:center;padding-left:9px;min-width:24px">
+          <span style="font-size:12px;font-weight:800;color:#111">${val}</span>
+        </div>
+      </div>
+      <div style="min-width:96px;font-size:11px;color:var(--muted)">${Math.round(val/total*100)}%${leak}</div>
+    </div>`;
+  }).join('');
+  const convRate = Math.round(signe / total * 100);
+  el.innerHTML = `
+    <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:14px;padding:18px 20px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:14px">
+        <div style="font-size:14px;font-weight:800;color:#fff">Tunnel de vente${ldCurrentSource!=='all' ? ' · ' + (LD_SOURCE_LABELS[ldCurrentSource]?.label || ldCurrentSource) : ''}</div>
+        <div style="font-size:12px;color:var(--muted)">${total} leads · <span style="color:#4ade80;font-weight:700">${signe} signé(s) — ${convRate}%</span> · <span style="color:#f87171;font-weight:700">${perdu} perdu(s)</span></div>
+      </div>
+      ${bars}
+      ${maxDrop>0 ? `<div style="margin-top:12px;font-size:12px;color:#f87171;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:8px;padding:8px 12px">🔎 Plus grosse perte au passage vers « ${LD_STATUT_LABELS[order[dropAt]].label} » : ${maxDrop} lead(s).</div>` : ''}
+    </div>`;
+}
+
 function ldRender() {
   const listEl = document.getElementById('ld-list');
   if (!listEl) return;
+
+  ldRenderFunnel();
 
   const search = (document.getElementById('ld-search')?.value || '').toLowerCase();
   const filtStatut = document.getElementById('ld-filter-statut')?.value || '';
@@ -8271,7 +8337,7 @@ function ldToggleMenu(id) {
 function ldCycleStatus(id) {
   const l = ldData.find(x => x.id === id);
   if (!l) return;
-  const statuts = ['nouveau','qualifie','contacte','converti','perdu'];
+  const statuts = Object.keys(LD_STATUT_LABELS);
   const idx = statuts.indexOf(l.statut);
   l.statut = statuts[(idx + 1) % statuts.length];
   ldSave();
