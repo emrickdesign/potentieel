@@ -625,10 +625,18 @@
         transform:translateX(-100%);
         transition:transform .25s ease;
         box-shadow:0 0 40px rgba(0,0,0,.55);
+        /* Respecte l'encoche / la barre d'état iPhone (PWA plein écran) */
+        padding-top:env(safe-area-inset-top);
+        padding-bottom:env(safe-area-inset-bottom);
       }
       .sidebar.open{ transform:translateX(0); }
-      /* Topbar allégée pour laisser la place au titre de page */
-      .topbar{ padding:0 14px !important; gap:8px; }
+      /* Topbar : descend SOUS l'encoche/caméra pour rester cliquable, façon barre flottante */
+      .topbar{
+        padding:calc(env(safe-area-inset-top) + 8px) 14px 8px !important;
+        height:auto !important; min-height:52px;
+        gap:8px;
+        position:sticky; top:0; z-index:1800;
+      }
       .topbar-section{ display:none; }
       .topbar-left > span.topbar-section + span{ display:none; } /* le séparateur "·" */
       .topbar-left{ min-width:0; flex:1; }
