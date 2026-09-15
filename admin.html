@@ -2314,34 +2314,66 @@
             .sa-form-g input,.sa-form-g select{width:100%;box-sizing:border-box;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:9px;padding:10px 12px;font-size:13.5px}
             .sa-modal-err{color:var(--red);font-size:12px;margin-top:8px;display:none}
             .sa-modal-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+            /* vue clients */
+            .sa-cli-grid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+            .sa-cli-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;cursor:pointer;transition:.15s;position:relative}
+            .sa-cli-card:hover{border-color:var(--accent);transform:translateY(-1px)}
+            .sa-cli-card .nm{font-size:15px;font-weight:800;margin-bottom:2px}
+            .sa-cli-card .sub{font-size:12px;color:var(--muted);margin-bottom:12px}
+            .sa-cli-card .mini{display:flex;gap:14px}
+            .sa-cli-card .mini div{font-size:12px;color:var(--muted)}
+            .sa-cli-card .mini b{display:block;font-size:19px;font-weight:800;color:var(--text);letter-spacing:-.5px}
+            .sa-cli-card .mini b.al{color:var(--accent)}
+            .sa-cli-card .chev{position:absolute;top:16px;right:16px;color:var(--muted)}
+            .sa-sec-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin:2px 0 10px}
+            .sa-back{background:none;border:none;color:var(--accent);font-size:13px;font-weight:700;cursor:pointer;padding:0;margin-bottom:14px}
+            .sa-det-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
+            .sa-det-name{font-size:20px;font-weight:800}
+            .sa-det-metaline{font-size:12.5px;color:var(--muted);margin-top:3px}
+            .sa-stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+            .sa-stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px 14px}
+            .sa-stat b{display:block;font-size:22px;font-weight:800;letter-spacing:-.5px}
+            .sa-stat span{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+            .sa-stat.alert b{color:var(--accent)}
           </style>
 
           <div class="sa-head">
-            <div class="sa-h1">Suivi ads <small>Demandes reçues (appels & formulaires) et comptes clients.</small></div>
+            <div class="sa-h1">Suivi ads <small id="sa-sub">Sélectionne un client pour voir ses demandes.</small></div>
             <div class="sa-actions">
               <button class="sa-btn sa-btn-g" onclick="saLoad()">↻ Actualiser</button>
               <button class="sa-btn sa-btn-p" onclick="saOpenModal()">+ Nouveau client</button>
             </div>
           </div>
 
-          <div class="sa-tabs">
-            <button class="sa-tab active" data-t="demandes" onclick="saTab('demandes')">Demandes</button>
-            <button class="sa-tab" data-t="clients" onclick="saTab('clients')">Clients</button>
+          <!-- Vue liste des clients -->
+          <div id="sa-clients-view">
+            <div id="sa-untriaged"></div>
+            <div id="sa-clients" class="sa-cli-grid2"><div class="sa-empty">Chargement…</div></div>
           </div>
 
-          <div id="sa-tab-demandes">
+          <!-- Vue détail d'un client -->
+          <div id="sa-client-detail" style="display:none">
+            <button class="sa-back" onclick="saCloseClient()">← Tous les clients</button>
+            <div class="sa-det-head">
+              <div>
+                <div class="sa-det-name" id="sa-det-name">—</div>
+                <div class="sa-det-metaline" id="sa-det-meta"></div>
+              </div>
+              <button class="sa-btn sa-btn-g" id="sa-det-edit">Modifier</button>
+            </div>
+            <div class="sa-hint" id="sa-det-hint" style="display:none"></div>
+            <div class="sa-stats3">
+              <div class="sa-stat"><b id="sa-st-total">0</b><span>Demandes</span></div>
+              <div class="sa-stat alert"><b id="sa-st-missed">0</b><span>À rappeler</span></div>
+              <div class="sa-stat"><b id="sa-st-week">0</b><span>Cette semaine</span></div>
+            </div>
             <div class="sa-chips" id="sa-chips">
               <span class="sa-chip active" data-f="all" onclick="saFilter('all')">Tout</span>
+              <span class="sa-chip" data-f="missed" onclick="saFilter('missed')">À rappeler</span>
               <span class="sa-chip" data-f="todo" onclick="saFilter('todo')">À qualifier</span>
-              <span class="sa-chip" data-f="missed" onclick="saFilter('missed')">Manqués</span>
               <span class="sa-chip" data-f="qualifie" onclick="saFilter('qualifie')">Qualifiés</span>
             </div>
-            <div id="sa-list"><div class="sa-empty">Chargement…</div></div>
-          </div>
-
-          <div id="sa-tab-clients" style="display:none">
-            <div class="sa-hint">Webhook Twilio à pointer sur le numéro de suivi (Voice → A call comes in, POST) :<br><code>https://alpzagoprkpzirgtrdup.supabase.co/functions/v1/twilio-voice</code></div>
-            <div id="sa-clients"><div class="sa-empty">Chargement…</div></div>
+            <div id="sa-list"></div>
           </div>
         </div>
 
@@ -11391,8 +11423,8 @@ else
   pushInit();
 </script>
 <script>
-/* ============ SUIVI ADS ============ */
-const saState = { clients:[], calls:[], forms:[], tab:'demandes', filter:'all', editing:null, loaded:false };
+/* ============ SUIVI ADS (vue par client) ============ */
+const saState = { clients:[], calls:[], forms:[], selected:null, filter:'all', editing:null, loaded:false };
 function saEsc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 function saTel(t){ return String(t||'').replace(/[^+0-9]/g,''); }
 function saDate(iso){ try{ const d=new Date(iso),n=new Date(); const t=new Intl.DateTimeFormat('fr-FR',{hour:'2-digit',minute:'2-digit'}).format(d);
@@ -11400,57 +11432,110 @@ function saDate(iso){ try{ const d=new Date(iso),n=new Date(); const t=new Intl.
   const y=new Date(n);y.setDate(n.getDate()-1); if(d.toDateString()===y.toDateString()) return "Hier "+t;
   return new Intl.DateTimeFormat('fr-FR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}).format(d);}catch{return'';} }
 function saDur(s){ s=+s||0; if(!s)return''; const m=Math.floor(s/60),r=s%60; return m?`${m}min${r?' '+r+'s':''}`:`${r}s`; }
+function saIsWeek(iso){ const d=new Date(iso),n=new Date(); const diff=(n-d)/86400000; return diff>=0&&diff<7; }
 
-async function saInit(){ if(!saState.loaded){ document.getElementById('sa-list').innerHTML='<div class="sa-empty">Chargement…</div>'; } saLoad(); }
+async function saInit(){ if(!saState.loaded){ document.getElementById('sa-clients').innerHTML='<div class="sa-empty">Chargement…</div>'; } saLoad(); }
 
 async function saLoad(){
   const [cl,ca,fo] = await Promise.all([
     sb.from('crm_clients').select('*').order('created_at',{ascending:false}),
     sb.from('ads_calls').select('*').order('created_at',{ascending:false}),
-    sb.from('form_submissions').select('*').order('submitted_at',{ascending:false}),
+    sb.from('form_submissions').select('*').not('client_id','is',null).order('submitted_at',{ascending:false}),
   ]);
-  saState.clients = cl.data||[]; saState.calls = ca.data||[]; saState.forms = fo.data||[]; saState.loaded=true;
-  const todo = saState.calls.filter(c=>c.qualification==='nouveau').length + saState.forms.filter(f=>f.qualification==='nouveau').length;
+  saState.clients=cl.data||[]; saState.calls=ca.data||[]; saState.forms=fo.data||[]; saState.loaded=true;
+  saUpdateBadge();
+  if(saState.selected && saState.clients.some(c=>c.id===saState.selected)) saRenderDetail();
+  else { saState.selected=null; saRenderClientsView(); }
+}
+function saUpdateBadge(){
+  const todo = saState.calls.filter(c=>c.qualification==='nouveau'&&c.client_id).length + saState.forms.filter(f=>f.qualification==='nouveau').length;
   const b=document.getElementById('badge-suivi'); if(b){ b.textContent=todo; b.style.display=todo?'':'none'; }
-  saState.tab==='clients' ? saRenderClients() : saRenderDemandes();
 }
 
-function saTab(t){ saState.tab=t;
-  document.querySelectorAll('#page-suivi .sa-tab').forEach(x=>x.classList.toggle('active',x.dataset.t===t));
-  document.getElementById('sa-tab-demandes').style.display = t==='demandes'?'':'none';
-  document.getElementById('sa-tab-clients').style.display  = t==='clients'?'':'none';
-  t==='clients'?saRenderClients():saRenderDemandes();
+function saMapCall(c){ return {kind:'call',id:c.id,at:c.created_at,client_id:c.client_id,qual:c.qualification,
+  missed:(c.status==='manque'||c.status==='repondeur'),status:c.status,name:c.from_number||'Appel',tel:c.from_number,dur:c.duration_sec,rec:c.recording_url}; }
+function saMapForm(f){ return {kind:'form',id:f.id,at:f.submitted_at,client_id:f.client_id,qual:f.qualification,missed:false,
+  name:f.prenom||f.entreprise||'Contact',tel:f.telephone,meta:[f.ville,f.domaine].filter(Boolean).join(' · ')}; }
+function saItemsForClient(id){
+  const calls=saState.calls.filter(c=>c.client_id===id).map(saMapCall);
+  const forms=saState.forms.filter(f=>f.client_id===id).map(saMapForm);
+  return [...calls,...forms].sort((a,b)=>new Date(b.at)-new Date(a.at));
 }
-function saFilter(f){ saState.filter=f; document.querySelectorAll('#sa-chips .sa-chip').forEach(x=>x.classList.toggle('active',x.dataset.f===f)); saRenderDemandes(); }
+function saStats(items){ return { total:items.length, missed:items.filter(i=>i.missed).length, week:items.filter(i=>saIsWeek(i.at)).length }; }
 
-function saClientOptions(sel){
-  return '<option value="">— non attribué —</option>' + saState.clients.map(c=>
-    `<option value="${c.id}" ${c.id===sel?'selected':''}>${saEsc(c.entreprise||c.nom||c.email)}</option>`).join('');
+/* ---- Vue liste des clients ---- */
+function saCloseClient(){ saState.selected=null; saRenderClientsView(); }
+function saRenderClientsView(){
+  document.getElementById('sa-client-detail').style.display='none';
+  document.getElementById('sa-clients-view').style.display='';
+  document.getElementById('sa-sub').textContent='Sélectionne un client pour voir ses demandes.';
+  const untri=saState.calls.filter(c=>!c.client_id).map(saMapCall);
+  const ut=document.getElementById('sa-untriaged');
+  ut.innerHTML = untri.length
+    ? `<div class="sa-sec-title">À trier — appels reçus sur un numéro non rattaché (${untri.length})</div>`
+      + untri.map(i=>saCard(i,true)).join('')
+      + `<div class="sa-sec-title" style="margin-top:22px">Clients</div>`
+    : '';
+  const el=document.getElementById('sa-clients');
+  if(!saState.clients.length){ el.innerHTML='<div class="sa-empty">Aucun client. Clique « + Nouveau client » en haut à droite.</div>'; return; }
+  el.innerHTML=saState.clients.map(c=>{
+    const st=saStats(saItemsForClient(c.id));
+    const type=c.type==='ads'?'Ads':'Site';
+    return `<div class="sa-cli-card" onclick="saOpenClient('${c.id}')">
+      <div class="chev">›</div>
+      <div class="nm">${saEsc(c.entreprise||c.nom||c.email)}</div>
+      <div class="sub">${type}${c.twilio_number?' · '+saEsc(c.twilio_number):' · numéro non configuré'}</div>
+      <div class="mini">
+        <div><b>${st.total}</b>Demandes</div>
+        <div><b class="${st.missed?'al':''}">${st.missed}</b>À rappeler</div>
+        <div><b>${st.week}</b>7 jours</div>
+      </div>
+    </div>`;
+  }).join('');
 }
-function saQualBadge(q){ return q==='qualifie'?'<span class="sa-bdg bg-q">Qualifié</span>':q==='disqualifie'?'<span class="sa-bdg bg-dq">Disqualifié</span>':'<span class="sa-bdg bg-nv">À qualifier</span>'; }
 
-function saRenderDemandes(){
-  const calls = saState.calls.map(c=>({kind:'call',id:c.id,at:c.created_at,client_id:c.client_id,qual:c.qualification,
-    missed:(c.status==='manque'||c.status==='repondeur'),status:c.status,name:c.from_number||'Appel',tel:c.from_number,dur:c.duration_sec,rec:c.recording_url}));
-  const forms = saState.forms.map(f=>({kind:'form',id:f.id,at:f.submitted_at,client_id:f.client_id,qual:f.qualification,missed:false,
-    name:f.prenom||f.entreprise||'Contact',tel:f.telephone,meta:[f.ville,f.domaine].filter(Boolean).join(' · ')}));
-  let items=[...calls,...forms].sort((a,b)=>new Date(b.at)-new Date(a.at));
-  const f=saState.filter;
-  if(f==='todo') items=items.filter(i=>i.qual==='nouveau');
-  else if(f==='missed') items=items.filter(i=>i.missed);
-  else if(f==='qualifie') items=items.filter(i=>i.qual==='qualifie');
+/* ---- Vue détail d'un client ---- */
+function saOpenClient(id){ saState.selected=id; saState.filter='all'; saRenderDetail(); }
+function saRenderDetail(){
+  const c=saState.clients.find(x=>x.id===saState.selected); if(!c){ saCloseClient(); return; }
+  document.getElementById('sa-clients-view').style.display='none';
+  document.getElementById('sa-client-detail').style.display='';
+  document.getElementById('sa-sub').textContent='';
+  document.getElementById('sa-det-name').textContent=c.entreprise||c.nom||c.email;
+  const meta=[c.type==='ads'?'Client Ads':'Client Site', c.twilio_number?('Numéro de suivi '+c.twilio_number):null, c.telephone_reel?('→ transfert vers '+c.telephone_reel):null].filter(Boolean).join('   ·   ');
+  document.getElementById('sa-det-meta').textContent=meta;
+  document.getElementById('sa-det-edit').onclick=()=>saOpenModal(c);
+  const hint=document.getElementById('sa-det-hint');
+  if(c.type==='ads' && (!c.twilio_number||!c.telephone_reel)){
+    hint.style.display=''; hint.innerHTML='⚠️ Renseigne le <b>numéro Twilio de suivi</b> et le <b>téléphone réel</b> (bouton Modifier) pour que les appels de ce client arrivent ici.';
+  } else hint.style.display='none';
+  const items=saItemsForClient(c.id);
+  const st=saStats(items);
+  document.getElementById('sa-st-total').textContent=st.total;
+  document.getElementById('sa-st-missed').textContent=st.missed;
+  document.getElementById('sa-st-week').textContent=st.week;
+  let list=items; const f=saState.filter;
+  if(f==='missed') list=items.filter(i=>i.missed);
+  else if(f==='todo') list=items.filter(i=>i.qual==='nouveau');
+  else if(f==='qualifie') list=items.filter(i=>i.qual==='qualifie');
+  document.querySelectorAll('#sa-client-detail .sa-chip').forEach(x=>x.classList.toggle('active',x.dataset.f===f));
   const el=document.getElementById('sa-list');
-  if(!items.length){ el.innerHTML='<div class="sa-empty">Aucune demande.</div>'; return; }
-  el.innerHTML=items.map(saCard).join('');
+  el.innerHTML = list.length ? list.map(i=>saCard(i,false)).join('') : '<div class="sa-empty">Aucune demande dans ce filtre.</div>';
 }
+function saFilter(f){ saState.filter=f; saRenderDetail(); }
 
-function saCard(i){
+/* ---- Carte demande ---- */
+function saQualBadge(q){ return q==='qualifie'?'<span class="sa-bdg bg-q">Qualifié</span>':q==='disqualifie'?'<span class="sa-bdg bg-dq">Disqualifié</span>':'<span class="sa-bdg bg-nv">À qualifier</span>'; }
+function saCard(i, withAssign){
   const phoneSvg='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.09 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg>';
   const cls=i.kind==='form'?'form':(i.missed?'missed':'');
   const badge=i.kind==='form'?'<span class="sa-bdg bg-form">Formulaire</span>':(i.missed?'<span class="sa-bdg bg-missed">Manqué</span>':'<span class="sa-bdg bg-ok">Répondu</span>');
   const meta=[saDate(i.at), i.kind==='call'&&!i.missed&&saDur(i.dur), i.meta].filter(Boolean).join(' · ');
   const audio=i.rec?`<audio controls preload="none" src="${saEsc(i.rec)}"></audio>`:'';
   const q=i.qual||'nouveau';
+  const assign = withAssign
+    ? `<select class="sa-sel" onchange="saAssign('${i.kind}','${i.id}',this.value)"><option value="">— attribuer à un client —</option>${saState.clients.map(c=>`<option value="${c.id}">${saEsc(c.entreprise||c.nom||c.email)}</option>`).join('')}</select>`
+    : '';
   return `<div class="sa-card ${cls}">
     <div class="sa-ic">${phoneSvg}</div>
     <div class="sa-b">
@@ -11458,54 +11543,31 @@ function saCard(i){
       <div class="sa-meta">${saEsc(meta)}${i.tel?` · <a href="tel:${saTel(i.tel)}" style="color:var(--accent);text-decoration:none">${saEsc(i.tel)}</a>`:''}</div>
       ${audio}
       <div class="sa-ctrl">
-        <select class="sa-sel" onchange="saAssign('${i.kind}','${i.id}',this.value)">${saClientOptions(i.client_id)}</select>
+        ${assign}
         <button class="sa-q ok ${q==='qualifie'?'on':''}" onclick="saQualify('${i.kind}','${i.id}','qualifie')">✓ Qualifier</button>
         <button class="sa-q no ${q==='disqualifie'?'on':''}" onclick="saQualify('${i.kind}','${i.id}','disqualifie')">✗ Disqualifier</button>
       </div>
     </div>
   </div>`;
 }
-
 async function saAssign(kind,id,clientId){
   const tbl=kind==='call'?'ads_calls':'form_submissions';
   const { error } = await sb.from(tbl).update({ client_id: clientId||null }).eq('id',id);
   if(error){ alert('Erreur: '+error.message); return; }
-  const arr=kind==='call'?saState.calls:saState.forms; const row=arr.find(r=>r.id===id); if(row) row.client_id=clientId||null;
+  await saLoad();
 }
 async function saQualify(kind,id,val){
   const tbl=kind==='call'?'ads_calls':'form_submissions';
   const arr=kind==='call'?saState.calls:saState.forms; const row=arr.find(r=>r.id===id);
-  const next = row && row.qualification===val ? 'nouveau' : val; // re-clic = annule
+  const next = row && row.qualification===val ? 'nouveau' : val;
   const { error } = await sb.from(tbl).update({ qualification: next }).eq('id',id);
   if(error){ alert('Erreur: '+error.message); return; }
   if(row) row.qualification=next;
-  saRenderDemandes();
-  const todo = saState.calls.filter(c=>c.qualification==='nouveau').length + saState.forms.filter(f=>f.qualification==='nouveau').length;
-  const b=document.getElementById('badge-suivi'); if(b){ b.textContent=todo; b.style.display=todo?'':'none'; }
+  saUpdateBadge();
+  saState.selected ? saRenderDetail() : saRenderClientsView();
 }
 
-function saRenderClients(){
-  const el=document.getElementById('sa-clients');
-  if(!saState.clients.length){ el.innerHTML='<div class="sa-empty">Aucun client. Cliquez « + Nouveau client ».</div>'; return; }
-  el.innerHTML=saState.clients.map(c=>{
-    const typeBadge = c.type==='ads'?'<span class="sa-bdg bg-nv">Ads</span>':'<span class="sa-bdg bg-form">Site</span>';
-    const inactif = c.actif?'':'<span class="sa-bdg bg-dq">Inactif</span>';
-    return `<div class="sa-cli">
-      <div class="sa-cli-top">
-        <div class="sa-cli-nm">${saEsc(c.entreprise||c.nom||c.email)} ${typeBadge} ${inactif}</div>
-        <button class="sa-btn sa-btn-g" onclick='saOpenModal(${JSON.stringify(c).replace(/'/g,"&#39;")})'>Modifier</button>
-      </div>
-      <div class="sa-cli-grid">
-        <div class="sa-fld"><label>Contact</label><div class="v">${saEsc(c.nom||'—')}</div></div>
-        <div class="sa-fld"><label>Email</label><div class="v">${saEsc(c.email)}</div></div>
-        <div class="sa-fld"><label>Tél réel (transfert)</label><div class="v">${saEsc(c.telephone_reel||'—')}</div></div>
-        <div class="sa-fld"><label>Numéro Twilio</label><div class="v">${saEsc(c.twilio_number||'—')}</div></div>
-        <div class="sa-fld"><label>Notif email</label><div class="v">${c.notify_email?'Oui':'Non'}</div></div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
+/* ---- Modal client ---- */
 function saOpenModal(client){
   saState.editing = client && client.id ? client : null;
   const ed = saState.editing;
@@ -11526,7 +11588,6 @@ function saOpenModal(client){
   document.getElementById('sa-modal').classList.add('open');
 }
 function saCloseModal(){ document.getElementById('sa-modal').classList.remove('open'); }
-
 async function saSaveClient(){
   const err=document.getElementById('sa-modal-err'); err.style.display='none';
   const btn=document.getElementById('sa-save-btn'); btn.disabled=true; const lbl=btn.textContent; btn.textContent='…';
@@ -11556,7 +11617,7 @@ async function saSaveClient(){
       if(!r.ok||j.error) return fail(j.error||'Création impossible.');
     }
     saCloseModal(); btn.disabled=false; btn.textContent=lbl;
-    await saLoad(); saTab('clients');
+    await saLoad();
   }catch(e){ fail(String(e.message||e)); }
 }
 </script>
