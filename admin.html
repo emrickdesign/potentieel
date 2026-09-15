@@ -701,7 +701,7 @@
           <span class="topbar-title" id="tb-title">Dashboard</span>
         </div>
         <div class="topbar-right">
-          <div class="tb-btn tb-btn-ghost">
+          <div class="tb-btn tb-btn-ghost" style="cursor:pointer" onclick="saOpenClientEspace()" title="Voir l'espace d'un client">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             Espace client
           </div>
@@ -2359,7 +2359,10 @@
                 <div class="sa-det-name" id="sa-det-name">—</div>
                 <div class="sa-det-metaline" id="sa-det-meta"></div>
               </div>
-              <button class="sa-btn sa-btn-g" id="sa-det-edit">Modifier</button>
+              <div style="display:flex;gap:8px;flex-shrink:0">
+                <button class="sa-btn sa-btn-g" id="sa-det-espace">👁 Espace client</button>
+                <button class="sa-btn sa-btn-g" id="sa-det-edit">Modifier</button>
+              </div>
             </div>
             <div class="sa-hint" id="sa-det-hint" style="display:none"></div>
             <div class="sa-stats3">
@@ -11463,6 +11466,16 @@ function saItemsForClient(id){
 }
 function saStats(items){ return { total:items.length, missed:items.filter(i=>i.missed).length, week:items.filter(i=>saIsWeek(i.at)).length }; }
 
+/* ---- Aperçu de l'espace client (nouvel onglet) ---- */
+function saOpenClientEspace(){
+  if (saState.selected) { window.open('espace-client.html?preview='+saState.selected,'_blank'); return; }
+  // Aucun client ouvert : bascule sur l'onglet Suivi ads et invite à en choisir un
+  const item = document.querySelector('.nav-item[data-page="suivi"]');
+  if (item && !item.classList.contains('active')) nav(item);
+  if (saState.clients.length) alert("Ouvre d'abord un client, puis clique « Espace client » pour voir sa vue.");
+  else alert("Crée d'abord un client (bouton « + Nouveau client »).");
+}
+
 /* ---- Vue liste des clients ---- */
 function saCloseClient(){ saState.selected=null; saRenderClientsView(); }
 function saRenderClientsView(){
@@ -11505,6 +11518,7 @@ function saRenderDetail(){
   const meta=[c.type==='ads'?'Client Ads':'Client Site', c.twilio_number?('Numéro de suivi '+c.twilio_number):null, c.telephone_reel?('→ transfert vers '+c.telephone_reel):null].filter(Boolean).join('   ·   ');
   document.getElementById('sa-det-meta').textContent=meta;
   document.getElementById('sa-det-edit').onclick=()=>saOpenModal(c);
+  document.getElementById('sa-det-espace').onclick=()=>window.open('espace-client.html?preview='+c.id,'_blank');
   const hint=document.getElementById('sa-det-hint');
   if(c.type==='ads' && (!c.twilio_number||!c.telephone_reel)){
     hint.style.display=''; hint.innerHTML='⚠️ Renseigne le <b>numéro Twilio de suivi</b> et le <b>téléphone réel</b> (bouton Modifier) pour que les appels de ce client arrivent ici.';

@@ -140,6 +140,7 @@ const ADMIN_EMAILS = ['emrick.perilliat2006@gmail.com', 'eloisecld73@gmail.com']
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let CLIENT = null;
+let PREVIEW = false;
 
 function esc(s){ return String(s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 function telHref(t){ return String(t||'').replace(/[^+0-9]/g,''); }
@@ -161,24 +162,45 @@ function fmtDur(s){ s=+s||0; if(!s) return ''; const m=Math.floor(s/60), r=s%60;
 function isThisWeek(iso){ const d=new Date(iso), n=new Date(); const diff=(n-d)/86400000; return diff>=0 && diff<7; }
 
 async function boot(){
+  const previewId = new URLSearchParams(location.search).get('preview');
   const { data: { session } } = await sb.auth.getSession();
   if (!session?.user) { location.href = 'auth.html'; return; }
   const email = session.user.email;
-  if (ADMIN_EMAILS.includes(email)) { location.href = 'admin.html'; return; }
-  document.getElementById('whoName').textContent = email;
+  const isAdmin = ADMIN_EMAILS.includes(email);
 
-  const { data: client } = await sb.from('crm_clients')
-    .select('*').eq('auth_user_id', session.user.id).maybeSingle();
+  if (isAdmin && previewId) {
+    // Aperçu admin : voir l'espace d'un client donné
+    PREVIEW = true;
+    const { data: client } = await sb.from('crm_clients').select('*').eq('id', previewId).maybeSingle();
+    document.getElementById('loading').classList.add('hidden');
+    if (!client) { document.getElementById('gate').classList.remove('hidden'); return; }
+    CLIENT = client;
+    showPreviewBanner(client);
+  } else if (isAdmin) {
+    location.href = 'admin.html'; return;
+  } else {
+    document.getElementById('whoName').textContent = email;
+    const { data: client } = await sb.from('crm_clients')
+      .select('*').eq('auth_user_id', session.user.id).maybeSingle();
+    document.getElementById('loading').classList.add('hidden');
+    if (!client) { document.getElementById('gate').classList.remove('hidden'); return; }
+    CLIENT = client;
+  }
 
-  document.getElementById('loading').classList.add('hidden');
-
-  if (!client) { document.getElementById('gate').classList.remove('hidden'); return; }
-  CLIENT = client;
-
-  const name = client.nom || client.entreprise || '';
+  const name = CLIENT.nom || CLIENT.entreprise || '';
   document.getElementById('hiName').textContent = name ? name + ' 👋' : '👋';
   document.getElementById('app').classList.remove('hidden');
   load();
+}
+
+function showPreviewBanner(client){
+  const b = document.createElement('div');
+  b.style.cssText = 'background:var(--orange);color:#fff;padding:9px 16px;font-size:13px;font-weight:600;text-align:center;position:sticky;top:0;z-index:30';
+  b.textContent = '👁 Aperçu admin — espace de ' + (client.entreprise || client.nom || client.email) + ' (ce que le client voit)';
+  document.body.insertBefore(b, document.body.firstChild);
+  document.getElementById('whoName').textContent = 'Aperçu admin';
+  const lo = document.querySelector('.ec-logout');
+  if (lo) { lo.textContent = '← Admin'; lo.setAttribute('onclick', "location.href='admin.html'"); }
 }
 
 async function load(){
@@ -188,14 +210,18 @@ async function load(){
     sb.from('form_submissions').select('*').eq('client_id', CLIENT.id).order('submitted_at',{ascending:false}),
   ]);
 
-  const calls = (callsRes.data||[]).map(c => ({
+  // Ce que le client voit : appels qualifiés OU manqués/répondeur ; formulaires qualifiés.
+  // (En mode client la RLS filtre déjà ; on ré-applique pour l'aperçu admin qui lit tout.)
+  const rawCalls = (callsRes.data||[]).filter(c =>
+    c.qualification === 'qualifie' || c.status === 'manque' || c.status === 'repondeur');
+  const calls = rawCalls.map(c => ({
     kind:'call', at: c.created_at,
     missed: (c.status==='manque' || c.status==='repondeur'),
     name: c.from_number || 'Appel',
     tel: c.from_number, status: c.status, dur: c.duration_sec,
     rec: c.recording_url, note: c.notes,
   }));
-  const forms = (formsRes.data||[]).map(f => ({
+  const forms = (formsRes.data||[]).filter(f => f.qualification === 'qualifie').map(f => ({
     kind:'form', at: f.submitted_at, missed:false,
     name: f.prenom || f.entreprise || 'Nouveau contact',
     tel: f.telephone,
