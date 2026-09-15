@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Espace client — Potentieel</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.json">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { background: var(--bg); margin: 0; color: var(--white);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif; }
+    a { color: inherit; }
+
+    /* ---- Topbar ---- */
+    .ec-top {
+      position: sticky; top: 0; z-index: 20;
+      background: rgba(255,255,255,.85); backdrop-filter: saturate(1.4) blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: calc(env(safe-area-inset-top) + 12px) 20px 12px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .ec-brand { display: inline-flex; align-items: center; gap: 8px; font-weight: 800; letter-spacing: 1px; font-size: 14px; }
+    .ec-brand .mk { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;background:var(--orange);border-radius:6px; }
+    .ec-who { display:flex; align-items:center; gap:10px; font-size:13px; color: var(--gray); }
+    .ec-logout { background: var(--bg-card-2); border:1px solid var(--border-card); color: var(--gray-light);
+      border-radius: 9px; padding: 7px 12px; font-size: 13px; font-weight:600; cursor: pointer; }
+    .ec-logout:hover { background: var(--bg-card-3); }
+
+    /* ---- Layout ---- */
+    .ec-wrap { max-width: 760px; margin: 0 auto; padding: 22px 20px calc(env(safe-area-inset-bottom) + 40px); }
+    .ec-hi { font-size: 24px; font-weight: 800; margin: 8px 0 2px; letter-spacing: -.3px; }
+    .ec-hi small { display:block; font-size: 14px; font-weight: 500; color: var(--gray); margin-top: 4px; }
+
+    /* ---- Stat strip ---- */
+    .ec-stats { display:grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 20px 0 8px; }
+    .ec-stat { background: var(--bg-card); border:1px solid var(--border-card); border-radius: 14px; padding: 14px 12px; }
+    .ec-stat b { display:block; font-size: 22px; font-weight: 800; letter-spacing:-.5px; }
+    .ec-stat span { font-size: 11.5px; color: var(--gray); font-weight:600; text-transform: uppercase; letter-spacing:.4px; }
+    .ec-stat.alert b { color: var(--orange); }
+
+    /* ---- Section head ---- */
+    .ec-sechead { display:flex; align-items:center; justify-content:space-between; margin: 26px 0 12px; }
+    .ec-sechead h2 { font-size: 15px; font-weight: 800; margin:0; text-transform: uppercase; letter-spacing:.6px; color: var(--gray-light); }
+    .ec-refresh { background:none; border:none; color: var(--orange); font-size:13px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:5px; }
+
+    /* ---- Demand card ---- */
+    .ec-card { background: var(--bg-card); border:1px solid var(--border-card); border-radius: 16px;
+      padding: 16px; margin-bottom: 12px; display:flex; gap: 14px; align-items: flex-start; }
+    .ec-card.missed { border-color: #e6b8a3; background: #fff6f1; }
+    .ec-ic { flex:0 0 auto; width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+      background: var(--bg-card-3); color: var(--gray-light); }
+    .ec-card.missed .ec-ic { background: #f3d3c4; color: var(--orange); }
+    .ec-card.form .ec-ic { background:#e5eee6; color:#3a7d54; }
+    .ec-body { flex:1 1 auto; min-width:0; }
+    .ec-row1 { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .ec-name { font-weight: 700; font-size: 15px; }
+    .ec-badge { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 999px; letter-spacing:.3px; }
+    .b-missed { background:#f4926a22; color: var(--orange); }
+    .b-ok { background:#3a7d5422; color:#2f6a46; }
+    .b-form { background:#5a6b8622; color:#4a5a78; }
+    .ec-meta { color: var(--gray); font-size: 13px; margin-top: 3px; display:flex; gap:8px; flex-wrap:wrap; }
+    .ec-meta .dot { opacity:.5; }
+    .ec-note { margin-top: 8px; font-size: 13.5px; color: var(--gray-light); background: var(--bg-card-2);
+      border-radius: 10px; padding: 8px 11px; white-space: pre-wrap; }
+    audio { width: 100%; margin-top: 10px; height: 36px; }
+    .ec-actions { margin-top: 12px; display:flex; gap:8px; flex-wrap:wrap; }
+    .ec-call { display:inline-flex; align-items:center; gap:6px; background: var(--orange); color:#fff;
+      text-decoration:none; font-weight:700; font-size:13.5px; padding: 9px 15px; border-radius: 10px; }
+    .ec-call:hover { opacity:.9; }
+    .ec-tel { display:inline-flex; align-items:center; gap:6px; border:1px solid var(--border-card);
+      color: var(--gray-light); text-decoration:none; font-weight:600; font-size:13.5px; padding: 9px 13px; border-radius:10px; }
+
+    /* ---- Empty / states ---- */
+    .ec-empty { text-align:center; padding: 48px 20px; color: var(--gray); }
+    .ec-empty svg { opacity:.4; margin-bottom:12px; }
+    .ec-empty h3 { color: var(--gray-light); font-size: 16px; margin: 0 0 6px; }
+    .ec-loading { text-align:center; padding: 60px; color: var(--gray); font-size:14px; }
+    .ec-gate { max-width: 460px; margin: 60px auto; text-align:center; padding: 32px 24px;
+      background: var(--bg-card); border:1px solid var(--border-card); border-radius: 18px; }
+    .ec-gate h2 { font-size:18px; margin:0 0 8px; }
+    .ec-gate p { color: var(--gray); font-size:14px; line-height:1.55; margin:0 0 18px; }
+    .ec-gate a { color: var(--orange); font-weight:600; text-decoration:none; }
+    .hidden { display:none !important; }
+  </style>
+</head>
+<body>
+
+<div class="ec-top">
+  <span class="ec-brand">
+    <span class="mk"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+    POTENTIEEL
+  </span>
+  <span class="ec-who">
+    <span id="whoName"></span>
+    <button class="ec-logout" onclick="logout()">Déconnexion</button>
+  </span>
+</div>
+
+<div id="loading" class="ec-loading">Chargement de votre espace…</div>
+
+<!-- Compte non rattaché -->
+<div id="gate" class="ec-gate hidden">
+  <h2>Votre espace est en cours de configuration</h2>
+  <p>Votre compte est bien connecté mais n'est pas encore rattaché à un suivi. Notre équipe s'en occupe — cela ne prend que quelques minutes.</p>
+  <a href="mailto:potentieel.web@gmail.com">Nous contacter</a>
+</div>
+
+<!-- Espace ads -->
+<div id="app" class="ec-wrap hidden">
+  <h1 class="ec-hi">Bonjour <span id="hiName">👋</span>
+    <small id="hiSub">Voici les demandes reçues via vos campagnes.</small>
+  </h1>
+
+  <div class="ec-stats">
+    <div class="ec-stat"><b id="stTotal">0</b><span>Demandes</span></div>
+    <div class="ec-stat alert"><b id="stMissed">0</b><span>À rappeler</span></div>
+    <div class="ec-stat"><b id="stWeek">0</b><span>Cette semaine</span></div>
+  </div>
+
+  <div class="ec-sechead">
+    <h2>Vos demandes</h2>
+    <button class="ec-refresh" onclick="load()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><polyline points="21 3 21 9 15 9"/></svg> Actualiser</button>
+  </div>
+
+  <div id="list"></div>
+
+  <div id="empty" class="ec-empty hidden">
+    <svg viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+    <h3>Aucune demande pour le moment</h3>
+    <p style="font-size:13.5px">Dès qu'un prospect appelle ou remplit un formulaire, il apparaîtra ici.</p>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://alpzagoprkpzirgtrdup.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFscHphZ29wcmtwemlyZ3RyZHVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3OTg2MDEsImV4cCI6MjA5MjM3NDYwMX0.R7R6esDFce1W4k_wK-aBtAG20oUtK2SmSNCVKENS91g';
+const ADMIN_EMAILS = ['emrick.perilliat2006@gmail.com', 'eloisecld73@gmail.com'];
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let CLIENT = null;
+
+function esc(s){ return String(s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function telHref(t){ return String(t||'').replace(/[^+0-9]/g,''); }
+function initials(n){ return (String(n||'?').trim()[0]||'?').toUpperCase(); }
+
+function fmtDate(iso){
+  try {
+    const d = new Date(iso);
+    const now = new Date();
+    const sameDay = d.toDateString() === now.toDateString();
+    const t = new Intl.DateTimeFormat('fr-FR',{hour:'2-digit',minute:'2-digit'}).format(d);
+    if (sameDay) return "Aujourd'hui · " + t;
+    const y = new Date(now); y.setDate(now.getDate()-1);
+    if (d.toDateString() === y.toDateString()) return "Hier · " + t;
+    return new Intl.DateTimeFormat('fr-FR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}).format(d);
+  } catch { return ''; }
+}
+function fmtDur(s){ s=+s||0; if(!s) return ''; const m=Math.floor(s/60), r=s%60; return m? `${m} min ${r?r+'s':''}`.trim() : `${r}s`; }
+function isThisWeek(iso){ const d=new Date(iso), n=new Date(); const diff=(n-d)/86400000; return diff>=0 && diff<7; }
+
+async function boot(){
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session?.user) { location.href = 'auth.html'; return; }
+  const email = session.user.email;
+  if (ADMIN_EMAILS.includes(email)) { location.href = 'admin.html'; return; }
+  document.getElementById('whoName').textContent = email;
+
+  const { data: client } = await sb.from('crm_clients')
+    .select('*').eq('auth_user_id', session.user.id).maybeSingle();
+
+  document.getElementById('loading').classList.add('hidden');
+
+  if (!client) { document.getElementById('gate').classList.remove('hidden'); return; }
+  CLIENT = client;
+
+  const name = client.nom || client.entreprise || '';
+  document.getElementById('hiName').textContent = name ? name + ' 👋' : '👋';
+  document.getElementById('app').classList.remove('hidden');
+  load();
+}
+
+async function load(){
+  if (!CLIENT) return;
+  const [callsRes, formsRes] = await Promise.all([
+    sb.from('ads_calls').select('*').eq('client_id', CLIENT.id).order('created_at',{ascending:false}),
+    sb.from('form_submissions').select('*').eq('client_id', CLIENT.id).order('submitted_at',{ascending:false}),
+  ]);
+
+  const calls = (callsRes.data||[]).map(c => ({
+    kind:'call', at: c.created_at,
+    missed: (c.status==='manque' || c.status==='repondeur'),
+    name: c.from_number || 'Appel',
+    tel: c.from_number, status: c.status, dur: c.duration_sec,
+    rec: c.recording_url, note: c.notes,
+  }));
+  const forms = (formsRes.data||[]).map(f => ({
+    kind:'form', at: f.submitted_at, missed:false,
+    name: f.prenom || f.entreprise || 'Nouveau contact',
+    tel: f.telephone,
+    meta: [f.ville, f.domaine].filter(Boolean).join(' · '),
+    note: f.entreprise && f.prenom ? (f.entreprise) : '',
+  }));
+
+  const items = [...calls, ...forms].sort((a,b)=> new Date(b.at) - new Date(a.at));
+
+  document.getElementById('stTotal').textContent = items.length;
+  document.getElementById('stMissed').textContent = items.filter(i=>i.missed).length;
+  document.getElementById('stWeek').textContent = items.filter(i=>isThisWeek(i.at)).length;
+
+  const list = document.getElementById('list');
+  const empty = document.getElementById('empty');
+  if (!items.length){ list.innerHTML=''; empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+  list.innerHTML = items.map(render).join('');
+}
+
+function render(i){
+  if (i.kind === 'call'){
+    const badge = i.missed
+      ? '<span class="ec-badge b-missed">Appel manqué</span>'
+      : '<span class="ec-badge b-ok">Appel reçu</span>';
+    const meta = [fmtDate(i.at), !i.missed && fmtDur(i.dur)].filter(Boolean)
+      .map((m,idx)=> idx? '<span class="dot">·</span>'+m : m).join(' ');
+    const audio = i.rec ? `<audio controls preload="none" src="${esc(i.rec)}"></audio>` : '';
+    return `<div class="ec-card ${i.missed?'missed':''}">
+      <div class="ec-ic">${i.missed
+        ? '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.09 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/><line x1="23" y1="1" x2="17" y2="7"/><line x1="17" y1="1" x2="23" y2="7"/></svg>'
+        : '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.09 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>'}
+      </div>
+      <div class="ec-body">
+        <div class="ec-row1"><span class="ec-name">${esc(i.name)}</span>${badge}</div>
+        <div class="ec-meta">${meta}</div>
+        ${audio}
+        ${i.tel ? `<div class="ec-actions">
+          <a class="ec-call" href="tel:${telHref(i.tel)}"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.09 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg> Rappeler</a>
+        </div>`:''}
+      </div>
+    </div>`;
+  }
+  // form
+  return `<div class="ec-card form">
+    <div class="ec-ic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+    <div class="ec-body">
+      <div class="ec-row1"><span class="ec-name">${esc(i.name)}</span><span class="ec-badge b-form">Formulaire</span></div>
+      <div class="ec-meta">${fmtDate(i.at)}${i.meta?`<span class="dot">·</span>${esc(i.meta)}`:''}</div>
+      <div class="ec-actions">
+        ${i.tel?`<a class="ec-call" href="tel:${telHref(i.tel)}"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.09 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg> Rappeler</a>`:''}
+        ${i.tel?`<a class="ec-tel" href="tel:${telHref(i.tel)}">${esc(i.tel)}</a>`:''}
+      </div>
+    </div>
+  </div>`;
+}
+
+async function logout(){ await sb.auth.signOut(); location.href = 'auth.html'; }
+
+boot();
+</script>
+</body>
+</html>

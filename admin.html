@@ -669,6 +669,7 @@
         <div class="nav-item" data-page="projets" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg> <span>Projets</span></div>
         <div class="nav-item" data-page="clients" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg> <span>Clients</span></div>
         <div class="nav-item" data-page="appels" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.07 19.79 19.79 0 01.12.45a2 2 0 012-2.18h3a2 2 0 012 1.72c.127.96.361 1.9.7 2.81a2 2 0 01-.45 2.11L6.91 10.09a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7a2 2 0 011.72 2z"/></svg> <span>Appels</span></div>
+        <div class="nav-item" data-page="suivi" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14"/></svg> <span>Suivi ads</span> <span class="ni-badge" id="badge-suivi" style="display:none">0</span></div>
 
         <div class="sb-section">Opérations</div>
         <div class="nav-item" data-page="documents" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> <span>Documents</span></div>
@@ -2251,6 +2252,116 @@
               <p style="font-size:12px;color:var(--muted);margin-bottom:18px">Requise pour les débriefs IA. Stockée dans ton navigateur uniquement.</p>
               <input id="ap-apikey-input" type="password" placeholder="sk-ant-api03-..." style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:11px 14px;color:#fff;font-size:13px;outline:none;box-sizing:border-box;margin-bottom:12px">
               <button onclick="apSaveApiKey()" style="width:100%;padding:12px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:700;cursor:pointer">Enregistrer</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── SUIVI ADS ── -->
+        <div id="page-suivi" class="page">
+          <style>
+            #page-suivi .sa-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+            #page-suivi .sa-h1{font-size:22px;font-weight:800}
+            #page-suivi .sa-h1 small{display:block;font-size:13px;font-weight:500;color:var(--muted);margin-top:3px}
+            #page-suivi .sa-actions{display:flex;gap:8px}
+            .sa-btn{padding:9px 15px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:.15s;display:inline-flex;align-items:center;gap:6px}
+            .sa-btn-p{background:var(--accent);color:#fff}.sa-btn-p:hover{background:var(--accent2)}
+            .sa-btn-g{background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border)}.sa-btn-g:hover{background:rgba(255,255,255,.1)}
+            .sa-tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:16px}
+            .sa-tab{padding:10px 16px;font-size:13px;font-weight:700;color:var(--muted);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent}
+            .sa-tab.active{color:var(--text);border-bottom-color:var(--accent)}
+            .sa-chips{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap}
+            .sa-chip{padding:6px 13px;border-radius:999px;font-size:12px;font-weight:600;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer}
+            .sa-chip.active{background:rgba(244,146,106,.15);border-color:var(--accent);color:var(--accent)}
+            .sa-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:15px 16px;margin-bottom:11px;display:flex;gap:13px;align-items:flex-start}
+            .sa-card.missed{border-color:rgba(244,87,106,.4)}
+            .sa-ic{flex:0 0 auto;width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.05);color:var(--muted)}
+            .sa-card.missed .sa-ic{background:rgba(244,87,106,.13);color:var(--red)}
+            .sa-card.form .sa-ic{background:rgba(45,213,115,.1);color:var(--green)}
+            .sa-b{flex:1;min-width:0}
+            .sa-r1{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+            .sa-nm{font-weight:700;font-size:14.5px}
+            .sa-bdg{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:.3px}
+            .bg-missed{background:rgba(244,87,106,.15);color:var(--red)}
+            .bg-ok{background:rgba(45,213,115,.15);color:var(--green)}
+            .bg-form{background:rgba(120,140,200,.15);color:#9db0f0}
+            .bg-q{background:rgba(45,213,115,.15);color:var(--green)}
+            .bg-dq{background:rgba(148,148,179,.15);color:var(--muted)}
+            .bg-nv{background:rgba(244,146,106,.15);color:var(--accent)}
+            .sa-meta{color:var(--muted);font-size:12.5px;margin-top:3px;display:flex;gap:7px;flex-wrap:wrap}
+            #page-suivi audio{height:34px;margin-top:9px;width:100%;max-width:340px;display:block}
+            .sa-ctrl{margin-top:11px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+            .sa-sel{background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:7px 9px;font-size:12px}
+            .sa-q{padding:7px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text)}
+            .sa-q.ok{background:rgba(45,213,115,.13);border-color:rgba(45,213,115,.3);color:var(--green)}
+            .sa-q.no{background:rgba(244,87,106,.1);border-color:rgba(244,87,106,.3);color:var(--red)}
+            .sa-q.on{outline:2px solid currentColor}
+            .sa-cli{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:11px}
+            .sa-cli-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+            .sa-cli-nm{font-size:15px;font-weight:800}
+            .sa-cli-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:12px}
+            .sa-fld label{display:block;font-size:11px;color:var(--muted);font-weight:600;margin-bottom:3px}
+            .sa-fld .v{font-size:13px}
+            .sa-empty{text-align:center;padding:44px;color:var(--muted)}
+            .sa-hint{background:rgba(244,146,106,.07);border:1px solid rgba(244,146,106,.25);border-radius:11px;padding:12px 14px;font-size:12.5px;color:var(--muted);margin-bottom:14px;line-height:1.6}
+            .sa-hint code{color:var(--accent);font-family:monospace;font-size:11.5px;word-break:break-all}
+            /* modal */
+            #sa-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:200;padding:16px}
+            #sa-modal.open{display:flex}
+            .sa-modal-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;width:100%;max-width:440px;max-height:90vh;overflow-y:auto}
+            .sa-modal-card h3{font-size:17px;font-weight:800;margin:0 0 16px}
+            .sa-form-g{margin-bottom:12px}
+            .sa-form-g label{display:block;font-size:12px;color:var(--muted);font-weight:600;margin-bottom:5px}
+            .sa-form-g input,.sa-form-g select{width:100%;box-sizing:border-box;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:9px;padding:10px 12px;font-size:13.5px}
+            .sa-modal-err{color:var(--red);font-size:12px;margin-top:8px;display:none}
+            .sa-modal-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+          </style>
+
+          <div class="sa-head">
+            <div class="sa-h1">Suivi ads <small>Demandes reçues (appels & formulaires) et comptes clients.</small></div>
+            <div class="sa-actions">
+              <button class="sa-btn sa-btn-g" onclick="saLoad()">↻ Actualiser</button>
+              <button class="sa-btn sa-btn-p" onclick="saOpenModal()">+ Nouveau client</button>
+            </div>
+          </div>
+
+          <div class="sa-tabs">
+            <button class="sa-tab active" data-t="demandes" onclick="saTab('demandes')">Demandes</button>
+            <button class="sa-tab" data-t="clients" onclick="saTab('clients')">Clients</button>
+          </div>
+
+          <div id="sa-tab-demandes">
+            <div class="sa-chips" id="sa-chips">
+              <span class="sa-chip active" data-f="all" onclick="saFilter('all')">Tout</span>
+              <span class="sa-chip" data-f="todo" onclick="saFilter('todo')">À qualifier</span>
+              <span class="sa-chip" data-f="missed" onclick="saFilter('missed')">Manqués</span>
+              <span class="sa-chip" data-f="qualifie" onclick="saFilter('qualifie')">Qualifiés</span>
+            </div>
+            <div id="sa-list"><div class="sa-empty">Chargement…</div></div>
+          </div>
+
+          <div id="sa-tab-clients" style="display:none">
+            <div class="sa-hint">Webhook Twilio à pointer sur le numéro de suivi (Voice → A call comes in, POST) :<br><code>https://alpzagoprkpzirgtrdup.supabase.co/functions/v1/twilio-voice</code></div>
+            <div id="sa-clients"><div class="sa-empty">Chargement…</div></div>
+          </div>
+        </div>
+
+        <!-- Modal client -->
+        <div id="sa-modal">
+          <div class="sa-modal-card">
+            <h3 id="sa-modal-title">Nouveau client</h3>
+            <input type="hidden" id="sa-c-id">
+            <div class="sa-form-g"><label>Entreprise</label><input id="sa-c-entreprise" placeholder="Ex. Toiture Martin"></div>
+            <div class="sa-form-g"><label>Nom du contact</label><input id="sa-c-nom" placeholder="Ex. Jean Martin"></div>
+            <div class="sa-form-g"><label>Email de connexion *</label><input id="sa-c-email" type="email" placeholder="client@exemple.fr"></div>
+            <div class="sa-form-g" id="sa-c-pwd-wrap"><label>Mot de passe initial * (6+ car.)</label><input id="sa-c-pwd" type="text" placeholder="À communiquer au client"></div>
+            <div class="sa-form-g"><label>Type de client</label><select id="sa-c-type"><option value="ads">Ads (suivi complet)</option><option value="site">Site internet</option></select></div>
+            <div class="sa-form-g"><label>Téléphone réel (cible du transfert)</label><input id="sa-c-tel" placeholder="+336..."></div>
+            <div class="sa-form-g"><label>Numéro Twilio de suivi</label><input id="sa-c-twilio" placeholder="+339..."></div>
+            <div class="sa-form-g"><label><input type="checkbox" id="sa-c-notify" checked style="width:auto;margin-right:6px">Notifier le client par email (appels manqués)</label></div>
+            <div class="sa-modal-err" id="sa-modal-err"></div>
+            <div class="sa-modal-foot">
+              <button class="sa-btn sa-btn-g" onclick="saCloseModal()">Annuler</button>
+              <button class="sa-btn sa-btn-p" id="sa-save-btn" onclick="saSaveClient()">Créer le compte</button>
             </div>
           </div>
         </div>
@@ -3848,7 +3959,7 @@ async function bootApp(email) {
 const sections = {
   dashboard:'VUE D\'ENSEMBLE', pipeline:'BUSINESS', taches:'PILOTAGE',
   objectifs:'PILOTAGE', planning:'PILOTAGE',
-  clients:'BUSINESS', leads:'BUSINESS', ads:'BUSINESS',
+  clients:'BUSINESS', leads:'BUSINESS', ads:'BUSINESS', suivi:'BUSINESS',
   formulaire:'BUSINESS', appels:'BUSINESS',
   documents:'OPÉRATIONS', facturation:'OPÉRATIONS', devis:'OPÉRATIONS',
   depenses:'OPÉRATIONS'
@@ -3856,7 +3967,7 @@ const sections = {
 const titles = {
   dashboard:'Dashboard', pipeline:'Pipeline', taches:'Tâches',
   objectifs:'Objectifs', planning:'Planning',
-  clients:'Clients', leads:'Leads', ads:'Google Ads',
+  clients:'Clients', leads:'Leads', ads:'Google Ads', suivi:'Suivi ads',
   formulaire:'Formulaire', appels:'Appels',
   documents:'Documents', facturation:'Facturation', devis:'Devis',
   depenses:'Trésorerie'
@@ -3891,6 +4002,7 @@ function nav(el) {
   if(p==='projets') { prLoad().then(() => { prRender(); prLoadAllAssetsFromIDB(); }).catch(()=>{ prRender(); prLoadAllAssetsFromIDB(); }); }
   if(p==='formulaire') fmLoad();
   if(p==='appels') apInit();
+  if(p==='suivi') saInit();
   if(p==='objectifs') obInit();
   if(p==='planning') plInit();
   if(p==='depenses') dpInit();
@@ -11277,6 +11389,176 @@ if (document.readyState === 'loading')
   document.addEventListener('DOMContentLoaded', pushInit);
 else
   pushInit();
+</script>
+<script>
+/* ============ SUIVI ADS ============ */
+const saState = { clients:[], calls:[], forms:[], tab:'demandes', filter:'all', editing:null, loaded:false };
+function saEsc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function saTel(t){ return String(t||'').replace(/[^+0-9]/g,''); }
+function saDate(iso){ try{ const d=new Date(iso),n=new Date(); const t=new Intl.DateTimeFormat('fr-FR',{hour:'2-digit',minute:'2-digit'}).format(d);
+  if(d.toDateString()===n.toDateString()) return "Aujourd'hui "+t;
+  const y=new Date(n);y.setDate(n.getDate()-1); if(d.toDateString()===y.toDateString()) return "Hier "+t;
+  return new Intl.DateTimeFormat('fr-FR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}).format(d);}catch{return'';} }
+function saDur(s){ s=+s||0; if(!s)return''; const m=Math.floor(s/60),r=s%60; return m?`${m}min${r?' '+r+'s':''}`:`${r}s`; }
+
+async function saInit(){ if(!saState.loaded){ document.getElementById('sa-list').innerHTML='<div class="sa-empty">Chargement…</div>'; } saLoad(); }
+
+async function saLoad(){
+  const [cl,ca,fo] = await Promise.all([
+    sb.from('crm_clients').select('*').order('created_at',{ascending:false}),
+    sb.from('ads_calls').select('*').order('created_at',{ascending:false}),
+    sb.from('form_submissions').select('*').order('submitted_at',{ascending:false}),
+  ]);
+  saState.clients = cl.data||[]; saState.calls = ca.data||[]; saState.forms = fo.data||[]; saState.loaded=true;
+  const todo = saState.calls.filter(c=>c.qualification==='nouveau').length + saState.forms.filter(f=>f.qualification==='nouveau').length;
+  const b=document.getElementById('badge-suivi'); if(b){ b.textContent=todo; b.style.display=todo?'':'none'; }
+  saState.tab==='clients' ? saRenderClients() : saRenderDemandes();
+}
+
+function saTab(t){ saState.tab=t;
+  document.querySelectorAll('#page-suivi .sa-tab').forEach(x=>x.classList.toggle('active',x.dataset.t===t));
+  document.getElementById('sa-tab-demandes').style.display = t==='demandes'?'':'none';
+  document.getElementById('sa-tab-clients').style.display  = t==='clients'?'':'none';
+  t==='clients'?saRenderClients():saRenderDemandes();
+}
+function saFilter(f){ saState.filter=f; document.querySelectorAll('#sa-chips .sa-chip').forEach(x=>x.classList.toggle('active',x.dataset.f===f)); saRenderDemandes(); }
+
+function saClientOptions(sel){
+  return '<option value="">— non attribué —</option>' + saState.clients.map(c=>
+    `<option value="${c.id}" ${c.id===sel?'selected':''}>${saEsc(c.entreprise||c.nom||c.email)}</option>`).join('');
+}
+function saQualBadge(q){ return q==='qualifie'?'<span class="sa-bdg bg-q">Qualifié</span>':q==='disqualifie'?'<span class="sa-bdg bg-dq">Disqualifié</span>':'<span class="sa-bdg bg-nv">À qualifier</span>'; }
+
+function saRenderDemandes(){
+  const calls = saState.calls.map(c=>({kind:'call',id:c.id,at:c.created_at,client_id:c.client_id,qual:c.qualification,
+    missed:(c.status==='manque'||c.status==='repondeur'),status:c.status,name:c.from_number||'Appel',tel:c.from_number,dur:c.duration_sec,rec:c.recording_url}));
+  const forms = saState.forms.map(f=>({kind:'form',id:f.id,at:f.submitted_at,client_id:f.client_id,qual:f.qualification,missed:false,
+    name:f.prenom||f.entreprise||'Contact',tel:f.telephone,meta:[f.ville,f.domaine].filter(Boolean).join(' · ')}));
+  let items=[...calls,...forms].sort((a,b)=>new Date(b.at)-new Date(a.at));
+  const f=saState.filter;
+  if(f==='todo') items=items.filter(i=>i.qual==='nouveau');
+  else if(f==='missed') items=items.filter(i=>i.missed);
+  else if(f==='qualifie') items=items.filter(i=>i.qual==='qualifie');
+  const el=document.getElementById('sa-list');
+  if(!items.length){ el.innerHTML='<div class="sa-empty">Aucune demande.</div>'; return; }
+  el.innerHTML=items.map(saCard).join('');
+}
+
+function saCard(i){
+  const phoneSvg='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.09 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg>';
+  const cls=i.kind==='form'?'form':(i.missed?'missed':'');
+  const badge=i.kind==='form'?'<span class="sa-bdg bg-form">Formulaire</span>':(i.missed?'<span class="sa-bdg bg-missed">Manqué</span>':'<span class="sa-bdg bg-ok">Répondu</span>');
+  const meta=[saDate(i.at), i.kind==='call'&&!i.missed&&saDur(i.dur), i.meta].filter(Boolean).join(' · ');
+  const audio=i.rec?`<audio controls preload="none" src="${saEsc(i.rec)}"></audio>`:'';
+  const q=i.qual||'nouveau';
+  return `<div class="sa-card ${cls}">
+    <div class="sa-ic">${phoneSvg}</div>
+    <div class="sa-b">
+      <div class="sa-r1"><span class="sa-nm">${saEsc(i.name)}</span>${badge}${saQualBadge(q)}</div>
+      <div class="sa-meta">${saEsc(meta)}${i.tel?` · <a href="tel:${saTel(i.tel)}" style="color:var(--accent);text-decoration:none">${saEsc(i.tel)}</a>`:''}</div>
+      ${audio}
+      <div class="sa-ctrl">
+        <select class="sa-sel" onchange="saAssign('${i.kind}','${i.id}',this.value)">${saClientOptions(i.client_id)}</select>
+        <button class="sa-q ok ${q==='qualifie'?'on':''}" onclick="saQualify('${i.kind}','${i.id}','qualifie')">✓ Qualifier</button>
+        <button class="sa-q no ${q==='disqualifie'?'on':''}" onclick="saQualify('${i.kind}','${i.id}','disqualifie')">✗ Disqualifier</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+async function saAssign(kind,id,clientId){
+  const tbl=kind==='call'?'ads_calls':'form_submissions';
+  const { error } = await sb.from(tbl).update({ client_id: clientId||null }).eq('id',id);
+  if(error){ alert('Erreur: '+error.message); return; }
+  const arr=kind==='call'?saState.calls:saState.forms; const row=arr.find(r=>r.id===id); if(row) row.client_id=clientId||null;
+}
+async function saQualify(kind,id,val){
+  const tbl=kind==='call'?'ads_calls':'form_submissions';
+  const arr=kind==='call'?saState.calls:saState.forms; const row=arr.find(r=>r.id===id);
+  const next = row && row.qualification===val ? 'nouveau' : val; // re-clic = annule
+  const { error } = await sb.from(tbl).update({ qualification: next }).eq('id',id);
+  if(error){ alert('Erreur: '+error.message); return; }
+  if(row) row.qualification=next;
+  saRenderDemandes();
+  const todo = saState.calls.filter(c=>c.qualification==='nouveau').length + saState.forms.filter(f=>f.qualification==='nouveau').length;
+  const b=document.getElementById('badge-suivi'); if(b){ b.textContent=todo; b.style.display=todo?'':'none'; }
+}
+
+function saRenderClients(){
+  const el=document.getElementById('sa-clients');
+  if(!saState.clients.length){ el.innerHTML='<div class="sa-empty">Aucun client. Cliquez « + Nouveau client ».</div>'; return; }
+  el.innerHTML=saState.clients.map(c=>{
+    const typeBadge = c.type==='ads'?'<span class="sa-bdg bg-nv">Ads</span>':'<span class="sa-bdg bg-form">Site</span>';
+    const inactif = c.actif?'':'<span class="sa-bdg bg-dq">Inactif</span>';
+    return `<div class="sa-cli">
+      <div class="sa-cli-top">
+        <div class="sa-cli-nm">${saEsc(c.entreprise||c.nom||c.email)} ${typeBadge} ${inactif}</div>
+        <button class="sa-btn sa-btn-g" onclick='saOpenModal(${JSON.stringify(c).replace(/'/g,"&#39;")})'>Modifier</button>
+      </div>
+      <div class="sa-cli-grid">
+        <div class="sa-fld"><label>Contact</label><div class="v">${saEsc(c.nom||'—')}</div></div>
+        <div class="sa-fld"><label>Email</label><div class="v">${saEsc(c.email)}</div></div>
+        <div class="sa-fld"><label>Tél réel (transfert)</label><div class="v">${saEsc(c.telephone_reel||'—')}</div></div>
+        <div class="sa-fld"><label>Numéro Twilio</label><div class="v">${saEsc(c.twilio_number||'—')}</div></div>
+        <div class="sa-fld"><label>Notif email</label><div class="v">${c.notify_email?'Oui':'Non'}</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function saOpenModal(client){
+  saState.editing = client && client.id ? client : null;
+  const ed = saState.editing;
+  document.getElementById('sa-modal-title').textContent = ed?'Modifier le client':'Nouveau client';
+  document.getElementById('sa-c-id').value = ed?ed.id:'';
+  document.getElementById('sa-c-entreprise').value = ed?ed.entreprise||'':'';
+  document.getElementById('sa-c-nom').value = ed?ed.nom||'':'';
+  document.getElementById('sa-c-email').value = ed?ed.email||'':'';
+  document.getElementById('sa-c-email').disabled = !!ed;
+  document.getElementById('sa-c-pwd').value = '';
+  document.getElementById('sa-c-pwd-wrap').style.display = ed?'none':'';
+  document.getElementById('sa-c-type').value = ed?ed.type||'ads':'ads';
+  document.getElementById('sa-c-tel').value = ed?ed.telephone_reel||'':'';
+  document.getElementById('sa-c-twilio').value = ed?ed.twilio_number||'':'';
+  document.getElementById('sa-c-notify').checked = ed?ed.notify_email!==false:true;
+  document.getElementById('sa-modal-err').style.display='none';
+  document.getElementById('sa-save-btn').textContent = ed?'Enregistrer':'Créer le compte';
+  document.getElementById('sa-modal').classList.add('open');
+}
+function saCloseModal(){ document.getElementById('sa-modal').classList.remove('open'); }
+
+async function saSaveClient(){
+  const err=document.getElementById('sa-modal-err'); err.style.display='none';
+  const btn=document.getElementById('sa-save-btn'); btn.disabled=true; const lbl=btn.textContent; btn.textContent='…';
+  const payload={
+    entreprise:document.getElementById('sa-c-entreprise').value.trim()||null,
+    nom:document.getElementById('sa-c-nom').value.trim()||null,
+    type:document.getElementById('sa-c-type').value,
+    telephone_reel:document.getElementById('sa-c-tel').value.trim()||null,
+    twilio_number:document.getElementById('sa-c-twilio').value.trim()||null,
+    notify_email:document.getElementById('sa-c-notify').checked,
+  };
+  const fail=(m)=>{ err.textContent=m; err.style.display='block'; btn.disabled=false; btn.textContent=lbl; };
+  try{
+    if(saState.editing){
+      const { error } = await sb.from('crm_clients').update(payload).eq('id',saState.editing.id);
+      if(error) return fail(error.message);
+    } else {
+      const email=document.getElementById('sa-c-email').value.trim().toLowerCase();
+      const password=document.getElementById('sa-c-pwd').value;
+      if(!email||password.length<6) return fail('Email + mot de passe (6 caractères min.) requis.');
+      const { data:{ session } } = await sb.auth.getSession();
+      const r = await fetch('https://alpzagoprkpzirgtrdup.supabase.co/functions/v1/client-invite',{
+        method:'POST', headers:{ 'Authorization':'Bearer '+session.access_token, 'Content-Type':'application/json' },
+        body: JSON.stringify({ ...payload, email, password }),
+      });
+      const j = await r.json().catch(()=>({}));
+      if(!r.ok||j.error) return fail(j.error||'Création impossible.');
+    }
+    saCloseModal(); btn.disabled=false; btn.textContent=lbl;
+    await saLoad(); saTab('clients');
+  }catch(e){ fail(String(e.message||e)); }
+}
 </script>
 </body>
 </html>
