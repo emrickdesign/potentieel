@@ -2335,6 +2335,9 @@
             .sa-stat b{display:block;font-size:22px;font-weight:800;letter-spacing:-.5px}
             .sa-stat span{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
             .sa-stat.alert b{color:var(--accent)}
+            .sa-theme{width:100%;max-width:360px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px 11px;font-size:12.5px}
+            .sa-theme::placeholder{color:var(--muted)}
+            .sa-conseils-box{width:100%;min-height:130px;background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:14px;font-size:13.5px;line-height:1.6;resize:vertical;font-family:inherit}
           </style>
 
           <div class="sa-head">
@@ -2377,6 +2380,13 @@
               <span class="sa-chip" data-f="qualifie" onclick="saFilter('qualifie')">Qualifiés</span>
             </div>
             <div id="sa-list"></div>
+
+            <div class="sa-sec-title" style="margin-top:28px">Conseils affichés au client</div>
+            <textarea id="sa-conseils" class="sa-conseils-box" placeholder="Ce texte apparaît dans l'onglet « Conseils » de l'espace client. Ex : Rappelez chaque prospect dans les 5 minutes — au-delà, 1 sur 2 est déjà pris par un concurrent."></textarea>
+            <div style="margin-top:8px">
+              <button class="sa-btn sa-btn-p" id="sa-conseils-save" onclick="saSaveConseils()">Enregistrer les conseils</button>
+              <span id="sa-conseils-status" style="font-size:12px;color:var(--muted);margin-left:8px"></span>
+            </div>
           </div>
         </div>
 
@@ -11455,9 +11465,9 @@ function saUpdateBadge(){
   const b=document.getElementById('badge-suivi'); if(b){ b.textContent=todo; b.style.display=todo?'':'none'; }
 }
 
-function saMapCall(c){ return {kind:'call',id:c.id,at:c.created_at,client_id:c.client_id,qual:c.qualification,
+function saMapCall(c){ return {kind:'call',id:c.id,at:c.created_at,client_id:c.client_id,qual:c.qualification,theme:c.theme,
   missed:(c.status==='manque'||c.status==='repondeur'),status:c.status,name:c.from_number||'Appel',tel:c.from_number,dur:c.duration_sec,rec:c.recording_url}; }
-function saMapForm(f){ return {kind:'form',id:f.id,at:f.submitted_at,client_id:f.client_id,qual:f.qualification,missed:false,
+function saMapForm(f){ return {kind:'form',id:f.id,at:f.submitted_at,client_id:f.client_id,qual:f.qualification,theme:f.theme,missed:false,
   name:f.prenom||f.entreprise||'Contact',tel:f.telephone,meta:[f.ville,f.domaine].filter(Boolean).join(' · ')}; }
 function saItemsForClient(id){
   const calls=saState.calls.filter(c=>c.client_id===id).map(saMapCall);
@@ -11519,6 +11529,8 @@ function saRenderDetail(){
   document.getElementById('sa-det-meta').textContent=meta;
   document.getElementById('sa-det-edit').onclick=()=>saOpenModal(c);
   document.getElementById('sa-det-espace').onclick=()=>window.open('espace-client.html?preview='+c.id,'_blank');
+  const ta=document.getElementById('sa-conseils'); if(ta) ta.value=c.conseils||'';
+  document.getElementById('sa-conseils-status').textContent='';
   const hint=document.getElementById('sa-det-hint');
   if(c.type==='ads' && (!c.twilio_number||!c.telephone_reel)){
     hint.style.display=''; hint.innerHTML='⚠️ Renseigne le <b>numéro Twilio de suivi</b> et le <b>téléphone réel</b> (bouton Modifier) pour que les appels de ce client arrivent ici.';
@@ -11537,6 +11549,16 @@ function saRenderDetail(){
   el.innerHTML = list.length ? list.map(i=>saCard(i,false)).join('') : '<div class="sa-empty">Aucune demande dans ce filtre.</div>';
 }
 function saFilter(f){ saState.filter=f; saRenderDetail(); }
+async function saSaveConseils(){
+  const c=saState.clients.find(x=>x.id===saState.selected); if(!c) return;
+  const st=document.getElementById('sa-conseils-status'); const btn=document.getElementById('sa-conseils-save');
+  const val=document.getElementById('sa-conseils').value.trim()||null;
+  btn.disabled=true; st.textContent='…';
+  const { error } = await sb.from('crm_clients').update({ conseils:val }).eq('id',c.id);
+  btn.disabled=false;
+  if(error){ st.textContent='Erreur : '+error.message; return; }
+  c.conseils=val; st.textContent='Enregistré ✓'; setTimeout(()=>{st.textContent='';},2500);
+}
 
 /* ---- Carte demande ---- */
 function saQualBadge(q){ return q==='qualifie'?'<span class="sa-bdg bg-q">Qualifié</span>':q==='disqualifie'?'<span class="sa-bdg bg-dq">Disqualifié</span>':'<span class="sa-bdg bg-nv">À qualifier</span>'; }
@@ -11556,6 +11578,9 @@ function saCard(i, withAssign){
       <div class="sa-r1"><span class="sa-nm">${saEsc(i.name)}</span>${badge}${saQualBadge(q)}</div>
       <div class="sa-meta">${saEsc(meta)}${i.tel?` · <a href="tel:${saTel(i.tel)}" style="color:var(--accent);text-decoration:none">${saEsc(i.tel)}</a>`:''}</div>
       ${audio}
+      <div class="sa-ctrl" style="margin-top:10px">
+        <input class="sa-theme" placeholder="Thème / corps de métier (ex : charpente, chauffage)" value="${i.theme?saEsc(i.theme):''}" onchange="saSetTheme('${i.kind}','${i.id}',this.value)">
+      </div>
       <div class="sa-ctrl">
         ${assign}
         <button class="sa-q ok ${q==='qualifie'?'on':''}" onclick="saQualify('${i.kind}','${i.id}','qualifie')">✓ Qualifier</button>
@@ -11563,6 +11588,13 @@ function saCard(i, withAssign){
       </div>
     </div>
   </div>`;
+}
+async function saSetTheme(kind,id,val){
+  const tbl=kind==='call'?'ads_calls':'form_submissions';
+  const v=(val||'').trim()||null;
+  const { error } = await sb.from(tbl).update({ theme:v }).eq('id',id);
+  if(error){ alert('Erreur: '+error.message); return; }
+  const arr=kind==='call'?saState.calls:saState.forms; const row=arr.find(r=>r.id===id); if(row) row.theme=v;
 }
 async function saAssign(kind,id,clientId){
   const tbl=kind==='call'?'ads_calls':'form_submissions';
