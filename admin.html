@@ -2476,7 +2476,7 @@
             <div class="sa-form-g"><label>Numéro Twilio de suivi</label><input id="sa-c-twilio" placeholder="+339..."></div>
             <div class="sa-form-g"><label>ID marque Metricool (plus tard)</label><input id="sa-c-blog" placeholder="ex. 5844590"></div>
             <div class="sa-form-g"><label>Lien de la fiche Google</label><input id="sa-c-gbp" placeholder="https://g.page/..."></div>
-            <div class="sa-form-g"><label><input type="checkbox" id="sa-c-notify" checked style="width:auto;margin-right:6px">Notifier le client par email (appels manqués)</label></div>
+            <div class="sa-form-g"><label><input type="checkbox" id="sa-c-notify" style="width:auto;margin-right:6px">Notifier le client par email quand il rate un appel (à cocher à la mise en production)</label></div>
             <div class="sa-modal-err" id="sa-modal-err"></div>
             <div class="sa-modal-foot">
               <button class="sa-btn sa-btn-g" onclick="saCloseModal()">Annuler</button>
@@ -11770,7 +11770,7 @@ function saOpenModal(client){
   document.getElementById('sa-c-twilio').value = ed?ed.twilio_number||'':'';
   document.getElementById('sa-c-blog').value = ed?ed.metricool_blog_id||'':'';
   document.getElementById('sa-c-gbp').value = ed?ed.gbp_url||'':'';
-  document.getElementById('sa-c-notify').checked = ed?ed.notify_email!==false:true;
+  document.getElementById('sa-c-notify').checked = ed?ed.notify_email===true:false;
   document.getElementById('sa-modal-err').style.display='none';
   document.getElementById('sa-save-btn').textContent = ed?'Enregistrer':'Créer le compte';
   document.getElementById('sa-modal').classList.add('open');
