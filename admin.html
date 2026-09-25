@@ -2337,6 +2337,32 @@
             .sa-stat.alert b{color:var(--accent)}
             .sa-theme{width:100%;max-width:360px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px 11px;font-size:12.5px}
             .sa-theme::placeholder{color:var(--muted)}
+            .sa-tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:18px;overflow-x:auto}
+            .sa-tabs button{background:none;border:none;color:var(--muted);font-weight:600;font-size:13.5px;padding:10px 14px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;font-family:inherit}
+            .sa-tabs button.on{color:var(--text);border-bottom-color:var(--accent)}
+            .sa-api-banner{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.35);color:var(--text);border-radius:12px;padding:13px 16px;font-size:13px;line-height:1.55;margin-bottom:16px}
+            .sa-gmb-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+            .sa-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;opacity:.75}
+            .sa-box h4{margin:0 0 10px;font-size:14px}
+            .sa-box textarea{width:100%;min-height:90px;background:var(--bg);border:1px solid var(--border);border-radius:9px;color:var(--text);padding:10px;font-family:inherit;font-size:13px;resize:vertical}
+            .sa-box-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
+            .sa-linkline{margin-top:14px;font-size:12.5px;color:var(--muted)}
+            .sa-linkline a{color:var(--accent)}
+            .sa-bars{display:flex;align-items:flex-end;gap:5px;height:110px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 12px 8px}
+            .sa-bars div{flex:1;background:var(--accent);border-radius:4px 4px 0 0;min-height:2px;position:relative}
+            .sa-bars div.z{background:var(--border)}
+            .sa-theme-row{display:flex;align-items:center;gap:10px;margin-bottom:7px;font-size:13px}
+            .sa-theme-row .t{flex:0 0 150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+            .sa-theme-row .bar{flex:1;height:8px;background:var(--border);border-radius:5px;overflow:hidden}
+            .sa-theme-row .bar i{display:block;height:100%;background:var(--accent)}
+            .sa-theme-row .n{flex:0 0 26px;text-align:right;color:var(--muted);font-weight:700}
+            .sa-notes{width:100%;min-height:64px;margin-top:8px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:9px 11px;font-size:12.5px;line-height:1.5;font-family:inherit;resize:vertical}
+            .sa-summary{margin-top:8px;font-size:12.5px;color:var(--muted);line-height:1.5}
+            .sa-transcript{margin-top:6px;font-size:12px;color:var(--muted)}
+            .sa-transcript summary{cursor:pointer;font-weight:600}
+            .sa-transcript pre{white-space:pre-wrap;font-family:inherit;margin:6px 0 0}
+            .sa-mini-btn{background:none;border:1px solid var(--border);color:var(--muted);border-radius:7px;padding:4px 9px;font-size:11.5px;cursor:pointer;margin-top:8px;font-family:inherit}
+            .sa-mini-btn:hover{color:var(--text)}
             .sa-conseils-box{width:100%;min-height:130px;background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:14px;font-size:13.5px;line-height:1.6;resize:vertical;font-family:inherit}
           </style>
 
@@ -2368,6 +2394,15 @@
               </div>
             </div>
             <div class="sa-hint" id="sa-det-hint" style="display:none"></div>
+            <div class="sa-tabs" id="sa-tabs">
+              <button class="on" data-t="demandes" onclick="saTab('demandes')">Demandes</button>
+              <button data-t="stats" onclick="saTab('stats')">Statistiques</button>
+              <button data-t="gmb" onclick="saTab('gmb')">Google My Business</button>
+              <button data-t="social" onclick="saTab('social')">Réseaux sociaux</button>
+              <button data-t="conseils" onclick="saTab('conseils')">Conseils</button>
+            </div>
+
+            <div class="sa-panel" id="sa-p-demandes">
             <div class="sa-stats3">
               <div class="sa-stat"><b id="sa-st-total">0</b><span>Demandes</span></div>
               <div class="sa-stat alert"><b id="sa-st-missed">0</b><span>À rappeler</span></div>
@@ -2381,11 +2416,48 @@
             </div>
             <div id="sa-list"></div>
 
-            <div class="sa-sec-title" style="margin-top:28px">Conseils affichés au client</div>
+            </div>
+
+            <div class="sa-panel" id="sa-p-stats" style="display:none">
+              <div class="sa-stats3" id="sa-kpis"></div>
+              <div class="sa-sec-title">Demandes par jour (14 derniers jours)</div>
+              <div class="sa-bars" id="sa-bars"></div>
+              <div class="sa-sec-title" style="margin-top:22px">Thèmes les plus fréquents</div>
+              <div id="sa-themes"></div>
+            </div>
+
+            <div class="sa-panel" id="sa-p-gmb" style="display:none">
+              <div class="sa-api-banner"><b>API Metricool à activer.</b> La gestion de la fiche Google passe par l'API Metricool (plan Advanced). Tout est prêt côté app : dès que la clé est posée, les posts et les avis apparaîtront ici. En attendant, on branchera l'API Google Business Profile directe (gratuite).</div>
+              <div class="sa-gmb-grid">
+                <div class="sa-box"><h4>Publier un post</h4>
+                  <textarea disabled placeholder="Texte du post (offre, actualité, réalisation…)"></textarea>
+                  <div class="sa-box-foot"><button class="sa-btn sa-btn-g" disabled>Programmer</button><button class="sa-btn sa-btn-p" disabled>Publier</button></div>
+                </div>
+                <div class="sa-box"><h4>Avis Google</h4>
+                  <div class="sa-empty" style="padding:26px 10px">Aucun avis chargé — l'API n'est pas encore activée.</div>
+                  <div class="sa-box-foot"><button class="sa-btn sa-btn-g" disabled>Répondre aux avis</button></div>
+                </div>
+                <div class="sa-box"><h4>Posts programmés</h4>
+                  <div class="sa-empty" style="padding:26px 10px">Rien de programmé.</div>
+                </div>
+                <div class="sa-box"><h4>Statistiques de la fiche</h4>
+                  <div class="sa-empty" style="padding:26px 10px">Vues, appels, itinéraires : à venir.</div>
+                </div>
+              </div>
+              <div class="sa-linkline" id="sa-gmb-link"></div>
+            </div>
+
+            <div class="sa-panel" id="sa-p-social" style="display:none">
+              <div class="sa-api-banner"><b>Réseaux sociaux — bientôt.</b> Publication et suivi Instagram / Facebook via l'API Metricool (plan Advanced). Onglet réservé pour plus tard.</div>
+            </div>
+
+            <div class="sa-panel" id="sa-p-conseils" style="display:none">
+            <div class="sa-sec-title" >Conseils affichés au client</div>
             <textarea id="sa-conseils" class="sa-conseils-box" placeholder="Ce texte apparaît dans l'onglet « Conseils » de l'espace client. Ex : Rappelez chaque prospect dans les 5 minutes — au-delà, 1 sur 2 est déjà pris par un concurrent."></textarea>
             <div style="margin-top:8px">
               <button class="sa-btn sa-btn-p" id="sa-conseils-save" onclick="saSaveConseils()">Enregistrer les conseils</button>
               <span id="sa-conseils-status" style="font-size:12px;color:var(--muted);margin-left:8px"></span>
+            </div>
             </div>
           </div>
         </div>
@@ -2402,6 +2474,8 @@
             <div class="sa-form-g"><label>Type de client</label><select id="sa-c-type"><option value="ads">Ads (suivi complet)</option><option value="site">Site internet</option></select></div>
             <div class="sa-form-g"><label>Téléphone réel (cible du transfert)</label><input id="sa-c-tel" placeholder="+336..."></div>
             <div class="sa-form-g"><label>Numéro Twilio de suivi</label><input id="sa-c-twilio" placeholder="+339..."></div>
+            <div class="sa-form-g"><label>ID marque Metricool (plus tard)</label><input id="sa-c-blog" placeholder="ex. 5844590"></div>
+            <div class="sa-form-g"><label>Lien de la fiche Google</label><input id="sa-c-gbp" placeholder="https://g.page/..."></div>
             <div class="sa-form-g"><label><input type="checkbox" id="sa-c-notify" checked style="width:auto;margin-right:6px">Notifier le client par email (appels manqués)</label></div>
             <div class="sa-modal-err" id="sa-modal-err"></div>
             <div class="sa-modal-foot">
@@ -11466,7 +11540,7 @@ function saUpdateBadge(){
 }
 
 function saMapCall(c){ return {kind:'call',id:c.id,at:c.created_at,client_id:c.client_id,qual:c.qualification,theme:c.theme,
-  missed:(c.status==='manque'||c.status==='repondeur'),status:c.status,name:c.from_number||'Appel',tel:c.from_number,dur:c.duration_sec,rec:c.recording_url}; }
+  missed:(c.status==='manque'||c.status==='repondeur'),status:c.status,name:c.from_number||'Appel',tel:c.from_number,dur:c.duration_sec,rec:c.recording_url,notes:c.notes,summary:c.summary,transcript:c.transcript}; }
 function saMapForm(f){ return {kind:'form',id:f.id,at:f.submitted_at,client_id:f.client_id,qual:f.qualification,theme:f.theme,missed:false,
   name:f.prenom||f.entreprise||'Contact',tel:f.telephone,meta:[f.ville,f.domaine].filter(Boolean).join(' · ')}; }
 function saItemsForClient(id){
@@ -11518,7 +11592,7 @@ function saRenderClientsView(){
 }
 
 /* ---- Vue détail d'un client ---- */
-function saOpenClient(id){ saState.selected=id; saState.filter='all'; saRenderDetail(); }
+function saOpenClient(id){ saState.selected=id; saState.filter='all'; saState.tab='demandes'; saRenderDetail(); }
 function saRenderDetail(){
   const c=saState.clients.find(x=>x.id===saState.selected); if(!c){ saCloseClient(); return; }
   document.getElementById('sa-clients-view').style.display='none';
@@ -11540,6 +11614,9 @@ function saRenderDetail(){
   document.getElementById('sa-st-total').textContent=st.total;
   document.getElementById('sa-st-missed').textContent=st.missed;
   document.getElementById('sa-st-week').textContent=st.week;
+  saRenderStats(items);
+  saRenderGmbLink(c);
+  saTab(saState.tab||'demandes');
   let list=items; const f=saState.filter;
   if(f==='missed') list=items.filter(i=>i.missed);
   else if(f==='todo') list=items.filter(i=>i.qual==='nouveau');
@@ -11560,6 +11637,65 @@ async function saSaveConseils(){
   c.conseils=val; st.textContent='Enregistré ✓'; setTimeout(()=>{st.textContent='';},2500);
 }
 
+/* ---- Onglets de la fiche client ---- */
+function saTab(t){
+  saState.tab=t;
+  document.querySelectorAll('#sa-tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+  ['demandes','stats','gmb','social','conseils'].forEach(k=>{ const el=document.getElementById('sa-p-'+k); if(el) el.style.display=(k===t)?'':'none'; });
+}
+function saRenderGmbLink(c){
+  const el=document.getElementById('sa-gmb-link'); if(!el) return;
+  el.innerHTML = c.gbp_url ? `Fiche Google du client : <a href="${saEsc(c.gbp_url)}" target="_blank" rel="noopener">${saEsc(c.gbp_url)}</a>` : 'Aucun lien de fiche Google renseigné (bouton Modifier).';
+}
+
+/* ---- Statistiques ---- */
+function saRenderStats(items){
+  const calls=items.filter(i=>i.kind==='call');
+  const answered=calls.filter(i=>!i.missed);
+  const durs=answered.map(i=>+i.dur||0).filter(Boolean);
+  const avg=durs.length?Math.round(durs.reduce((a,b)=>a+b,0)/durs.length):0;
+  const rate=calls.length?Math.round(answered.length/calls.length*100):null;
+  const qual=items.filter(i=>i.qual==='qualifie').length;
+  const qrate=items.length?Math.round(qual/items.length*100):null;
+  const kpi=(v,l,al)=>`<div class="sa-stat${al?' alert':''}"><b>${v}</b><span>${l}</span></div>`;
+  document.getElementById('sa-kpis').innerHTML =
+    kpi(items.length,'Demandes')+kpi(calls.length,'Appels')+kpi(items.length-calls.length,'Formulaires')+
+    kpi(rate==null?'—':rate+'%','Taux de réponse')+kpi(avg?saDur(avg):'—','Durée moyenne')+kpi(qrate==null?'—':qrate+'%','Qualifiées');
+  // 14 jours
+  const days=[]; const now=new Date(); now.setHours(0,0,0,0);
+  for(let k=13;k>=0;k--){ const d=new Date(now); d.setDate(now.getDate()-k); days.push({d,n:0}); }
+  items.forEach(i=>{ const t=new Date(i.at); t.setHours(0,0,0,0); const row=days.find(x=>x.d.getTime()===t.getTime()); if(row) row.n++; });
+  const max=Math.max(1,...days.map(x=>x.n));
+  document.getElementById('sa-bars').innerHTML=days.map(x=>`<div class="${x.n?'':'z'}" style="height:${x.n?Math.max(6,x.n/max*100):2}%" title="${x.d.toLocaleDateString('fr-FR',{day:'numeric',month:'short'})} : ${x.n}"></div>`).join('');
+  // thèmes
+  const th={}; items.forEach(i=>{ const t=(i.theme||'').trim().toLowerCase(); if(t) th[t]=(th[t]||0)+1; });
+  const rows=Object.entries(th).sort((a,b)=>b[1]-a[1]).slice(0,8); const m=rows.length?rows[0][1]:1;
+  document.getElementById('sa-themes').innerHTML = rows.length
+    ? rows.map(([t,n])=>`<div class="sa-theme-row"><span class="t">${saEsc(t)}</span><span class="bar"><i style="width:${n/m*100}%"></i></span><span class="n">${n}</span></div>`).join('')
+    : '<div class="sa-empty">Aucun thème renseigné pour l\'instant. Note-les en écoutant les appels.</div>';
+}
+
+/* ---- Notes d'écoute + transcription auto (préparée) ---- */
+async function saSetNotes(id,val){
+  const v=(val||'').trim()||null;
+  const { error } = await sb.from('ads_calls').update({ notes:v }).eq('id',id);
+  if(error){ alert('Erreur: '+error.message); return; }
+  const row=saState.calls.find(r=>r.id===id); if(row) row.notes=v;
+}
+async function saTranscribe(id,btn){
+  const old=btn.textContent; btn.disabled=true; btn.textContent='Transcription…';
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    const r = await fetch('https://alpzagoprkpzirgtrdup.supabase.co/functions/v1/call-transcribe',{
+      method:'POST', headers:{ 'Authorization':'Bearer '+session.access_token, 'Content-Type':'application/json' },
+      body: JSON.stringify({ call_id:id }),
+    });
+    const j = await r.json().catch(()=>({}));
+    if(!r.ok||j.error){ alert(j.message||j.error||'Transcription impossible.'); btn.disabled=false; btn.textContent=old; return; }
+    await saLoad();
+  }catch(e){ alert(String(e.message||e)); btn.disabled=false; btn.textContent=old; }
+}
+
 /* ---- Carte demande ---- */
 function saQualBadge(q){ return q==='qualifie'?'<span class="sa-bdg bg-q">Qualifié</span>':q==='disqualifie'?'<span class="sa-bdg bg-dq">Disqualifié</span>':'<span class="sa-bdg bg-nv">À qualifier</span>'; }
 function saCard(i, withAssign){
@@ -11578,6 +11714,10 @@ function saCard(i, withAssign){
       <div class="sa-r1"><span class="sa-nm">${saEsc(i.name)}</span>${badge}${saQualBadge(q)}</div>
       <div class="sa-meta">${saEsc(meta)}${i.tel?` · <a href="tel:${saTel(i.tel)}" style="color:var(--accent);text-decoration:none">${saEsc(i.tel)}</a>`:''}</div>
       ${audio}
+      ${i.kind==='call'&&i.rec?`<textarea class="sa-notes" placeholder="Tes notes en écoutant l'appel (visibles par le client)…" onchange="saSetNotes('${i.id}',this.value)">${saEsc(i.notes||'')}</textarea>`:''}
+      ${i.summary?`<div class="sa-summary"><b>Résumé :</b> ${saEsc(i.summary)}</div>`:''}
+      ${i.transcript?`<details class="sa-transcript"><summary>Transcription</summary><pre>${saEsc(i.transcript)}</pre></details>`:''}
+      ${i.kind==='call'&&i.rec&&!i.transcript?`<button class="sa-mini-btn" onclick="saTranscribe('${i.id}',this)">✨ Transcrire automatiquement</button>`:''}
       <div class="sa-ctrl" style="margin-top:10px">
         <input class="sa-theme" placeholder="Thème / corps de métier (ex : charpente, chauffage)" value="${i.theme?saEsc(i.theme):''}" onchange="saSetTheme('${i.kind}','${i.id}',this.value)">
       </div>
@@ -11628,6 +11768,8 @@ function saOpenModal(client){
   document.getElementById('sa-c-type').value = ed?ed.type||'ads':'ads';
   document.getElementById('sa-c-tel').value = ed?ed.telephone_reel||'':'';
   document.getElementById('sa-c-twilio').value = ed?ed.twilio_number||'':'';
+  document.getElementById('sa-c-blog').value = ed?ed.metricool_blog_id||'':'';
+  document.getElementById('sa-c-gbp').value = ed?ed.gbp_url||'':'';
   document.getElementById('sa-c-notify').checked = ed?ed.notify_email!==false:true;
   document.getElementById('sa-modal-err').style.display='none';
   document.getElementById('sa-save-btn').textContent = ed?'Enregistrer':'Créer le compte';
@@ -11644,6 +11786,8 @@ async function saSaveClient(){
     telephone_reel:document.getElementById('sa-c-tel').value.trim()||null,
     twilio_number:document.getElementById('sa-c-twilio').value.trim()||null,
     notify_email:document.getElementById('sa-c-notify').checked,
+    metricool_blog_id:document.getElementById('sa-c-blog').value.trim()||null,
+    gbp_url:document.getElementById('sa-c-gbp').value.trim()||null,
   };
   const fail=(m)=>{ err.textContent=m; err.style.display='block'; btn.disabled=false; btn.textContent=lbl; };
   try{
