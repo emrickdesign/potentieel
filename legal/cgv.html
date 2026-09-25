@@ -15,62 +15,179 @@
     .legal-wrap h1 { font-size: clamp(30px,5vw,44px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; color: var(--white); }
     .legal-updated { color: var(--gray); font-size: 13px; margin-bottom: 40px; }
     .legal-wrap h2 { font-size: 20px; font-weight: 700; margin: 36px 0 12px; color: var(--white); }
+    .legal-wrap h3 { font-size: 16px; font-weight: 700; margin: 24px 0 8px; color: var(--white); }
     .legal-wrap p, .legal-wrap li { color: var(--gray-light); font-size: 15px; line-height: 1.8; }
-    .legal-wrap ul { padding-left: 20px; margin: 8px 0; }
+    .legal-wrap ul, .legal-wrap ol { padding-left: 20px; margin: 8px 0; }
     .legal-wrap a { color: var(--orange); }
     .legal-wrap strong { color: var(--white); }
     .legal-back { display: inline-flex; align-items: center; gap: 6px; color: var(--orange); font-weight: 600; font-size: 14px; text-decoration: none; margin-bottom: 40px; }
     .legal-todo { background: rgba(244,146,106,0.10); border: 1px solid rgba(244,146,106,0.25); color: var(--orange); font-weight: 600; padding: 1px 7px; border-radius: 5px; font-size: 13px; }
+    .legal-cadre { border: 1px solid rgba(255,255,255,0.14); border-radius: 12px; padding: 18px 20px; margin: 16px 0; background: rgba(255,255,255,0.03); }
+    .legal-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 15px; }
+    .legal-table th, .legal-table td { border-bottom: 1px solid rgba(255,255,255,0.12); padding: 10px 8px; text-align: left; color: var(--gray-light); }
+    .legal-table th { color: var(--white); font-weight: 700; }
+    .legal-som { display: grid; gap: 4px; margin-bottom: 8px; }
   </style>
 </head>
 <body>
 <div class="legal-wrap">
   <a href="../index.html" class="legal-back">← Retour au site</a>
   <h1>Conditions Générales de Vente</h1>
-  <p class="legal-updated">Dernière mise à jour : septembre 2026</p>
+  <p class="legal-updated">Dernière mise à jour : 24 septembre 2026</p>
 
-  <h2>1. Objet</h2>
-  <p>Les présentes conditions générales de vente (CGV) régissent les prestations de création de sites internet et les services associés (maintenance, hébergement, accompagnement) fournis par <strong>Potentieel</strong> <span class="legal-todo">[statut &amp; SIREN à compléter]</span> à ses clients professionnels et particuliers. Toute commande implique l'acceptation pleine et entière des présentes CGV.</p>
+  <p>Les présentes conditions générales de vente (les « CGV ») s'appliquent à toutes les prestations vendues par Potentieel. Elles sont jointes à chaque devis et forment, avec celui-ci, l'intégralité du contrat. En signant le devis, le Client déclare en avoir pris connaissance et les accepter sans réserve. En cas de contradiction, les mentions particulières du devis signé priment sur les présentes CGV.</p>
 
-  <h2>2. Prestations</h2>
+  <div class="legal-som">
+    <p><strong>Sommaire</strong> — 1. Le prestataire · 2. Objet · 3. Devis, commande et signature · 4. Offre « Création de site » · 5. Offre « Système d'acquisition Google » · 6. Budget publicitaire · 7. <a href="#garantie">Garantie « Rentable ou Remboursé »</a> · 8. Obligations du Client · 9. Prix et paiement · 10. Après la période : gestion mensuelle · 11. Comptes, contenus et restitution · 12. Suivi des appels · 13. Données personnelles · 14. Responsabilité · 15. Confidentialité et références · 16. Rétractation · 17. Médiation · 18. Droit applicable</p>
+  </div>
+
+  <h2 id="prestataire">1. Le prestataire</h2>
+  <p>
+    <strong>Potentieel</strong> — entreprise individuelle d'Emrick Perilliat<br>
+    SIREN : 990 572 117<br>
+    Siège : 4 avenue Maurice Franck, 73110 Valgelon-la-Rochette<br>
+    Email : <a href="mailto:potentieel.web@gmail.com">potentieel.web@gmail.com</a> · Téléphone : <a href="tel:+33769387613">07 69 38 76 13</a><br>
+    TVA non applicable, article 293 B du Code général des impôts (franchise en base), sauf mention contraire sur le devis.
+  </p>
+
+  <h2 id="objet">2. Objet</h2>
+  <p>Potentieel propose deux offres distinctes, vendues séparément :</p>
   <ul>
-    <li><strong>Création de site</strong> : site vitrine ou marchand sur-mesure, à partir d'environ 1 000 € (montant exact annoncé sur devis avant tout démarrage, selon les options), paiement possible en 1 à 4 fois.</li>
+    <li><strong>Création de site internet</strong> et services associés (maintenance, hébergement, accompagnement) — article 4 ;</li>
+    <li><strong>Système d'acquisition Google</strong> : mise en place et gestion d'un dispositif d'acquisition de demandes de devis pour les entreprises du bâtiment — articles 5 à 10.</li>
+  </ul>
+  <p>Le Client est un professionnel. Les articles 16 et 17 précisent les cas particuliers des consommateurs et des professionnels assimilés.</p>
+
+  <h2 id="devis">3. Devis, commande et signature</h2>
+  <p>Chaque prestation fait l'objet d'un devis gratuit précisant le périmètre, la zone couverte, le prix et la durée. Le devis est valable 30 jours sauf mention contraire.</p>
+  <p>La commande est ferme dès la <strong>signature électronique du devis</strong> par le Client. Cette signature est réalisée en ligne, au moyen d'un lien personnel : elle constitue une signature électronique simple au sens du règlement (UE) n° 910/2014 (eIDAS). Sont enregistrés comme preuve de l'accord : le nom et la fonction du signataire, la date et l'heure, l'adresse IP de connexion et une empreinte numérique du document signé, qui garantit que le devis n'a pas été modifié après signature. Le Client reçoit et peut télécharger à tout moment le devis signé.</p>
+
+  <h2 id="site">4. Offre « Création de site internet »</h2>
+  <ul>
+    <li><strong>Création de site</strong> : site vitrine ou marchand sur-mesure, à partir d'environ 1 000 €, montant exact annoncé sur devis avant tout démarrage, paiement possible en 1 à 4 fois.</li>
     <li><strong>Abonnement maintenance &amp; hébergement</strong> : 49 €/mois, comprenant l'hébergement, le nom de domaine, les sauvegardes, les mises à jour et le support.</li>
+    <li><strong>Première version offerte</strong> : Potentieel réalise une première version du site, présentée lors d'un appel dédié, généralement sous 1 à 2 semaines. Le Client ne s'engage financièrement qu'après l'avoir vue et avoir donné son accord explicite.</li>
+    <li><strong>Délais</strong> : livraison du site finalisé en 1 à 3 semaines selon la complexité et la réactivité du Client.</li>
+    <li><strong>Résiliation de l'abonnement</strong> : sans engagement de durée, résiliable à tout moment par écrit. Potentieel restitue l'ensemble des fichiers et de la base de données : gratuitement si l'abonnement dure depuis plus de 6 mois, moyennant 200 € de frais de transfert en deçà.</li>
   </ul>
 
-  <h2>3. Première version avant engagement</h2>
-  <p>Potentieel réalise une <strong>première version du site offerte</strong>, présentée au client lors d'un appel dédié (généralement sous 1 à 2 semaines après le premier contact). Le client ne s'engage financièrement qu'après avoir vu cette première version et donné son accord explicite. Aucun paiement n'est dû tant que le client n'a pas validé le lancement du projet.</p>
+  <h2 id="acquisition">5. Offre « Système d'acquisition Google »</h2>
+  <p>Potentieel met en place et exploite, pour le compte du Client, un dispositif destiné à générer des demandes de devis qualifiées dans une zone géographique définie au devis.</p>
 
-  <h2>4. Devis et commande</h2>
-  <p>Chaque prestation fait l'objet d'un devis gratuit, précisant le périmètre et le prix. La commande est ferme dès la validation écrite du devis par le client (email ou signature) et, le cas échéant, le versement de l'acompte convenu.</p>
-
-  <h2>5. Prix et paiement</h2>
-  <p>Les prix sont indiqués en euros. <span class="legal-todo">[à confirmer]</span> TVA non applicable, art. 293 B du CGI, sauf mention contraire. Le paiement s'effectue par carte (Stripe) ou virement, selon l'échéancier indiqué sur le devis.</p>
-
-  <h2>6. Délais</h2>
-  <p>La première version est présentée généralement sous 1 à 2 semaines. La livraison du site finalisé intervient en <strong>1 à 3 semaines</strong> selon la complexité du projet et la réactivité du client pour fournir les éléments et valider la maquette.</p>
-
-  <h2>7. Abonnement, résiliation et restitution des données</h2>
-  <p>L'abonnement de maintenance est <strong>sans engagement de durée</strong> : le client peut le résilier à tout moment, par simple demande écrite.</p>
-  <p>En cas de résiliation, Potentieel restitue au client <strong>l'ensemble des fichiers et de la base de données</strong> de son site, afin qu'il puisse le transférer où il le souhaite :</p>
+  <h3>5.1 Ce que comprend la prestation</h3>
   <ul>
-    <li><strong>Gratuitement</strong> si le client a souscrit l'abonnement depuis <strong>plus de 6 mois</strong> ;</li>
-    <li>Moyennant des frais de transfert de <strong>200 €</strong> si l'abonnement date de <strong>moins de 6 mois</strong>.</li>
+    <li>optimisation de la fiche Google Business Profile ;</li>
+    <li>création et gestion des campagnes Google Ads Search, et Local Services Ads lorsque l'activité et la zone y sont éligibles ;</li>
+    <li>création d'une page de destination dédiée ;</li>
+    <li>mise en place d'un numéro de suivi des appels (article 12) ;</li>
+    <li>dispositif de collecte d'avis Google ;</li>
+    <li>dispositif de relance des demandes non abouties (« Bouclier Anti-Chantiers Perdus ») ;</li>
+    <li>espace client accessible en continu, présentant les demandes reçues ;</li>
+    <li>suivi hebdomadaire par WhatsApp (message vocal et mini-formulaire) ;</li>
+    <li><strong>gestion et optimisation des campagnes incluses pendant toute la période, sans honoraires supplémentaires.</strong></li>
   </ul>
+  <p><strong>Périmètre</strong> : tous corps d'état du bâtiment, à l'exception de la plomberie. La zone couverte est celle indiquée sur le devis.</p>
 
-  <h2>8. Propriété</h2>
-  <p>Une fois la prestation intégralement réglée, le client est propriétaire de son nom de domaine, de ses contenus et de ses données. Aucun verrouillage n'est appliqué.</p>
+  <h3>5.2 Prix de la mise en place</h3>
+  <p>Le prix dépend du chiffre d'affaires annuel déclaré par le Client lors de la qualification :</p>
+  <table class="legal-table">
+    <tr><th>Chiffre d'affaires annuel du Client</th><th>Mise en place</th><th>Budget publicitaire minimum conseillé</th></tr>
+    <tr><td>Moins de 100 000 €</td><td>1 000 €</td><td>600 € à 1 000 € / mois</td></tr>
+    <tr><td>100 000 € à 300 000 €</td><td>2 500 €</td><td>800 € à 1 200 € / mois</td></tr>
+    <tr><td>300 000 € à 1 000 000 €</td><td>5 000 €</td><td>1 200 € à 1 750 € / mois</td></tr>
+    <tr><td>Plus de 1 000 000 €</td><td>9 000 €</td><td>1 500 € à 2 000 € / mois</td></tr>
+  </table>
+  <p>Le budget minimum conseillé dépend aussi de la taille de la ville visée. Les montants applicables au Client sont ceux figurant sur son devis, qui prévalent sur ce tableau indicatif.</p>
 
-  <h2>9. Droit de rétractation</h2>
-  <p>Pour les clients consommateurs (particuliers), un délai de rétractation de 14 jours s'applique conformément au Code de la consommation. <span class="legal-todo">[à confirmer]</span> Lorsque le client demande expressément le démarrage de la prestation avant la fin de ce délai, il reconnaît renoncer à son droit de rétractation pour la partie de prestation déjà exécutée.</p>
+  <h3>5.3 Durée de la période</h3>
+  <p>La période d'acquisition dure <strong>8 semaines</strong>, sauf durée différente indiquée au devis. Elle démarre à la <strong>mise en ligne effective des campagnes</strong>, et non à la signature. La mise en ligne intervient dès que le Client a fourni les accès et les éléments nécessaires (article 8).</p>
 
-  <h2>10. Médiation de la consommation</h2>
-  <p>Conformément à l'article L.612-1 du Code de la consommation, le client consommateur peut recourir gratuitement à un médiateur de la consommation : <span class="legal-todo">[à compléter : nom et coordonnées du médiateur]</span>.</p>
+  <h2 id="budget">6. Budget publicitaire</h2>
+  <p>Le budget publicitaire n'est <strong>pas inclus</strong> dans le prix de la prestation. Il est payé <strong>directement par le Client à Google</strong>, sur son propre compte Google Ads, avec son propre moyen de paiement. Potentieel ne perçoit aucune commission sur ce budget et n'en fait pas l'avance.</p>
+  <p>Le montant minimum convenu figure sur le devis. Il conditionne la garantie décrite à l'article 7.</p>
 
-  <h2>11. Droit applicable</h2>
-  <p>Les présentes CGV sont soumises au droit français. En cas de litige, une solution amiable sera recherchée avant toute action judiciaire.</p>
+  <h2 id="garantie">7. Garantie « Rentable ou Remboursé »</h2>
+  <div class="legal-cadre">
+    <p><strong>Le principe.</strong> Si, au terme de la période, le chiffre d'affaires des chantiers signés issus des demandes apportées par Potentieel est <strong>inférieur au montant de la mise en place réglé par le Client</strong>, Potentieel rembourse ce montant en intégralité, par virement, sous 48 heures après validation du décompte.</p>
+  </div>
+  <p>Le seuil de déclenchement est égal au montant hors taxes de la mise en place figurant sur le devis, sauf coefficient différent expressément indiqué sur celui-ci.</p>
 
-  <h2>12. Contact</h2>
+  <h3>7.1 Ce qui est compté</h3>
+  <p>Est pris en compte le montant hors taxes des <strong>devis signés par le Client</strong> avec des clients finals dont la demande provient du dispositif : appels reçus sur le numéro de suivi, formulaires de la page de destination, messages et appels issus de la fiche Google Business Profile, pendant la période.</p>
+  <p>Un chantier signé pendant la période compte pour son montant total, même si les travaux et les encaissements interviennent après. Les demandes reçues pendant la période et signées dans les <strong>30 jours</strong> qui suivent son terme sont également comptées.</p>
+
+  <h3>7.2 Comment le décompte est établi</h3>
+  <p>Le Client transmet ses devis signés au fil de l'eau, via l'espace client ou le suivi hebdomadaire WhatsApp. Au terme de la période, Potentieel adresse au Client un décompte récapitulant les demandes reçues et les montants signés. Le Client dispose de <strong>7 jours</strong> pour le compléter ou le corriger, pièces à l'appui. Passé ce délai, le décompte est réputé accepté.</p>
+  <p>À défaut d'éléments transmis par le Client, le décompte est établi sur la base des demandes tracées par le dispositif et d'une attestation sur l'honneur du Client quant au chiffre d'affaires signé.</p>
+
+  <h3>7.3 Les trois règles à respecter par le Client</h3>
+  <p>La garantie repose sur un dispositif complet : les demandes doivent être rappelées et le budget maintenu, faute de quoi le résultat ne dépend plus du travail de Potentieel. Le Client s'engage donc sur trois règles, rappelées sur le devis :</p>
+  <ol>
+    <li><strong>Règle de Fin de Journée</strong> — toute demande reçue avant 16 h est rappelée le jour même, idéalement entre 17 h et 19 h.</li>
+    <li><strong>Règle des 2 Minutes</strong> — le mini-formulaire WhatsApp du vendredi est rempli avant le lundi matin.</li>
+    <li><strong>Règle du Budget</strong> — le budget publicitaire Google est maintenu au minimum convenu pendant toute la période.</li>
+  </ol>
+
+  <h3>7.4 Effet d'un manquement</h3>
+  <p>Un manquement isolé ne fait pas perdre la garantie. Potentieel signale par écrit (WhatsApp ou email) chaque manquement constaté. La garantie cesse de s'appliquer uniquement si, après <strong>trois signalements écrits</strong> portant sur la même règle, le manquement se poursuit.</p>
+  <p>Lorsque la diffusion est interrompue pour une raison qui n'incombe pas à Potentieel — budget coupé ou réduit sous le minimum, campagnes mises en pause à la demande du Client, compte Google suspendu du fait du Client, absence prolongée du Client — la période est <strong>prolongée d'autant</strong> plutôt que la garantie annulée. Au-delà de 30 jours cumulés d'interruption, la garantie prend fin.</p>
+
+  <h3>7.5 Devis sans garantie</h3>
+  <p>La garantie s'applique lorsqu'elle est mentionnée sur le devis. Certains devis sont établis <strong>sans garantie</strong> : dans ce cas, aucune mention de garantie n'y figure, et le présent article 7 ne s'applique pas.</p>
+
+  <h3>7.6 Effet du remboursement</h3>
+  <p>Le remboursement porte sur la mise en place. Il ne couvre pas le budget publicitaire versé à Google, qui n'a jamais été encaissé par Potentieel. Le remboursement met fin à la prestation : les campagnes sont arrêtées et le dispositif restitué selon l'article 11.</p>
+
+  <h2 id="obligations">8. Obligations du Client</h2>
+  <ul>
+    <li>fournir, dans les 7 jours suivant la signature, les accès nécessaires : compte Google Ads (ou création d'un compte à son nom), fiche Google Business Profile, éléments de présentation de l'entreprise, photos de chantiers, assurances et mentions obligatoires ;</li>
+    <li>maintenir le budget publicitaire convenu ;</li>
+    <li>traiter les demandes reçues selon les règles de l'article 7.3 ;</li>
+    <li>répondre aux demandes d'information de Potentieel dans un délai raisonnable ;</li>
+    <li>garantir l'exactitude des informations communiquées, notamment son chiffre d'affaires déclaré, ses qualifications, assurances et autorisations d'exercer.</li>
+  </ul>
+  <p>Le retard du Client dans la fourniture des accès et éléments décale d'autant la mise en ligne, donc le départ de la période.</p>
+
+  <h2 id="prix">9. Prix et paiement</h2>
+  <p>Les prix sont exprimés en euros, TVA non applicable (article 293 B du CGI), sauf mention contraire sur le devis. La mise en place est <strong>payable intégralement à la commande</strong>, sauf échéancier expressément prévu au devis. Le paiement s'effectue par carte via le lien sécurisé transmis, ou par virement sur le compte indiqué sur le devis.</p>
+  <p>En cas de retard de paiement, des pénalités au taux d'intérêt légal majoré de 10 points sont dues de plein droit, ainsi qu'une indemnité forfaitaire de recouvrement de 40 € (articles L.441-10 et D.441-5 du Code de commerce). Potentieel peut suspendre la prestation après une mise en demeure restée sans effet pendant 8 jours.</p>
+
+  <h2 id="apres">10. Après la période : gestion mensuelle</h2>
+  <p>À l'issue de la période, le Client choisit librement de poursuivre ou d'arrêter. S'il poursuit, la gestion et l'optimisation des campagnes font l'objet d'un abonnement mensuel, indiqué sur le devis, compris selon le palier entre <strong>500 € et 1 000 € par mois</strong>, hors budget publicitaire.</p>
+  <p>Cet abonnement est <strong>sans engagement de durée</strong> et résiliable par écrit avec un <strong>préavis de 30 jours</strong>. Aucune reconduction tacite ne s'applique tant que le Client n'a pas accepté l'abonnement par écrit.</p>
+
+  <h2 id="comptes">11. Comptes, contenus et restitution</h2>
+  <p>Le compte Google Ads, la fiche Google Business Profile et les avis appartiennent au Client et restent à son nom. Potentieel y intervient au titre d'un accès délégué.</p>
+  <p>À la fin de la relation, quelle qu'en soit la cause, Potentieel retire ses accès et restitue au Client, sur simple demande et sans frais : l'historique des campagnes, la liste des demandes reçues et les contenus créés pour lui (textes d'annonces, page de destination). Le numéro de suivi des appels est fourni par un opérateur tiers : sa conservation par le Client dépend des conditions de cet opérateur et fait l'objet d'un accord au cas par cas. Aucun verrouillage n'est appliqué.</p>
+
+  <h2 id="appels">12. Suivi des appels</h2>
+  <p>Les appels issus des annonces transitent par un numéro de suivi permettant de mesurer l'origine des demandes. Lorsque les appels sont enregistrés, l'appelant en est informé au début de l'appel et peut s'y opposer. Les enregistrements ne servent qu'à la qualification des demandes et à l'amélioration du traitement des appels ; ils ne sont pas cédés à des tiers et sont conservés au maximum 6 mois.</p>
+
+  <h2 id="donnees">13. Données personnelles</h2>
+  <p>Les données des prospects du Client (nom, téléphone, email, demande) sont collectées pour le compte du Client, qui en est le responsable de traitement. Potentieel agit comme <strong>sous-traitant</strong> au sens de l'article 28 du RGPD : il traite ces données uniquement sur instruction du Client, les sécurise, ne les utilise pour aucune autre finalité, et les restitue ou les supprime à la fin de la prestation.</p>
+  <p>Les données sont hébergées dans l'Union européenne. Certains outils utilisés (Google, Meta, opérateur de téléphonie) peuvent impliquer des transferts hors Union européenne, encadrés par les clauses contractuelles types de la Commission européenne.</p>
+  <p>Le traitement des données du Client lui-même est décrit dans notre <a href="confidentialite.html">politique de confidentialité</a>.</p>
+
+  <h2 id="responsabilite">14. Responsabilité</h2>
+  <p>Potentieel est tenu à une <strong>obligation de moyens</strong> : il met en œuvre les compétences et les diligences nécessaires pour générer des demandes qualifiées. Le volume de demandes, leur qualité et le taux de transformation dépendent aussi du marché, de la saison, de la zone, des prix pratiqués par le Client et de sa réactivité. La seule garantie de résultat consentie est celle de l'article 7.</p>
+  <p>Potentieel ne peut être tenu responsable des décisions de Google (refus, suspension ou modification des règles de diffusion), ni des interruptions de service des plateformes tierces. En cas de suspension du compte du fait de Google, Potentieel accompagne le Client dans les démarches de rétablissement et la période est prolongée d'autant.</p>
+  <p>La responsabilité de Potentieel, toutes causes confondues, est limitée au montant hors taxes effectivement réglé par le Client au titre de la prestation concernée.</p>
+
+  <h2 id="confidentialite">15. Confidentialité et références</h2>
+  <p>Chaque partie garde confidentielles les informations de l'autre. Potentieel peut citer le nom et le logo du Client comme référence, ainsi que des résultats chiffrés anonymisés ; le Client peut s'y opposer à tout moment par écrit.</p>
+
+  <h2 id="retractation">16. Droit de rétractation</h2>
+  <p>Le Client consommateur dispose d'un délai de rétractation de 14 jours (articles L.221-18 et suivants du Code de la consommation).</p>
+  <p>Ce même délai bénéficie au <strong>Client professionnel employant 5 salariés ou moins</strong> lorsque l'objet du contrat n'entre pas dans le champ de son activité principale (article L.221-3 du Code de la consommation), ce qui est le cas des prestations de publicité vendues à une entreprise du bâtiment.</p>
+  <p>Lorsque le Client demande expressément que la prestation démarre avant la fin de ce délai — ce qui est le cas dès lors que les campagnes sont mises en ligne — il reste redevable du montant correspondant à ce qui a déjà été exécuté s'il se rétracte ensuite. Un formulaire de rétractation est fourni sur simple demande à <a href="mailto:potentieel.web@gmail.com">potentieel.web@gmail.com</a>.</p>
+
+  <h2 id="mediation">17. Médiation de la consommation</h2>
+  <p>Le Client consommateur peut recourir gratuitement à un médiateur de la consommation (article L.612-1 du Code de la consommation) : <span class="legal-todo">[à compléter : nom et coordonnées du médiateur agréé]</span>.</p>
+
+  <h2 id="droit">18. Droit applicable et litiges</h2>
+  <p>Les présentes CGV sont soumises au droit français. En cas de litige, les parties recherchent une solution amiable avant toute action judiciaire. À défaut d'accord, le litige relève des tribunaux compétents dans le ressort du siège de Potentieel pour les Clients professionnels ; pour les Clients consommateurs, les règles de compétence légales s'appliquent.</p>
+
+  <h2>Contact</h2>
   <p><a href="mailto:potentieel.web@gmail.com">potentieel.web@gmail.com</a> · <a href="tel:+33769387613">07 69 38 76 13</a></p>
 </div>
 </body>
