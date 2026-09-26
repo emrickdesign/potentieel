@@ -10895,7 +10895,7 @@ function saUpdateBadge(){
 function saMapCall(c){ return {kind:'call',id:c.id,at:c.created_at,client_id:c.client_id,qual:c.qualification,theme:c.theme,
   missed:(c.status==='manque'||c.status==='repondeur'),status:c.status,name:c.from_number||'Appel',tel:c.from_number,dur:c.duration_sec,rec:c.recording_url,notes:c.notes,summary:c.summary,transcript:c.transcript}; }
 function saMapForm(f){ return {kind:'form',id:f.id,at:f.submitted_at,client_id:f.client_id,qual:f.qualification,theme:f.theme,missed:false,
-  name:f.prenom||f.entreprise||'Contact',tel:f.telephone,meta:[f.ville,f.domaine].filter(Boolean).join(' · ')}; }
+  name:f.prenom||f.entreprise||'Contact',tel:f.telephone,meta:[f.ville,f.domaine,f.details].filter(Boolean).join(' · ')}; }
 function saItemsForClient(id){
   const calls=saState.calls.filter(c=>c.client_id===id).map(saMapCall);
   const forms=saState.forms.filter(f=>f.client_id===id).map(saMapForm);

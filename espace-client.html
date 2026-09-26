@@ -311,7 +311,7 @@ async function load(){
     .map(f => ({
       kind:'form', at: f.submitted_at, missed:false,
       name: f.prenom || f.entreprise || 'Nouveau contact', tel: f.telephone,
-      meta: [f.ville, f.domaine].filter(Boolean).join(' · '), theme: f.theme,
+      meta: [f.ville, f.domaine, f.details].filter(Boolean).join(' · '), theme: f.theme,
     }));
 
   const items = [...calls, ...forms].sort((a,b)=> new Date(b.at) - new Date(a.at));
