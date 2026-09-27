@@ -3562,6 +3562,7 @@ function setupRealtime() {
         case 'clients':
           if (active && active.id === 'cl-notes-area' && clCurrentId === id) break;
           clData = isDelete ? clData.filter(c => String(c.id) !== String(id)) : patch(clData, row.payload);
+          if (isDelete) _clSent.delete(String(id)); else _clSent.set(String(id), clStableStr(row.payload));
           localStorage.setItem(CL_KEY, JSON.stringify(clData));
           clRenderGrid(); break;
         case 'documents':
@@ -4302,6 +4303,8 @@ let clEditMode = false;
 async function clLoad() {
   const remote = await crmItemsLoadAll('clients');
   const merged = remote ? crmMerge('clients', remote) : null;
+  // État serveur de référence : seules les fiches modifiées depuis seront renvoyées.
+  if (remote) remote.forEach(p => { if (p && p.id != null) _clSent.set(String(p.id), clStableStr(p)); });
   if (merged && merged.length > 0) {
     clData = merged;
     localStorage.setItem(CL_KEY, JSON.stringify(clData));
@@ -4325,6 +4328,15 @@ async function clLoad() {
   }));
   if (faMig) clSave();
 }
+// Dernier état envoyé à Supabase, par fiche. clSave n'upserte que les fiches
+// réellement modifiées : renvoyer toutes les fiches à chaque sauvegarde écrasait,
+// avec une copie périmée, ce que le webhook Stripe venait d'écrire côté serveur
+// (versement coché, facture, MRR) — et coûtait N requêtes par frappe.
+const _clSent = new Map();
+function clStableStr(o) {
+  return JSON.stringify(o, (k, v) => (v && typeof v === 'object' && !Array.isArray(v))
+    ? Object.keys(v).sort().reduce((a, x) => (a[x] = v[x], a), {}) : v);
+}
 function clSave(deletedId) {
   // On retire les data base64 volumineux avant de sauver dans localStorage
   // (ils sont déjà dans IDB — on garde juste idbKey comme référence)
@@ -4338,8 +4350,13 @@ function clSave(deletedId) {
   localStorage.setItem(CL_KEY, JSON.stringify(slim));
   // pas de suppression de masse en boucle normale — seule clDeleteClient() peut
   // explicitement effacer un client (id passé ici en paramètre)
-  if (deletedId !== undefined) { crmItemDelete('clients', deletedId); return; }
-  slim.forEach(c => crmItemUpsert('clients', c.id, c));
+  if (deletedId !== undefined) { _clSent.delete(String(deletedId)); crmItemDelete('clients', deletedId); return; }
+  slim.forEach(c => {
+    const str = clStableStr(c);
+    if (_clSent.get(String(c.id)) === str) return;   // inchangée : rien à envoyer
+    _clSent.set(String(c.id), str);
+    crmItemUpsert('clients', c.id, c);
+  });
   // Une fiche a changé → la trésorerie doit régénérer les entrées à sa prochaine ouverture.
   try { _dpClientsDone = false; } catch(_) {}
 }
@@ -7689,7 +7706,7 @@ async function clCallStripe(type, extra = {}) {
         'Authorization': `Bearer ${session.access_token}`,
         'apikey': SUPABASE_KEY,
       },
-      body: JSON.stringify({ type, clientEmail: c.email, ...extra }),
+      body: JSON.stringify({ type, clientEmail: c.email, clientId: c.id, ...extra }),
     });
     const data = await res.json();
     if (data.error) { alert('Erreur Stripe : ' + data.error); return null; }
@@ -8542,8 +8559,7 @@ function fmRenderRecent(S) {
 /* ═══════════════════════════════════════════════
    APPELS — Calendly + ajout manuel + rappels email
 ═══════════════════════════════════════════════ */
-const CALENDLY_PAT = 'eyJraWQiOiIxY2UxZTEzNjE3ZGNmNzY2YjNjZWJjY2Y4ZGM1YmFmYThhNjVlNjg0MDIzZjdjMzJiZTgzNDliMjM4MDEzNWI0IiwidHlwIjoiUEFUIiwiYWxnIjoiRVMyNTYifQ.eyJpc3MiOiJodHRwczovL2F1dGguY2FsZW5kbHkuY29tIiwiaWF0IjoxNzgwMTM0NTY1LCJqdGkiOiIyM2Q5YWJhMC05MDA2LTQ4NmMtOGM3MS1lNTBiMmY3ODZhMzkiLCJ1c2VyX3V1aWQiOiJjZWFkODhlMC0wOTkxLTQyZmUtOGUzYi1mMmJjYjYxN2NkNDQiLCJzY29wZSI6ImF2YWlsYWJpbGl0eTpyZWFkIGF2YWlsYWJpbGl0eTp3cml0ZSBldmVudF90eXBlczpyZWFkIGV2ZW50X3R5cGVzOndyaXRlIGxvY2F0aW9uczpyZWFkIHJvdXRpbmdfZm9ybXM6cmVhZCBzaGFyZXM6d3JpdGUgc2NoZWR1bGVkX2V2ZW50czpyZWFkIHNjaGVkdWxlZF9ldmVudHM6d3JpdGUgc2NoZWR1bGluZ19saW5rczp3cml0ZSBncm91cHM6cmVhZCBvcmdhbml6YXRpb25zOnJlYWQgb3JnYW5pemF0aW9uczp3cml0ZSB1c2VyczpyZWFkIGNvbnRhY3RzOnJlYWQgY29udGFjdHM6d3JpdGUgYWN0aXZpdHlfbG9nOnJlYWQgZGF0YV9jb21wbGlhbmNlOndyaXRlIG91dGdvaW5nX2NvbW11bmljYXRpb25zOnJlYWQgd2ViaG9va3M6cmVhZCB3ZWJob29rczp3cml0ZSJ9.eXjB9DIAyPd_AUO05HU6P7oxq_1IwoTG3ASn28JdM0aXHHnY1k4dhDnEatbi5DmYClFfpeZbBro3pHOzmsRduA';
-const CALENDLY_USER_URI = 'https://api.calendly.com/users/cead88e0-0991-42fe-8e3b-f2bcb617cd44';
+// Le jeton Calendly vit côté serveur (Edge Function calendly-sync) : jamais dans cette page publique.
 
 let apCalls = [];
 let apCurrentTab = 'avenir';
@@ -8561,44 +8577,28 @@ async function apLoadCalls() {
 }
 
 /* ── Calendly refresh ── */
+// Passe par l'Edge Function calendly-sync (jeton stocké côté serveur, réservée à l'équipe).
 async function apRefreshCalendly() {
   const btn = document.getElementById('ap-refresh-btn');
   if (!btn) return;
+  const old = btn.innerHTML;
   btn.textContent = '↺ Chargement…'; btn.disabled = true;
   try {
-    const now = new Date().toISOString();
-    const past = new Date(Date.now() - 45*24*3600*1000).toISOString();
-    const future = new Date(Date.now() + 90*24*3600*1000).toISOString();
-    const h = { 'Authorization': `Bearer ${CALENDLY_PAT}`, 'Content-Type': 'application/json' };
-
-    const [r1, r2] = await Promise.all([
-      fetch(`https://api.calendly.com/scheduled_events?user=${encodeURIComponent(CALENDLY_USER_URI)}&status=active&min_start_time=${now}&max_start_time=${future}&count=100`, {headers:h}),
-      fetch(`https://api.calendly.com/scheduled_events?user=${encodeURIComponent(CALENDLY_USER_URI)}&status=active&min_start_time=${past}&max_start_time=${now}&count=100`, {headers:h})
-    ]);
-    const d1 = await r1.json(); const d2 = await r2.json();
-    const events = [...(d1.collection||[]), ...(d2.collection||[])];
-
-    for (const ev of events) {
-      const uid = ev.uri.split('/').pop();
-      let name = 'Inconnu', email = null;
-      try {
-        const ir = await fetch(`${ev.uri}/invitees?count=1`, {headers:h});
-        const id = await ir.json();
-        const inv = id.collection?.[0];
-        if (inv) { name = inv.name || name; email = inv.email || null; }
-      } catch(_) {}
-      const isUp = new Date(ev.start_time) > new Date();
-      await sb.from('calls').upsert({
-        calendly_uuid: uid, source: 'calendly',
-        name, email, scheduled_at: ev.start_time,
-        status: isUp ? 'upcoming' : 'past'
-      }, { onConflict: 'calendly_uuid' });
-    }
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) throw new Error('Session expirée');
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/calendly-sync`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${session.access_token}`, 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+      body: '{}'
+    });
+    const out = await res.json().catch(() => ({}));
+    if (!res.ok || out.error) throw new Error(out.error || `HTTP ${res.status}`);
     await apLoadCalls();
     apRenderList();
   } catch(e) { console.error('Calendly:', e); }
-  btn.textContent = '↺ Rafraîchir Calendly'; btn.disabled = false;
+  btn.innerHTML = old; btn.disabled = false;
 }
+
 
 /* ── Tabs ── */
 function apSetTab(tab) {
