@@ -9,3 +9,6 @@ push.command
 # Fichiers de test / junk locaux
 testfile*.txt
 .git_junk_holder/
+
+# Dossier de travail de la CLI Supabase
+supabase/.temp/
