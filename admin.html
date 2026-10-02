@@ -2079,6 +2079,8 @@
             .sa-cli-card .mini b.al{color:var(--accent)}
             .sa-cli-card .chev{position:absolute;top:16px;right:16px;color:var(--muted)}
             .sa-sec-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin:2px 0 10px}
+            .sa-search{width:100%;max-width:340px;margin-bottom:12px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:9px;padding:9px 12px;font-size:13px;font-family:inherit}
+            .sa-search::placeholder{color:var(--muted)}
             .sa-back{background:none;border:none;color:var(--accent);font-size:13px;font-weight:700;cursor:pointer;padding:0;margin-bottom:14px}
             .sa-det-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
             .sa-det-name{font-size:20px;font-weight:800}
@@ -2169,6 +2171,8 @@
           <!-- Vue liste des clients -->
           <div id="sa-clients-view">
             <div id="sa-untriaged"></div>
+            <input id="sa-search" class="sa-search" type="search" placeholder="Rechercher un client…"
+                   oninput="saSearch(this.value)" style="display:none">
             <div id="sa-clients" class="sa-cli-grid2"><div class="sa-empty">Chargement…</div></div>
           </div>
 
@@ -2198,7 +2202,7 @@
             <div class="sa-stats3">
               <div class="sa-stat"><b id="sa-st-total">0</b><span>Demandes</span></div>
               <div class="sa-stat alert"><b id="sa-st-missed">0</b><span>À rappeler</span></div>
-              <div class="sa-stat"><b id="sa-st-week">0</b><span>Cette semaine</span></div>
+              <div class="sa-stat"><b id="sa-st-week">0</b><span>7 derniers jours</span></div>
             </div>
             <div class="sa-chips" id="sa-chips">
               <span class="sa-chip active" data-f="all" onclick="saFilter('all')">Tout</span>
@@ -10903,7 +10907,7 @@ else
 </script>
 <script>
 /* ============ SUIVI ADS (vue par client) ============ */
-const saState = { clients:[], calls:[], forms:[], selected:null, filter:'all', editing:null, loaded:false };
+const saState = { clients:[], calls:[], forms:[], selected:null, filter:'all', editing:null, loaded:false, q:'' };
 function saEsc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 function saTel(t){ return String(t||'').replace(/[^+0-9]/g,''); }
 function saDate(iso){ try{ const d=new Date(iso),n=new Date(); const t=new Intl.DateTimeFormat('fr-FR',{hour:'2-digit',minute:'2-digit'}).format(d);
@@ -11001,8 +11005,23 @@ function saRenderClientsView(){
     : '';
   const el=document.getElementById('sa-clients');
   if(!saState.clients.length){ el.innerHTML='<div class="sa-empty">Aucun client. Clique « + Nouveau client » en haut à droite.</div>'; return; }
-  el.innerHTML=saState.clients.map(c=>{
-    const st=saStats(saItemsForClient(c.id));
+
+  // La recherche n'a pas d'intérêt sur une poignée de clients : on ne l'affiche
+  // qu'à partir du moment où la liste devient pénible à parcourir.
+  const search=document.getElementById('sa-search');
+  if(search) search.style.display = saState.clients.length>6 ? '' : 'none';
+
+  // Un seul calcul des stats par client (il servait au tri ET à l'affichage),
+  // puis tri : ce qui demande une action remonte en haut.
+  let rows=saState.clients.map(c=>({ c, st:saStats(saItemsForClient(c.id)) }));
+  const q=saState.q;
+  if(q) rows=rows.filter(r=>[r.c.entreprise,r.c.nom,r.c.email,r.c.twilio_number]
+    .filter(Boolean).join(' ').toLowerCase().includes(q));
+  rows.sort((a,b)=> b.st.missed-a.st.missed || b.st.week-a.st.week || b.st.total-a.st.total
+    || String(a.c.entreprise||a.c.nom||'').localeCompare(String(b.c.entreprise||b.c.nom||''),'fr'));
+
+  if(!rows.length){ el.innerHTML='<div class="sa-empty">Aucun client ne correspond à « '+saEsc(q)+' ».</div>'; return; }
+  el.innerHTML=rows.map(({c,st})=>{
     const type=c.type==='ads'?'Ads':'Site';
     return `<div class="sa-cli-card" onclick="saOpenClient('${c.id}')">
       <div class="chev">›</div>
@@ -11018,6 +11037,10 @@ function saRenderClientsView(){
 }
 
 /* ---- Vue détail d'un client ---- */
+/* Le champ vit hors de #sa-clients : re-rendre la grille ne lui fait pas
+   perdre le focus, on peut donc filtrer à chaque frappe. */
+function saSearch(v){ saState.q=(v||'').trim().toLowerCase(); saRenderClientsView(); }
+
 function saOpenClient(id){ saState.selected=id; saState.filter='all'; saState.tab='demandes'; saRenderDetail(); }
 function saRenderDetail(){
   const c=saState.clients.find(x=>x.id===saState.selected); if(!c){ saCloseClient(); return; }
