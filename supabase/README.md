@@ -52,10 +52,12 @@ L'enchaînement complet, dans l'ordre où ça se passe :
 `stripe-checkout` · `stripe-webhook` · `stripe-sync` · `stripe-metrics` ·
 `stripe-forecast` · `send-invoice-email` · `send-quote-email` · `payment-alert-email`
 
-> ⚠️ **L'envoi d'email est hors service** au 02/10/2026 : Gmail rejette les
-> identifiants (`535 BadCredentials`) et aucune clé Resend n'est posée, donc
-> `twilio-status` ne prévient personne d'un appel manqué. L'échec est **silencieux**
-> (il n'apparaît que dans les logs). Procédure de réparation dans
+> **Envoi d'email** : `twilio-status` passe par Gmail en SMTP
+> (`potentieel.web@gmail.com`, mot de passe d'application dans le Vault sous
+> `crm_gmail_app_password`). Il était hors service jusqu'au 02/10/2026 — Google
+> refusait un mot de passe qui n'avait jamais été vérifié. Réparé.
+> ⚠️ Un échec d'envoi reste **silencieux** : il n'apparaît que dans les logs de la
+> fonction, jamais dans le CRM. Procédure et commande de test dans
 > [AJOUTER-UN-CLIENT.md](../AJOUTER-UN-CLIENT.md), étape 0b.
 
 ### Rendez-vous

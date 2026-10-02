@@ -37,22 +37,28 @@ l'autorisation manque.
 Ne pas toucher à la « Site URL » : elle sert à un autre projet du hub. C'est
 précisément pour cela que chaque site doit déclarer sa propre Redirect URL.
 
-### b) Le canal d'envoi d'emails ⚠️ ACTUELLEMENT HORS SERVICE
+### b) Le canal d'envoi d'emails — réparé le 02/10/2026 ✅
 
-Au 02/10/2026, Gmail refuse les identifiants (`535 BadCredentials`). Conséquence :
-**aucun email d'appel manqué ne part**, ni vers l'agence ni vers le client.
+Gmail refusait les identifiants (`535 BadCredentials`) : le mot de passe
+d'application posé le 27/09 n'avait jamais fonctionné, et personne ne pouvait
+s'en apercevoir puisqu'aucun appel n'était encore arrivé. Un nouveau mot de passe
+d'application a été généré depuis `potentieel.web@gmail.com` et remplacé dans le
+Vault (`crm_gmail_app_password`). L'authentification SMTP passe désormais.
 
-Pour le réparer :
-1. Se connecter au compte Google qui envoie (`potentieel.web@gmail.com` sauf si la
-   variable `GMAIL_USER` dit autre chose).
-2. Compte Google → Sécurité → **Mots de passe des applications** → en générer un
-   nouveau (16 caractères).
-3. Le poser dans le Vault Supabase sous le nom `crm_gmail_app_password`
-   (le remplacer, ne pas en créer un second).
-4. Revérifier avec la commande de l'étape 6.
+Si ça recasse un jour — Google révoque ces mots de passe au moindre changement de
+sécurité sur le compte :
 
-Tant que ce point n'est pas réglé, le reste fonctionne — le lien d'accès du client
-ne passe pas par email, il se transmet à la main.
+1. Se connecter à **`potentieel.web@gmail.com`** (l'adresse d'envoi est écrite en
+   dur dans `twilio-status`, aucun secret `GMAIL_USER` ne la remplace).
+2. [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
+   → en générer un nouveau. La validation en 2 étapes doit être active.
+3. Retirer les espaces, puis remplacer la valeur dans le Vault Supabase sous
+   `crm_gmail_app_password` (ne pas en créer un second).
+4. Retester avec la commande de l'étape 6.
+
+⚠️ **L'envoi échoue en silence.** En cas de problème, rien n'apparaît dans le CRM :
+l'erreur ne va que dans les logs de `twilio-status`. C'est la faiblesse à garder en
+tête — un canal d'email muet donne l'illusion de fonctionner.
 
 ---
 
