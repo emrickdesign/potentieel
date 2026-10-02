@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Votre récapitulatif — Potentieel</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet">
+
+<!-- ╔═══════════════════════════════════════════════════════════════╗
+     ║  MODE D'EMPLOI                                                ║
+     ║                                                               ║
+     ║  1. Dupliquer ce fichier : recap/durand-couverture.html        ║
+     ║  2. Remplir l'objet P ci-dessous avec le récap Fathom          ║
+     ║  3. Le lien devient : potentieel.fr/recap/durand-couverture    ║
+     ║                                                               ║
+     ║  RÈGLE : on reprend SES mots, pas les nôtres. Les citations    ║
+     ║  doivent être des phrases qu'il a réellement dites.            ║
+     ╚═══════════════════════════════════════════════════════════════╝ -->
+<script>
+const P = {
+
+  /* ---------- Identité ---------- */
+  prenom:        "Prénom",
+  entreprise:    "Nom de l'entreprise",
+  metier:        "couvreur",            // en minuscules, dans la phrase
+  ville:         "Chambéry",
+  dateAppel:     "2 octobre",           // jour de l'appel d'une heure
+  dateDecision:  "lundi 7 octobre",     // date de l'appel de décision
+  heureDecision: "9 h 00",
+
+  /* ---------- Ce qu'il a dit (verbatim Fathom) ---------- */
+  citation:      "Sa phrase exacte, celle qui résume pourquoi il nous a appelés.",
+  contexte: [
+    "Ce qu'il a raconté sur sa situation — un fait par ligne.",
+    "D'où viennent ses chantiers aujourd'hui.",
+    "Ce qui le gêne dans la situation actuelle."
+  ],
+
+  /* ---------- Son objectif ---------- */
+  objectif:      "Ce qu'il veut atteindre, dans ses mots et avec son chiffre.",
+
+  /* ---------- Les chiffres de l'appel ---------- */
+  chantierType:  12000,   // € — montant de son chantier type
+  margePct:      30,      // % — sa marge sur ce chantier
+  budgetPub:     600,     // €/mois — budget Google
+  honoraires:    500,     // €/mois — notre suivi
+  miseEnPlace:   1500,    // € — une fois (0 si incluse)
+  demandesMin:   8,       // fourchette basse de demandes/mois estimées
+  demandesMax:   14,      // fourchette haute
+
+  /* ---------- Le plan ---------- */
+  plan: [
+    "Ce qu'on met en place en premier, formulé pour lui.",
+    "La deuxième chose.",
+    "La troisième.",
+    "Ce qu'on surveille ensemble le premier mois."
+  ],
+
+  /* ---------- Son objection, telle qu'il l'a formulée ---------- */
+  objection:     "Sa phrase exacte : « je vais en parler à mon associé », « j'ai déjà essayé », etc.",
+  reponse:       "La réponse précise, celle qu'on lui a donnée au téléphone. Pas un argumentaire général.",
+
+  /* ---------- Ce que ce n'est pas (honnêteté) ---------- */
+  limites: [
+    "Ce qu'on ne garantit pas.",
+    "Ce qui dépend de lui et pas de nous.",
+    "Dans quel cas ça ne marchera pas."
+  ],
+
+  /* ---------- Preuve du même métier (mettre null si on n'en a pas) ----------
+     Choisir la preuve qui correspond à SON métier. Une seule, pas trois. */
+  preuve: {
+    image:    "../assets/preuves/message-sebastien-facade.jpg",
+    phrase:   "J'ai déjà rentabilisé l'investissement. Le premier mois j'ai reçu des appels sérieux, pas juste des curieux.",
+    qui:      "Sébastien, façadier en Isère",
+    resultat: "Un ravalement complet signé à Voiron — 18 000 € TTC, et deux devis en attente"
+  }
+};
+</script>
+
+<style>
+:root{
+  --bg:#ffffff; --cream:#f7f6f3; --cream-2:#f0eee7;
+  --orange:#c1531e; --orange-soft:#f4926a; --lime:#4c6f18;
+  --ink:#18170f; --ink-2:#514f47; --ink-3:#6b6862;
+  --border:#e7e3d9; --radius:16px; --radius-sm:10px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.65;font-size:17px;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block;height:auto}
+a{color:inherit}
+.wrap{max-width:720px;margin:0 auto;padding:0 24px}
+.band{padding:64px 0}
+.band--cream{background:var(--cream);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+
+.top{padding:28px 0;border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.14em;font-size:14px}
+.brand svg{width:20px;height:20px;flex:none}
+
+h1{font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:clamp(32px,5.6vw,46px);line-height:1.12;letter-spacing:-.02em;margin-bottom:20px}
+h2{font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:clamp(25px,4vw,32px);line-height:1.2;letter-spacing:-.015em;margin-bottom:16px}
+h3{font-size:18px;font-weight:700;margin-bottom:8px}
+p{margin-bottom:18px;color:var(--ink-2)}
+p.lead{font-size:20px;color:var(--ink);line-height:1.6}
+strong{color:var(--ink);font-weight:600}
+em.hand{font-family:'Playfair Display',Georgia,serif;font-style:italic;color:var(--orange);font-weight:600}
+
+.hero{padding:68px 0 56px}
+.hero .meta{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--lime);margin-bottom:20px}
+.hero .meta::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--lime);flex:none}
+
+blockquote.said{font-family:'Playfair Display',Georgia,serif;font-size:clamp(21px,3.4vw,26px);line-height:1.4;font-style:italic;color:var(--ink);border-left:3px solid var(--orange);padding-left:22px;margin:0 0 26px}
+
+.facts li{list-style:none;position:relative;padding-left:30px;margin-bottom:12px;color:var(--ink-2)}
+.facts li::before{content:"";position:absolute;left:4px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--orange-soft)}
+
+.goal{background:#fff;border:1px solid var(--border);border-left:4px solid var(--lime);border-radius:var(--radius);padding:26px}
+.goal h3{color:var(--lime);font-size:15px;letter-spacing:.02em;margin-bottom:10px}
+.goal p{font-size:21px;color:var(--ink);margin-bottom:0;font-family:'Playfair Display',Georgia,serif;line-height:1.4}
+
+.steps{counter-reset:s;margin-top:26px}
+.steps li{counter-increment:s;position:relative;padding-left:50px;margin-bottom:20px;list-style:none;color:var(--ink-2)}
+.steps li::before{content:counter(s);position:absolute;left:0;top:-2px;width:32px;height:32px;border-radius:50%;background:var(--orange);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center}
+
+/* Chiffres */
+.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:26px 0}
+.nums > div{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:20px 18px}
+.nums .n{font-family:'Playfair Display',Georgia,serif;font-size:30px;font-weight:700;color:var(--orange);line-height:1.1;display:block;margin-bottom:4px}
+.nums .l{font-size:14px;color:var(--ink-3);line-height:1.4}
+
+.seuil{background:var(--ink);color:#fff;border-radius:var(--radius);padding:30px 28px;margin-top:8px}
+.seuil h3{color:#fff;font-size:17px;margin-bottom:14px}
+.seuil p{color:#c9c6bb;font-size:16px;margin-bottom:0}
+.seuil .big{font-family:'Playfair Display',Georgia,serif;font-size:clamp(28px,5vw,40px);color:var(--orange-soft);display:block;margin:12px 0;line-height:1.2}
+
+/* Objection */
+.obj{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:26px}
+.obj .q{font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:20px;color:var(--ink);margin-bottom:16px;line-height:1.4}
+.obj .a{margin-bottom:0}
+
+.limits li{list-style:none;position:relative;padding-left:32px;margin-bottom:12px;color:var(--ink-2);font-size:16px}
+.limits li::before{content:"—";position:absolute;left:4px;top:0;color:var(--orange);font-weight:700}
+
+/* Preuve */
+.proof{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:24px}
+.proof img{border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:16px}
+.proof blockquote{font-family:'Playfair Display',Georgia,serif;font-size:19px;line-height:1.45;font-style:italic;color:var(--ink);border-left:3px solid var(--orange-soft);padding-left:16px;margin-bottom:14px}
+.proof .who{font-size:14px;color:var(--ink-3);margin-bottom:0}
+.proof .result{display:inline-block;margin-top:12px;background:#f1f6e9;color:var(--lime);font-weight:600;font-size:15px;padding:8px 14px;border-radius:var(--radius-sm)}
+
+/* CTA */
+.cta{background:var(--ink);color:#fff;border-radius:var(--radius);padding:40px 32px;text-align:center}
+.cta h2{color:#fff;margin-bottom:12px}
+.cta p{color:#c9c6bb;margin-bottom:24px}
+.btn{display:inline-block;background:var(--orange);color:#fff;font-weight:700;font-size:17px;padding:16px 30px;border-radius:999px;text-decoration:none;transition:transform .2s ease,background .2s ease}
+.btn:hover{background:#a8471a;transform:translateY(-2px)}
+.btn-sec{display:inline-block;margin-top:16px;color:#c9c6bb;font-size:15px;text-decoration:underline;text-underline-offset:3px}
+
+footer{padding:34px 0 54px;font-size:14px;color:var(--ink-3);text-align:center}
+footer a{color:var(--ink-3);text-decoration:underline;text-underline-offset:3px}
+.legal{font-size:13px;color:var(--ink-3);margin-top:18px;line-height:1.55}
+
+.internal{background:#fdf4e3;border-bottom:1px solid #e8d9b5;color:#6b5420;font-size:14px;line-height:1.5;padding:14px 0}
+.internal strong{color:#4a3a16}
+.internal .wrap{display:flex;gap:12px;align-items:flex-start}
+.internal svg{width:19px;height:19px;flex:none;margin-top:2px;stroke:#b8862a}
+
+.proof img.phone{max-width:330px;margin:0 auto 16px}
+
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+.reveal.on{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+
+@media print{
+  .reveal{opacity:1;transform:none}
+  .band{padding:28px 0;break-inside:avoid}
+  .cta{background:#fff;color:var(--ink);border:1px solid var(--border)}
+  .cta h2,.cta p{color:var(--ink)}
+  .seuil{background:#fff;color:var(--ink);border:1px solid var(--border)}
+  .seuil h3,.seuil p{color:var(--ink)}
+}
+
+@media(max-width:640px){
+  body{font-size:16px}
+  .band{padding:48px 0}
+  .hero{padding:48px 0 40px}
+  .nums{grid-template-columns:1fr;gap:10px}
+  .nums > div{display:flex;align-items:baseline;gap:14px}
+  .nums .n{margin-bottom:0;font-size:26px}
+  .cta{padding:32px 22px}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <span class="brand">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#c1531e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
+      </svg>
+      POTENTIEEL
+    </span>
+  </div>
+</header>
+
+<!-- Bandeau à supprimer dans chaque copie envoyée à un vrai prospect,
+     une fois le fichier rempli avec ses données à lui. -->
+<div class="internal">
+  <div class="wrap">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/>
+    </svg>
+    <span><strong>Modèle — document interne.</strong> Dupliquer ce fichier par prospect, remplir l'objet <code>P</code> en haut du code, puis supprimer ce bandeau.</span>
+  </div>
+</div>
+
+<section class="hero">
+  <div class="wrap">
+    <span class="meta" id="h-date"></span>
+    <h1 id="h-titre"></h1>
+    <p class="lead" id="h-intro"></p>
+    <p>Cette page est la vôtre. Elle reprend ce qu'on s'est dit, les chiffres qu'on a posés ensemble, et ce qui se passe si vous dites oui. Vous pouvez la transférer à qui vous voulez.</p>
+  </div>
+</section>
+
+<section class="band band--cream">
+  <div class="wrap reveal">
+    <h2>Ce que vous m'avez dit</h2>
+    <blockquote class="said" id="c-citation"></blockquote>
+    <ul class="facts" id="c-contexte"></ul>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap reveal">
+    <h2>Là où vous voulez aller</h2>
+    <div class="goal">
+      <h3>Votre objectif</h3>
+      <p id="c-objectif"></p>
+    </div>
+  </div>
+</section>
+
+<section class="band band--cream">
+  <div class="wrap reveal">
+    <h2>Ce qu'on mettrait en place</h2>
+    <p>Pas une campagne générique : celle-ci est construite sur ce que vous m'avez décrit.</p>
+    <ol class="steps" id="c-plan"></ol>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap reveal">
+    <h2>Les chiffres, sans arrondi flatteur</h2>
+    <p id="c-chiffres-intro"></p>
+    <div class="nums">
+      <div><span class="n" id="n-budget"></span><span class="l">de budget Google par mois, payé directement depuis votre compte</span></div>
+      <div><span class="n" id="n-hono"></span><span class="l">notre suivi mensuel</span></div>
+      <div><span class="n" id="n-dem"></span><span class="l">demandes estimées par mois</span></div>
+    </div>
+    <div class="seuil">
+      <h3>À partir de quand c'est rentable pour vous</h3>
+      <p id="c-seuil-txt"></p>
+      <span class="big" id="c-seuil-big"></span>
+      <p id="c-seuil-note"></p>
+    </div>
+    <p class="legal" id="c-legal"></p>
+  </div>
+</section>
+
+<section class="band band--cream" id="s-preuve" hidden>
+  <div class="wrap reveal">
+    <h2>Ce que ça a donné dans votre métier</h2>
+    <div class="proof">
+      <img id="p-img" src="" alt="">
+      <blockquote id="p-phrase"></blockquote>
+      <p class="who" id="p-qui"></p>
+      <span class="result" id="p-resultat"></span>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap reveal">
+    <h2>La question que vous m'avez posée</h2>
+    <div class="obj">
+      <p class="q" id="c-objection"></p>
+      <p class="a" id="c-reponse"></p>
+    </div>
+  </div>
+</section>
+
+<section class="band band--cream">
+  <div class="wrap reveal">
+    <h2>Ce que ce n'est pas</h2>
+    <p>Autant le dire maintenant plutôt que dans trois mois.</p>
+    <ul class="limits" id="c-limites"></ul>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap reveal">
+    <div class="cta">
+      <h2 id="cta-titre"></h2>
+      <p id="cta-txt"></p>
+      <a class="btn" href="tel:+33769387613">07 69 38 76 13</a>
+      <br>
+      <a class="btn-sec" href="javascript:window.print()">Imprimer cette page</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Potentieel — Google Ads pour les entreprises du bâtiment<br>
+    <a href="https://potentieel.fr">potentieel.fr</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var eur = function(n){ return n.toLocaleString('fr-FR') + ' €'; };
+  var txt = function(id, v){ var el = $(id); if(el) el.textContent = v; };
+  var list = function(id, arr, tag){
+    var el = $(id); if(!el) return;
+    el.innerHTML = '';
+    (arr || []).forEach(function(item){
+      var li = document.createElement(tag || 'li');
+      li.textContent = item;
+      el.appendChild(li);
+    });
+  };
+
+  /* En-tête */
+  txt('h-date', 'Suite à notre échange du ' + P.dateAppel);
+  $('h-titre').innerHTML = P.prenom + ', voilà <em class="hand">où on en est</em>.';
+  txt('h-intro', P.entreprise + ' — ' + P.metier + ' à ' + P.ville + '.');
+
+  /* Ce qu'il a dit */
+  txt('c-citation', '« ' + P.citation + ' »');
+  list('c-contexte', P.contexte);
+
+  /* Objectif */
+  txt('c-objectif', P.objectif);
+
+  /* Plan */
+  list('c-plan', P.plan);
+
+  /* Chiffres */
+  var margeEuro   = Math.round(P.chantierType * P.margePct / 100);
+  var coutMensuel = P.budgetPub + P.honoraires;
+  var chantiers   = Math.ceil(coutMensuel / margeEuro);
+
+  txt('c-chiffres-intro',
+    'Votre chantier type est à ' + eur(P.chantierType) + ', avec environ ' + P.margePct +
+    ' % de marge — soit ' + eur(margeEuro) + ' qui vous restent sur chaque chantier signé. ' +
+    'Tout le raisonnement part de là.');
+
+  txt('n-budget', eur(P.budgetPub));
+  txt('n-hono',   eur(P.honoraires));
+  txt('n-dem',    P.demandesMin + ' à ' + P.demandesMax);
+
+  txt('c-seuil-txt',
+    'Vous dépensez ' + eur(coutMensuel) + ' par mois en tout. Avec ' + eur(margeEuro) +
+    ' de marge par chantier, il vous faut :');
+
+  txt('c-seuil-big',
+    chantiers + (chantiers > 1 ? ' chantiers signés par mois' : ' chantier signé par mois') + ' pour être à l\'équilibre');
+
+  txt('c-seuil-note',
+    'Au-delà, c\'est pour vous. Sur ' + P.demandesMin + ' à ' + P.demandesMax +
+    ' demandes par mois, il faut donc en transformer ' +
+    Math.round(chantiers / P.demandesMax * 100) + ' à ' +
+    Math.round(chantiers / P.demandesMin * 100) + ' %. ' +
+    'C\'est à vous de juger si c\'est atteignable avec votre façon de répondre au téléphone.');
+
+  txt('c-legal',
+    (P.miseEnPlace > 0 ? 'Mise en place : ' + eur(P.miseEnPlace) + ', une seule fois. ' : '') +
+    'Le budget publicitaire est payé directement à Google depuis votre compte, à votre nom : vous le voyez et vous le contrôlez. ' +
+    'Les volumes de demandes sont une estimation basée sur les recherches constatées dans votre zone, pas un engagement de résultat.');
+
+  /* Preuve */
+  if (P.preuve) {
+    $('s-preuve').hidden = false;
+    $('p-img').src = P.preuve.image;
+    $('p-img').alt = 'Retour de ' + P.preuve.qui;
+    if (/message-|mail-/.test(P.preuve.image)) $('p-img').classList.add('phone');
+    txt('p-phrase',   '« ' + P.preuve.phrase + ' »');
+    txt('p-qui',      P.preuve.qui);
+    txt('p-resultat', P.preuve.resultat);
+  }
+
+  /* Objection */
+  txt('c-objection', '« ' + P.objection + ' »');
+  txt('c-reponse',   P.reponse);
+
+  /* Limites */
+  list('c-limites', P.limites);
+
+  /* CTA */
+  txt('cta-titre', 'On se rappelle ' + P.dateDecision);
+  txt('cta-txt',   'À ' + P.heureDecision + '. D\'ici là, si une question vous vient — ou si votre associé en a une — appelez-moi, ça évite d\'attendre.');
+
+  /* Révélation */
+  var els = document.querySelectorAll('.reveal');
+  if(!('IntersectionObserver' in window)){
+    els.forEach(function(el){ el.classList.add('on'); });
+  } else {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add('on'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0, rootMargin: '0px 0px -10% 0px' });
+    els.forEach(function(el){ io.observe(el); });
+  }
+})();
+</script>
+
+</body>
+</html>

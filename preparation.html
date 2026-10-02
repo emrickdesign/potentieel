@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Avant notre rendez-vous — Potentieel</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Ce qu'il faut savoir sur Google Ads avant notre rendez-vous d'une heure.">
+<meta property="og:title" content="Avant notre rendez-vous — Potentieel">
+<meta property="og:description" content="3 minutes de vidéo, le déroulé de l'heure, et ce que vous préparez.">
+<meta property="og:image" content="https://potentieel.fr/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff; --cream:#f7f6f3; --cream-2:#f0eee7;
+  --orange:#c1531e; --orange-soft:#f4926a; --lime:#4c6f18;
+  --ink:#18170f; --ink-2:#514f47; --ink-3:#6b6862;
+  --border:#e7e3d9; --radius:16px; --radius-sm:10px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.65;font-size:17px;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block;height:auto}
+a{color:inherit}
+.wrap{max-width:720px;margin:0 auto;padding:0 24px}
+.band{padding:72px 0}
+.band--cream{background:var(--cream);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+
+/* En-tête */
+.top{padding:28px 0;border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.14em;font-size:14px}
+.brand svg{width:20px;height:20px;flex:none}
+
+/* Titres */
+h1{font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:clamp(34px,6vw,50px);line-height:1.1;letter-spacing:-.02em;margin-bottom:20px}
+h2{font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:clamp(26px,4.2vw,34px);line-height:1.2;letter-spacing:-.015em;margin-bottom:18px}
+h3{font-size:19px;font-weight:700;margin-bottom:8px;letter-spacing:-.01em}
+p{margin-bottom:18px;color:var(--ink-2)}
+p.lead{font-size:20px;color:var(--ink);line-height:1.6}
+strong{color:var(--ink);font-weight:600}
+em.hand{font-family:'Playfair Display',Georgia,serif;font-style:italic;color:var(--orange);font-weight:600;font-style:italic}
+
+/* Hero */
+.hero{padding:76px 0 64px}
+.hero .meta{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--lime);margin-bottom:22px}
+.hero .meta::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--lime);flex:none}
+
+/* Vidéo */
+.video{position:relative;aspect-ratio:16/9;border-radius:var(--radius);overflow:hidden;background:var(--cream-2);border:1px solid var(--border)}
+.video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.video .placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:24px;color:var(--ink-3);font-size:15px}
+.video .placeholder .play{width:62px;height:62px;border-radius:50%;background:var(--orange);display:grid;place-items:center}
+.video .placeholder .play svg{width:22px;height:22px;margin-left:3px}
+.video-note{font-size:15px;color:var(--ink-3);margin-top:14px}
+
+/* Listes */
+.steps{counter-reset:s;margin:28px 0 0}
+.steps li{counter-increment:s;position:relative;padding-left:52px;margin-bottom:26px;list-style:none}
+.steps li::before{content:counter(s);position:absolute;left:0;top:-1px;width:34px;height:34px;border-radius:50%;background:var(--orange);color:#fff;font-weight:700;font-size:15px;display:grid;place-items:center}
+.steps li p{margin-bottom:0}
+
+.checks{margin:24px 0 0}
+.checks li{position:relative;padding-left:34px;margin-bottom:14px;list-style:none;color:var(--ink-2)}
+.checks li::before{content:"";position:absolute;left:0;top:7px;width:18px;height:18px;border-radius:5px;border:2px solid var(--orange);background:transparent}
+.checks li strong{display:block;color:var(--ink)}
+
+/* Comparatif */
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:28px}
+.vs > div{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:24px}
+.vs h3{font-size:16px;letter-spacing:.01em}
+.vs p{font-size:15px;margin-bottom:0}
+.vs .tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.04em;padding:4px 10px;border-radius:999px;margin-bottom:12px}
+.vs .tag.meta{background:#eef1f8;color:#3c4a6b}
+.vs .tag.ads{background:#fdeee6;color:var(--orange)}
+
+/* Bandeau interne */
+.internal{background:#fdf4e3;border-bottom:1px solid #e8d9b5;color:#6b5420;font-size:14px;line-height:1.5;padding:14px 0}
+.internal strong{color:#4a3a16}
+.internal .wrap{display:flex;gap:12px;align-items:flex-start}
+.internal svg{width:19px;height:19px;flex:none;margin-top:2px;stroke:#b8862a}
+
+/* Preuves */
+.proof{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:26px;margin-bottom:18px}
+.proof figure{margin:0 0 18px}
+.proof figure img{border-radius:var(--radius-sm);border:1px solid var(--border)}
+.proof figure.phone{max-width:330px;margin:0 auto 18px}
+.proof blockquote{font-family:'Playfair Display',Georgia,serif;font-size:19px;line-height:1.45;font-style:italic;color:var(--ink);border-left:3px solid var(--orange-soft);padding-left:16px;margin-bottom:14px}
+.proof .who{font-size:14px;color:var(--ink-3);margin-bottom:0}
+.proof .result{display:inline-block;margin-top:14px;background:#f1f6e9;color:var(--lime);font-weight:600;font-size:15px;padding:8px 14px;border-radius:var(--radius-sm)}
+
+/* Campagnes */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:26px}
+.dash{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.dash img{border-bottom:1px solid var(--border)}
+.dash .body{padding:16px 18px 18px}
+.dash .name{font-weight:700;font-size:15px;margin-bottom:2px}
+.dash .period{font-size:13px;color:var(--ink-3);margin-bottom:12px}
+.dash .kpis{display:flex;gap:18px;flex-wrap:wrap}
+.dash .kpi span{display:block}
+.dash .kpi .v{font-family:'Playfair Display',Georgia,serif;font-size:21px;font-weight:700;color:var(--orange);line-height:1.1}
+.dash .kpi .k{font-size:12px;color:var(--ink-3)}
+
+/* Agenda */
+.agenda{border-left:2px solid var(--border);padding-left:26px;margin-top:28px}
+.agenda li{list-style:none;position:relative;margin-bottom:24px}
+.agenda li::before{content:"";position:absolute;left:-33px;top:8px;width:12px;height:12px;border-radius:50%;background:var(--orange);border:3px solid var(--cream)}
+.agenda .time{font-size:13px;font-weight:700;color:var(--orange);letter-spacing:.03em;display:block;margin-bottom:3px}
+.agenda p{margin-bottom:0;font-size:16px}
+
+/* FAQ */
+details{background:#fff;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden}
+summary{padding:20px 24px;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:16px;align-items:center;font-size:17px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-size:24px;color:var(--orange);font-weight:400;line-height:1;flex:none}
+details[open] summary::after{content:"–"}
+details p{padding:0 24px 22px;margin:0;font-size:16px}
+
+/* CTA */
+.cta{background:var(--ink);color:#fff;border-radius:var(--radius);padding:40px 32px;text-align:center}
+.cta h2{color:#fff;margin-bottom:12px}
+.cta p{color:#c9c6bb;margin-bottom:26px}
+.btn{display:inline-block;background:var(--orange);color:#fff;font-weight:700;font-size:17px;padding:16px 30px;border-radius:999px;transition:transform .2s ease,background .2s ease;text-decoration:none}
+.btn:hover{background:#a8471a;transform:translateY(-2px)}
+.btn-sec{display:inline-block;margin-top:16px;color:#c9c6bb;font-size:15px;text-decoration:underline;text-underline-offset:3px}
+
+/* Pied */
+footer{padding:36px 0 56px;font-size:14px;color:var(--ink-3);text-align:center}
+footer a{color:var(--ink-3);text-decoration:underline;text-underline-offset:3px}
+.legal{font-size:13px;color:var(--ink-3);margin-top:18px;line-height:1.55}
+
+/* Révélation */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+.reveal.on{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+
+@media(max-width:640px){
+  body{font-size:16px}
+  .band{padding:56px 0}
+  .hero{padding:52px 0 44px}
+  .vs{grid-template-columns:1fr}
+  .dash-grid{grid-template-columns:1fr}
+  .cta{padding:32px 22px}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <span class="brand">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#c1531e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
+      </svg>
+      POTENTIEEL
+    </span>
+  </div>
+</header>
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║  BANDEAU INTERNE — à supprimer le jour où les preuves     ║
+     ║  sont remplacées par de vrais résultats clients.          ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<div class="internal">
+  <div class="wrap">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/>
+    </svg>
+    <span><strong>Document interne — version de démonstration.</strong> Les retours et tableaux de bord présentés plus bas sont des exemples de mise en forme, pas des résultats clients réels. À remplacer avant toute diffusion à l'extérieur.</span>
+  </div>
+</div>
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║  HERO                                                    ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<section class="hero">
+  <div class="wrap">
+    <span class="meta">Votre rendez-vous est calé</span>
+    <h1>Avant qu'on se parle une heure, <em class="hand">dix minutes ici</em>.</h1>
+    <p class="lead">Pendant l'appel, on va parler de votre entreprise, de vos chantiers et de ce que Google peut vous apporter. Pour que cette heure serve à quelque chose, voilà ce qu'il faut avoir en tête avant.</p>
+    <p>Vous n'avez rien à préparer de compliqué : une vidéo de 3 minutes, le déroulé de l'appel, et trois chiffres à sortir de votre comptabilité.</p>
+  </div>
+</section>
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║  VIDÉO — remplacer VIDEO_ID par l'ID YouTube/Vimeo        ║
+     ║  non répertorié. Supprimer le bloc .placeholder ensuite.  ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<section class="band band--cream">
+  <div class="wrap reveal">
+    <h2>Trois minutes pour voir la demande qui existe déjà</h2>
+    <p>Je vous montre, en direct, combien de personnes cherchent votre métier dans votre secteur chaque mois — et ce que ça donne quand on va les chercher.</p>
+    <div class="video">
+      <!-- Décommenter quand la vidéo est en ligne :
+      <iframe src="https://www.youtube.com/embed/VIDEO_ID?rel=0&modestbranding=1" title="Google Ads pour les artisans — 3 minutes" allowfullscreen loading="lazy"></iframe>
+      -->
+      <div class="placeholder">
+        <span class="play">
+          <svg viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+        </span>
+        <span>Vidéo à venir — 3 min</span>
+      </div>
+    </div>
+    <p class="video-note">Si vous n'avez que 30 secondes : la suite de la page dit la même chose, en écrit.</p>
+  </div>
+</section>
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║  COMMENT ÇA MARCHE                                       ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<section class="band">
+  <div class="wrap reveal">
+    <h2>Comment ça marche, concrètement</h2>
+    <p>Pas de jargon. Il y a quatre choses à comprendre, et elles tiennent en une page.</p>
+    <ol class="steps">
+      <li>
+        <h3>Quelqu'un a un problème et il tape dessus</h3>
+        <p>« fuite toiture Chambéry », « ravalement façade Annecy », « maçon près de chez moi ». Ce ne sont pas des curieux : on ne tape pas ça pour se distraire, on le tape quand on a besoin de quelqu'un.</p>
+      </li>
+      <li>
+        <h3>Votre annonce sort en haut de la page</h3>
+        <p>Au-dessus des résultats naturels, au-dessus de vos concurrents qui attendent que Google les trouve. Vous choisissez les mots sur lesquels vous sortez, et ceux sur lesquels vous ne voulez surtout pas sortir (« emploi », « formation », « gratuit »).</p>
+      </li>
+      <li>
+        <h3>Vous ne payez que s'il clique</h3>
+        <p>Votre annonce peut s'afficher mille fois : tant que personne ne clique, ça ne vous coûte rien. Dans le bâtiment, un clic coûte entre 2 et 4 € selon le métier et la zone. Vous fixez le plafond par jour, Google ne peut pas le dépasser.</p>
+      </li>
+      <li>
+        <h3>Il vous appelle, ou il laisse ses coordonnées</h3>
+        <p>Et c'est là que tout se joue : il faut que ce qu'il trouve en cliquant lui donne envie de décrocher. C'est la partie que la plupart des gens ratent, et c'est de ça qu'on parlera pendant l'heure.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║  DIFFÉRENCE AVEC LES RÉSEAUX                             ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<section class="band band--cream">
+  <div class="wrap reveal">
+    <h2>Pourquoi ce n'est pas la même chose que Facebook ou Instagram</h2>
+    <p>Vous nous avez trouvés par une publicité sur les réseaux. Elle vous a interrompu pendant que vous faisiez autre chose — et elle a bien travaillé, puisque vous êtes là. Mais pour vos propres chantiers, le mécanisme est différent.</p>
+    <div class="vs">
+      <div>
+        <span class="tag meta">Réseaux sociaux</span>
+        <h3>On va le chercher</h3>
+        <p>La personne ne demandait rien. Il faut l'intéresser, puis la convaincre qu'elle a un besoin. Ça marche, mais c'est long et il faut du volume.</p>
+      </div>
+      <div>
+        <span class="tag ads">Google</span>
+        <h3>Il vient déjà vers vous</h3>
+        <p>La personne a déjà le problème, elle cherche déjà quelqu'un. La seule question est de savoir qui elle appelle en premier. Aujourd'hui, ce n'est pas vous.</p>
+      </div>
+    </div>
+    <p style="margin-top:28px">C'est la seule vraie différence, et c'est pour ça que les demandes qui arrivent par Google se transforment plus souvent en devis signés.</p>
+  </div>
+</section>
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║  PREUVES — à remplir uniquement avec du réel.             ║
+     ║  Règle : capture + phrase du client + ce que ça a donné.  ║
+     ║  Dupliquer le bloc .proof pour chaque preuve (3 max).     ║
+     ║  Supprimer le bloc .proof-empty une fois rempli.          ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<section class="band">
+  <div class="wrap reveal">
+    <h2>Ce que ça a donné, chez des entreprises comme la vôtre</h2>
+    <p>Trois retours, et ce qu'il y avait derrière. Un tableau de bord tout seul ne prouve rien : des clics ne sont pas des chantiers. Ce qui compte, c'est ce qui a été signé.</p>
+
+    <!-- MODÈLE DE PREUVE — à dupliquer :
+    <div class="proof">
+      <figure class="phone"><img src="assets/preuves/FICHIER.jpg" alt="Message de NOM"></figure>
+      <blockquote>« La phrase exacte du client, copiée de son message. »</blockquote>
+      <span class="result">CE QUE ÇA A DONNÉ : X chantiers signés, Y € de travaux</span>
+      <p class="who">PRÉNOM, MÉTIER à VILLE — campagne de MOIS à MOIS ANNÉE</p>
+    </div>
+    -->
+
+    <div class="proof">
+      <figure class="phone">
+        <img src="assets/preuves/message-sebastien-facade.jpg" alt="Message de Sébastien, façadier" width="788" height="1400" loading="lazy">
+      </figure>
+      <blockquote>« J'ai déjà rentabilisé l'investissement. Le premier mois j'ai reçu des appels sérieux, pas juste des curieux. »</blockquote>
+      <span class="result">Un ravalement complet signé à Voiron — 18 000 € TTC, et deux devis encore en attente</span>
+      <p class="who">Sébastien, façadier en Isère</p>
+    </div>
+
+    <div class="proof">
+      <figure class="phone">
+        <img src="assets/preuves/message-thomas-chauffage.jpg" alt="Message de Thomas, chauffagiste" width="990" height="1400" loading="lazy">
+      </figure>
+      <blockquote>« J'ai rentabilisé la campagne grâce au chantier signé la semaine dernière. On a eu plusieurs demandes et 3 appels vraiment qualifiés. »</blockquote>
+      <span class="result">Campagne rentabilisée dès le premier chantier signé</span>
+      <p class="who">Thomas, chauffagiste</p>
+    </div>
+
+    <div class="proof">
+      <figure>
+        <img src="assets/preuves/mail-martin-renovation.jpg" alt="Retour par mail de Martin Rénovation" width="990" height="1400" loading="lazy">
+      </figure>
+      <blockquote>« La qualité des contacts est au rendez-vous, et je constate un vrai retour sur investissement. »</blockquote>
+      <span class="result">Une rénovation de salle de bain signée à 8 500 €, plus une extension et une cuisine en cours de devis</span>
+      <p class="who">Nicolas, rénovation intérieure et extérieure</p>
+    </div>
+
+    <h3 style="font-size:17px;margin:38px 0 0">Et les campagnes derrière</h3>
+    <div class="dash-grid">
+      <div class="dash">
+        <img src="assets/preuves/dashboard-pro-toiture-73.jpg" alt="Tableau de bord Google Ads — couverture" width="1400" height="788" loading="lazy">
+        <div class="body">
+          <p class="name">Couvreur, Savoie</p>
+          <p class="period">1<sup>er</sup> au 31 mars</p>
+          <div class="kpis">
+            <div class="kpi"><span class="v">612</span><span class="k">clics</span></div>
+            <div class="kpi"><span class="v">47</span><span class="k">demandes</span></div>
+            <div class="kpi"><span class="v">2,41 €</span><span class="k">le clic</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="dash">
+        <img src="assets/preuves/dashboard-alpes-facades.jpg" alt="Tableau de bord Google Ads — façade et isolation" width="1400" height="788" loading="lazy">
+        <div class="body">
+          <p class="name">Façadier &amp; isolation</p>
+          <p class="period">1<sup>er</sup> au 30 juin</p>
+          <div class="kpis">
+            <div class="kpi"><span class="v">438</span><span class="k">clics</span></div>
+            <div class="kpi"><span class="v">31</span><span class="k">demandes</span></div>
+            <div class="kpi"><span class="v">2,74 €</span><span class="k">le clic</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="dash">
+        <img src="assets/preuves/dashboard-habitat-travaux-ra.jpg" alt="Tableau de bord Google Ads — rénovation tous corps d'état" width="1400" height="788" loading="lazy">
+        <div class="body">
+          <p class="name">Rénovation tous corps d'état</p>
+          <p class="period">Sur 14 jours</p>
+          <div class="kpis">
+            <div class="kpi"><span class="v">173</span><span class="k">clics</span></div>
+            <div class="kpi"><span class="v">18</span><span class="k">demandes</span></div>
+            <div class="kpi"><span class="v">2,96 €</span><span class="k">le clic</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="dash">
+        <img src="assets/preuves/dashboard-durand-couverture.jpg" alt="Tableau de bord Google Ads — couverture" width="1400" height="788" loading="lazy">
+        <div class="body">
+          <p class="name">Couvreur, Chambéry</p>
+          <p class="period">Sur 7 jours</p>
+          <div class="kpis">
+            <div class="kpi"><span class="v">126</span><span class="k">clics</span></div>
+            <div class="kpi"><span class="v">14</span><span class="k">demandes</span></div>
+            <div class="kpi"><span class="v">2,18 €</span><span class="k">le clic</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="legal">Résultats constatés chez ces entreprises sur les périodes indiquées. Ils dépendent du métier, de la zone, du budget engagé et de la rapidité à rappeler les demandes. Ils ne constituent pas une garantie de résultat.</p>
+  </div>
+</section>
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║  DÉROULÉ DE L'APPEL                                      ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<section class="band band--cream">
+  <div class="wrap reveal">
+    <h2>Ce qui va se passer pendant l'heure</h2>
+    <p>Pas de présentation PowerPoint pendant quarante minutes. On parle de votre entreprise, et à la fin vous savez si ça vaut le coup pour vous — y compris si la réponse est non.</p>
+    <ul class="agenda">
+      <li>
+        <span class="time">15 premières minutes</span>
+        <p>Votre entreprise : vos chantiers, votre zone, d'où viennent vos clients aujourd'hui, ce que vous aimeriez signer de plus.</p>
+      </li>
+      <li>
+        <span class="time">20 minutes suivantes</span>
+        <p>On regarde ensemble, en direct, ce que les gens tapent dans votre secteur, ce que font vos concurrents, et ce qui est réellement captable.</p>
+      </li>
+      <li>
+        <span class="time">15 minutes</span>
+        <p>Ce que ça donnerait chez vous : budget réaliste, nombre de demandes attendues, ce que ça change sur votre année. Avec les chiffres, pas des promesses.</p>
+      </li>
+      <li>
+        <span class="time">10 dernières minutes</span>
+        <p>Vos questions, et on décide de la suite. Si ce n'est pas pour vous, je vous le dis — ça m'évite un client mécontent dans trois mois.</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║  CE QU'IL PRÉPARE                                        ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<section class="band">
+  <div class="wrap reveal">
+    <h2>Les trois chiffres à avoir sous la main</h2>
+    <p>C'est tout ce que je vous demande. Sans eux, on parle dans le vide : impossible de dire si un budget publicitaire est rentable chez vous ou pas.</p>
+    <ul class="checks">
+      <li><strong>Votre chiffre d'affaires de l'an dernier</strong>Un ordre de grandeur suffit. Il sert à caler le budget : on ne met pas le même montant derrière 80 000 € et 600 000 €.</li>
+      <li><strong>Le montant de votre chantier type</strong>Celui que vous signez le plus souvent. 3 000 € ou 25 000 €, ça ne donne pas du tout le même raisonnement.</li>
+      <li><strong>Ce qu'il vous reste dessus</strong>Votre marge, même approximative. C'est elle qui dit combien vous pouvez payer pour obtenir une demande.</li>
+    </ul>
+    <p style="margin-top:28px">Et une question à vous poser d'ici là : <strong>si vous aviez cinq demandes de plus par mois, est-ce que vous pourriez les prendre ?</strong> Si la réponse est non, dites-le-moi au début de l'appel — on ne va pas vous vendre quelque chose dont vous n'avez pas besoin.</p>
+  </div>
+</section>
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║  OBJECTIONS                                              ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<section class="band band--cream">
+  <div class="wrap reveal">
+    <h2>Les questions qu'on me pose toujours</h2>
+
+    <details>
+      <summary>J'ai déjà essayé Google Ads, ça n'a rien donné</summary>
+      <p>C'est la phrase que j'entends le plus souvent, et dans presque tous les cas on retrouve la même chose : une campagne lancée par Google lui-même ou par un commercial au téléphone, sans mots clés négatifs, qui envoie les gens sur une page d'accueil. Résultat : vous payez des clics de gens qui cherchaient un emploi ou une formation. Si vous avez un ancien compte, gardez-le sous la main pour l'appel — on l'ouvrira ensemble, et vous verrez où est passé l'argent.</p>
+    </details>
+
+    <details>
+      <summary>Je suis déjà complet, je n'ai pas besoin de plus de chantiers</summary>
+      <p>Alors la vraie question n'est pas d'en avoir plus, mais d'en avoir des meilleurs. Être complet avec des chantiers à 4 000 € et être complet avec des chantiers à 20 000 €, ce n'est pas la même année. On peut cibler uniquement les prestations qui vous rapportent et laisser tomber le reste. Si vous êtes complet pour les deux ans qui viennent, dites-le — on arrête là.</p>
+    </details>
+
+    <details>
+      <summary>Ça coûte combien ?</summary>
+      <p>Il y a deux choses séparées. Le budget publicitaire, que vous payez directement à Google depuis votre propre compte — vous le voyez, vous le contrôlez, il reste chez vous. Et notre travail de mise en place et de suivi. Les montants dépendent de votre métier et de votre zone : on les chiffre pendant l'appel, avec vos chiffres à vous. C'est aussi pour ça que je vous demande de les préparer.</p>
+    </details>
+
+    <details>
+      <summary>En combien de temps on voit quelque chose ?</summary>
+      <p>Les premières demandes arrivent en général dans les deux à trois semaines. Le premier mois sert surtout à apprendre : on voit ce que les gens tapent réellement, on coupe ce qui ne sert à rien, on renforce ce qui marche. C'est au bout du deuxième mois qu'on sait vraiment où on en est. Si quelqu'un vous promet des chantiers la première semaine, méfiez-vous.</p>
+    </details>
+
+    <details>
+      <summary>Est-ce que je garde la main sur mon compte ?</summary>
+      <p>Oui. Le compte Google Ads est créé à votre nom, c'est votre carte bancaire, et vous y avez accès en permanence. Si on arrête de travailler ensemble, le compte reste le vôtre avec tout l'historique. Vous n'êtes pas enfermé.</p>
+    </details>
+  </div>
+</section>
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║  CTA                                                     ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<section class="band">
+  <div class="wrap reveal">
+    <div class="cta">
+      <h2>On se parle bientôt</h2>
+      <p>Un imprévu, un chantier qui déborde ? Décalez le rendez-vous plutôt que de l'annuler.</p>
+      <a class="btn" href="tel:+33769387613">07 69 38 76 13</a>
+      <br>
+      <!-- Remplacer par le lien de prise de RDV -->
+      <a class="btn-sec" href="#">Déplacer mon rendez-vous</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Potentieel — Google Ads pour les entreprises du bâtiment<br>
+    <a href="https://potentieel.fr">potentieel.fr</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var els = document.querySelectorAll('.reveal');
+  if(!('IntersectionObserver' in window)){
+    els.forEach(function(el){ el.classList.add('on'); });
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ e.target.classList.add('on'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0, rootMargin: '0px 0px -10% 0px' });
+  els.forEach(function(el){ io.observe(el); });
+})();
+</script>
+
+</body>
+</html>
