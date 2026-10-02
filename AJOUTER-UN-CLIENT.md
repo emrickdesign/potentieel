@@ -10,18 +10,32 @@ Compter 20 minutes, dont 10 d'attente côté Twilio.
 Ces deux réglages conditionnent tous les clients. S'ils sont déjà faits, passer
 directement à l'étape 1.
 
-### a) Autoriser la page de mot de passe dans Supabase
+### a) Autoriser la page de mot de passe dans Supabase ⚠️ À FAIRE
 
-Le hub Supabase est partagé entre tous les sites clients, et il n'a qu'une seule
-« Site URL ». Sans cette autorisation, le client qui clique sur son lien d'accès
-atterrit **sur le site d'un autre client**.
+**Constaté manquant le 02/10/2026.** Le hub Supabase est partagé entre tous les
+sites clients et n'a qu'une seule « Site URL ». Aujourd'hui, un client qui clique
+sur son lien d'accès est renvoyé vers `https://acquisition.linkprime.fr/` — un
+autre projet — et ne peut donc pas choisir son mot de passe.
 
+Vérifié ainsi (un jeton volontairement invalide suffit, rien n'est consommé) :
+
+```bash
+curl -s -o /dev/null -D - "https://alpzagoprkpzirgtrdup.supabase.co/auth/v1/verify?token=invalide&type=recovery&redirect_to=https%3A%2F%2Fpotentieel.fr%2Freset" | grep -i '^location:'
+```
+
+Tant que l'en-tête `Location` ne commence pas par `https://potentieel.fr/reset`,
+l'autorisation manque.
+
+**Correction :**
 1. Tableau de bord Supabase → **Authentication** → **URL Configuration**
-2. Dans **Redirect URLs**, vérifier la présence de :
+2. Dans **Redirect URLs**, ajouter :
    ```
    https://potentieel.fr/reset
    ```
-3. L'ajouter si elle manque, puis **Save**.
+3. **Save**, puis relancer la commande ci-dessus pour confirmer.
+
+Ne pas toucher à la « Site URL » : elle sert à un autre projet du hub. C'est
+précisément pour cela que chaque site doit déclarer sa propre Redirect URL.
 
 ### b) Le canal d'envoi d'emails ⚠️ ACTUELLEMENT HORS SERVICE
 
