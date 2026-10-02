@@ -10876,24 +10876,56 @@ function saIsWeek(iso){ const d=new Date(iso),n=new Date(); const diff=(n-d)/864
 
 async function saInit(){ if(!saState.loaded){ document.getElementById('sa-clients').innerHTML='<div class="sa-empty">Chargement…</div>'; } saLoad(); }
 
+/* Supabase plafonne chaque requête à 1000 lignes (réglage « Max rows » du projet).
+   Sans pagination, au-delà de 1000 appels la page afficherait des totaux et des
+   stats faux SANS lever la moindre erreur. On lit donc par tranches jusqu'à
+   épuisement. Le transcript (plusieurs Ko par appel) n'est pas chargé ici :
+   transcribed_at sert de témoin, le texte est récupéré au dépliage. */
+const SA_PAGE = 1000;
+const SA_MAX_PAGES = 60;   // garde-fou : 60 000 lignes max, jamais de boucle sans fin
+const SA_CALL_COLS = 'id,client_id,from_number,status,duration_sec,recording_url,qualification,notes,created_at,theme,summary,transcribed_at,rappele_at';
+const SA_FORM_COLS = 'id,prenom,entreprise,telephone,ville,domaine,details,submitted_at,client_id,qualification,theme';
+async function saFetchAll(build, orderCol){
+  const out=[];
+  for(let page=0; page<SA_MAX_PAGES; page++){
+    const from = page*SA_PAGE;
+    // build() refait un query builder neuf : un builder Supabase ne se rejoue pas.
+    const { data, error } = await build().order(orderCol,{ascending:false}).range(from, from+SA_PAGE-1);
+    if(error){ console.error('[Suivi ads] '+orderCol+' : '+error.message); break; }
+    const batch = data||[];
+    out.push(...batch);
+    // Exactement une page pleine => il peut y avoir une suite.
+    // Moins => on a tout. PLUS => le serveur ignore la pagination et vient de
+    // tout renvoyer : s'arreter, sinon on boucle sans fin et on gele le CRM.
+    if(batch.length !== SA_PAGE) break;
+    if(page === SA_MAX_PAGES-1) console.warn('[Suivi ads] lecture arretee a '+out.length+' lignes (plafond de securite).');
+  }
+  return out;
+}
+
 async function saLoad(){
   const [cl,ca,fo] = await Promise.all([
-    sb.from('crm_clients').select('*').order('created_at',{ascending:false}),
-    sb.from('ads_calls').select('*').order('created_at',{ascending:false}),
-    sb.from('form_submissions').select('*').not('client_id','is',null).order('submitted_at',{ascending:false}),
+    saFetchAll(()=>sb.from('crm_clients').select('*'), 'created_at'),
+    saFetchAll(()=>sb.from('ads_calls').select(SA_CALL_COLS), 'created_at'),
+    saFetchAll(()=>sb.from('form_submissions').select(SA_FORM_COLS).not('client_id','is',null), 'submitted_at'),
   ]);
-  saState.clients=cl.data||[]; saState.calls=ca.data||[]; saState.forms=fo.data||[]; saState.loaded=true;
+  saState.clients=cl; saState.calls=ca; saState.forms=fo; saState.loaded=true;
   saUpdateBadge();
   if(saState.selected && saState.clients.some(c=>c.id===saState.selected)) saRenderDetail();
   else { saState.selected=null; saRenderClientsView(); }
 }
 function saUpdateBadge(){
-  const todo = saState.calls.filter(c=>c.qualification==='nouveau'&&c.client_id).length + saState.forms.filter(f=>f.qualification==='nouveau').length;
+  // Un appel non rattaché compte TOUJOURS : il faut l'attribuer à un client,
+  // quelle que soit sa qualification. C'est justement le travail à faire.
+  const aTrier  = saState.calls.filter(c=>!c.client_id).length;
+  const aQualif = saState.calls.filter(c=>c.client_id && c.qualification==='nouveau').length
+                + saState.forms.filter(f=>f.qualification==='nouveau').length;
+  const todo = aTrier + aQualif;
   const b=document.getElementById('badge-suivi'); if(b){ b.textContent=todo; b.style.display=todo?'':'none'; }
 }
 
 function saMapCall(c){ return {kind:'call',id:c.id,at:c.created_at,client_id:c.client_id,qual:c.qualification,theme:c.theme,
-  missed:(c.status==='manque'||c.status==='repondeur'),status:c.status,name:c.from_number||'Appel',tel:c.from_number,dur:c.duration_sec,rec:c.recording_url,notes:c.notes,summary:c.summary,transcript:c.transcript}; }
+  missed:(c.status==='manque'||c.status==='repondeur'),rappele:!!c.rappele_at,status:c.status,name:c.from_number||'Appel',tel:c.from_number,dur:c.duration_sec,rec:c.recording_url,notes:c.notes,summary:c.summary,transcribed:!!c.transcribed_at}; }
 function saMapForm(f){ return {kind:'form',id:f.id,at:f.submitted_at,client_id:f.client_id,qual:f.qualification,theme:f.theme,missed:false,
   name:f.prenom||f.entreprise||'Contact',tel:f.telephone,meta:[f.ville,f.domaine,f.details].filter(Boolean).join(' · ')}; }
 function saItemsForClient(id){
@@ -10901,7 +10933,9 @@ function saItemsForClient(id){
   const forms=saState.forms.filter(f=>f.client_id===id).map(saMapForm);
   return [...calls,...forms].sort((a,b)=>new Date(b.at)-new Date(a.at));
 }
-function saStats(items){ return { total:items.length, missed:items.filter(i=>i.missed).length, week:items.filter(i=>saIsWeek(i.at)).length }; }
+// « À rappeler » doit pouvoir redescendre : un appel manqué puis rappelé n'est
+// plus à rappeler. On garde i.missed (le fait historique) et on retire i.rappele.
+function saStats(items){ return { total:items.length, missed:items.filter(i=>i.missed&&!i.rappele).length, week:items.filter(i=>saIsWeek(i.at)).length }; }
 
 /* ---- Aperçu de l'espace client (nouvel onglet) ---- */
 function saOpenClientEspace(){
@@ -10971,7 +11005,7 @@ function saRenderDetail(){
   saRenderGmbLink(c);
   saTab(saState.tab||'demandes');
   let list=items; const f=saState.filter;
-  if(f==='missed') list=items.filter(i=>i.missed);
+  if(f==='missed') list=items.filter(i=>i.missed&&!i.rappele);
   else if(f==='todo') list=items.filter(i=>i.qual==='nouveau');
   else if(f==='qualifie') list=items.filter(i=>i.qual==='qualifie');
   document.querySelectorAll('#sa-client-detail .sa-chip').forEach(x=>x.classList.toggle('active',x.dataset.f===f));
@@ -11054,7 +11088,9 @@ function saQualBadge(q){ return q==='qualifie'?'<span class="sa-bdg bg-q">Qualif
 function saCard(i, withAssign){
   const phoneSvg='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.09 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg>';
   const cls=i.kind==='form'?'form':(i.missed?'missed':'');
-  const badge=i.kind==='form'?'<span class="sa-bdg bg-form">Formulaire</span>':(i.missed?'<span class="sa-bdg bg-missed">Manqué</span>':'<span class="sa-bdg bg-ok">Répondu</span>');
+  // Un appel manqué reste « Manqué » (c'est un fait) ; « Rappelé » s'ajoute à côté.
+  const badge=i.kind==='form'?'<span class="sa-bdg bg-form">Formulaire</span>':(i.missed?'<span class="sa-bdg bg-missed">Manqué</span>':'<span class="sa-bdg bg-ok">Répondu</span>')
+    +(i.missed&&i.rappele?'<span class="sa-bdg bg-ok">Rappelé</span>':'');
   const meta=[saDate(i.at), i.kind==='call'&&!i.missed&&saDur(i.dur), i.meta].filter(Boolean).join(' · ');
   const audio=i.rec?`<audio controls preload="none" src="${saEsc(i.rec)}"></audio>`:'';
   const q=i.qual||'nouveau';
@@ -11069,19 +11105,43 @@ function saCard(i, withAssign){
       ${audio}
       ${i.kind==='call'&&i.rec?`<textarea class="sa-notes" placeholder="Tes notes en écoutant l'appel (visibles par le client)…" onchange="saSetNotes('${i.id}',this.value)">${saEsc(i.notes||'')}</textarea>`:''}
       ${i.summary?`<div class="sa-summary"><b>Résumé :</b> ${saEsc(i.summary)}</div>`:''}
-      ${i.transcript?`<details class="sa-transcript"><summary>Transcription</summary><pre>${saEsc(i.transcript)}</pre></details>`:''}
-      ${i.kind==='call'&&i.rec&&!i.transcript?`<button class="sa-mini-btn" onclick="saTranscribe('${i.id}',this)">✨ Transcrire automatiquement</button>`:''}
+      ${i.transcribed?`<details class="sa-transcript" ontoggle="saLoadTranscript('${i.id}',this)"><summary>Transcription</summary><pre>Chargement…</pre></details>`:''}
+      ${i.kind==='call'&&i.rec&&!i.transcribed?`<button class="sa-mini-btn" onclick="saTranscribe('${i.id}',this)">✨ Transcrire automatiquement</button>`:''}
       <div class="sa-ctrl" style="margin-top:10px">
         <input class="sa-theme" placeholder="Thème / corps de métier (ex : charpente, chauffage)" value="${i.theme?saEsc(i.theme):''}" onchange="saSetTheme('${i.kind}','${i.id}',this.value)">
       </div>
       <div class="sa-ctrl">
         ${assign}
+        ${i.kind==='call'&&i.missed?`<button class="sa-q ${i.rappele?'ok on':''}" onclick="saToggleRappele('${i.id}')">${i.rappele?'✓ Rappelé':'☎ Marquer rappelé'}</button>`:''}
         <button class="sa-q ok ${q==='qualifie'?'on':''}" onclick="saQualify('${i.kind}','${i.id}','qualifie')">✓ Qualifier</button>
         <button class="sa-q no ${q==='disqualifie'?'on':''}" onclick="saQualify('${i.kind}','${i.id}','disqualifie')">✗ Disqualifier</button>
       </div>
     </div>
   </div>`;
 }
+/* Rappel effectué : c'est ce qui fait redescendre le compteur « À rappeler ».
+   Re-cliquer annule (erreur de clic). */
+async function saToggleRappele(id){
+  const row=saState.calls.find(r=>r.id===id); if(!row) return;
+  const next = row.rappele_at ? null : new Date().toISOString();
+  const { error } = await sb.from('ads_calls').update({ rappele_at: next }).eq('id', id);
+  if(error){ alert('Erreur: '+error.message); return; }
+  row.rappele_at = next;
+  saUpdateBadge();
+  saState.selected ? saRenderDetail() : saRenderClientsView();
+}
+
+/* Le transcript n'est pas chargé avec la liste (trop lourd) : on va le chercher
+   quand on déplie, une seule fois par carte. */
+async function saLoadTranscript(id, el){
+  if(!el.open || el.dataset.loaded) return;
+  el.dataset.loaded='1';
+  const pre=el.querySelector('pre');
+  const { data, error } = await sb.from('ads_calls').select('transcript').eq('id',id).maybeSingle();
+  pre.textContent = error ? ('Erreur : '+error.message)
+                  : (data && data.transcript ? data.transcript : 'Transcription vide.');
+}
+
 async function saSetTheme(kind,id,val){
   const tbl=kind==='call'?'ads_calls':'form_submissions';
   const v=(val||'').trim()||null;
