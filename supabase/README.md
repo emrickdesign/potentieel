@@ -37,13 +37,26 @@ L'enchaînement complet, dans l'ordre où ça se passe :
 
 ### Clients
 - **`client-invite`** — crée le compte de l'espace client (utilisateur auth +
-  ligne `crm_clients`). Réservé aux emails de l'équipe, en dur dans la fonction.
+  ligne `crm_clients`) et renvoie un **lien d'accès** que l'agence transmet au
+  client. Aucun mot de passe n'est attribué : le client choisit le sien.
+  Réservée aux emails de l'équipe, en dur dans la fonction.
+  Appelée aussi avec le **seul email** d'un client existant pour lui regénérer un
+  lien — d'où la règle interne : *n'écrire que les champs transmis*, sinon ce
+  second appel effacerait le reste de sa fiche.
+  Le lien renvoie vers `CLIENT_REDIRECT_URL` (défaut `https://potentieel.fr/reset`),
+  **qui doit figurer dans les Redirect URLs de Supabase**.
 - **`clients-income`** — revenus par client.
 - **`notify-lead`** — notification à l'arrivée d'un lead.
 
 ### Stripe & facturation
 `stripe-checkout` · `stripe-webhook` · `stripe-sync` · `stripe-metrics` ·
 `stripe-forecast` · `send-invoice-email` · `send-quote-email` · `payment-alert-email`
+
+> ⚠️ **L'envoi d'email est hors service** au 02/10/2026 : Gmail rejette les
+> identifiants (`535 BadCredentials`) et aucune clé Resend n'est posée, donc
+> `twilio-status` ne prévient personne d'un appel manqué. L'échec est **silencieux**
+> (il n'apparaît que dans les logs). Procédure de réparation dans
+> [AJOUTER-UN-CLIENT.md](../AJOUTER-UN-CLIENT.md), étape 0b.
 
 ### Rendez-vous
 `calendly-sync` · `send-call-confirmation` · `send-call-reminders`

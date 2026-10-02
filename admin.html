@@ -2186,6 +2186,7 @@
               </div>
               <div style="display:flex;gap:8px;flex-shrink:0">
                 <button class="sa-btn sa-btn-g" id="sa-det-espace">👁 Espace client</button>
+                <button class="sa-btn sa-btn-g" onclick="saLienAcces()">🔑 Lien d'accès</button>
                 <button class="sa-btn sa-btn-g" id="sa-det-edit">Modifier</button>
               </div>
             </div>
@@ -2266,7 +2267,19 @@
             <div class="sa-form-g"><label>Entreprise</label><input id="sa-c-entreprise" placeholder="Ex. Toiture Martin"></div>
             <div class="sa-form-g"><label>Nom du contact</label><input id="sa-c-nom" placeholder="Ex. Jean Martin"></div>
             <div class="sa-form-g"><label>Email de connexion *</label><input id="sa-c-email" type="email" placeholder="client@exemple.fr"></div>
-            <div class="sa-form-g" id="sa-c-pwd-wrap"><label>Mot de passe initial * (6+ car.)</label><input id="sa-c-pwd" type="text" placeholder="À communiquer au client"></div>
+            <div class="sa-form-g" id="sa-lien-wrap" style="display:none">
+              <label>Lien d'accès à transmettre au client</label>
+              <input id="sa-lien" readonly onclick="this.select()">
+              <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+                <button type="button" class="sa-btn sa-btn-p" onclick="saCopierLien()">Copier le lien</button>
+                <span id="sa-lien-ok" style="font-size:12px;color:var(--muted)"></span>
+              </div>
+              <p style="font-size:12px;color:var(--muted);line-height:1.55;margin:10px 0 0">
+                Envoie-le par WhatsApp ou SMS. Le client ouvre le lien et <b>choisit lui-même</b>
+                son mot de passe : tu ne le connaîtras jamais. Le lien expire au bout de quelques
+                heures — le bouton « Lien d'accès » de sa fiche en regénère un à tout moment.
+              </p>
+            </div>
             <div class="sa-form-g"><label>Type de client</label><select id="sa-c-type"><option value="ads">Ads (suivi complet)</option><option value="site">Site internet</option></select></div>
             <div class="sa-form-g"><label>Téléphone réel (cible du transfert)</label><input id="sa-c-tel" placeholder="+336..."></div>
             <div class="sa-form-g"><label>Numéro Twilio de suivi</label><input id="sa-c-twilio" placeholder="+339..."></div>
@@ -11238,8 +11251,9 @@ function saOpenModal(client){
   document.getElementById('sa-c-nom').value = ed?ed.nom||'':'';
   document.getElementById('sa-c-email').value = ed?ed.email||'':'';
   document.getElementById('sa-c-email').disabled = !!ed;
-  document.getElementById('sa-c-pwd').value = '';
-  document.getElementById('sa-c-pwd-wrap').style.display = ed?'none':'';
+  document.getElementById('sa-lien-wrap').style.display = 'none';
+  document.getElementById('sa-lien').value = '';
+  document.getElementById('sa-lien-ok').textContent = '';
   document.getElementById('sa-c-type').value = ed?ed.type||'ads':'ads';
   document.getElementById('sa-c-tel').value = ed?ed.telephone_reel||'':'';
   document.getElementById('sa-c-twilio').value = ed?ed.twilio_number||'':'';
@@ -11251,6 +11265,47 @@ function saOpenModal(client){
   document.getElementById('sa-modal').classList.add('open');
 }
 function saCloseModal(){ document.getElementById('sa-modal').classList.remove('open'); }
+
+/* ---- Lien d'accès du client ---- */
+async function saAppelerInvite(corps){
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    if(!session) return { erreur:'Session expirée, reconnecte-toi.' };
+    const r = await fetch(SUPABASE_URL+'/functions/v1/client-invite',{
+      method:'POST', headers:{ 'Authorization':'Bearer '+session.access_token, 'Content-Type':'application/json' },
+      body: JSON.stringify(corps),
+    });
+    const j = await r.json().catch(()=>({}));
+    if(!r.ok||j.error) return { erreur: j.error || 'Opération impossible.' };
+    return j;
+  }catch(e){ return { erreur:String(e.message||e) }; }
+}
+function saAfficherLien(lien, erreur){
+  const w=document.getElementById('sa-lien-wrap');
+  w.style.display='';
+  document.getElementById('sa-lien').value = lien
+    || ('Lien indisponible' + (erreur ? ' : '+erreur : '') + '. Vérifie que https://potentieel.fr/reset est bien dans les Redirect URLs de Supabase.');
+}
+function saCopierLien(){
+  const i=document.getElementById('sa-lien'); const ok=document.getElementById('sa-lien-ok');
+  i.select();
+  const fini=()=>{ ok.textContent='Copié ✓'; setTimeout(()=>{ok.textContent='';},2500); };
+  if(navigator.clipboard) navigator.clipboard.writeText(i.value).then(fini).catch(()=>{ document.execCommand('copy'); fini(); });
+  else { document.execCommand('copy'); fini(); }
+}
+/* Regénère un lien pour un client existant : on n'envoie que son email, la
+   fonction ne touche alors à aucun autre champ de sa fiche. */
+async function saLienAcces(){
+  const c=saState.clients.find(x=>x.id===saState.selected); if(!c) return;
+  if(!c.email){ alert("Ce client n'a pas d'email de connexion. Renseigne-le avec « Modifier »."); return; }
+  saOpenModal(c);
+  const btn=document.getElementById('sa-save-btn'); btn.disabled=true;
+  saAfficherLien('Génération…','');
+  const j = await saAppelerInvite({ email:c.email });
+  btn.disabled=false;
+  if(j.erreur){ saAfficherLien('', j.erreur); return; }
+  saAfficherLien(j.lien, j.lien_erreur);
+}
 async function saSaveClient(){
   const err=document.getElementById('sa-modal-err'); err.style.display='none';
   const btn=document.getElementById('sa-save-btn'); btn.disabled=true; const lbl=btn.textContent; btn.textContent='…';
@@ -11271,15 +11326,14 @@ async function saSaveClient(){
       if(error) return fail(error.message);
     } else {
       const email=document.getElementById('sa-c-email').value.trim().toLowerCase();
-      const password=document.getElementById('sa-c-pwd').value;
-      if(!email||password.length<6) return fail('Email + mot de passe (6 caractères min.) requis.');
-      const { data:{ session } } = await sb.auth.getSession();
-      const r = await fetch('https://alpzagoprkpzirgtrdup.supabase.co/functions/v1/client-invite',{
-        method:'POST', headers:{ 'Authorization':'Bearer '+session.access_token, 'Content-Type':'application/json' },
-        body: JSON.stringify({ ...payload, email, password }),
-      });
-      const j = await r.json().catch(()=>({}));
-      if(!r.ok||j.error) return fail(j.error||'Création impossible.');
+      if(!email) return fail('Email de connexion requis.');
+      const j = await saAppelerInvite({ ...payload, email });
+      if(j.erreur) return fail(j.erreur);
+      // On ne referme pas : le lien d'accès doit être copié avant de quitter.
+      btn.disabled=false; btn.textContent=lbl;
+      saAfficherLien(j.lien, j.lien_erreur);
+      await saLoad();
+      return;
     }
     saCloseModal(); btn.disabled=false; btn.textContent=lbl;
     await saLoad();
