@@ -1475,6 +1475,13 @@
               <select id="fa-cl-select" onchange="faPrefill()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:16px;outline:none">
                 <option value="">— Aucun client sélectionné —</option>
               </select>
+              <!-- Entité qui facture : pré-remplie depuis la fiche client, modifiable
+                   facture par facture (même principe que le devis). -->
+              <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Facturé par (micro-entreprise) *</label>
+              <select id="fa-owner" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;margin-bottom:16px;outline:none">
+                <option value="emrick">👤 Emrick — PERILLIAT EMRICK</option>
+                <option value="eloise">👤 Éloïse — CESAR-LE DREAU ELOISE</option>
+              </select>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
                 <div><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Entreprise *</label>
                 <input id="fa-entreprise" placeholder="Nom entreprise" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box"></div>
@@ -1564,6 +1571,15 @@
                     <input id="fa-abo-periode-end" type="date" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;box-sizing:border-box">
                   </div>
                 </div>
+              </div>
+
+              <!-- Entité qui facture (pré-remplie depuis la fiche, modifiable) -->
+              <div style="margin-bottom:18px">
+                <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:5px">Facturé par (micro-entreprise)</label>
+                <select id="fa-abo-owner" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none">
+                  <option value="emrick">👤 Emrick — PERILLIAT EMRICK</option>
+                  <option value="eloise">👤 Éloïse — CESAR-LE DREAU ELOISE</option>
+                </select>
               </div>
 
               <!-- Montant -->
@@ -6138,6 +6154,7 @@ function faOpenAboModal(clientId) {
   document.getElementById('fa-abo-nom').textContent = c.nom || cid;
   document.getElementById('fa-abo-email').textContent = c.email || '';
   document.getElementById('fa-abo-montant').value = '49';
+  document.getElementById('fa-abo-owner').value = c.owner || 'emrick';
   // Période par défaut : 7 du mois actuel → 7 du mois suivant (modifiable)
   const now = new Date();
   const start = new Date(now.getFullYear(), now.getMonth(), 7);
@@ -6160,6 +6177,7 @@ function faOpenModal(clientId) {
   document.getElementById('fa-versement-montant').value='';
   document.getElementById('fa-versement-note').value='';
   document.getElementById('fa-reglement').value='virement';
+  document.getElementById('fa-owner').value='emrick';
   const todayStr=new Date().toISOString().split('T')[0];
   document.getElementById('fa-emission').value=todayStr;
   document.getElementById('fa-echeance').value=todayStr;
@@ -6183,6 +6201,7 @@ function faPrefill(){
   set('fa-adresse',c.adresse);set('fa-id-num',c.siret||c.siren);
   if(c.siret)document.getElementById('fa-id-type').value='SIRET';
   else if(c.siren)document.getElementById('fa-id-type').value='SIREN';
+  document.getElementById('fa-owner').value=c.owner||'emrick';
 }
 function faCreate(){
   const entreprise=document.getElementById('fa-entreprise').value.trim();
@@ -6217,7 +6236,8 @@ function faCreate(){
       adresse:document.getElementById('fa-adresse').value.trim(),idType:document.getElementById('fa-id-type').value,
       idNum:document.getElementById('fa-id-num').value.trim(),creation,abo,
       versementMontant:hasVersement?versementMontant:null,versementNote:versementNote,
-      reglement:document.getElementById('fa-reglement').value,owner:c.owner||'emrick'}};
+      reglement:document.getElementById('fa-reglement').value,
+      owner:(document.getElementById('fa-owner')&&document.getElementById('fa-owner').value)||c.owner||'emrick'}};
   if(!c.factures)c.factures=[];
   c.factures.unshift(fa);clSave();clRenderFactures(c);
   if(document.getElementById('page-facturation')?.classList.contains('active')) renderGlobalFactures();
@@ -6244,7 +6264,8 @@ function faCreateAbo(){
     totalTxt:aPrix[aboVal],montantNum:parseInt(aboVal),
     data:{entreprise:c.nom||'',email:c.email||'',tel:c.tel||'',adresse:c.adresse||'',
       idType:c.siret?'SIRET':c.siren?'SIREN':'',idNum:c.siret||c.siren||'',
-      abo:aboVal,reglement:'stripe',periode,owner:c.owner||'emrick'}};
+      abo:aboVal,reglement:'stripe',periode,
+      owner:(document.getElementById('fa-abo-owner')&&document.getElementById('fa-abo-owner').value)||c.owner||'emrick'}};
   if(!c.factures)c.factures=[];
   c.factures.unshift(fa);clSave();clRenderFactures(c);
   faAboCloseModal();faPrintFa(fa);
