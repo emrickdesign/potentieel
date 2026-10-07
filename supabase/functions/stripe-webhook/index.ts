@@ -19,7 +19,8 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
  * par email. Idempotent : table crm_stripe_events + id de facture Stripe stocké
  * sur chaque facture. Le numéro de versement vient du rang de la facture dans
  * l'abonnement : si le versement a déjà été coché à la main, rien ne bouge.
- * Aucun secret en dur : clé Stripe et secret de signature lus dans l'env ou le Vault.
+ * Aucun secret en dur : clés Stripe et secrets de signature lus dans l'env ou le Vault.
+ * Le même endpoint sert les DEUX comptes Stripe de l'agence : voir ACCOUNTS.
  */
 
 type AnyObj = Record<string, any>;
@@ -34,6 +35,17 @@ async function secret(name: string): Promise<string> {
   if (error || !data) throw new Error(`Secret ${name} introuvable`);
   return (_sec[name] = String(data));
 }
+/*
+ * Les deux comptes Stripe de l'agence (cf. stripe-checkout). Un même endpoint
+ * reçoit les deux : c'est le secret de signature qui valide l'événement qui dit
+ * de quel compte il vient — et donc quelle clé utiliser pour rappeler Stripe,
+ * et quelle entité a réellement encaissé.
+ */
+const ACCOUNTS: Record<string, { label: string; secret: string; whsec: string }> = {
+  emrick: { label: "Emrick", secret: "crm_stripe_secret_key",        whsec: "crm_stripe_webhook_secret" },
+  eloise: { label: "Éloïse", secret: "crm_stripe_secret_key_eloise", whsec: "crm_stripe_webhook_secret_eloise" },
+};
+
 function safeEqual(a: string, b: string): boolean {
   if (a.length !== b.length) return false;
   let d = 0;
@@ -60,7 +72,7 @@ async function verifyStripeSignature(payload: string, sigHeader: string, whsec: 
 }
 
 // ── API Stripe ──
-async function stripe(method: "GET" | "POST", path: string, body?: Record<string, unknown>): Promise<AnyObj> {
+async function stripe(acct: string, method: "GET" | "POST", path: string, body?: Record<string, unknown>): Promise<AnyObj> {
   const params = new URLSearchParams();
   if (body) {
     const flat = (o: unknown, p = "") => {
@@ -72,7 +84,7 @@ async function stripe(method: "GET" | "POST", path: string, body?: Record<string
   }
   const res = await fetch(`https://api.stripe.com/v1/${path}`, {
     method,
-    headers: { Authorization: `Bearer ${await secret("crm_stripe_secret_key")}`, "Content-Type": "application/x-www-form-urlencoded" },
+    headers: { Authorization: `Bearer ${await secret(ACCOUNTS[acct].secret)}`, "Content-Type": "application/x-www-form-urlencoded" },
     body: body ? params.toString() : undefined,
   });
   const out = await res.json();
@@ -135,11 +147,13 @@ function nextRef(clients: AnyObj[], ms: number): string {
   const [y, m] = isoDate(ms).split("-");
   return `FA-${m}-${y}-${String(count + 1).padStart(3, "0")}`;
 }
-function baseData(c: AnyObj): AnyObj {
+// `owner` = entité qui émet la facture. C'est celle dont le compte Stripe a
+// encaissé, pas celle rattachée à la fiche : l'argent est arrivé chez elle.
+function baseData(c: AnyObj, acct: string): AnyObj {
   return {
     entreprise: c.nom || "", email: c.email || "", tel: c.tel || "", adresse: c.adresse || "",
     idType: c.siret ? "SIRET" : c.siren ? "SIREN" : "", idNum: c.siret || c.siren || "",
-    reglement: "stripe", owner: c.owner || "emrick",
+    reglement: "stripe", owner: acct,
   };
 }
 function pushFacture(clients: AnyObj[], c: AnyObj, ms: number, f: AnyObj) {
@@ -152,18 +166,18 @@ function ensureVersements(c: AnyObj, n: number) {
 }
 
 // ── invoice.paid ──
-async function handleInvoicePaid(event: AnyObj): Promise<string> {
+async function handleInvoicePaid(event: AnyObj, acct: string): Promise<string> {
   const inv = event.data.object as AnyObj;
   if (inv.status !== "paid") return "ignoré (non payée)";
   const amount = (inv.amount_paid || 0) / 100;
   if (amount <= 0) return "ignoré (montant nul)";
 
   const subId: string | null = inv.parent?.subscription_details?.subscription ?? inv.subscription ?? null;
-  const sub = subId ? await stripe("GET", `subscriptions/${subId}`) : null;
+  const sub = subId ? await stripe(acct, "GET", `subscriptions/${subId}`) : null;
   const md: AnyObj = { ...(sub?.metadata ?? {}), ...(inv.parent?.subscription_details?.metadata ?? {}) };
 
   let email = inv.customer_email || "";
-  if (!email && inv.customer) email = (await stripe("GET", `customers/${inv.customer}`)).email || "";
+  if (!email && inv.customer) email = (await stripe(acct, "GET", `customers/${inv.customer}`)).email || "";
 
   const clients = await loadClients();
   const c = findClient(clients, md.crm_client_id, email);
@@ -172,12 +186,12 @@ async function handleInvoicePaid(event: AnyObj): Promise<string> {
 
   const paidMs = (inv.status_transitions?.paid_at ?? event.created) * 1000;
   const months = Number(md.auto_cancel_after_months || 0);
-  const data = baseData(c);
+  const data = baseData(c, acct);
   const fid = "fas_" + event.id;
 
   if (months >= 2 && subId) {
     // Paiement du site en N fois : rang de cette facture parmi les échéances payées.
-    const list = await stripe("GET", `invoices?subscription=${subId}&status=paid&limit=100`);
+    const list = await stripe(acct, "GET", `invoices?subscription=${subId}&status=paid&limit=100`);
     const paid = ((list.data ?? []) as AnyObj[]).filter((x) => (x.amount_paid || 0) > 0).sort((a, b) => a.created - b.created);
     const idx = paid.findIndex((x) => x.id === inv.id);
     const num = idx >= 0 ? idx + 1 : paid.length + 1;
@@ -236,7 +250,7 @@ async function handleInvoicePaid(event: AnyObj): Promise<string> {
 }
 
 // ── checkout.session.completed (paiements uniques) ──
-async function handleCheckoutCompleted(event: AnyObj): Promise<string> {
+async function handleCheckoutCompleted(event: AnyObj, acct: string): Promise<string> {
   const s = event.data.object as AnyObj;
   if (s.mode !== "payment") return "ignoré (abonnement → invoice.paid)";
   if (s.payment_status !== "paid") return "ignoré (non payé)";
@@ -245,7 +259,7 @@ async function handleCheckoutCompleted(event: AnyObj): Promise<string> {
 
   let md: AnyObj = { ...(s.metadata ?? {}) };
   if (!md.crm_client_id && s.payment_link) {
-    try { md = { ...((await stripe("GET", `payment_links/${s.payment_link}`)).metadata ?? {}), ...md }; } catch { /* lien supprimé */ }
+    try { md = { ...((await stripe(acct, "GET", `payment_links/${s.payment_link}`)).metadata ?? {}), ...md }; } catch { /* lien supprimé */ }
   }
   const email = s.customer_details?.email || s.customer_email || "";
 
@@ -257,14 +271,14 @@ async function handleCheckoutCompleted(event: AnyObj): Promise<string> {
   let label = "Paiement Stripe";
   let priceId = "";
   try {
-    const li = await stripe("GET", `checkout/sessions/${s.id}/line_items`);
+    const li = await stripe(acct, "GET", `checkout/sessions/${s.id}/line_items`);
     priceId = li.data?.[0]?.price?.id || "";
     label = li.data?.[0]?.description || label;
   } catch { /* libellé par défaut */ }
 
   const kind = md.crm_kind || (priceId === PRICE_SETUP_990 ? "site_1x" : PRICE_ONE.has(priceId) ? "abo_mois" : PRICE_SUB.has(priceId) ? "abo" : "unique");
   const paidMs = event.created * 1000;
-  const data = baseData(c);
+  const data = baseData(c, acct);
   const base = { id: "fas_" + event.id, stripeSessionId: s.id, montantNum: amount, totalTxt: fmtEUR(amount) };
 
   if (kind === "site_1x") {
@@ -292,11 +306,20 @@ async function handleCheckoutCompleted(event: AnyObj): Promise<string> {
 // ── Point d'entrée ──
 Deno.serve(async (req: Request) => {
   const raw = await req.text();
-  let whsec = "";
-  try { whsec = await secret("crm_stripe_webhook_secret"); } catch (e) { console.log("stripe-webhook:", String(e)); return new Response("config", { status: 500 }); }
-  if (!(await verifyStripeSignature(raw, req.headers.get("stripe-signature") || "", whsec))) {
-    return new Response("Invalid signature", { status: 400 });
+  const sigHeader = req.headers.get("stripe-signature") || "";
+
+  // Quel compte a envoyé l'événement ? Celui dont le secret valide la signature.
+  // Un compte sans secret configuré est simplement ignoré (il n'envoie rien).
+  let acct = "";
+  let configured = 0;
+  for (const [name, a] of Object.entries(ACCOUNTS)) {
+    let whsec = "";
+    try { whsec = await secret(a.whsec); } catch { continue; }
+    configured++;
+    if (await verifyStripeSignature(raw, sigHeader, whsec)) { acct = name; break; }
   }
+  if (!configured) { console.log("stripe-webhook: aucun secret de signature configuré"); return new Response("config", { status: 500 }); }
+  if (!acct) return new Response("Invalid signature", { status: 400 });
 
   let event: AnyObj;
   try { event = JSON.parse(raw); } catch { return new Response("Bad payload", { status: 400 }); }
@@ -311,16 +334,16 @@ Deno.serve(async (req: Request) => {
       const months = Number(sub.metadata?.auto_cancel_after_months || 0);
       if (months >= 2 && months <= 12 && !sub.cancel_at) {
         const cancelAt = Math.floor(addMonthsClamped(new Date(sub.start_date * 1000), months).getTime() / 1000);
-        await stripe("POST", `subscriptions/${sub.id}`, { cancel_at: cancelAt });
+        await stripe(acct, "POST", `subscriptions/${sub.id}`, { cancel_at: cancelAt });
         result = `cancel_at posé (${months} mois)`;
       }
     } else if (event.type === "invoice.paid") {
-      result = await handleInvoicePaid(event);
+      result = await handleInvoicePaid(event, acct);
     } else if (event.type === "checkout.session.completed") {
-      result = await handleCheckoutCompleted(event);
+      result = await handleCheckoutCompleted(event, acct);
     }
-    await admin.from("crm_stripe_events").insert({ id: event.id, type: event.type, result });
-    console.log("stripe-webhook:", event.type, event.id, "→", result);
+    await admin.from("crm_stripe_events").insert({ id: event.id, type: event.type, result: `[${acct}] ${result}` });
+    console.log("stripe-webhook:", acct, event.type, event.id, "→", result);
     return new Response("ok", { status: 200 });
   } catch (e) {
     // Erreur réelle (Stripe/DB) → 500 : Stripe réessaiera, le traitement est idempotent.

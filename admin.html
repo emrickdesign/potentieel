@@ -1321,8 +1321,19 @@
 
               <!-- Générer un lien Stripe -->
               <div class="panel" style="margin-bottom:16px">
-                <div class="panel-head"><h3 style="display:flex;align-items:center;gap:8px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Générer un lien de paiement Stripe</h3></div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px 16px">
+                <div class="panel-head" style="flex-wrap:wrap;gap:10px"><h3 style="display:flex;align-items:center;gap:8px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Générer un lien de paiement Stripe</h3>
+                  <!-- Sur quel compte Stripe encaisser. Préréglé sur l'entité du client, modifiable lien par lien. -->
+                  <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+                    <span style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1px">ENCAISSER SUR</span>
+                    <!-- Les deux boutons restent côte à côte, même quand la ligne passe à la ligne sur mobile. -->
+                    <span style="display:flex;gap:6px">
+                      <button type="button" id="pay-acct-emrick" class="pay-nx active" onclick="clSetPayAccount('emrick')" style="padding:6px 12px;font-size:12px">👤 Emrick</button>
+                      <button type="button" id="pay-acct-eloise" class="pay-nx" onclick="clSetPayAccount('eloise')" style="padding:6px 12px;font-size:12px">👤 Éloïse</button>
+                    </span>
+                  </div>
+                </div>
+                <div id="pay-acct-hint" style="font-size:11px;color:var(--muted);line-height:1.5;padding:10px 16px 0"></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px 16px 16px">
 
                   <!-- Abo 49 -->
                   <div class="pay-card" onclick="clGenerateStripe('sub_49','Abo 49 €/m')">
@@ -4512,6 +4523,7 @@ async function clOpenDetail(id) {
   clRenderAssets(c);
   clRenderPaiements(c);
   clRenderPayLinks(c);
+  clRenderPayAccount(c);
   clRenderSitePlan(c);
   const _payNxCustomInput = document.getElementById('pay-nx-custom');
   if (_payNxCustomInput) _payNxCustomInput.value = '';
@@ -4957,7 +4969,7 @@ function clRenderInfos(c) {
 function clSetOwner(val) {
   if (!clCurrentId) return;
   const c = clData.find(x=>x.id===clCurrentId);
-  if (c) { c.owner = val; clSave(); }
+  if (c) { c.owner = val; clSave(); clRenderPayAccount(c); } // le compte Stripe suit l'entité du client
 }
 function clSaveNotes() {
   if (!clCurrentId) return;
@@ -7605,6 +7617,40 @@ function clDeleteClient(id, ev) {
 /* ═══════════════════  PAIEMENT STRIPE  ══════════════════ */
 
 const SUPABASE_FN_URL = 'https://alpzagoprkpzirgtrdup.supabase.co/functions/v1/stripe-checkout';
+
+/* Les deux comptes Stripe de l'agence — un par entité (voir COMPANY_INFO).
+   L'argent encaissé appartient à l'entité du compte : c'est elle qui facture.
+   Le sélecteur est donc préréglé sur `owner` du client, mais reste modifiable. */
+const PAY_ACCOUNTS = {
+  emrick: { label: 'Emrick', de: "d'Emrick", entite: 'PERILLIAT EMRICK' },
+  eloise: { label: 'Éloïse', de: "d'Éloïse", entite: 'CESAR-LE DREAU ELOISE' },
+};
+let payAccount = 'emrick';
+
+function clRenderPayAccount(c) {
+  payAccount = PAY_ACCOUNTS[c && c.owner] ? c.owner : 'emrick';
+  clPaintPayAccount(c);
+}
+function clSetPayAccount(a) {
+  if (!PAY_ACCOUNTS[a]) return;
+  payAccount = a;
+  clPaintPayAccount(clData.find(x => x.id === clCurrentId));
+}
+function clPaintPayAccount(c) {
+  Object.keys(PAY_ACCOUNTS).forEach(k => {
+    const b = document.getElementById('pay-acct-' + k);
+    if (b) b.classList.toggle('active', k === payAccount);
+  });
+  const hint = document.getElementById('pay-acct-hint');
+  if (!hint) return;
+  const a = PAY_ACCOUNTS[payAccount];
+  const owner = (c && PAY_ACCOUNTS[c.owner]) ? c.owner : 'emrick';
+  const mismatch = owner !== payAccount
+    ? ` <span style="color:var(--accent)">⚠ Ce client est rattaché à ${PAY_ACCOUNTS[owner].label} pour ses devis et factures.</span>`
+    : '';
+  hint.innerHTML = `Les liens ci-dessous encaisseront sur le Stripe <strong style="color:var(--text)">${a.de}</strong> — facture émise par ${a.entite}.${mismatch}`;
+}
+
 const SITE_PLAN_PRIX_DEFAULT = 990; // tarif standard appliqué si le client n'a pas de prix personnalisé
 function clSitePrixBase(c) { return (typeof c.sitePrix === 'number' && c.sitePrix > 0) ? c.sitePrix : SITE_PLAN_PRIX_DEFAULT; }
 function clSitePlanUnit(c, plan) { const n = parseInt(plan) || 0; return n > 0 ? clSitePrixBase(c) / n : 0; }
@@ -7619,10 +7665,11 @@ function clRenderPayLinks(c) {
     el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:16px 0">Aucun lien généré pour ce client.</div>';
     return;
   }
+  // Les liens d'avant le second compte Stripe sont tous ceux d'Emrick.
   el.innerHTML = links.map(l => `
     <div class="pay-link-row">
       <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px">${l.label}</div>
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px">${l.label} <span style="font-size:10px;font-weight:600;color:var(--muted);background:rgba(255,255,255,.06);padding:2px 7px;border-radius:20px;white-space:nowrap">👤 ${(PAY_ACCOUNTS[l.account] || PAY_ACCOUNTS.emrick).label}</span></div>
         <div style="font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.url}</div>
         <div style="font-size:11px;color:var(--muted);margin-top:2px">${l.date}</div>
       </div>
@@ -7762,7 +7809,7 @@ async function clCallStripe(type, extra = {}) {
         'Authorization': `Bearer ${session.access_token}`,
         'apikey': SUPABASE_KEY,
       },
-      body: JSON.stringify({ type, clientEmail: c.email, clientId: c.id, ...extra }),
+      body: JSON.stringify({ type, clientEmail: c.email, clientId: c.id, account: payAccount, ...extra }),
     });
     const data = await res.json();
     if (data.error) { alert('Erreur Stripe : ' + data.error); return null; }
@@ -7774,7 +7821,7 @@ async function clCallStripe(type, extra = {}) {
 function clSavePayLink(url, label) {
   const c = clData.find(x=>x.id===clCurrentId); if (!c) return;
   if (!c.payLinks) c.payLinks = [];
-  c.payLinks.unshift({ id:'pl'+Date.now(), url, label, date: new Date().toLocaleString('fr-FR') });
+  c.payLinks.unshift({ id:'pl'+Date.now(), url, label, account: payAccount, date: new Date().toLocaleString('fr-FR') });
   clSave(); clRenderPayLinks(c);
 }
 

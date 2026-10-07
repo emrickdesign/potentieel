@@ -52,6 +52,32 @@ L'enchaînement complet, dans l'ordre où ça se passe :
 `stripe-checkout` · `stripe-webhook` · `stripe-sync` · `stripe-metrics` ·
 `stripe-forecast` · `send-invoice-email` · `send-quote-email` · `payment-alert-email`
 
+> **Deux comptes Stripe**, un par entité de l'agence (les deux micro-entreprises
+> de `COMPANY_INFO`, côté `admin.html`). Dans la fiche client, onglet Paiement,
+> le sélecteur « ENCAISSER SUR » choisit le compte ; il est préréglé sur l'entité
+> du client. L'entité qui encaisse est celle qui facture : le webhook pose
+> `owner` = compte Stripe sur la facture qu'il crée.
+>
+> | | Clé secrète | Secret de signature du webhook |
+> |---|---|---|
+> | Emrick | `crm_stripe_secret_key` | `crm_stripe_webhook_secret` |
+> | Éloïse | `crm_stripe_secret_key_eloise` | `crm_stripe_webhook_secret_eloise` |
+>
+> Chaque nom est lu d'abord dans l'env de la fonction (en MAJUSCULES), sinon
+> dans le Vault. Un compte dont la clé manque est simplement **inactif** :
+> `stripe-checkout` répond « compte pas encore connecté » et le webhook ignore
+> ce secret. Les deux comptes partagent **le même endpoint de webhook** — c'est
+> le secret qui valide la signature qui dit de quel compte vient l'événement.
+>
+> Les `price_…` fixes n'existent que sur le compte d'Emrick. Sur l'autre compte,
+> `stripe-checkout` recrée le prix équivalent au premier usage et le retrouve
+> ensuite par son `lookup_key` (`potentieel_sub_49`, `potentieel_setup_990`…).
+>
+> ⚠️ `stripe-sync`, `stripe-metrics` et `stripe-forecast` (Trésorerie, MRR)
+> ne lisent **que** `STRIPE_SECRET_KEY`, donc le seul compte d'Emrick. Dès qu'un
+> client encaissera chez Éloïse, ces chiffres seront incomplets : à étendre aux
+> deux comptes le moment venu.
+
 > **Envoi d'email** : `twilio-status` passe par Gmail en SMTP
 > (`potentieel.web@gmail.com`, mot de passe d'application dans le Vault sous
 > `crm_gmail_app_password`). Il était hors service jusqu'au 02/10/2026 — Google
