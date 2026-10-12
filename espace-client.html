@@ -93,6 +93,25 @@
       padding: 22px; font-size: 15px; line-height: 1.65; color: var(--gray-light); white-space: pre-wrap; }
     .ec-conseils-empty { text-align:center; padding: 44px 20px; color: var(--gray); }
 
+    /* ---- Photos ---- */
+    .ph-drop { margin-top:20px; border:2px dashed var(--border-card); border-radius:16px; background:var(--bg-card);
+      padding:26px 18px; text-align:center; cursor:pointer; transition:.15s; }
+    .ph-drop:hover, .ph-drop.over { border-color: var(--orange); background:#fff6f1; }
+    .ph-drop h3 { margin:10px 0 4px; font-size:16px; color:var(--gray-light); }
+    .ph-drop p { margin:0; font-size:13.5px; color:var(--gray); line-height:1.5; }
+    .ph-btn { display:inline-flex; align-items:center; gap:7px; margin-top:14px; background:var(--orange); color:#fff; border:none;
+      border-radius:11px; padding:11px 18px; font-size:15px; font-weight:700; cursor:pointer; }
+    .ph-progress { margin-top:12px; font-size:13.5px; color:var(--gray-light); font-weight:600; min-height:18px; }
+    .ph-tips { margin-top:14px; font-size:13px; color:var(--gray); line-height:1.6; }
+    .ph-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:10px; margin-top:12px; }
+    .ph-item { position:relative; border-radius:12px; overflow:hidden; background:var(--bg-card-3); aspect-ratio:1/1; }
+    .ph-item img { width:100%; height:100%; object-fit:cover; display:block; cursor:zoom-in; }
+    .ph-del { position:absolute; top:6px; right:6px; width:30px; height:30px; border-radius:50%; border:none; cursor:pointer;
+      background:rgba(0,0,0,.55); color:#fff; font-size:16px; line-height:30px; }
+    .ph-used { position:absolute; left:6px; bottom:6px; background:#2f6a46; color:#fff; font-size:11px; font-weight:700;
+      padding:3px 8px; border-radius:999px; }
+    .ph-light { position:fixed; inset:0; background:rgba(0,0,0,.88); z-index:80; display:flex; align-items:center; justify-content:center; padding:20px; }
+    .ph-light img { max-width:100%; max-height:100%; border-radius:10px; }
     /* ---- States ---- */
     .ec-empty { text-align:center; padding: 48px 20px; color: var(--gray); }
     .ec-empty svg { opacity:.4; margin-bottom:12px; }
@@ -152,6 +171,10 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
       <span>Fiche Google</span>
     </button>
+    <button data-sec="photos" onclick="ecSection('photos')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/></svg>
+      <span>Mes photos</span>
+    </button>
     <button data-sec="conseils" onclick="ecSection('conseils')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg>
       <span>Conseils</span>
@@ -198,6 +221,23 @@
       </div>
     </section>
 
+    <!-- SECTION PHOTOS -->
+    <section id="sec-photos" class="ec-sec ec-wrap" hidden>
+      <h1 class="ec-hi">Mes photos <small>Déposez ici vos photos : nous les publions sur votre fiche Google.</small></h1>
+      <input type="file" id="phInput" accept="image/*" multiple hidden onchange="phUpload(this.files); this.value=''">
+      <div class="ph-drop" id="phDrop" onclick="document.getElementById('phInput').click()">
+        <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="color:var(--orange)"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <h3>Ajouter des photos</h3>
+        <p>Depuis votre téléphone ou votre ordinateur. Vous pouvez en sélectionner plusieurs d'un coup.</p>
+        <button type="button" class="ph-btn" onclick="event.stopPropagation(); document.getElementById('phInput').click()">Choisir mes photos</button>
+      </div>
+      <div class="ph-progress" id="phProgress"></div>
+      <div class="ph-tips"><b>Les photos qui marchent le mieux :</b> vos chantiers et réalisations (avant / après), votre équipe au travail, votre véhicule, votre atelier. Des photos prises par vous, même au téléphone, font de meilleurs posts que des images toutes faites.</div>
+      <div class="ec-sechead"><h2>Photos envoyées <span id="phCount" style="color:var(--gray)"></span></h2></div>
+      <div class="ph-grid" id="phGrid"></div>
+      <div class="ec-empty hidden" id="phEmpty" style="padding:30px 20px"><h3>Aucune photo pour le moment</h3></div>
+    </section>
+
     <!-- SECTION CONSEILS -->
     <section id="sec-conseils" class="ec-sec ec-wrap" hidden>
       <h1 class="ec-hi">Conseils <small>Nos recommandations pour convertir plus de demandes.</small></h1>
@@ -235,6 +275,8 @@ function ecSection(name){
   document.getElementById('sec-demandes').hidden = name!=='demandes';
   document.getElementById('sec-google').hidden = name!=='google';
   document.getElementById('sec-conseils').hidden = name!=='conseils';
+  document.getElementById('sec-photos').hidden = name!=='photos';
+  if (name==='photos') phLoad();
 }
 
 async function boot(){
@@ -364,6 +406,96 @@ function render(i){
     </div>
   </div>`;
 }
+
+/* ---- Photos du client (bucket privé client-photos/<client_id>/…) ---- */
+let PHOTOS = [];
+const PH_MAX = 2400;              // côté long max : net pour Google, < 5 Mo en JPEG
+
+// Redimensionne et convertit en JPEG (les photos de téléphone font 4 à 12 Mo, parfois en HEIC).
+// Si le navigateur ne sait pas décoder l'image, on envoie l'original tel quel.
+async function phPrepare(file){
+  try {
+    const url = URL.createObjectURL(file);
+    const img = await new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = ko; i.src = url; });
+    URL.revokeObjectURL(url);
+    const r = Math.min(1, PH_MAX / Math.max(img.naturalWidth, img.naturalHeight));
+    const w = Math.round(img.naturalWidth * r), h = Math.round(img.naturalHeight * r);
+    const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+    cv.getContext('2d').drawImage(img, 0, 0, w, h);
+    const blob = await new Promise(ok => cv.toBlob(ok, 'image/jpeg', 0.88));
+    if (!blob) throw new Error('conversion');
+    return { blob, mime: 'image/jpeg', ext: 'jpg', w, h };
+  } catch {
+    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+    return { blob: file, mime: file.type || 'image/jpeg', ext, w: null, h: null };
+  }
+}
+
+async function phUpload(files){
+  if (!CLIENT || !files || !files.length) return;
+  const list = [...files].filter(f => /^image\//.test(f.type) || /\.(heic|heif|jpe?g|png|webp)$/i.test(f.name));
+  const prog = document.getElementById('phProgress');
+  let ok = 0, ko = 0;
+  for (let i = 0; i < list.length; i++){
+    prog.textContent = `Envoi de la photo ${i+1} sur ${list.length}…`;
+    const f = list[i];
+    try {
+      const p = await phPrepare(f);
+      const path = `${CLIENT.id}/${crypto.randomUUID()}.${p.ext}`;
+      const up = await sb.storage.from('client-photos').upload(path, p.blob, { contentType: p.mime, upsert: false });
+      if (up.error) throw up.error;
+      const ins = await sb.from('client_photos').insert({ client_id: CLIENT.id, path, nom: f.name, mime: p.mime, taille: p.blob.size, largeur: p.w, hauteur: p.h });
+      if (ins.error) { await sb.storage.from('client-photos').remove([path]); throw ins.error; }
+      ok++;
+    } catch(e) { console.warn('photo', f.name, e); ko++; }
+  }
+  prog.textContent = ko ? `${ok} photo(s) envoyée(s), ${ko} en échec — réessayez pour celles-ci.` : `${ok} photo(s) envoyée(s) ✓ Merci !`;
+  setTimeout(() => { if (!ko) prog.textContent = ''; }, 5000);
+  phLoad();
+}
+
+async function phLoad(){
+  if (!CLIENT) return;
+  const { data, error } = await sb.from('client_photos').select('*').eq('client_id', CLIENT.id).order('created_at', { ascending: false });
+  if (error) { document.getElementById('phProgress').textContent = 'Impossible de charger vos photos : ' + error.message; return; }
+  PHOTOS = data || [];
+  const urls = {};
+  if (PHOTOS.length) {
+    const { data: signed } = await sb.storage.from('client-photos').createSignedUrls(PHOTOS.map(p => p.path), 3600);
+    (signed || []).forEach(s => { if (s.signedUrl) urls[s.path] = s.signedUrl; });
+  }
+  document.getElementById('phCount').textContent = PHOTOS.length ? `(${PHOTOS.length})` : '';
+  document.getElementById('phEmpty').classList.toggle('hidden', PHOTOS.length > 0);
+  document.getElementById('phGrid').innerHTML = PHOTOS.map(p => `
+    <div class="ph-item">
+      ${urls[p.path] ? `<img loading="lazy" src="${esc(urls[p.path])}" alt="${esc(p.nom)}" onclick="phZoom(this.src)">` : ''}
+      ${p.utilise_le ? '<span class="ph-used">Publiée sur Google</span>' : ''}
+      <button class="ph-del" title="Supprimer" onclick="phDelete('${p.id}')">×</button>
+    </div>`).join('');
+}
+
+async function phDelete(id){
+  const p = PHOTOS.find(x => x.id === id); if (!p) return;
+  if (!confirm('Supprimer cette photo ?')) return;
+  const { error } = await sb.from('client_photos').delete().eq('id', id);
+  if (error) { alert('Suppression impossible : ' + error.message); return; }
+  await sb.storage.from('client-photos').remove([p.path]);
+  phLoad();
+}
+
+function phZoom(src){
+  const d = document.createElement('div'); d.className = 'ph-light';
+  d.innerHTML = `<img src="${esc(src)}" alt="">`; d.onclick = () => d.remove();
+  document.body.appendChild(d);
+}
+
+// Glisser-déposer sur ordinateur
+(function(){
+  const z = document.getElementById('phDrop'); if (!z) return;
+  ['dragenter','dragover'].forEach(ev => z.addEventListener(ev, e => { e.preventDefault(); z.classList.add('over'); }));
+  ['dragleave','drop'].forEach(ev => z.addEventListener(ev, e => { e.preventDefault(); z.classList.remove('over'); }));
+  z.addEventListener('drop', e => phUpload(e.dataTransfer.files));
+})();
 
 async function logout(){ await sb.auth.signOut(); location.href = 'auth.html'; }
 

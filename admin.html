@@ -2224,6 +2224,7 @@
               <button class="on" data-t="demandes" onclick="saTab('demandes')">Demandes</button>
               <button data-t="stats" onclick="saTab('stats')">Statistiques</button>
               <button data-t="gmb" onclick="saTab('gmb')">Google My Business</button>
+              <button data-t="photos" onclick="saTab('photos')">Photos <span id="sa-ph-count" style="opacity:.6"></span></button>
               <button data-t="social" onclick="saTab('social')">Réseaux sociaux</button>
               <button data-t="conseils" onclick="saTab('conseils')">Conseils</button>
             </div>
@@ -2271,6 +2272,27 @@
                 </div>
               </div>
               <div class="sa-linkline" id="sa-gmb-link"></div>
+            </div>
+
+            <div class="sa-panel" id="sa-p-photos" style="display:none">
+              <style>
+                .sa-ph-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:12px}
+                .sa-ph{position:relative;border-radius:12px;overflow:hidden;background:rgba(255,255,255,.04);border:1px solid var(--border)}
+                .sa-ph img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;cursor:zoom-in}
+                .sa-ph-bar{display:flex;gap:4px;padding:6px;flex-wrap:wrap}
+                .sa-ph-bar button,.sa-ph-bar a{flex:1;font-size:11px;font-weight:700;padding:6px 4px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,.05);color:var(--text);cursor:pointer;text-align:center;text-decoration:none}
+                .sa-ph-bar .on{background:rgba(74,222,128,.15);border-color:rgba(74,222,128,.4);color:#4ade80}
+                .sa-ph-meta{font-size:10.5px;color:var(--muted);padding:0 8px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+              </style>
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+                <div class="sa-sec-title" style="margin:0">Photos déposées par le client — pour les posts de sa fiche Google</div>
+                <div style="display:flex;gap:8px">
+                  <input type="file" id="sa-ph-input" accept="image/*" multiple hidden onchange="saPhotoUpload(this.files); this.value=''">
+                  <button class="sa-btn sa-btn-g" onclick="document.getElementById('sa-ph-input').click()">+ Ajouter</button>
+                </div>
+              </div>
+              <div id="sa-ph-status" style="font-size:12px;color:var(--muted);margin-top:6px"></div>
+              <div class="sa-ph-grid" id="sa-ph-grid"></div>
             </div>
 
             <div class="sa-panel" id="sa-p-social" style="display:none">
@@ -8028,6 +8050,13 @@ async function ldInit() {
     const { data: _subs } = await sb.from('form_submissions').select('*');
     (_subs || []).forEach(s => {
       const fid = 'ld_fs_' + s.id;
+      // Demande venue de la page de conversion d'un CLIENT (Suivi ads) : elle appartient
+      // à la fiche de ce client, jamais aux leads de l'agence. On la retire aussi si un
+      // ancien import l'avait déjà fait entrer ici.
+      if (s.client_id) {
+        if (ldData.some(l => l.id === fid)) { ldData = ldData.filter(l => l.id !== fid); ldMarkDeleted(fid); }
+        return;
+      }
       if (ldDeleted.has(fid)) return;              // respecte les suppressions manuelles
       const _known = ldData.find(l => l.id === fid);
       if (_known) {
@@ -8464,7 +8493,7 @@ async function fmLoad() {
   el.innerHTML = `<div style="grid-column:1/-1;color:var(--muted);font-size:13px;padding:8px 0">Chargement...</div>`;
 
   let visitsQ = sb.from('form_visits').select('*');
-  let subsQ   = sb.from('form_submissions').select('*');
+  let subsQ   = sb.from('form_submissions').select('*').is('client_id', null); // hors pages de conversion des clients
 
   if (fmPeriodDays > 0) {
     const since = new Date(Date.now() - fmPeriodDays * 86400000).toISOString();
@@ -11173,7 +11202,78 @@ async function saSaveConseils(){
 function saTab(t){
   saState.tab=t;
   document.querySelectorAll('#sa-tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
-  ['demandes','stats','gmb','social','conseils'].forEach(k=>{ const el=document.getElementById('sa-p-'+k); if(el) el.style.display=(k===t)?'':'none'; });
+  ['demandes','stats','gmb','photos','social','conseils'].forEach(k=>{ const el=document.getElementById('sa-p-'+k); if(el) el.style.display=(k===t)?'':'none'; });
+  if(t==='photos') saPhotosLoad();
+}
+
+/* ---- Photos du client (déposées depuis son espace, bucket privé client-photos) ---- */
+let saPhotos=[];
+async function saPhotosLoad(){
+  const c=saState.clients.find(x=>x.id===saState.selected); if(!c) return;
+  const grid=document.getElementById('sa-ph-grid'), st=document.getElementById('sa-ph-status');
+  const { data, error } = await sb.from('client_photos').select('*').eq('client_id',c.id).order('created_at',{ascending:false});
+  if(error){ st.textContent='Erreur : '+error.message; return; }
+  saPhotos=data||[];
+  document.getElementById('sa-ph-count').textContent = saPhotos.length ? '('+saPhotos.length+')' : '';
+  const nonPub=saPhotos.filter(p=>!p.utilise_le).length;
+  st.textContent = saPhotos.length ? `${saPhotos.length} photo(s) · ${nonPub} pas encore publiée(s) sur Google` : '';
+  if(!saPhotos.length){ grid.innerHTML='<div class="sa-empty" style="grid-column:1/-1">Le client n\'a encore déposé aucune photo. Il peut le faire depuis son espace, onglet « Mes photos ».</div>'; return; }
+  const { data: signed } = await sb.storage.from('client-photos').createSignedUrls(saPhotos.map(p=>p.path), 3600);
+  const urls={}; (signed||[]).forEach(s=>{ if(s.signedUrl) urls[s.path]=s.signedUrl; });
+  grid.innerHTML = saPhotos.map(p=>{
+    const u=urls[p.path]||''; const d=new Date(p.created_at).toLocaleDateString('fr-FR');
+    return `<div class="sa-ph">
+      ${u?`<img loading="lazy" src="${saEsc(u)}" onclick="window.open('${saEsc(u)}','_blank')">`:''}
+      <div class="sa-ph-meta">${saEsc(d)} · ${p.largeur&&p.hauteur?p.largeur+'×'+p.hauteur:''}</div>
+      <div class="sa-ph-bar">
+        <button class="${p.utilise_le?'on':''}" onclick="saPhotoToggle('${p.id}')">${p.utilise_le?'✓ Publiée':'Publiée ?'}</button>
+        ${u?`<a href="${saEsc(u)}&download=${encodeURIComponent((p.nom||'photo').replace(/\.[^.]+$/,'')+'.'+(p.path.split('.').pop()))}">↓</a>`:''}
+        <button onclick="saPhotoDel('${p.id}')" title="Supprimer">🗑</button>
+      </div></div>`;
+  }).join('');
+}
+async function saPhotoToggle(id){
+  const p=saPhotos.find(x=>x.id===id); if(!p) return;
+  const val=p.utilise_le?null:new Date().toISOString();
+  const { error } = await sb.from('client_photos').update({ utilise_le: val }).eq('id',id);
+  if(error){ alert('Erreur : '+error.message); return; }
+  saPhotosLoad();
+}
+async function saPhotoDel(id){
+  const p=saPhotos.find(x=>x.id===id); if(!p) return;
+  if(!confirm('Supprimer cette photo (elle disparaît aussi de l\'espace du client) ?')) return;
+  const { error } = await sb.from('client_photos').delete().eq('id',id);
+  if(error){ alert('Erreur : '+error.message); return; }
+  await sb.storage.from('client-photos').remove([p.path]);
+  saPhotosLoad();
+}
+async function saPhotoUpload(files){
+  const c=saState.clients.find(x=>x.id===saState.selected); if(!c||!files||!files.length) return;
+  const st=document.getElementById('sa-ph-status'); let ok=0, ko=0; const list=[...files];
+  for(let i=0;i<list.length;i++){
+    st.textContent=`Envoi ${i+1}/${list.length}…`;
+    const f=list[i];
+    try{
+      let blob=f, mime=f.type||'image/jpeg', ext=(f.name.split('.').pop()||'jpg').toLowerCase(), w=null, h=null;
+      try{
+        const url=URL.createObjectURL(f);
+        const img=await new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=url; });
+        URL.revokeObjectURL(url);
+        const r=Math.min(1,2400/Math.max(img.naturalWidth,img.naturalHeight));
+        w=Math.round(img.naturalWidth*r); h=Math.round(img.naturalHeight*r);
+        const cv=document.createElement('canvas'); cv.width=w; cv.height=h; cv.getContext('2d').drawImage(img,0,0,w,h);
+        const b=await new Promise(res=>cv.toBlob(res,'image/jpeg',0.88)); if(b){ blob=b; mime='image/jpeg'; ext='jpg'; }
+      }catch(_){}
+      const path=`${c.id}/${crypto.randomUUID()}.${ext}`;
+      const up=await sb.storage.from('client-photos').upload(path,blob,{contentType:mime,upsert:false});
+      if(up.error) throw up.error;
+      const ins=await sb.from('client_photos').insert({client_id:c.id,path,nom:f.name,mime,taille:blob.size,largeur:w,hauteur:h});
+      if(ins.error){ await sb.storage.from('client-photos').remove([path]); throw ins.error; }
+      ok++;
+    }catch(e){ console.warn('photo',e); ko++; }
+  }
+  st.textContent = ko ? `${ok} envoyée(s), ${ko} en échec` : `${ok} photo(s) ajoutée(s) ✓`;
+  saPhotosLoad();
 }
 function saRenderGmbLink(c){
   const el=document.getElementById('sa-gmb-link'); if(!el) return;
