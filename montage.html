@@ -138,7 +138,7 @@
   <section id="vue-montages">
     <div class="panel">
       <div class="listhead" style="margin-top:0">
-        <h2>Vidéos montées</h2><span class="count" id="n-montages">—</span>
+        <h2 id="titre-montages">Vidéos montées</h2><span class="count" id="n-montages">—</span>
       </div>
       <div class="cards" id="liste-montages"></div>
       <p class="muted" id="vide-montages" hidden>
@@ -148,8 +148,9 @@
       <!-- quand le studio local n'est pas joignable (autre machine, Mac éteint) -->
       <div id="hors-ligne" hidden>
         <p class="muted" style="margin:0 0 10px">
-          Le studio local n'est pas joignable, donc tes dossiers ne sont pas lisibles d'ici.
-          Lance <strong>Studio de montage</strong> sur ton Mac, ou dépose une vidéo à la main.
+          Une page web n'a pas le droit de lire les dossiers de ton Mac : depuis ici, il faut
+          déposer la vidéo toi-même. Pour retrouver tes rushs et tes montages listés
+          automatiquement, ouvre <strong>Studio de montage</strong> sur ton Mac.
         </p>
         <div id="drop" tabindex="0" role="button"
              style="border:2px dashed var(--line);border-radius:12px;background:var(--surface-2);
@@ -287,22 +288,37 @@ $("reload").addEventListener("click", charger);
 /* ---------- chargement ---------- */
 var serveurOk = false;
 function charger(){
-  fetch(BASE+"/api/media", {cache:"no-store"}).then(function(r){return r.json();})
+  /* Depuis potentieel.fr, Chrome refuse d'atteindre localhost et laisse la
+     requête suspendue sans jamais répondre : on ne tente même pas, on passe
+     directement au choix de fichier. */
+  if(!LOCAL){ horsLigne(); return; }
+  var ctrl = new AbortController();
+  var minuteur = setTimeout(function(){ ctrl.abort(); }, 4000);
+  fetch(BASE+"/api/media", {cache:"no-store", signal:ctrl.signal})
+  .then(function(r){ clearTimeout(minuteur); return r.json(); })
   .then(function(j){
     serveurOk = true; data = j;
     $("hors-ligne").hidden = true;
     rendreMontages(); rendreRushs();
   })
-  .catch(function(){
-    serveurOk = false;
-    data = { rushs: [], montages: [], dossiers: {} };
-    $("hors-ligne").hidden = false;
-    rendreMontages(); rendreRushs();
-    $("vide-montages").hidden = true;
-    $("n-montages").textContent = "—";
-    $("dossiers").textContent =
-      "Studio local injoignable : lance l'app sur ton Mac pour voir tes rushs ici.";
-  });
+  .catch(function(){ clearTimeout(minuteur); horsLigne(); });
+}
+
+function horsLigne(){
+  serveurOk = false;
+  data = { rushs: [], montages: [], dossiers: {} };
+  rendreMontages(); rendreRushs();
+  $("hors-ligne").hidden = false;
+  $("vide-montages").hidden = true;
+  $("n-montages").textContent = "—";
+  if(!LOCAL){
+    // l'onglet Rushs ne peut rien afficher ici : on l'enlève plutôt que
+    // de montrer une liste vide sans explication
+    $("t-rushs").hidden = true;
+    $("reload").hidden = true;
+    onglet("montages");
+    $("titre-montages").textContent = "Relire un montage";
+  }
 }
 
 /* repli : une vidéo choisie à la main, lue depuis le navigateur */
