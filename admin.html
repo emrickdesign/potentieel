@@ -669,7 +669,7 @@
 
         <div class="sb-section">Opérations</div>
         <div class="nav-item" data-page="documents" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> <span>Documents</span></div>
-        <div class="nav-item" data-page="facturation" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> <span>Facturation</span></div>
+        <div class="nav-item" data-page="facturation" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> <span>Facturation</span> <span class="ni-badge" id="badge-fx" style="display:none" title="Factures à valider">0</span></div>
         <div class="nav-item" data-page="devis" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> <span>Devis</span></div>
         <div class="nav-item" data-page="depenses" onclick="nav(this)"><svg class="ni-svg" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 110 7H6"/></svg> <span>Trésorerie</span></div>
       </nav>
@@ -1295,6 +1295,7 @@
                     <input id="cl-mrrdepuis-input" type="date" onchange="clSetMrrDepuis(this.value)" style="background:#1a1a22;border:1px solid var(--border);border-radius:8px;padding:5px 8px;color:#fff;font-size:12px;outline:none;cursor:pointer">
                   </span>
                   <span id="cl-mrr-hint" style="font-size:11px;color:var(--muted);flex:1;min-width:160px"></span>
+                  <button onclick="fxMrrVirement()" title="Abonnement de ce mois reçu par virement : prépare la facture" style="background:rgba(255,255,255,.06);border:1px solid var(--border);color:#fff;border-radius:8px;padding:6px 10px;font-size:11.5px;font-weight:700;cursor:pointer;white-space:nowrap">🧾 Mois reçu par virement</button>
                 </div>
               </div>
 
@@ -2677,6 +2678,8 @@
               <button onclick="faGlobalImportOpen()" style="background:rgba(255,255,255,.07);color:#fff;border:1px solid var(--border);padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">↑ Importer une facture</button>
             </div>
           </div>
+          <!-- Factures automatiques (Factur-X) -->
+          <div id="fx-box" style="margin-bottom:30px"></div>
           <!-- Navigateur mensuel -->
           <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;flex-wrap:wrap">
             <button onclick="faNavMonth(-1)" class="btn-nav-arrow">‹</button>
@@ -3729,6 +3732,7 @@ async function bootApp(email) {
     if (dashNav) nav(dashNav);
   } catch(_) {}
   try { setupRealtime(); } catch(_) { console.warn('setupRealtime:', _); }
+  try { fxBadge(); } catch(_) {}
 }
 
 // Navigation
@@ -3772,7 +3776,7 @@ function nav(el) {
   document.getElementById('tb-section').textContent = sections[p]||'';
   document.getElementById('tb-title').textContent   = titles[p]||p;
   if (p !== 'clients') clCurrentId = null;
-  if(p==='facturation') { faInitRetards().then(() => renderGlobalFactures()).catch(()=>renderGlobalFactures()); }
+  if(p==='facturation') { faInitRetards().then(() => renderGlobalFactures()).catch(()=>renderGlobalFactures()); fxLoad(); }
   if(p==='devis') { dvInitStandalone().then(() => renderGlobalDevis()).catch(()=>renderGlobalDevis()); }
   if(p==='leads') ldRender();
   if(p==='projets') { prLoad().then(() => { prRender(); prLoadAllAssetsFromIDB(); }).catch(()=>{ prRender(); prLoadAllAssetsFromIDB(); }); }
@@ -6663,8 +6667,15 @@ function renderGlobalFactures(){
   const monthFa=allFa.filter(faDateMatch);
 
   // Stats
-  const totPayee=monthFa.reduce((s,f)=>s+(f.montantNum||0),0);
-  const nbPayee=monthFa.length;
+  // + factures automatiques (crm_factures) encaissées ce mois — avoirs déduits, brouillons compris
+  // (un brouillon = un paiement déjà reçu, seule la facture reste à valider).
+  const fxMois=(typeof fxData!=='undefined'?fxData:[]).filter(f=>{
+    if(f.statut==='annulee'||!f.date_paiement&&f.type!=='avoir') return false;
+    const d=(f.date_paiement||f.date_emission||'').split('-');
+    return parseInt(d[1],10)-1===faMonth && parseInt(d[0],10)===faYear;
+  });
+  const totPayee=monthFa.reduce((s,f)=>s+(f.montantNum||0),0)+fxMois.reduce((s,f)=>s+(f.type==='avoir'?-1:1)*Number(f.total||0),0);
+  const nbPayee=monthFa.length+fxMois.filter(f=>f.type!=='avoir').length;
   // MRR actuel — même calcul que le dashboard principal (somme des mrr des clients actif + retard)
   const mrrStatutsFa=new Set(['actif','retard']);
   const mrrActuelFa=(clData||[]).filter(c=>mrrStatutsFa.has(c.statut)).reduce((s,c)=>s+(parseFloat(c.mrr)||0),0);
@@ -7835,6 +7846,217 @@ function clToggleVersement(i) {
   if (!c.siteVersements) return;
   c.siteVersements[i] = !c.siteVersements[i];
   clSave(); clRenderSitePlan(c); clRenderGrid();
+  fxVersementCoche(c, i, c.siteVersements[i]);
+}
+
+/* ═══════════════════════════════════════════════
+   FACTURES AUTOMATIQUES — Factur-X (table crm_factures)
+   Un paiement reçu = une facture : Stripe (stripe-webhook) ou virement coché ici.
+   Brouillon → validation (numéro définitif FA-E/FA-L-AAAA-NNNN) → envoi par
+   factures-envoi (cron 8 h ou bouton). Émise = verrouillée : correction par avoir.
+═══════════════════════════════════════════════ */
+const FX_FN = `${SUPABASE_URL}/functions/v1/factures-envoi`;
+let fxData = [], fxTab = 'brouillon', fxAuto = false;
+const fxEsc = s => String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fxEur = n => Number(n||0).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+const fxDate = iso => iso ? iso.slice(0,10).split('-').reverse().join('/') : '—';
+const fxToday = () => new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Paris'}).format(new Date());
+const FX_ENT = { emrick:'Emrick', eloise:'Éloïse' };
+
+async function fxCall(body){
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) throw new Error('Session expirée, reconnecte-toi.');
+  const r = await fetch(FX_FN, { method:'POST', headers:{ 'Authorization':`Bearer ${session.access_token}`, 'apikey':SUPABASE_KEY, 'Content-Type':'application/json' }, body: JSON.stringify(body) });
+  const out = await r.json().catch(()=>({}));
+  if (!r.ok || out.error) throw new Error(out.error || `HTTP ${r.status}`);
+  return out;
+}
+async function fxBadge(){
+  const { count } = await sb.from('crm_factures').select('id',{count:'exact',head:true}).in('statut',['brouillon','erreur']);
+  const b = document.getElementById('badge-fx'); if (!b) return;
+  b.textContent = count || 0; b.style.display = count ? '' : 'none';
+}
+async function fxLoad(){
+  const box = document.getElementById('fx-box'); if (!box) return;
+  const [{ data, error }, { data: reg }] = await Promise.all([
+    sb.from('crm_factures').select('*').order('created_at',{ascending:false}).limit(300),
+    sb.from('crm_reglages').select('valeur').eq('cle','facturation_auto').maybeSingle(),
+  ]);
+  if (error) { box.innerHTML = `<div style="color:#f87171;font-size:13px">Factures automatiques indisponibles : ${fxEsc(error.message)}</div>`; return; }
+  fxData = data || []; fxAuto = reg?.valeur === true;
+  fxRender(); fxBadge();
+  try { renderGlobalFactures(); } catch(_) {}
+}
+function fxRender(){
+  const box = document.getElementById('fx-box'); if (!box) return;
+  const groups = {
+    brouillon: fxData.filter(f=>f.statut==='brouillon'),
+    attente:   fxData.filter(f=>f.statut==='a_envoyer'||f.statut==='erreur'),
+    envoyee:   fxData.filter(f=>f.statut==='envoyee'),
+  };
+  const labels = { brouillon:'À valider', attente:'À envoyer / erreurs', envoyee:'Envoyées' };
+  const list = groups[fxTab] || [];
+  const tab = k => `<button onclick="fxTab='${k}';fxRender()" style="background:${fxTab===k?'var(--accent)':'rgba(255,255,255,.06)'};color:#fff;border:1px solid ${fxTab===k?'var(--accent)':'var(--border)'};border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer">${labels[k]} <span style="opacity:.75">${groups[k].length}</span></button>`;
+  const statBadge = f => ({
+    brouillon:'<span style="color:#fbbf24">Brouillon</span>',
+    a_envoyer:'<span style="color:#60a5fa">Part demain 8 h</span>',
+    erreur:`<span style="color:#f87171" title="${fxEsc(f.envoi_erreur)}">Erreur : ${fxEsc((f.envoi_erreur||'').slice(0,60))}</span>`,
+    envoyee:`<span style="color:#4ade80">Envoyée le ${fxDate(f.envoyee_le)}</span>`,
+    annulee:'<span style="color:var(--muted)">Annulée</span>',
+  })[f.statut] || f.statut;
+  const btn = (txt, fn, primary) => `<button onclick="${fn}" style="background:${primary?'var(--accent)':'rgba(255,255,255,.06)'};color:#fff;border:1px solid ${primary?'var(--accent)':'var(--border)'};border-radius:7px;padding:5px 10px;font-size:11.5px;font-weight:700;cursor:pointer;white-space:nowrap">${txt}</button>`;
+  const rows = list.map(f => {
+    const acts = [btn('Aperçu', `fxApercu('${f.id}')`)];
+    if (f.statut==='brouillon') { acts.push(btn('Modifier', `fxModifier('${f.id}')`)); acts.push(btn('Valider & envoyer', `fxEnvoyer('${f.id}')`, true)); acts.push(btn('🗑', `fxSupprimer('${f.id}')`)); }
+    if (f.statut==='a_envoyer'||f.statut==='erreur') acts.push(btn(f.statut==='erreur'?'Renvoyer':'Envoyer maintenant', `fxEnvoyer('${f.id}')`, true));
+    if (f.statut==='envoyee') { acts.push(btn('Renvoyer', `fxEnvoyer('${f.id}')`)); if (f.type==='facture') acts.push(btn('Avoir', `fxAvoir('${f.id}')`)); }
+    const noMail = !(f.client&&f.client.email);
+    return `<tr style="border-bottom:1px solid var(--border)">
+      <td style="padding:10px 8px;font-size:12px;color:var(--muted);white-space:nowrap">${fxDate(f.date_paiement||f.created_at)}</td>
+      <td style="padding:10px 8px"><div style="font-weight:700;font-size:13px">${fxEsc(f.client?.nom||'—')}</div><div style="font-size:11.5px;color:${noMail?'#f87171':'var(--muted)'}">${noMail?'⚠ email manquant':fxEsc(f.client.email)}</div></td>
+      <td style="padding:10px 8px;font-size:12.5px">${f.type==='avoir'?'<b style="color:#f87171">Avoir</b> · ':''}${fxEsc(f.libelle||'')}<div style="font-size:11px;color:var(--muted)">${fxEsc(f.numero||'sans numéro (brouillon)')} · ${FX_ENT[f.entite]||f.entite} · ${f.source==='stripe'?'Stripe':f.source==='virement'?'Virement':'Manuel'}</div></td>
+      <td style="padding:10px 8px;font-weight:800;white-space:nowrap;text-align:right">${fxEur(f.total)}</td>
+      <td style="padding:10px 8px;font-size:12px">${statBadge(f)}</td>
+      <td style="padding:10px 8px"><div style="display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end">${acts.join('')}</div></td>
+    </tr>`;
+  }).join('');
+  box.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+      <div style="font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.6px">Factures automatiques · Factur-X</div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;cursor:pointer" title="Désactivé : chaque facture attend ta validation. Activé : elle part seule le lendemain à 8 h.">
+        <input type="checkbox" ${fxAuto?'checked':''} onchange="fxToggleAuto(this.checked)"> Envoi 100 % automatique
+      </label>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.55">${fxAuto
+      ? 'Chaque paiement reçu (Stripe ou virement coché) est facturé et envoyé au client le lendemain à 8 h, avec toi en copie.'
+      : 'Mode validation : chaque paiement reçu crée un <b>brouillon</b>. Vérifie l\'aperçu puis « Valider & envoyer » (numéro définitif attribué à ce moment).'}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">${tab('brouillon')}${tab('attente')}${tab('envoyee')}</div>
+    ${list.length ? `<div style="overflow-x:auto;border:1px solid var(--border);border-radius:12px"><table style="width:100%;border-collapse:collapse;min-width:760px"><tbody>${rows}</tbody></table></div>`
+      : `<div style="padding:22px;text-align:center;color:var(--muted);font-size:13px;border:1px dashed var(--border);border-radius:12px">${fxTab==='brouillon'?'Aucune facture à valider ✓':fxTab==='attente'?'Rien en attente d\'envoi.':'Aucune facture envoyée pour le moment.'}</div>`}`;
+}
+async function fxToggleAuto(on){
+  if (on && !confirm('Passer en envoi 100 % automatique ?\n\nChaque nouveau paiement sera facturé et envoyé au client sans validation, le lendemain à 8 h.')) { fxRender(); return; }
+  const { error } = await sb.from('crm_reglages').upsert({ cle:'facturation_auto', valeur: !!on, modifie_le: new Date().toISOString() });
+  if (error) { alert('Erreur : '+error.message); }
+  fxLoad();
+}
+async function fxApercu(id){
+  const w = window.open('', '_blank'); if (w) w.document.write('<p style="font-family:sans-serif;padding:20px">Génération de la facture…</p>');
+  try {
+    const out = await fxCall({ action:'apercu', id });
+    const bin = atob(out.pdfBase64); const arr = new Uint8Array(bin.length); for (let i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i);
+    const url = URL.createObjectURL(new Blob([arr], { type:'application/pdf' }));
+    if (w) w.location.href = url; else window.open(url, '_blank');
+    if (out.warnings && out.warnings.length) setTimeout(()=>alert('À vérifier :\n• '+out.warnings.join('\n• ')), 300);
+  } catch(e) { if (w) w.close(); alert('Aperçu impossible : '+e.message); }
+}
+async function fxEnvoyer(id){
+  const f = fxData.find(x=>x.id===id); if (!f) return;
+  if (!(f.client&&f.client.email)) { alert('Email du client manquant : clique « Modifier » pour l\'ajouter.'); return; }
+  const msg = f.numero ? `Envoyer ${f.numero} à ${f.client.email} ?` : `Valider cette facture de ${fxEur(f.total)} et l'envoyer à ${f.client.email} ?\n\nUn numéro définitif lui sera attribué : elle ne pourra plus être modifiée (correction par avoir).`;
+  if (!confirm(msg)) return;
+  try { const out = await fxCall({ action:'envoyer', id }); alert(`Facture ${out.numero} envoyée ✓`); }
+  catch(e) { alert('Envoi impossible : '+e.message); }
+  fxLoad();
+}
+async function fxSupprimer(id){
+  if (!confirm('Supprimer ce brouillon ? (aucun numéro n\'a été attribué)')) return;
+  const { error } = await sb.from('crm_factures').delete().eq('id', id).eq('statut','brouillon');
+  if (error) alert('Erreur : '+error.message);
+  fxLoad();
+}
+async function fxAvoir(id){
+  const f = fxData.find(x=>x.id===id); if (!f) return;
+  if (!confirm(`Créer un avoir annulant ${f.numero} (${fxEur(f.total)}) ?\n\nIl part en brouillon : tu le valides ensuite.`)) return;
+  const { error } = await sb.from('crm_factures').insert({
+    entite: f.entite, type:'avoir', avoir_de: f.id, client_id: f.client_id, client: f.client, lignes: f.lignes, total: f.total,
+    reglement: f.reglement, source:'manuel', libelle: `Avoir sur ${f.numero}`,
+  });
+  if (error) alert('Erreur : '+error.message);
+  fxTab = 'brouillon'; fxLoad();
+}
+function fxModifier(id){
+  const f = fxData.find(x=>x.id===id); if (!f || f.statut!=='brouillon') return;
+  const l = (f.lignes&&f.lignes[0]) || {};
+  const ov = document.createElement('div');
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1400;display:flex;align-items:center;justify-content:center;padding:16px';
+  const inp = (id,label,val,type='text') => `<label style="font-size:11.5px;color:var(--muted);display:block;margin:10px 0 4px">${label}</label><input id="${id}" type="${type}" value="${fxEsc(val)}" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:9px 11px;color:#fff;font-size:13px">`;
+  ov.innerHTML = `<div style="background:#18181f;border:1px solid var(--border);border-radius:16px;padding:22px;width:100%;max-width:460px;max-height:90vh;overflow:auto">
+    <h3 style="margin:0 0 6px;font-size:16px">Modifier le brouillon</h3>
+    <div style="font-size:12px;color:var(--muted)">Paiement du ${fxDate(f.date_paiement)} · ${fxEur(f.total)}</div>
+    ${inp('fxm-nom','Client (nom affiché sur la facture)',f.client?.nom||'')}
+    ${inp('fxm-email','Email du client',f.client?.email||'','email')}
+    ${inp('fxm-adresse','Adresse du client (rue, code postal ville)',f.client?.adresse||'')}
+    ${inp('fxm-siret','SIRET du client (si professionnel)',f.client?.siret||f.client?.siren||'')}
+    ${inp('fxm-des','Désignation',l.designation||'')}
+    ${inp('fxm-desc','Détail (facultatif)',l.description||'')}
+    ${inp('fxm-montant','Montant (€)',f.total,'number')}
+    <label style="font-size:11.5px;color:var(--muted);display:block;margin:10px 0 4px">Facturé par</label>
+    <select id="fxm-ent" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:9px 11px;color:#fff;font-size:13px">
+      <option value="emrick" ${f.entite==='emrick'?'selected':''}>Emrick</option><option value="eloise" ${f.entite==='eloise'?'selected':''}>Éloïse</option></select>
+    <div style="display:flex;gap:8px;margin-top:18px"><button id="fxm-cancel" class="btn-modal-cancel" style="flex:1">Annuler</button>
+    <button id="fxm-save" style="flex:2;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:11px;font-weight:700;cursor:pointer">Enregistrer</button></div></div>`;
+  document.body.appendChild(ov);
+  ov.querySelector('#fxm-cancel').onclick = () => ov.remove();
+  ov.onclick = e => { if (e.target===ov) ov.remove(); };
+  ov.querySelector('#fxm-save').onclick = async () => {
+    const v = id => ov.querySelector('#'+id).value.trim();
+    const montant = Math.round(parseFloat(v('fxm-montant').replace(',','.'))*100)/100;
+    if (!(montant>0)) { alert('Montant invalide.'); return; }
+    const sir = v('fxm-siret').replace(/\s/g,'');
+    const client = { ...(f.client||{}), nom:v('fxm-nom'), email:v('fxm-email'), adresse:v('fxm-adresse'), siret: sir.length===14?sir:'', siren: sir.length===9?sir:'' };
+    const { error } = await sb.from('crm_factures').update({
+      client, entite: v('fxm-ent'), total: montant,
+      lignes: [{ designation: v('fxm-des')||'Prestation', description: v('fxm-desc')||undefined, quantite:1, prix_unitaire: montant }],
+    }).eq('id', f.id).eq('statut','brouillon');
+    if (error) { alert('Erreur : '+error.message); return; }
+    ov.remove(); fxLoad();
+  };
+}
+function fxClientSnap(c){ return { nom:c.nom||'', email:c.email||'', tel:c.tel||'', adresse:c.adresse||'', siret:c.siret||'', siren:c.siren||'' }; }
+
+// Case de versement cochée à la main = paiement reçu hors Stripe → facture (avec accord).
+async function fxVersementCoche(c, i, coche){
+  const n = parseInt(c.sitePlan) || 0; if (!n) return;
+  const ref = `cli_${c.id}_setup_${i}`;
+  try {
+    if (!coche) { await sb.from('crm_factures').delete().eq('source_ref', ref).eq('statut','brouillon'); fxBadge(); return; }
+    const lib = `Site — versement ${i+1}/${n}`;
+    const [{ data: deja }, { data: stripe }] = await Promise.all([
+      sb.from('crm_factures').select('id').eq('source_ref', ref).limit(1),
+      sb.from('crm_factures').select('id').eq('client_id', String(c.id)).eq('source','stripe').eq('libelle', lib).limit(1),
+    ]);
+    if ((deja&&deja.length) || (stripe&&stripe.length)) return;   // déjà facturé (virement ou Stripe)
+    if (!confirm(`Versement ${i+1}/${n} reçu par virement ?\n\nOK : la facture est préparée (Facturation → À valider).\nAnnuler : case cochée sans facture (ex. déjà facturé autrement).`)) return;
+    const unit = clSitePlanUnit(c, c.sitePlan);
+    const amount = Math.round(((i===0 ? unit + (Number(c.siteFirstExtra)||0) : unit))*100)/100;
+    const { error } = await sb.from('crm_factures').insert({
+      entite: c.owner==='eloise'?'eloise':'emrick', client_id: String(c.id), client: fxClientSnap(c),
+      lignes: [{ designation:`Création de site web — versement ${i+1}/${n}`, description:`Règlement du site en ${n} fois.`, quantite:1, prix_unitaire: amount }],
+      total: amount, date_paiement: fxToday(), reglement:'virement', source:'virement', source_ref: ref, libelle: lib,
+    });
+    if (error && !/duplicate|unique/i.test(error.message)) alert('Facture non créée : '+error.message);
+    fxBadge();
+  } catch(e) { console.warn('fxVersementCoche', e); }
+}
+// Abonnement du mois reçu par virement → facture du mois.
+async function fxMrrVirement(){
+  const c = clData.find(x=>x.id===clCurrentId); if (!c) return;
+  const mrr = Math.round((parseFloat(c.mrr)||0)*100)/100;
+  if (!(mrr>0)) { alert('Renseigne d\'abord le montant de l\'abonnement (€/mois).'); return; }
+  const today = fxToday(), ym = today.slice(0,7);
+  const mois = new Date(today+'T12:00:00').toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
+  const ref = `cli_${c.id}_mrr_${ym}`;
+  const { data: deja } = await sb.from('crm_factures').select('id,numero').eq('source_ref', ref).maybeSingle();
+  if (deja) { alert(`L'abonnement de ${mois} est déjà facturé${deja.numero?' ('+deja.numero+')':''}.`); return; }
+  if (!confirm(`Abonnement de ${mois} (${fxEur(mrr)}) reçu par virement ?\n\nLa facture sera préparée dans Facturation.`)) return;
+  const { error } = await sb.from('crm_factures').insert({
+    entite: c.owner==='eloise'?'eloise':'emrick', client_id: String(c.id), client: fxClientSnap(c),
+    lignes: [{ designation:'Abonnement mensuel — hébergement, maintenance et suivi', description:`Mois de ${mois}.`, quantite:1, prix_unitaire: mrr }],
+    total: mrr, date_paiement: today, reglement:'virement', source:'virement', source_ref: ref, libelle: `Abonnement ${mois}`,
+  });
+  if (error) { alert('Erreur : '+error.message); return; }
+  alert('Facture préparée ✓ (Facturation → À valider)'); fxBadge();
 }
 
 async function clCallStripe(type, extra = {}) {

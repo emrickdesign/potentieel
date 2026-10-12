@@ -141,24 +141,29 @@ function findClient(clients: AnyObj[], clientId?: string, email?: string): AnyOb
   if (!e) return null;
   return clients.find((c) => String(c.email ?? "").toLowerCase().trim() === e) ?? null;
 }
-// Même format que le CRM : FA-MM-AAAA-NNN, NNN = nombre total de factures + 1.
-function nextRef(clients: AnyObj[], ms: number): string {
-  const count = clients.reduce((s, c) => s + (Array.isArray(c.factures) ? c.factures.length : 0), 0);
-  const [y, m] = isoDate(ms).split("-");
-  return `FA-${m}-${y}-${String(count + 1).padStart(3, "0")}`;
+// Facture du paiement → table crm_factures (facturation automatique Factur-X).
+// Elle part en brouillon (validation dans CRM → Facturation) ou est émise tout de suite
+// si le réglage facturation_auto est actif ; factures-envoi l'envoie chaque matin.
+// Plus de facture « interne » à la fiche : un paiement = une facture = un numéro.
+// source_ref (id Stripe) unique → rejouer l'événement ne crée jamais de doublon.
+async function creerFacture(c: AnyObj, acct: string, ms: number, f: { ref: string; libelle: string; lignes: AnyObj[]; total: number }) {
+  const { error } = await admin.from("crm_factures").insert({
+    entite: acct === "eloise" ? "eloise" : "emrick",
+    client_id: String(c.id),
+    client: { nom: c.nom || "", email: c.email || "", tel: c.tel || "", adresse: c.adresse || "", siret: c.siret || "", siren: c.siren || "" },
+    lignes: f.lignes,
+    total: r2(f.total),
+    date_paiement: isoDate(ms),
+    reglement: "stripe",
+    source: "stripe",
+    source_ref: f.ref,
+    libelle: f.libelle,
+  });
+  if (error && !/duplicate key|unique/i.test(error.message)) throw new Error("Création facture : " + error.message);
 }
-// `owner` = entité qui émet la facture. C'est celle dont le compte Stripe a
-// encaissé, pas celle rattachée à la fiche : l'argent est arrivé chez elle.
-function baseData(c: AnyObj, acct: string): AnyObj {
-  return {
-    entreprise: c.nom || "", email: c.email || "", tel: c.tel || "", adresse: c.adresse || "",
-    idType: c.siret ? "SIRET" : c.siren ? "SIREN" : "", idNum: c.siret || c.siren || "",
-    reglement: "stripe", owner: acct,
-  };
-}
-function pushFacture(clients: AnyObj[], c: AnyObj, ms: number, f: AnyObj) {
-  if (!Array.isArray(c.factures)) c.factures = [];
-  c.factures.unshift({ ref: nextRef(clients, ms), date: frDate(ms), echeance: frDate(ms), statut: "payee", ...f });
+async function factureDejaCreee(ref: string): Promise<boolean> {
+  const { data } = await admin.from("crm_factures").select("id").eq("source_ref", ref).maybeSingle();
+  return !!data;
 }
 function ensureVersements(c: AnyObj, n: number) {
   const cur = Array.isArray(c.siteVersements) ? c.siteVersements : [];
@@ -182,12 +187,10 @@ async function handleInvoicePaid(event: AnyObj, acct: string): Promise<string> {
   const clients = await loadClients();
   const c = findClient(clients, md.crm_client_id, email);
   if (!c) return `client introuvable (${md.crm_client_id || email || "sans email"})`;
-  if ((c.factures ?? []).some((f: AnyObj) => f.stripeInvoiceId === inv.id)) return "déjà traité";
+  if ((c.factures ?? []).some((f: AnyObj) => f.stripeInvoiceId === inv.id) || await factureDejaCreee(inv.id)) return "déjà traité";
 
   const paidMs = (inv.status_transitions?.paid_at ?? event.created) * 1000;
   const months = Number(md.auto_cancel_after_months || 0);
-  const data = baseData(c, acct);
-  const fid = "fas_" + event.id;
 
   if (months >= 2 && subId) {
     // Paiement du site en N fois : rang de cette facture parmi les échéances payées.
@@ -200,11 +203,11 @@ async function handleInvoicePaid(event: AnyObj, acct: string): Promise<string> {
     ensureVersements(c, n);
     if (num <= n) c.siteVersements[num - 1] = true;
     if (!c.siteFirstPayDate && num === 1) c.siteFirstPayDate = isoDate(paidMs);
-    pushFacture(clients, c, paidMs, {
-      id: fid, stripeInvoiceId: inv.id, totalTxt: `${fmtEUR(amount)} (versement ${num}/${n})`, montantNum: amount,
-      data: { ...data, versementMontant: amount, versementNote: `Versement ${num}/${n} — paiement du site (Stripe)` },
-    });
     await saveClient(c);
+    await creerFacture(c, acct, paidMs, {
+      ref: inv.id, total: amount, libelle: `Site — versement ${num}/${n}`,
+      lignes: [{ designation: `Création de site web — versement ${num}/${n}`, description: `Règlement du site en ${n} fois.`, quantite: 1, prix_unitaire: amount }],
+    });
     return `versement ${num}/${n} coché pour ${c.nom}`;
   }
 
@@ -226,26 +229,22 @@ async function handleInvoicePaid(event: AnyObj, acct: string): Promise<string> {
       if (!c.mrrDepuis) c.mrrDepuis = isoDate(pStart);
       if (c.statut !== "actif" && c.statut !== "retard") c.statut = "actif";
     }
-    const aboKey = String(monthly);
-    const periode = `Du ${frDate(pStart)} au ${frDate(pEnd)}`;
-    const detail = (aboKey === "20" || aboKey === "49")
-      ? { abo: aboKey, periode }
-      : { versementMontant: amount, versementNote: `Abonnement mensuel — ${periode}` };
-    pushFacture(clients, c, paidMs, {
-      id: fid, stripeInvoiceId: inv.id, echeance: frDate(pEnd),
-      totalTxt: monthly > 0 ? `${fmtEUR(amount)} — abonnement ${fmtEUR(monthly)}/mois` : fmtEUR(amount),
-      montantNum: amount, data: { ...data, ...detail },
-    });
+    const periode = `du ${frDate(pStart)} au ${frDate(pEnd)}`;
+    const nomAbo = monthly === 49 ? "Gestion complète" : monthly === 20 ? "Assistant digital" : `${fmtEUR(monthly)}/mois`;
     await saveClient(c);
+    await creerFacture(c, acct, paidMs, {
+      ref: inv.id, total: amount, libelle: `Abonnement ${nomAbo}`,
+      lignes: [{ designation: `Abonnement mensuel — ${nomAbo}`, description: `Période ${periode}. Hébergement, maintenance et suivi du site.`, quantite: 1, prix_unitaire: amount }],
+    });
     return `abonnement ${monthly} €/mois enregistré pour ${c.nom}`;
   }
 
   // Facture Stripe ponctuelle hors abonnement.
-  pushFacture(clients, c, paidMs, {
-    id: fid, stripeInvoiceId: inv.id, totalTxt: fmtEUR(amount), montantNum: amount,
-    data: { ...data, versementMontant: amount, versementNote: "Paiement Stripe" },
+  const libInv = ((inv.lines?.data ?? []) as AnyObj[])[0]?.description || "Prestation";
+  await creerFacture(c, acct, paidMs, {
+    ref: inv.id, total: amount, libelle: libInv,
+    lignes: [{ designation: libInv, quantite: 1, prix_unitaire: amount }],
   });
-  await saveClient(c);
   return `facture ponctuelle pour ${c.nom}`;
 }
 
@@ -266,7 +265,7 @@ async function handleCheckoutCompleted(event: AnyObj, acct: string): Promise<str
   const clients = await loadClients();
   const c = findClient(clients, md.crm_client_id, email);
   if (!c) return `client introuvable (${md.crm_client_id || email || "sans email"})`;
-  if ((c.factures ?? []).some((f: AnyObj) => f.stripeSessionId === s.id)) return "déjà traité";
+  if ((c.factures ?? []).some((f: AnyObj) => f.stripeSessionId === s.id) || await factureDejaCreee(s.id)) return "déjà traité";
 
   let label = "Paiement Stripe";
   let priceId = "";
@@ -278,8 +277,7 @@ async function handleCheckoutCompleted(event: AnyObj, acct: string): Promise<str
 
   const kind = md.crm_kind || (priceId === PRICE_SETUP_990 ? "site_1x" : PRICE_ONE.has(priceId) ? "abo_mois" : PRICE_SUB.has(priceId) ? "abo" : "unique");
   const paidMs = event.created * 1000;
-  const data = baseData(c, acct);
-  const base = { id: "fas_" + event.id, stripeSessionId: s.id, montantNum: amount, totalTxt: fmtEUR(amount) };
+  let facture: { libelle: string; designation: string; description?: string };
 
   if (kind === "site_1x") {
     if (!c.sitePlan) c.sitePlan = "1x";
@@ -288,18 +286,20 @@ async function handleCheckoutCompleted(event: AnyObj, acct: string): Promise<str
       c.siteVersements[0] = true;
       if (!c.siteFirstPayDate) c.siteFirstPayDate = isoDate(paidMs);
     }
-    const detail = amount === 990 ? { creation: "1x" } : { versementMontant: amount, versementNote: "Paiement du site en une fois (Stripe)" };
-    pushFacture(clients, c, paidMs, { ...base, data: { ...data, ...detail } });
+    facture = { libelle: "Site — paiement unique", designation: "Création de site web", description: "Conception, développement et mise en ligne du site. Règlement en une fois." };
   } else if (kind === "abo_mois") {
     const end = addMonthsClamped(new Date(paidMs), 1).getTime();
-    const periode = `Du ${frDate(paidMs)} au ${frDate(end)}`;
-    const key = String(amount);
-    const detail = (key === "20" || key === "49") ? { abo: key, periode } : { versementMontant: amount, versementNote: `Abonnement — ${periode}` };
-    pushFacture(clients, c, paidMs, { ...base, echeance: frDate(end), totalTxt: `${fmtEUR(amount)}/mois`, data: { ...data, ...detail } });
+    facture = { libelle: "Abonnement (1 mois)", designation: "Abonnement mensuel — sans engagement", description: `Période du ${frDate(paidMs)} au ${frDate(end)}.` };
+  } else if (kind === "ads") {
+    facture = { libelle: "Google Ads", designation: label || "Honoraires Google Ads", description: "Gestion des campagnes Google Ads." };
   } else {
-    pushFacture(clients, c, paidMs, { ...base, data: { ...data, versementMontant: amount, versementNote: label } });
+    facture = { libelle: label, designation: label };
   }
   await saveClient(c);
+  await creerFacture(c, acct, paidMs, {
+    ref: s.id, total: amount, libelle: facture.libelle,
+    lignes: [{ designation: facture.designation, description: facture.description, quantite: 1, prix_unitaire: amount }],
+  });
   return `paiement unique (${kind}) enregistré pour ${c.nom}`;
 }
 
