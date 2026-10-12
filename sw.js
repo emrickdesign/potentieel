@@ -1,4 +1,4 @@
-const CACHE = 'potentieel-v8';
+const CACHE = 'potentieel-v9';
 const ASSETS = ['/admin.html', '/styles.css', '/scripts.js', '/manifest.json'];
 
 self.addEventListener('install', e => {
@@ -13,8 +13,17 @@ self.addEventListener('activate', e => {
   );
 });
 self.addEventListener('fetch', e => {
+  const r = e.request;
+  // On ne touche QUE aux pages et fichiers du site, en lecture.
+  // Une écriture (PATCH d'une qualification, POST d'un formulaire…) ne doit
+  // jamais passer par ici : un cache ne peut pas répondre à un PATCH, donc
+  // caches.match() renvoie undefined et respondWith(undefined) casse la
+  // requête. L'enregistrement échouait alors sans message clair.
+  if (r.method !== 'GET') return;
+  // Les appels à Supabase et aux CDN partent en direct, sans interception.
+  if (new URL(r.url).origin !== self.location.origin) return;
   // Network-first : toujours récupérer le contenu frais, fallback cache
-  e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+  e.respondWith(fetch(r).catch(() => caches.match(r)));
 });
 
 // ── Web Push : nouveau lead ──

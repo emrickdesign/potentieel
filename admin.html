@@ -11529,11 +11529,26 @@ function saRenderStats(items){
     : '<div class="sa-empty">Aucun thème renseigné pour l\'instant. Note-les en écoutant les appels.</div>';
 }
 
+/* Toute ecriture du Suivi ads passe par ici.
+   Supabase ne renvoie PAS d'erreur quand une regle de securite refuse la ligne :
+   il renvoie simplement zero ligne modifiee, et `error` vaut null. Sans ce
+   controle, la qualification s'affichait comme enregistree puis disparaissait
+   au rechargement. Le .select('id') nous dit ce qui a reellement ete ecrit. */
+async function saEcrire(tbl, id, patch){
+  const { data, error } = await sb.from(tbl).update(patch).eq('id', id).select('id');
+  if(error){ alert('Erreur : '+error.message); return false; }
+  if(!data || !data.length){
+    alert("Rien n'a ete enregistre : la base a refuse la modification.\n\n"
+        + "Deconnecte-toi puis reconnecte-toi au CRM et reessaie.");
+    return false;
+  }
+  return true;
+}
+
 /* ---- Notes d'écoute + transcription auto (préparée) ---- */
 async function saSetNotes(id,val){
   const v=(val||'').trim()||null;
-  const { error } = await sb.from('ads_calls').update({ notes:v }).eq('id',id);
-  if(error){ alert('Erreur: '+error.message); return; }
+  if(!await saEcrire('ads_calls', id, { notes:v })) return;
   const row=saState.calls.find(r=>r.id===id); if(row) row.notes=v;
 }
 async function saTranscribe(id,btn){
@@ -11591,8 +11606,7 @@ function saCard(i, withAssign){
 async function saToggleRappele(id){
   const row=saState.calls.find(r=>r.id===id); if(!row) return;
   const next = row.rappele_at ? null : new Date().toISOString();
-  const { error } = await sb.from('ads_calls').update({ rappele_at: next }).eq('id', id);
-  if(error){ alert('Erreur: '+error.message); return; }
+  if(!await saEcrire('ads_calls', id, { rappele_at: next })) return;
   row.rappele_at = next;
   saUpdateBadge();
   saState.selected ? saRenderDetail() : saRenderClientsView();
@@ -11612,22 +11626,19 @@ async function saLoadTranscript(id, el){
 async function saSetTheme(kind,id,val){
   const tbl=kind==='call'?'ads_calls':'form_submissions';
   const v=(val||'').trim()||null;
-  const { error } = await sb.from(tbl).update({ theme:v }).eq('id',id);
-  if(error){ alert('Erreur: '+error.message); return; }
+  if(!await saEcrire(tbl, id, { theme:v })) return;
   const arr=kind==='call'?saState.calls:saState.forms; const row=arr.find(r=>r.id===id); if(row) row.theme=v;
 }
 async function saAssign(kind,id,clientId){
   const tbl=kind==='call'?'ads_calls':'form_submissions';
-  const { error } = await sb.from(tbl).update({ client_id: clientId||null }).eq('id',id);
-  if(error){ alert('Erreur: '+error.message); return; }
+  if(!await saEcrire(tbl, id, { client_id: clientId||null })) return;
   await saLoad();
 }
 async function saQualify(kind,id,val){
   const tbl=kind==='call'?'ads_calls':'form_submissions';
   const arr=kind==='call'?saState.calls:saState.forms; const row=arr.find(r=>r.id===id);
   const next = row && row.qualification===val ? 'nouveau' : val;
-  const { error } = await sb.from(tbl).update({ qualification: next }).eq('id',id);
-  if(error){ alert('Erreur: '+error.message); return; }
+  if(!await saEcrire(tbl, id, { qualification: next })) return;
   if(row) row.qualification=next;
   saUpdateBadge();
   saState.selected ? saRenderDetail() : saRenderClientsView();
