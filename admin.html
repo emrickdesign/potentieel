@@ -2122,6 +2122,7 @@
             .sa-stat.alert b{color:var(--accent)}
             .sa-theme{width:100%;max-width:360px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px 11px;font-size:12.5px}
             .sa-theme::placeholder{color:var(--muted)}
+            .sa-theme-fixe{display:inline-block;padding:7px 11px;background:var(--bg);border:1px dashed var(--border);border-radius:8px;font-size:12.5px;color:var(--muted)}
             .sa-tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:18px;overflow-x:auto}
             .sa-tabs button{background:none;border:none;color:var(--muted);font-weight:600;font-size:13.5px;padding:10px 14px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;font-family:inherit}
             .sa-tabs button.on{color:var(--text);border-bottom-color:var(--accent)}
@@ -11590,7 +11591,13 @@ function saCard(i, withAssign){
       ${i.transcribed?`<details class="sa-transcript" ontoggle="saLoadTranscript('${i.id}',this)"><summary>Transcription</summary><pre>Chargement…</pre></details>`:''}
       ${i.kind==='call'&&i.rec&&!i.transcribed?`<button class="sa-mini-btn" onclick="saTranscribe('${i.id}',this)">✨ Transcrire automatiquement</button>`:''}
       <div class="sa-ctrl" style="margin-top:10px">
-        <input class="sa-theme" placeholder="Thème / corps de métier (ex : charpente, chauffage)" value="${i.theme?saEsc(i.theme):''}" onchange="saSetTheme('${i.kind}','${i.id}',this.value)">
+        ${i.kind==='form'
+          /* Formulaire : le thème est le domaine choisi par le prospect lui-même.
+             On l'affiche, on ne le ressaisit pas — il n'y a qu'à qualifier. */
+          ? `<span class="sa-theme-fixe">${i.theme?saEsc(i.theme):'Aucun domaine renseigné dans le formulaire'}</span>`
+          /* Appel : rien ne dit de quoi il s'agit tant qu'on ne l'a pas écouté,
+             donc le thème reste saisi à la main. */
+          : `<input class="sa-theme" placeholder="Thème / corps de métier (ex : charpente, chauffage)" value="${i.theme?saEsc(i.theme):''}" onchange="saSetTheme('call','${i.id}',this.value)">`}
       </div>
       <div class="sa-ctrl">
         ${assign}
