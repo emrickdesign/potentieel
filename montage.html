@@ -2,569 +2,559 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Repères de montage — Potentieel</title>
-<style>
-  html,body{margin:0;padding:0}
-  img{max-width:100%}
-  [hidden]{display:none!important}
-</style>
+<title>Studio de montage — Potentieel</title>
+<meta name="theme-color" content="#0b0d12">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
-  /* Deux colonnes : lecteur à gauche, repères à droite. Une colonne sous 900px.
-     Parti pris assumé : thème sombre unique — on juge une image sur un fond neutre. */
   :root {
     color-scheme: dark;
-    --ink:        #0b0d12;   /* fond, encre bleutée plutôt que noir pur */
-    --surface:    #141821;
-    --surface-2:  #1c2130;
-    --line:       #2a3142;
-    --text:       #e8eaf0;
-    --text-dim:   #949cb0;
-    --marker:     #f5b945;   /* repère : l'ambre des marqueurs de timeline */
-    --live:       #4ad6c0;   /* état actif / lecture */
-    --danger:     #ff6b6b;
-    --font-ui:    "Archivo", "Helvetica Neue", Arial, sans-serif;
-    --font-mono:  "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --ink:#0b0d12; --surface:#141821; --surface-2:#1c2130; --line:#2a3142;
+    --text:#e8eaf0; --dim:#949cb0; --marker:#f5b945; --live:#4ad6c0; --danger:#ff6b6b;
+    --ui:"Archivo","Helvetica Neue",Arial,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
   }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--ink);color:var(--text);font-family:var(--ui);
+    font-size:15px;line-height:1.5;padding-inline:20px;padding-block:18px 32px}
+  .wrap{max-width:1360px;margin:0 auto}
+  header{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;margin-bottom:18px}
+  h1{font-size:22px;font-weight:800;letter-spacing:-.02em;margin:0}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--marker);
+    margin-right:9px;vertical-align:1px}
+  .tabs{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+  .tab{font:inherit;font-weight:600;font-size:14px;color:var(--dim);background:var(--surface);
+    border:1px solid var(--line);border-radius:999px;padding:8px 18px;cursor:pointer}
+  .tab[aria-selected=true]{background:var(--marker);color:#1a1405;border-color:var(--marker)}
+  .reload{font:inherit;font-size:13px;color:var(--text);background:var(--surface-2);
+    border:1px solid var(--line);border-radius:8px;padding:8px 13px;cursor:pointer}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    padding:16px;min-width:0}
+  .muted{color:var(--dim);font-size:13.5px}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
 
-  * { box-sizing: border-box; }
-  html, body { height: 100%; }
-  body {
-    margin: 0; background: var(--ink); color: var(--text);
-    font-family: var(--font-ui); font-size: 15px; line-height: 1.5;
-    padding-inline: 20px; padding-block: 20px 28px;
-  }
-  .wrap { max-width: 1340px; margin: 0 auto; }
+  /* listes */
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+  .card{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;
+    padding:13px;cursor:pointer;text-align:left;font:inherit;color:var(--text);min-width:0}
+  .card:hover{border-color:#3a4357}
+  .card[aria-current=true]{border-color:var(--marker);background:#21252f}
+  .card h3{margin:0 0 4px;font-size:15px;font-weight:600;overflow-wrap:anywhere}
+  .card .line{font-size:12.5px;color:var(--dim);font-family:var(--mono);overflow-wrap:anywhere}
+  .chip{display:inline-block;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;
+    border-radius:999px;padding:2px 8px;margin-top:7px;border:1px solid var(--line);color:var(--dim)}
+  .chip.ok{color:var(--live);border-color:#2b5f58}
+  .chip.part{color:var(--danger);border-color:#5f2b2b}
 
-  /* en-tête */
-  header { display: flex; flex-wrap: wrap; align-items: baseline;
-    gap: 10px 18px; margin-bottom: 20px; }
-  h1 { font-size: 23px; font-weight: 800; letter-spacing: -0.02em; margin: 0; }
-  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%;
-    background: var(--marker); margin-right: 9px; vertical-align: 1px; }
-  .sub { color: var(--text-dim); font-size: 13.5px; margin: 0; }
+  /* montage : lecteur + repères */
+  .work{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);gap:18px;
+    align-items:start;margin-top:16px}
+  @media (max-width:980px){.work{grid-template-columns:1fr}}
+  #stage{position:relative;background:#000;border-radius:10px;overflow:hidden;
+    aspect-ratio:16/9}
+  #stage video{width:100%;height:100%;object-fit:contain;display:block;background:#000}
+  .track{position:relative;margin-top:12px}
+  #seek{width:100%;margin:0;accent-color:var(--live);cursor:pointer}
+  .pins{position:relative;height:16px;margin-top:2px}
+  .pin{position:absolute;top:0;width:3px;height:11px;border-radius:2px;background:var(--marker);
+    transform:translateX(-1.5px);cursor:pointer;border:0;padding:0}
+  .pin:hover,.pin:focus-visible{height:16px;background:#ffd37a;outline:none}
+  .transport{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px}
+  .tbtn{font:inherit;font-size:13px;font-weight:600;color:var(--text);background:var(--surface-2);
+    border:1px solid var(--line);border-radius:8px;padding:8px 12px;cursor:pointer;
+    font-variant-numeric:tabular-nums}
+  .tbtn:hover:not(:disabled){border-color:#3a4357}
+  .tbtn:disabled{opacity:.4;cursor:default}
+  .tbtn.play{background:var(--live);color:#042b25;border-color:var(--live);min-width:54px}
+  .readout{margin-left:auto;font-family:var(--mono);font-size:14.5px;
+    font-variant-numeric:tabular-nums}
+  .readout b{color:var(--marker);font-weight:600}
+  .meta{margin-top:9px;font-size:12.5px;color:var(--dim);font-family:var(--mono);
+    overflow-wrap:anywhere}
 
-  /* grille */
-  .grid { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
-    gap: 20px; align-items: start; }
-  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
-
-  .panel { background: var(--surface); border: 1px solid var(--line);
-    border-radius: 14px; padding: 16px; min-width: 0; }
-
-  /* lecteur */
-  #stage { position: relative; background: #000; border-radius: 10px;
-    overflow: hidden; aspect-ratio: 16 / 9; display: grid; place-items: center; }
-  #stage video { width: 100%; height: 100%; object-fit: contain;
-    display: block; background: #000; }
-  #stage video[hidden] { display: none; }
-
-  #drop { position: absolute; inset: 0; display: grid; place-content: center;
-    justify-items: center; gap: 12px; text-align: center; padding: 24px;
-    border: 2px dashed var(--line); border-radius: 10px; background: var(--surface-2);
-    cursor: pointer; transition: border-color .15s, background .15s; }
-  #drop.over { border-color: var(--marker); background: #1f2432; }
-  #drop .big { font-size: 17px; font-weight: 600; }
-  #drop .small { font-size: 13px; color: var(--text-dim); max-width: 44ch; }
-  .filebtn { font: inherit; font-weight: 600; font-size: 14px;
-    background: var(--marker); color: #1a1405; border: 0; border-radius: 8px;
-    padding: 9px 18px; cursor: pointer; }
-
-  /* piste + repères */
-  .track { position: relative; margin-top: 14px; }
-  #seek { width: 100%; margin: 0; accent-color: var(--live); cursor: pointer; }
-  #seek:disabled { cursor: default; opacity: .45; }
-  .pins { position: relative; height: 16px; margin-top: 2px; }
-  .pin { position: absolute; top: 0; width: 3px; height: 11px; border-radius: 2px;
-    background: var(--marker); transform: translateX(-1.5px); cursor: pointer; }
-  .pin:hover, .pin:focus-visible { height: 16px; outline: none; background: #ffd37a; }
-
-  /* transport */
-  .transport { display: flex; flex-wrap: wrap; align-items: center;
-    gap: 8px; margin-top: 8px; }
-  .tbtn { font: inherit; font-size: 13px; font-weight: 600; color: var(--text);
-    background: var(--surface-2); border: 1px solid var(--line);
-    border-radius: 8px; padding: 8px 12px; cursor: pointer;
-    font-variant-numeric: tabular-nums; }
-  .tbtn:hover:not(:disabled) { border-color: #3a4357; }
-  .tbtn:disabled { opacity: .4; cursor: default; }
-  .tbtn.play { background: var(--live); color: #042b25; border-color: var(--live);
-    min-width: 54px; }
-  .readout { margin-left: auto; font-family: var(--font-mono); font-size: 14.5px;
-    font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
-  .readout b { color: var(--marker); font-weight: 600; }
-  .meta { margin-top: 10px; font-size: 12.5px; color: var(--text-dim);
-    font-family: var(--font-mono); }
-
-  /* réglages */
-  .row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
-  label.fps { font-size: 13px; color: var(--text-dim); display: flex;
-    align-items: center; gap: 7px; }
-  input[type="number"] { font: inherit; font-family: var(--font-mono); width: 72px;
-    background: var(--surface-2); color: var(--text); border: 1px solid var(--line);
-    border-radius: 7px; padding: 6px 9px; }
-
-  /* saisie */
-  textarea { width: 100%; min-height: 86px; resize: vertical; font: inherit;
-    font-size: 14.5px; line-height: 1.45; background: var(--surface-2);
-    color: var(--text); border: 1px solid var(--line); border-radius: 10px;
-    padding: 11px 13px; margin-top: 12px; }
-  textarea:focus { outline: none; border-color: var(--marker); }
-  textarea:disabled { opacity: .5; }
-  .addrow { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
-  .add { font: inherit; font-weight: 700; font-size: 14.5px; background: var(--marker);
-    color: #1a1405; border: 0; border-radius: 9px; padding: 11px 22px; cursor: pointer; }
-  .add:disabled { opacity: .4; cursor: default; }
-  .hint { font-size: 12.5px; color: var(--text-dim); }
-  kbd { font-family: var(--font-mono); font-size: 11.5px; background: var(--surface-2);
-    border: 1px solid var(--line); border-radius: 5px; padding: 1.5px 5px; }
-
-  /* liste des repères */
-  .listhead { display: flex; align-items: baseline; justify-content: space-between;
-    gap: 12px; margin: 20px 0 10px; }
-  .listhead h2 { font-size: 13px; font-weight: 600; letter-spacing: .07em;
-    text-transform: uppercase; color: var(--text-dim); margin: 0; }
-  .count { font-family: var(--font-mono); font-size: 13px; color: var(--marker); }
-  ul.notes { list-style: none; margin: 0; padding: 0; display: flex;
-    flex-direction: column; gap: 8px; max-height: 420px; overflow-y: auto; }
-  li.note { display: grid; grid-template-columns: auto 1fr auto; gap: 10px;
-    align-items: start; background: var(--surface-2); border: 1px solid var(--line);
-    border-radius: 10px; padding: 10px 11px; }
-  li.note.sample { opacity: .55; border-style: dashed; }
-  .stamp { font-family: var(--font-mono); font-size: 12.5px; color: var(--marker);
-    background: #241d08; border-radius: 6px; padding: 3px 7px; white-space: nowrap;
-    border: 0; cursor: pointer; font-variant-numeric: tabular-nums; }
-  li.note.sample .stamp { cursor: default; }
-  .body { font-size: 14px; min-width: 0; overflow-wrap: anywhere; }
-  .kill { background: none; border: 0; color: var(--text-dim); font-size: 17px;
-    line-height: 1; cursor: pointer; padding: 2px 4px; border-radius: 5px; }
-  .kill:hover { color: var(--danger); }
-  .badge { display: inline-block; font-size: 10.5px; letter-spacing: .06em;
-    text-transform: uppercase; color: var(--text-dim); border: 1px solid var(--line);
-    border-radius: 999px; padding: 1px 7px; margin-left: 7px; vertical-align: 1px; }
-
-  /* sortie */
-  .out { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 16px; }
-  .obtn { font: inherit; font-weight: 600; font-size: 14px; color: var(--text);
-    background: var(--surface-2); border: 1px solid var(--line); border-radius: 9px;
-    padding: 11px 16px; cursor: pointer; }
-  .obtn.primary { background: var(--marker); color: #1a1405; border-color: var(--marker); }
-  .obtn:disabled { opacity: .4; cursor: default; }
-  #toast { font-size: 13px; color: var(--live); align-self: center; min-height: 18px; }
-
-  #fallback { width: 100%; margin-top: 12px; min-height: 150px;
-    font-family: var(--font-mono); font-size: 12.5px; }
-
-  :focus-visible { outline: 2px solid var(--marker); outline-offset: 2px; }
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  label.fps{font-size:13px;color:var(--dim);display:flex;align-items:center;gap:7px}
+  input[type=number]{font:inherit;font-family:var(--mono);width:70px;background:var(--surface-2);
+    color:var(--text);border:1px solid var(--line);border-radius:7px;padding:6px 9px}
+  textarea{width:100%;min-height:84px;resize:vertical;font:inherit;font-size:14.5px;
+    background:var(--surface-2);color:var(--text);border:1px solid var(--line);
+    border-radius:10px;padding:11px 13px;margin-top:12px}
+  textarea:focus{outline:none;border-color:var(--marker)}
+  .addrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px}
+  .add{font:inherit;font-weight:700;font-size:14.5px;background:var(--marker);color:#1a1405;
+    border:0;border-radius:9px;padding:11px 22px;cursor:pointer}
+  .add:disabled{opacity:.4;cursor:default}
+  .hint{font-size:12.5px;color:var(--dim)}
+  kbd{font-family:var(--mono);font-size:11.5px;background:var(--surface-2);
+    border:1px solid var(--line);border-radius:5px;padding:1.5px 5px}
+  .listhead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+    margin:18px 0 10px}
+  .listhead h2{font-size:12.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
+    color:var(--dim);margin:0}
+  .count{font-family:var(--mono);font-size:13px;color:var(--marker)}
+  ul.notes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;
+    max-height:360px;overflow-y:auto}
+  li.note{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;
+    background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:10px 11px}
+  .stamp{font-family:var(--mono);font-size:12.5px;color:var(--marker);background:#241d08;
+    border-radius:6px;padding:3px 7px;white-space:nowrap;border:0;cursor:pointer;
+    font-variant-numeric:tabular-nums}
+  .body{font-size:14px;min-width:0;overflow-wrap:anywhere}
+  .kill{background:none;border:0;color:var(--dim);font-size:17px;line-height:1;cursor:pointer;
+    padding:2px 4px;border-radius:5px}
+  .kill:hover{color:var(--danger)}
+  .out{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px;align-items:center}
+  .obtn{font:inherit;font-weight:600;font-size:14px;color:var(--text);background:var(--surface-2);
+    border:1px solid var(--line);border-radius:9px;padding:11px 16px;cursor:pointer}
+  .obtn.primary{background:var(--marker);color:#1a1405;border-color:var(--marker)}
+  .obtn:disabled{opacity:.4;cursor:default}
+  #toast{font-size:13px;color:var(--live);min-height:18px}
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+  @media (max-width:700px){.pair{grid-template-columns:1fr}}
+  .pair video{width:100%;border-radius:10px;background:#000;display:block;aspect-ratio:16/9}
+  .pair .lab{font-size:12px;color:var(--dim);font-family:var(--mono);margin-bottom:5px}
+  .ask{margin-top:14px;background:var(--surface-2);border:1px solid var(--line);
+    border-radius:10px;padding:13px}
+  .ask code{font-family:var(--mono);font-size:13px;color:var(--marker);overflow-wrap:anywhere}
+  :focus-visible{outline:2px solid var(--marker);outline-offset:2px}
+  [hidden]{display:none!important}
 </style>
 </head>
 <body>
-
-
 <div class="wrap">
   <header>
-    <h1><span class="dot"></span>Repères de montage</h1>
-    <p class="sub">Pose un repère à la frame exacte, copie tout d'un bloc pour Claude.</p>
+    <h1><span class="dot"></span>Studio de montage</h1>
+    <div class="tabs" role="tablist">
+      <button class="tab" id="t-montages" role="tab" aria-selected="true">Montages</button>
+      <button class="tab" id="t-rushs" role="tab" aria-selected="false">Rushs</button>
+      <button class="reload" id="reload" type="button">Actualiser</button>
+    </div>
   </header>
 
-  <div class="grid">
-    <!-- lecteur -->
-    <section class="panel">
-      <div id="stage">
-        <video id="vid" hidden playsinline preload="metadata"></video>
-        <div id="drop" tabindex="0" role="button" aria-label="Charger une vidéo">
-          <span class="big">Dépose ta vidéo ici</span>
-          <span class="small">Elle reste sur ton Mac — rien n'est envoyé nulle part.
-            Les rendus sont dans <code>montage-youtube/clip-test-01/renders/</code>.</span>
-          <button class="filebtn" type="button" id="pick">Choisir un fichier</button>
+  <!-- ============ MONTAGES ============ -->
+  <section id="vue-montages">
+    <div class="panel">
+      <div class="listhead" style="margin-top:0">
+        <h2>Vidéos montées</h2><span class="count" id="n-montages">—</span>
+      </div>
+      <div class="cards" id="liste-montages"></div>
+      <p class="muted" id="vide-montages" hidden>
+        Aucun montage pour l'instant. Monte un rush, puis actualise.
+      </p>
+
+      <!-- quand le studio local n'est pas joignable (autre machine, Mac éteint) -->
+      <div id="hors-ligne" hidden>
+        <p class="muted" style="margin:0 0 10px">
+          Le studio local n'est pas joignable, donc tes dossiers ne sont pas lisibles d'ici.
+          Lance <strong>Studio de montage</strong> sur ton Mac, ou dépose une vidéo à la main.
+        </p>
+        <div id="drop" tabindex="0" role="button"
+             style="border:2px dashed var(--line);border-radius:12px;background:var(--surface-2);
+                    padding:26px;text-align:center;cursor:pointer">
+          <p style="margin:0 0 10px;font-weight:600">Dépose une vidéo ici</p>
+          <button class="obtn primary" type="button" id="pick">Choisir un fichier</button>
         </div>
+        <input type="file" id="file" accept="video/*" hidden>
       </div>
-      <input type="file" id="file" accept="video/*" hidden>
+    </div>
 
-      <div class="track">
-        <input type="range" id="seek" min="0" max="1000" value="0" step="1" disabled
-               aria-label="Position dans la vidéo">
-        <div class="pins" id="pins"></div>
+    <div class="work" id="atelier" hidden>
+      <div class="panel">
+        <div id="stage"><video id="vid" playsinline preload="metadata"></video></div>
+        <div class="track">
+          <input type="range" id="seek" min="0" max="1000" value="0" step="1"
+                 aria-label="Position dans la vidéo">
+          <div class="pins" id="pins"></div>
+        </div>
+        <div class="transport">
+          <button class="tbtn" id="m1s" type="button">−1 s</button>
+          <button class="tbtn" id="m1f" type="button">−1 img</button>
+          <button class="tbtn play" id="play" type="button">▶</button>
+          <button class="tbtn" id="p1f" type="button">+1 img</button>
+          <button class="tbtn" id="p1s" type="button">+1 s</button>
+          <span class="readout"><span id="tc">00:00.000</span> · <b id="fr">f0</b></span>
+        </div>
+        <p class="meta" id="meta"></p>
       </div>
 
-      <div class="transport">
-        <button class="tbtn" id="b-1s"   type="button" disabled>−1 s</button>
-        <button class="tbtn" id="b-1f"   type="button" disabled>−1 img</button>
-        <button class="tbtn play" id="b-play" type="button" disabled>▶</button>
-        <button class="tbtn" id="b+1f"   type="button" disabled>+1 img</button>
-        <button class="tbtn" id="b+1s"   type="button" disabled>+1 s</button>
-        <span class="readout"><span id="tc">00:00.000</span> · <b id="fr">f0</b></span>
-      </div>
-      <p class="meta" id="meta">aucune vidéo chargée</p>
-    </section>
-
-    <!-- repères -->
-    <section class="panel">
-      <div class="row">
+      <div class="panel">
         <label class="fps" for="fps">Cadence
-          <input type="number" id="fps" min="1" max="240" step="1" value="60">
-          img/s</label>
-        <span class="hint">Tes rushs sont en 60.</span>
+          <input type="number" id="fps" min="1" max="240" step="1" value="60"> img/s</label>
+        <textarea id="note" placeholder="Ton retour sur cette image… (Entrée pour ajouter)"></textarea>
+        <div class="addrow">
+          <button class="add" id="addbtn" type="button">Ajouter le repère</button>
+          <span class="hint"><kbd>Espace</kbd> lecture · <kbd>←</kbd><kbd>→</kbd> image par image
+            · <kbd>Maj</kbd>+<kbd>←</kbd><kbd>→</kbd> une seconde</span>
+        </div>
+        <div class="listhead">
+          <h2>Repères posés</h2><span class="count" id="count">0</span>
+        </div>
+        <ul class="notes" id="list"></ul>
+        <div class="out">
+          <button class="obtn primary" id="envoyer" type="button" disabled>Envoyer au monteur</button>
+          <button class="obtn" id="copier" type="button" disabled>Copier pour Claude</button>
+          <button class="obtn" id="vider" type="button" disabled>Tout effacer</button>
+          <span id="toast" role="status" aria-live="polite"></span>
+        </div>
+        <textarea id="fallback" hidden readonly class="mono"
+                  aria-label="Retours à copier manuellement"></textarea>
       </div>
+    </div>
+  </section>
 
-      <textarea id="note" disabled
-        placeholder="Ton retour sur cette image… (Entrée pour ajouter)"></textarea>
-      <div class="addrow">
-        <button class="add" id="addbtn" type="button" disabled>Ajouter le repère</button>
-        <span class="hint"><kbd>Espace</kbd> lecture · <kbd>←</kbd><kbd>→</kbd> image par image
-          · <kbd>Maj</kbd>+<kbd>←</kbd><kbd>→</kbd> une seconde</span>
+  <!-- ============ RUSHS ============ -->
+  <section id="vue-rushs" hidden>
+    <div class="panel">
+      <div class="listhead" style="margin-top:0">
+        <h2>Rushs disponibles</h2><span class="count" id="n-rushs">—</span>
       </div>
+      <p class="muted" id="dossiers"></p>
+      <div class="cards" id="liste-rushs" style="margin-top:12px"></div>
+      <p class="muted" id="vide-rushs" hidden>Aucun rush trouvé.</p>
+    </div>
 
-      <div class="listhead">
-        <h2>Repères posés</h2>
-        <span class="count" id="count">0</span>
+    <div class="panel" id="apercu" hidden style="margin-top:16px">
+      <h2 style="margin:0 0 2px;font-size:17px" id="apercu-titre"></h2>
+      <p class="muted" id="apercu-sous"></p>
+      <div class="pair">
+        <div><p class="lab">CAMÉRA</p><video id="pv-cam" controls preload="metadata"></video></div>
+        <div><p class="lab">ÉCRAN (avec le micro)</p><video id="pv-ecr" controls preload="metadata"></video></div>
       </div>
-      <ul class="notes" id="list"></ul>
-
-      <div class="out">
-        <button class="obtn primary" id="copy" type="button" disabled>Copier pour Claude</button>
-        <button class="obtn" id="copyjson" type="button" disabled>Copier en JSON</button>
-        <button class="obtn" id="clear" type="button" disabled>Tout effacer</button>
-        <span id="toast" role="status" aria-live="polite"></span>
+      <div class="ask">
+        <textarea id="consigne" style="margin-top:0;min-height:62px"
+          placeholder="Consigne pour le montage (facultatif) — ex : coupe serrée, insiste sur la partie démo…"></textarea>
+        <div class="out" style="margin-top:10px">
+          <button class="obtn primary" id="demander" type="button">Demander le montage</button>
+          <span id="toast2" role="status" aria-live="polite" style="font-size:13px;color:var(--live)"></span>
+        </div>
+        <p class="muted" id="phrase" hidden style="margin-top:10px">
+          Dis ça dans Claude Code : <code id="phrase-txt"></code>
+        </p>
       </div>
-      <textarea id="fallback" hidden readonly
-        aria-label="Retours à copier manuellement"></textarea>
-    </section>
-  </div>
+    </div>
+  </section>
 </div>
 
 <script>
-(function () {
-  "use strict";
+(function(){
+"use strict";
+var $ = function(id){ return document.getElementById(id); };
+/* Servie depuis le Mac, la page parle à son propre serveur.
+   Servie depuis potentieel.fr, elle va chercher le studio local. */
+var LOCAL = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+var BASE = LOCAL ? "" : "http://localhost:4200";
+var data = { rushs: [], montages: [], dossiers: {} };
+var courant = null;          // montage sélectionné
+var notes = [];
 
-  var vid = document.getElementById("vid");
-  var drop = document.getElementById("drop");
-  var fileIn = document.getElementById("file");
-  var seek = document.getElementById("seek");
-  var pins = document.getElementById("pins");
-  var tcEl = document.getElementById("tc");
-  var frEl = document.getElementById("fr");
-  var metaEl = document.getElementById("meta");
-  var fpsIn = document.getElementById("fps");
-  var noteEl = document.getElementById("note");
-  var addBtn = document.getElementById("addbtn");
-  var listEl = document.getElementById("list");
-  var countEl = document.getElementById("count");
-  var copyBtn = document.getElementById("copy");
-  var jsonBtn = document.getElementById("copyjson");
-  var clearBtn = document.getElementById("clear");
-  var playBtn = document.getElementById("b-play");
-  var toast = document.getElementById("toast");
-  var fallback = document.getElementById("fallback");
+/* ---------- utilitaires ---------- */
+function fps(){ var v = parseInt($("fps").value,10); return (v>0&&v<=240)?v:60; }
+function frameOf(t){ return Math.round(t*fps()); }
+function pad(n,w){ n=String(n); while(n.length<w) n="0"+n; return n; }
+function tc(t){
+  if(!isFinite(t)||t<0) t=0;
+  var m=Math.floor(t/60), s=Math.floor(t%60), ms=Math.round((t%1)*1000);
+  if(ms===1000){ms=0;s+=1;}
+  return pad(m,2)+":"+pad(s,2)+"."+pad(ms,3);
+}
+function say(el,msg,bad){
+  el.textContent=msg; el.style.color=bad?"var(--danger)":"var(--live)";
+  clearTimeout(el._t); el._t=setTimeout(function(){el.textContent="";},3200);
+}
+function cle(){ return courant ? "reperes:"+courant.projet+":"+courant.name : null; }
+function save(){ try{ var k=cle(); if(k) localStorage.setItem(k,JSON.stringify(notes)); }catch(e){} }
+function restore(){
+  notes=[]; try{ var k=cle(); if(!k) return;
+    var raw=localStorage.getItem(k); if(raw){ var p=JSON.parse(raw); if(Array.isArray(p)) notes=p; }
+  }catch(e){ notes=[]; }
+}
 
-  var notes = [];
-  var loaded = false;
-  var storeKey = null;
-  var url = null;
+/* ---------- onglets ---------- */
+function onglet(nom){
+  var m = nom==="montages";
+  $("t-montages").setAttribute("aria-selected", m);
+  $("t-rushs").setAttribute("aria-selected", !m);
+  $("vue-montages").hidden = !m;
+  $("vue-rushs").hidden = m;
+}
+$("t-montages").addEventListener("click", function(){ onglet("montages"); });
+$("t-rushs").addEventListener("click", function(){ onglet("rushs"); });
+$("reload").addEventListener("click", charger);
 
-  var SAMPLES = [
-    { t: 2.35,  f: 141, text: "Les sous-titres sont trop gros et le fond gris fait basique." },
-    { t: 7.10,  f: 426, text: "Ici il faudrait un zoom quand je pointe du doigt." },
-    { t: 18.60, f: 1116, text: "La pastille d'abonnement arrive trop tard, la caler 1 s plus tôt." }
-  ];
-
-  function fps() {
-    var v = parseInt(fpsIn.value, 10);
-    return (v > 0 && v <= 240) ? v : 60;
-  }
-  function frameOf(t) { return Math.round(t * fps()); }
-  function pad(n, w) { n = String(n); while (n.length < w) n = "0" + n; return n; }
-  function tc(t) {
-    if (!isFinite(t) || t < 0) t = 0;
-    var m = Math.floor(t / 60), s = Math.floor(t % 60), ms = Math.round((t % 1) * 1000);
-    if (ms === 1000) { ms = 0; s += 1; }
-    return pad(m, 2) + ":" + pad(s, 2) + "." + pad(ms, 3);
-  }
-
-  function say(msg, bad) {
-    toast.textContent = msg;
-    toast.style.color = bad ? "var(--danger)" : "var(--live)";
-    clearTimeout(say._t);
-    say._t = setTimeout(function () { toast.textContent = ""; }, 2600);
-  }
-
-  // --- persistance locale (confort, par navigateur) -------------------------
-  function save() {
-    if (!storeKey) return;
-    try { localStorage.setItem(storeKey, JSON.stringify(notes)); } catch (e) {}
-  }
-  function restore() {
-    if (!storeKey) return;
-    try {
-      var raw = localStorage.getItem(storeKey);
-      if (raw) {
-        var parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) notes = parsed;
-      }
-    } catch (e) { notes = []; }
-  }
-
-  // --- chargement ----------------------------------------------------------
-  function load(file) {
-    if (!file) return;
-    if (url) URL.revokeObjectURL(url);
-    url = URL.createObjectURL(file);
-    vid.src = url;
-    vid.hidden = false;
-    drop.hidden = true;
-
-    vid.addEventListener("loadedmetadata", function onMeta() {
-      vid.removeEventListener("loadedmetadata", onMeta);
-      loaded = true;
-      storeKey = "reperes:" + file.name + ":" + Math.round(vid.duration * 1000);
-      notes = [];
-      restore();
-
-      var total = Math.round(vid.duration * fps());
-      metaEl.textContent = file.name + " · " + tc(vid.duration) + " · " +
-        total + " images · " + vid.videoWidth + "×" + vid.videoHeight;
-
-      seek.disabled = false;
-      seek.max = String(Math.max(1, total));
-      [noteEl, addBtn, playBtn, clearBtn,
-       document.getElementById("b-1s"), document.getElementById("b-1f"),
-       document.getElementById("b+1f"), document.getElementById("b+1s")]
-        .forEach(function (el) { el.disabled = false; });
-
-      render();
-      tick();
-      noteEl.focus();
-    }, { once: true });
-
-    vid.addEventListener("error", function () {
-      say("Impossible de lire ce fichier.", true);
-      drop.hidden = false;
-      vid.hidden = true;
-    }, { once: true });
-  }
-
-  document.getElementById("pick").addEventListener("click", function (e) {
-    e.stopPropagation(); fileIn.click();
+/* ---------- chargement ---------- */
+var serveurOk = false;
+function charger(){
+  fetch(BASE+"/api/media", {cache:"no-store"}).then(function(r){return r.json();})
+  .then(function(j){
+    serveurOk = true; data = j;
+    $("hors-ligne").hidden = true;
+    rendreMontages(); rendreRushs();
+  })
+  .catch(function(){
+    serveurOk = false;
+    data = { rushs: [], montages: [], dossiers: {} };
+    $("hors-ligne").hidden = false;
+    rendreMontages(); rendreRushs();
+    $("vide-montages").hidden = true;
+    $("n-montages").textContent = "—";
+    $("dossiers").textContent =
+      "Studio local injoignable : lance l'app sur ton Mac pour voir tes rushs ici.";
   });
-  drop.addEventListener("click", function () { fileIn.click(); });
-  drop.addEventListener("keydown", function (e) {
-    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fileIn.click(); }
-  });
-  fileIn.addEventListener("change", function () { load(fileIn.files && fileIn.files[0]); });
+}
 
-  ["dragenter", "dragover"].forEach(function (ev) {
-    document.addEventListener(ev, function (e) {
-      e.preventDefault(); if (!loaded) drop.classList.add("over");
-    });
-  });
-  ["dragleave", "drop"].forEach(function (ev) {
-    document.addEventListener(ev, function (e) {
-      e.preventDefault(); drop.classList.remove("over");
-    });
-  });
-  document.addEventListener("drop", function (e) {
-    var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
-    if (f) load(f);
-  });
+/* repli : une vidéo choisie à la main, lue depuis le navigateur */
+function fichierLocal(f){
+  if(!f) return;
+  ouvrir({ name:f.name, projet:"fichier local", local:true, url:URL.createObjectURL(f) });
+}
+$("pick").addEventListener("click", function(e){ e.stopPropagation(); $("file").click(); });
+$("drop").addEventListener("click", function(){ $("file").click(); });
+$("drop").addEventListener("keydown", function(e){
+  if(e.key==="Enter"||e.key===" "){ e.preventDefault(); $("file").click(); }
+});
+$("file").addEventListener("change", function(){ fichierLocal(this.files && this.files[0]); });
+["dragenter","dragover"].forEach(function(ev){
+  document.addEventListener(ev, function(e){ e.preventDefault(); });
+});
+document.addEventListener("drop", function(e){
+  e.preventDefault();
+  var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+  if(f) fichierLocal(f);
+});
 
-  // --- transport -----------------------------------------------------------
-  function seekTo(t) {
-    if (!loaded) return;
-    vid.currentTime = Math.min(Math.max(0, t), Math.max(0, vid.duration - 1e-4));
+function rendreMontages(){
+  var box=$("liste-montages"); box.textContent="";
+  $("n-montages").textContent = data.montages.length;
+  $("vide-montages").hidden = data.montages.length>0;
+  data.montages.forEach(function(v){
+    var b=document.createElement("button");
+    b.type="button"; b.className="card";
+    if(courant && courant.url===v.url) b.setAttribute("aria-current","true");
+    var h=document.createElement("h3"); h.textContent=v.name;
+    var l=document.createElement("p"); l.className="line";
+    l.textContent=v.projet+" · "+v.size+" · "+v.quand;
+    b.appendChild(h); b.appendChild(l);
+    b.addEventListener("click", function(){ ouvrir(v); });
+    box.appendChild(b);
+  });
+}
+
+function rendreRushs(){
+  var box=$("liste-rushs"); box.textContent="";
+  $("n-rushs").textContent = data.rushs.length;
+  $("vide-rushs").hidden = data.rushs.length>0;
+  var d=data.dossiers||{};
+  $("dossiers").textContent = "Lus dans "+(d.cam||"?")+" et "+(d.ecran||"?");
+  data.rushs.forEach(function(r){
+    var b=document.createElement("button");
+    b.type="button"; b.className="card";
+    var h=document.createElement("h3"); h.textContent=r.libelle;
+    var l=document.createElement("p"); l.className="line"; l.textContent=r.stamp;
+    var c=document.createElement("span");
+    c.className="chip "+(r.complet?"ok":"part");
+    c.textContent = r.complet ? "caméra + écran" : (r.cam ? "caméra seule" : "écran seul");
+    b.appendChild(h); b.appendChild(l); b.appendChild(c);
+    b.addEventListener("click", function(){ apercu(r); });
+    box.appendChild(b);
+  });
+}
+
+/* ---------- aperçu d'un rush ---------- */
+var rushCourant=null;
+function apercu(r){
+  rushCourant=r;
+  $("apercu").hidden=false;
+  $("apercu-titre").textContent="Rush du "+r.libelle;
+  $("apercu-sous").textContent = r.complet
+    ? "Les deux pistes sont là." : "Attention : une seule piste trouvée.";
+  $("pv-cam").src = r.cam ? BASE + r.cam.url : "";
+  $("pv-ecr").src = r.ecran ? BASE + r.ecran.url : "";
+  $("phrase").hidden=true;
+  $("apercu").scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+$("demander").addEventListener("click", function(){
+  if(!rushCourant) return;
+  fetch(BASE+"/api/demande",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      stamp:rushCourant.stamp,
+      cam:rushCourant.cam?rushCourant.cam.name:null,
+      ecran:rushCourant.ecran?rushCourant.ecran.name:null,
+      consigne:$("consigne").value.trim()
+    })})
+  .then(function(r){return r.json();})
+  .then(function(j){
+    say($("toast2"), j.message||"Enregistré.");
+    $("phrase-txt").textContent="monte la demande";
+    $("phrase").hidden=false;
+  })
+  .catch(function(){ say($("toast2"),"Échec de l'enregistrement.",true); });
+});
+
+/* ---------- atelier de montage ---------- */
+var vid=$("vid");
+function ouvrir(v){
+  courant=v;
+  $("atelier").hidden=false;
+  vid.src = v.local ? v.url : BASE + v.url;
+  restore();
+  vid.addEventListener("loadedmetadata", function onm(){
+    vid.removeEventListener("loadedmetadata", onm);
+    var total=Math.round(vid.duration*fps());
+    $("seek").max=String(Math.max(1,total));
+    $("meta").textContent = v.name+" · "+tc(vid.duration)+" · "+total+" images · "
+      + vid.videoWidth+"×"+vid.videoHeight;
+    rendreNotes();
+  });
+  rendreMontages();
+  $("atelier").scrollIntoView({behavior:"smooth", block:"nearest"});
+  $("note").focus();
+}
+
+function seekTo(t){
+  if(!courant||!isFinite(vid.duration)) return;
+  vid.currentTime=Math.min(Math.max(0,t), Math.max(0,vid.duration-1e-4));
+}
+function step(n){ seekTo((frameOf(vid.currentTime)+n)/fps()+1e-4); }
+$("m1s").addEventListener("click",function(){seekTo(vid.currentTime-1);});
+$("p1s").addEventListener("click",function(){seekTo(vid.currentTime+1);});
+$("m1f").addEventListener("click",function(){step(-1);});
+$("p1f").addEventListener("click",function(){step(1);});
+$("play").addEventListener("click", toggle);
+function toggle(){ if(!courant) return; if(vid.paused){vid.play().catch(function(){});} else {vid.pause();} }
+vid.addEventListener("play", function(){ $("play").textContent="❚❚"; });
+vid.addEventListener("pause", function(){ $("play").textContent="▶"; });
+$("seek").addEventListener("input", function(){
+  if(!vid.paused) vid.pause();
+  seekTo(parseInt($("seek").value,10)/fps());
+});
+(function tick(){
+  if(courant && isFinite(vid.currentTime)){
+    $("tc").textContent=tc(vid.currentTime);
+    $("fr").textContent="f"+frameOf(vid.currentTime);
+    if(document.activeElement!==$("seek")) $("seek").value=String(frameOf(vid.currentTime));
   }
-  function stepFrames(n) { seekTo((frameOf(vid.currentTime) + n) / fps() + 1e-4); }
+  requestAnimationFrame(tick);
+})();
+$("fps").addEventListener("change", function(){
+  if(!courant||!isFinite(vid.duration)) return;
+  var total=Math.round(vid.duration*fps());
+  $("seek").max=String(Math.max(1,total));
+  $("meta").textContent=$("meta").textContent.replace(/· \d+ images/, "· "+total+" images");
+});
 
-  document.getElementById("b-1s").addEventListener("click", function () { seekTo(vid.currentTime - 1); });
-  document.getElementById("b+1s").addEventListener("click", function () { seekTo(vid.currentTime + 1); });
-  document.getElementById("b-1f").addEventListener("click", function () { stepFrames(-1); });
-  document.getElementById("b+1f").addEventListener("click", function () { stepFrames(1); });
-  playBtn.addEventListener("click", togglePlay);
+/* ---------- repères ---------- */
+function ajouter(){
+  if(!courant) return;
+  var txt=$("note").value.trim();
+  if(!txt){ $("note").focus(); return; }
+  notes.push({t:vid.currentTime, f:frameOf(vid.currentTime), text:txt});
+  notes.sort(function(a,b){return a.t-b.t;});
+  $("note").value=""; save(); rendreNotes(); $("note").focus();
+}
+$("addbtn").addEventListener("click", ajouter);
+$("note").addEventListener("keydown", function(e){
+  if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); ajouter(); }
+});
+$("vider").addEventListener("click", function(){
+  if(!notes.length) return;
+  notes=[]; save(); rendreNotes(); say($("toast"),"Repères effacés.");
+});
 
-  function togglePlay() {
-    if (!loaded) return;
-    if (vid.paused) { vid.play().catch(function () {}); } else { vid.pause(); }
+function rendreNotes(){
+  var L=$("list"); L.textContent="";
+  if(!notes.length){
+    var li=document.createElement("li"); li.className="note";
+    li.style.gridTemplateColumns="1fr";
+    var s=document.createElement("span"); s.className="body"; s.style.color="var(--dim)";
+    s.textContent="Place-toi sur l'image qui pose problème, écris ce qui ne va pas, Entrée.";
+    li.appendChild(s); L.appendChild(li);
   }
-  vid.addEventListener("play", function () { playBtn.textContent = "❚❚"; });
-  vid.addEventListener("pause", function () { playBtn.textContent = "▶"; });
-
-  seek.addEventListener("input", function () {
-    if (!loaded) return;
-    if (!vid.paused) vid.pause();
-    seekTo(parseInt(seek.value, 10) / fps());
+  notes.forEach(function(n,i){
+    var li=document.createElement("li"); li.className="note";
+    var st=document.createElement("button");
+    st.type="button"; st.className="stamp"; st.textContent=tc(n.t)+" · f"+n.f;
+    st.title="Revenir à cette image";
+    st.addEventListener("click", function(){ vid.pause(); seekTo(n.t); });
+    var bd=document.createElement("span"); bd.className="body"; bd.textContent=n.text;
+    var kl=document.createElement("button");
+    kl.type="button"; kl.className="kill"; kl.textContent="×";
+    kl.setAttribute("aria-label","Supprimer ce repère");
+    kl.addEventListener("click", function(){ notes.splice(i,1); save(); rendreNotes(); });
+    li.appendChild(st); li.appendChild(bd); li.appendChild(kl);
+    L.appendChild(li);
   });
-
-  function tick() {
-    if (loaded) {
-      var t = vid.currentTime;
-      tcEl.textContent = tc(t);
-      frEl.textContent = "f" + frameOf(t);
-      if (document.activeElement !== seek) seek.value = String(frameOf(t));
-    }
-    requestAnimationFrame(tick);
-  }
-
-  fpsIn.addEventListener("change", function () {
-    if (!loaded) return;
-    var total = Math.round(vid.duration * fps());
-    seek.max = String(Math.max(1, total));
-    metaEl.textContent = metaEl.textContent.replace(/· \d+ images/, "· " + total + " images");
+  $("count").textContent=notes.length;
+  $("copier").disabled=$("vider").disabled=!notes.length;
+  $("envoyer").disabled = !notes.length || !serveurOk;
+  $("envoyer").title = serveurOk ? "Écrit tes retours dans le projet"
+    : "Disponible seulement avec le studio local";
+  rendrePins();
+}
+function rendrePins(){
+  var P=$("pins"); P.textContent="";
+  if(!courant||!isFinite(vid.duration)||!vid.duration) return;
+  notes.forEach(function(n){
+    var p=document.createElement("button");
+    p.type="button"; p.className="pin";
+    p.style.left=(n.t/vid.duration*100)+"%";
+    p.title=tc(n.t)+" — "+n.text;
+    p.setAttribute("aria-label","Aller au repère "+tc(n.t));
+    p.addEventListener("click", function(){ vid.pause(); seekTo(n.t); });
+    P.appendChild(p);
   });
+}
 
-  // --- repères -------------------------------------------------------------
-  function add() {
-    if (!loaded) return;
-    var txt = noteEl.value.trim();
-    if (!txt) { noteEl.focus(); return; }
-    notes.push({ t: vid.currentTime, f: frameOf(vid.currentTime), text: txt });
-    notes.sort(function (a, b) { return a.t - b.t; });
-    noteEl.value = "";
-    save(); render();
-    noteEl.focus();
+/* ---------- sortie ---------- */
+function enTexte(){
+  var l=["Retours sur "+courant.name+" ("+tc(vid.duration)+" · "+fps()+" img/s)",""];
+  notes.forEach(function(n){ l.push("["+tc(n.t)+" · frame "+n.f+"] "+n.text); });
+  return l.join("\n");
+}
+$("copier").addEventListener("click", function(){
+  var texte=enTexte();
+  function manuel(){
+    $("fallback").hidden=false; $("fallback").value=texte;
+    $("fallback").focus(); $("fallback").select();
+    say($("toast"),"Copie bloquée — sélectionne le texte ci-dessous.",true);
   }
-  addBtn.addEventListener("click", add);
-  noteEl.addEventListener("keydown", function (e) {
-    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); add(); }
-  });
-
-  clearBtn.addEventListener("click", function () {
-    if (!notes.length) return;
-    notes = []; save(); render(); say("Repères effacés.");
-  });
-
-  function render() {
-    var showing = loaded ? notes : SAMPLES;
-    var isSample = !loaded;
-
-    listEl.textContent = "";
-    if (loaded && !notes.length) {
-      var empty = document.createElement("li");
-      empty.className = "note";
-      empty.style.gridTemplateColumns = "1fr";
-      empty.innerHTML = '<span class="body" style="color:var(--text-dim)">' +
-        'Place-toi sur l\'image qui pose problème, écris ce qui ne va pas, Entrée.</span>';
-      listEl.appendChild(empty);
-    }
-
-    showing.forEach(function (n, i) {
-      var li = document.createElement("li");
-      li.className = "note" + (isSample ? " sample" : "");
-
-      var stamp = document.createElement("button");
-      stamp.type = "button";
-      stamp.className = "stamp";
-      stamp.textContent = tc(n.t) + " · f" + n.f;
-      if (!isSample) {
-        stamp.title = "Revenir à cette image";
-        stamp.addEventListener("click", function () { vid.pause(); seekTo(n.t); });
-      } else {
-        stamp.disabled = true;
-      }
-
-      var body = document.createElement("span");
-      body.className = "body";
-      body.textContent = n.text;
-      if (isSample && i === 0) {
-        var b = document.createElement("span");
-        b.className = "badge"; b.textContent = "exemple";
-        body.appendChild(b);
-      }
-
-      li.appendChild(stamp);
-      li.appendChild(body);
-
-      if (!isSample) {
-        var kill = document.createElement("button");
-        kill.type = "button"; kill.className = "kill";
-        kill.setAttribute("aria-label", "Supprimer ce repère");
-        kill.textContent = "×";
-        kill.addEventListener("click", function () {
-          notes.splice(i, 1); save(); render();
-        });
-        li.appendChild(kill);
-      } else {
-        li.appendChild(document.createElement("span"));
-      }
-      listEl.appendChild(li);
-    });
-
-    countEl.textContent = loaded ? String(notes.length) : "3 exemples";
-    copyBtn.disabled = jsonBtn.disabled = !(loaded && notes.length);
-    clearBtn.disabled = !(loaded && notes.length);
-    renderPins();
-  }
-
-  function renderPins() {
-    pins.textContent = "";
-    if (!loaded || !vid.duration) return;
-    notes.forEach(function (n) {
-      var p = document.createElement("button");
-      p.type = "button"; p.className = "pin";
-      p.style.left = (n.t / vid.duration * 100) + "%";
-      p.title = tc(n.t) + " — " + n.text;
-      p.setAttribute("aria-label", "Aller au repère " + tc(n.t));
-      p.addEventListener("click", function () { vid.pause(); seekTo(n.t); });
-      pins.appendChild(p);
-    });
-  }
-
-  // --- sortie --------------------------------------------------------------
-  function asText() {
-    var name = metaEl.textContent.split(" · ")[0];
-    var lines = ["Retours sur " + name + " (" + tc(vid.duration) + " · " + fps() + " img/s)", ""];
-    notes.forEach(function (n) {
-      lines.push("[" + tc(n.t) + " · frame " + n.f + "] " + n.text);
-    });
-    return lines.join("\n");
-  }
-  function asJson() {
-    return JSON.stringify({
-      fichier: metaEl.textContent.split(" · ")[0],
-      cadence: fps(),
-      duree: vid.duration,
-      reperes: notes.map(function (n) {
-        return { timecode: tc(n.t), seconde: Math.round(n.t * 1000) / 1000, frame: n.f, retour: n.text };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(texte).then(function(){
+      $("fallback").hidden=true;
+      say($("toast"), notes.length+" repère(s) copié(s).");
+    }, manuel);
+  } else { manuel(); }
+});
+$("envoyer").addEventListener("click", function(){
+  if(!courant||!notes.length) return;
+  fetch(BASE+"/api/retours",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      projet:courant.projet, fichier:courant.name, cadence:fps(), duree:vid.duration,
+      reperes:notes.map(function(n){
+        return {timecode:tc(n.t), seconde:Math.round(n.t*1000)/1000, frame:n.f, retour:n.text};
       })
-    }, null, 2);
-  }
+    })})
+  .then(function(r){return r.json();})
+  .then(function(j){ say($("toast"), j.message||"Envoyé."); })
+  .catch(function(){ say($("toast"),"Échec de l'envoi.",true); });
+});
 
-  function put(text, label) {
-    function manual() {
-      fallback.hidden = false;
-      fallback.value = text;
-      fallback.focus(); fallback.select();
-      say("Copie bloquée — sélectionne le texte ci-dessous.", true);
-    }
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function () {
-        fallback.hidden = true;
-        say(label + " copié" + (notes.length > 1 ? "s" : "") + ".");
-      }, manual);
-    } else { manual(); }
-  }
-  copyBtn.addEventListener("click", function () { put(asText(), notes.length + " repère"); });
-  jsonBtn.addEventListener("click", function () { put(asJson(), "JSON"); });
+/* ---------- clavier ---------- */
+document.addEventListener("keydown", function(e){
+  var typing=/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName);
+  if(!courant || $("vue-montages").hidden) return;
+  if(e.key===" " && !typing){ e.preventDefault(); toggle(); }
+  else if(e.key==="ArrowLeft" && !typing){ e.preventDefault(); e.shiftKey?seekTo(vid.currentTime-1):step(-1); }
+  else if(e.key==="ArrowRight" && !typing){ e.preventDefault(); e.shiftKey?seekTo(vid.currentTime+1):step(1); }
+});
 
-  // --- clavier -------------------------------------------------------------
-  document.addEventListener("keydown", function (e) {
-    var typing = /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName);
-    if (!loaded) return;
-    if (e.key === " " && !typing) { e.preventDefault(); togglePlay(); }
-    else if (e.key === "ArrowLeft" && !typing) {
-      e.preventDefault(); e.shiftKey ? seekTo(vid.currentTime - 1) : stepFrames(-1);
-    } else if (e.key === "ArrowRight" && !typing) {
-      e.preventDefault(); e.shiftKey ? seekTo(vid.currentTime + 1) : stepFrames(1);
-    }
-  });
-
-  render();
-  tick();
+if(LOCAL && "serviceWorker" in navigator){
+  navigator.serviceWorker.register("/sw.js").catch(function(){});
+}
+charger();
 })();
 </script>
-
 </body>
 </html>
