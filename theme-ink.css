@@ -187,3 +187,46 @@ h1, h2, h3, h4, h5, h6, .serif, .pricing-price, .stat-item .num, .hero-stat .val
 /* Halo radial encore rendu derrière la bande d'appel à l'action : décoration
    sans contenu, et sur l'encre ça fait « lueur ». */
 .cta-section { background-image: none !important; }
+
+/* Les titres de carte étaient des <h4> sous un <h2> : saut de niveau, et les
+   lecteurs d'écran s'en servent pour naviguer. Passés en <h3>, avec les mêmes
+   styles rejoués ici pour que rien ne bouge visuellement. */
+.process-step-new h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 10px;
+  letter-spacing: -0.01em;
+  line-height: 1.3;}
+.process-flip .tool-flip-front h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  margin: 0;}
+.footer-col h3 {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-bottom: 20px;}
+.step-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px;}
+.adv-card--orange h3 { color: var(--orange);}
+.adv-card--lime h3 { color: var(--lime-dim);}
+.adv-card--purple h3 { color: #7c3aed;}
+.adv-card h3 { font-size: 19px; font-weight: 700; margin-bottom: 10px;}
+.included-card h3 {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-bottom: 24px;}
+.value-card h3 { font-size: 20px; font-weight: 700; margin-bottom: 10px;}
+
+/* Micro-libellés hérités sous le plancher de 11 px : illisibles en capitales
+   traquées, et ce sont des libellés fonctionnels, pas des mentions légales. */
+.pricing-eyebrow, .pricing-option-eyebrow, .hero-stat .lbl,
+.mock-stat-label, .mock-back-title { font-size: 11px !important; }
