@@ -527,71 +527,228 @@ section { position: relative; }
 
 .gzone-h {
   font-family: 'Roboto', system-ui, sans-serif;
-  font-weight: 500; font-size: 1.0625rem; color: #202124;
+  font-weight: 500; font-size: 1.25rem; color: #202124;
   letter-spacing: 0; line-height: 1.4;
   margin: clamp(44px, 5vw, 64px) 0 20px;
   padding-top: 18px; border-top: 1px solid #DADCE0;
 }
 
-/* Les trois étapes : c'est une vraie séquence, donc elle est numérotée. */
+/* --- Les trois étapes : chacune porte une couleur Google, une petite
+       illustration qui s'anime à l'entrée, et des mots-clés en couleur. --- */
 .gsteps {
   list-style: none; margin: 0; padding: 0;
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(262px, 1fr));
   gap: 16px; counter-reset: gs;
 }
 .gsteps li {
-  counter-increment: gs;
+  counter-increment: gs; position: relative; overflow: hidden;
   background: #fff; border: 1px solid #DADCE0; border-radius: 8px;
-  padding: 22px 22px 24px;
+  padding: 0 22px 24px;
+  transition: box-shadow .25s ease, transform .25s ease;
 }
-.gsteps li::before {
+.gsteps li:hover { box-shadow: 0 1px 2px rgba(60,64,67,.3), 0 2px 6px 2px rgba(60,64,67,.12); }
+.gsteps li::after {           /* le liseré de couleur, en haut */
+  content: ''; position: absolute; inset: 0 0 auto 0; height: 3px;
+}
+.gs-blue::after   { background: #4285F4; }
+.gs-yellow::after { background: #FBBC04; }
+.gs-green::after  { background: #34A853; }
+
+.gsteps strong {
+  display: flex; align-items: baseline; gap: 10px;
+  font-size: 1rem; font-weight: 500; color: #202124; margin-bottom: 8px;
+}
+.gsteps strong::before {
   content: counter(gs);
-  display: grid; place-items: center;
-  width: 26px; height: 26px; border-radius: 50%;
-  background: #E8F0FE; color: #174EA6;
-  font-size: 13px; font-weight: 500;
-  margin-bottom: 14px;
+  flex: none; display: grid; place-items: center;
+  width: 22px; height: 22px; border-radius: 50%;
+  font-size: 12px; font-weight: 500;
 }
-.gsteps strong { display: block; font-size: 1rem; font-weight: 500; color: #202124; margin-bottom: 8px; }
-.gsteps p { font-size: 0.9rem; line-height: 1.62; color: #5F6368; }
+.gs-blue strong::before   { background: #E8F0FE; color: #174EA6; }
+.gs-yellow strong::before { background: #FEF7E0; color: #8A5300; }
+.gs-green strong::before  { background: #E6F4EA; color: #137333; }
 
-/* Les quatre raisons, dans les quatre couleurs de Google. La couleur est
-   portée par une barre, jamais par du texte : le jaune et le vert de Google
-   ne passent pas le seuil de contraste sur du blanc. */
-.gwhy {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(242px, 1fr));
-  gap: 16px;
-}
-.gcard {
-  background: #fff; border: 1px solid #DADCE0; border-radius: 8px;
-  padding: 20px 20px 22px; position: relative; overflow: hidden;
-}
-.gcard::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 3px; }
-.g-blue::before   { background: #4285F4; }
-.g-red::before    { background: #EA4335; }
-.g-yellow::before { background: #FBBC04; }
-.g-green::before  { background: #34A853; }
-.gcard-k { display: block; font-size: 1rem; font-weight: 500; color: #202124; margin-bottom: 9px; }
-.gcard p { font-size: 0.9rem; line-height: 1.62; color: #5F6368; }
+.gsteps p { font-size: .9rem; line-height: 1.62; color: #5F6368; }
+.gsteps b { font-weight: 500; }
+.gs-blue   b { color: #1A73E8; }
+.gs-yellow b { color: #8A5300; }
+.gs-green  b { color: #137333; }
 
-.gzone .gnote {
-  max-width: 92ch;
-  margin-top: 28px; padding: 18px 20px;
-  background: #E8F0FE; border-radius: 8px;
-  font-size: 0.9rem; line-height: 1.65; color: #174EA6;
+/* L'illustration de chaque étape */
+.gs-art {
+  display: block; position: relative; height: 92px;
+  margin: 0 -22px 18px; padding: 18px 22px 0;
+  background: #F8F9FA; border-bottom: 1px solid #E8EAED;
+  overflow: hidden;
 }
 
+/* 1 — les prestations, dont une retenue */
+.gs-chip {
+  display: inline-block; font-style: normal;
+  font-size: 11.5px; line-height: 1; color: #5F6368;
+  background: #fff; border: 1px solid #DADCE0; border-radius: 999px;
+  padding: 6px 10px; margin: 0 5px 6px 0;
+  transition: background .4s ease, color .4s ease, border-color .4s ease;
+}
+.is-in .gs-chip.is-on { background: #1A73E8; border-color: #1A73E8; color: #fff; }
+
+/* 2 — la page d'arrivée, avec son bouton d'appel */
+.gs-art-page { padding-top: 16px; }
+.gs-l {
+  display: block; height: 6px; border-radius: 3px; background: #DADCE0;
+  margin-bottom: 7px;
+}
+.gs-l.w70 { width: 70%; } .gs-l.w45 { width: 45%; } .gs-l.w60 { width: 60%; }
+.gs-cta {
+  display: inline-block; font-style: normal;
+  font-size: 11px; font-weight: 500; color: #fff;
+  background: #137333; border-radius: 4px; padding: 5px 12px; margin-bottom: 7px;
+}
+.is-in .gs-art-page .gs-cta { animation: gsPulse 2.4s ease-in-out 1.2s 2; }
+@keyframes gsPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(19,115,51,.45); }
+  40%      { box-shadow: 0 0 0 8px rgba(19,115,51,0); }
+}
+
+/* 3 — la zone d'intervention */
+.gs-art-zone { padding: 0; }
+.gs-pin, .gs-ring {
+  position: absolute; left: 50%; top: 52%; transform: translate(-50%,-50%);
+  border-radius: 50%;
+}
+.gs-pin { width: 14px; height: 14px; background: #34A853; }
+.gs-ring { width: 44px; height: 44px; border: 1.5px solid rgba(52,168,83,.45); }
+.gs-ring.r2 { width: 78px; height: 78px; border-color: rgba(52,168,83,.22); }
+.is-in .gs-ring   { animation: gsRing 3.2s ease-out 1.4s 2; }
+.is-in .gs-ring.r2{ animation: gsRing 3.2s ease-out 1.6s 2; }
+@keyframes gsRing {
+  0%   { transform: translate(-50%,-50%) scale(.6); opacity: 0; }
+  35%  { opacity: 1; }
+  100% { transform: translate(-50%,-50%) scale(1); opacity: 1; }
+}
+
+/* --- Les quatre faits, illustrés par des maquettes d'interface --- */
 .gfacts {
-  margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
-  gap: 16px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
+  gap: 16px; margin: 0;
 }
-.gfact { background: #fff; border: 1px solid #DADCE0; border-radius: 8px; padding: 20px; }
-.gfact dt { font-size: 0.9rem; font-weight: 500; color: #202124; margin-bottom: 7px; }
-.gfact dd { margin: 0; font-size: 0.9rem; line-height: 1.62; color: #5F6368; }
+.gfact {
+  background: #fff; border: 1px solid #DADCE0; border-radius: 8px;
+  padding: 0 20px 22px; overflow: hidden;
+}
+.gfact h4 {
+  font-family: 'Roboto', system-ui, sans-serif;
+  font-size: 1rem; font-weight: 500; color: #202124; margin: 0 0 8px;
+}
+.gfact p { font-size: .9rem; line-height: 1.62; color: #5F6368; margin: 0; }
+.gfact b { font-weight: 500; color: #202124; }
 
+.shot {
+  position: relative; height: 176px; overflow: hidden;
+  margin: 0 -20px 18px; padding: 14px;
+  background: #F1F3F4; border-bottom: 1px solid #E8EAED;
+  font-size: 11px; line-height: 1.35;
+}
+.s-line { display: block; height: 5px; border-radius: 3px; background: #DADCE0; margin-top: 5px; }
+.s-line.w85 { width: 85%; } .s-line.w75 { width: 75%; } .s-line.w70 { width: 70%; }
+.s-line.w60 { width: 60%; } .s-line.w55 { width: 55%; } .s-line.w50 { width: 50%; }
 
-@media (max-width: 860px) {
-  .gzone-head { grid-template-columns: 1fr; gap: 14px; }
+/* Où vous apparaissez */
+.s-pill {
+  display: flex; align-items: center; gap: 7px;
+  background: #fff; border: 1px solid #DADCE0; border-radius: 999px;
+  padding: 5px 10px; margin-bottom: 6px;
+}
+.s-mag {
+  width: 10px; height: 10px; flex: none; border-radius: 50%;
+  border: 1.5px solid #9AA0A6; position: relative;
+}
+.s-mag::after {
+  content: ''; position: absolute; right: -4px; bottom: -3px;
+  width: 5px; height: 1.5px; background: #9AA0A6; transform: rotate(45deg);
+}
+.s-q { color: #3C4043; font-size: 11px; }
+.s-ad {
+  background: #fff; border-radius: 6px; padding: 8px 9px 9px; margin-bottom: 4px;
+  box-shadow: 0 1px 2px rgba(60,64,67,.2);
+}
+.s-tag { display: block; font-weight: 700; color: #202124; font-size: 10px; }
+.s-url { display: block; color: #5F6368; font-size: 10px; margin-top: 2px; }
+.s-title { display: block; color: #1a0dab; font-size: 11.5px; margin-top: 2px; }
+.s-org { opacity: .45; padding: 4px 9px 0; }
+.s-url2 { display: block; color: #5F6368; font-size: 10px; }
+
+/* Ce qu'est un clic */
+.s-page { background: #fff; border-radius: 6px; padding: 11px 11px 13px; box-shadow: 0 1px 2px rgba(60,64,67,.2); }
+.s-h1 { display: block; font-size: 12.5px; font-weight: 500; color: #202124; }
+.s-btn {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 11px;
+  background: #137333; color: #fff; border-radius: 4px;
+  padding: 7px 12px; font-size: 11.5px; font-weight: 500;
+}
+.s-btn svg { width: 12px; height: 12px; }
+.s-cursor { position: absolute; width: 17px; height: 17px; left: 78px; top: 80px; }
+.s-ripple {
+  position: absolute; left: 70px; top: 73px;
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 2px solid #137333; opacity: 0;
+}
+.is-in .s-cursor { animation: shotTap 3.4s ease-in-out 1s infinite; }
+.is-in .s-ripple { animation: shotRip 3.4s ease-out 1s infinite; }
+@keyframes shotTap {
+  0%, 14%   { transform: translate(14px, 16px); }
+  26%, 38%  { transform: translate(0, 0); }
+  30%, 34%  { transform: translate(1px, 2px); }
+  52%, 100% { transform: translate(14px, 16px); }
+}
+@keyframes shotRip {
+  0%, 26%  { transform: scale(.35); opacity: 0; }
+  32%      { opacity: .85; }
+  48%, 100%{ transform: scale(1.5); opacity: 0; }
+}
+
+/* Ce que coûte un clic */
+.shot-cpc { display: grid; align-content: center; gap: 13px; padding: 14px 16px; }
+.s-row { display: grid; grid-template-columns: 1fr; gap: 5px; }
+.s-lab { color: #5F6368; font-size: 10.5px; }
+.s-bar { display: block; height: 8px; border-radius: 4px; background: #E3E6E8; overflow: hidden; }
+.s-bar i {
+  display: block; height: 100%; width: 100%; border-radius: 4px;
+  transform: scaleX(0); transform-origin: left center;
+  transition: transform 1s cubic-bezier(.2,.8,.3,1) .4s;
+}
+.is-in .s-bar i { transform: scaleX(var(--w, 0)); }
+.s-bar.b1 i { background: #34A853; }
+.s-bar.b2 i { background: #FBBC04; }
+.s-bar.b3 i { background: #9AA0A6; }
+.s-val { color: #202124; font-size: 11.5px; font-weight: 500; }
+.shot-cpc .s-row { position: relative; }
+.shot-cpc .s-val { position: absolute; right: 0; top: 0; }
+
+/* Qui tient le compte */
+.shot-acc { display: grid; align-content: center; gap: 12px; }
+.s-bar-top {
+  display: flex; align-items: center; gap: 10px;
+  background: #fff; border: 1px solid #DADCE0; border-radius: 8px; padding: 10px 12px;
+}
+.s-gmark { flex: none; width: 18px; height: 18px; }
+.s-gmark svg { width: 100%; height: 100%; display: block; }
+.s-acc { flex: 1; min-width: 0; }
+.s-acc b { display: block; font-size: 11px; font-weight: 500; color: #202124; letter-spacing: .02em; }
+.s-acc i { display: block; font-style: normal; font-size: 10.5px; color: #5F6368; margin-top: 1px; }
+.s-chev {
+  flex: none; width: 7px; height: 7px;
+  border-right: 1.5px solid #5F6368; border-bottom: 1.5px solid #5F6368;
+  transform: rotate(45deg) translate(-2px,-2px);
+}
+.s-you {
+  justify-self: start; font-size: 10.5px; color: #137333;
+  background: #E6F4EA; border-radius: 999px; padding: 5px 11px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-in .gs-cta, .is-in .gs-ring, .is-in .s-cursor, .is-in .s-ripple { animation: none; }
+  .s-ripple { opacity: 0; }
 }
 
 /* ---------- La frise tarifaire ------------------------------------------- */
