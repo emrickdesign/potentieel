@@ -20,6 +20,24 @@
         ],
         "createdAt": "2026-10-13T13:14:52.777Z",
         "reason": "Claude: .hero herite clippe volontairement la photo de fond; aucun calque flottant n'a besoin d'en sortir."
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-10-13T13:34:45.596Z",
+        "reason": "Claude: grilles a filets (.flow, .faq) - le conteneur ne porte que la bordure et des gouttieres de 1px, le retrait est sur les enfants (mesure : texte a 25px du bord pour .flow, 22px pour .faq)."
+      },
+      {
+        "rule": "tight-leading",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-10-13T13:34:45.990Z",
+        "reason": "Claude: ne concerne que le titrage d'affichage (h1 1.06, h2 1.08, montants 1.08). Le skill frontend-design impose 1.05-1.15 a ces tailles ; le texte courant est a 1.6."
       }
     ]
   }

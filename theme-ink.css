@@ -152,3 +152,35 @@ input:focus, textarea:focus, select:focus {
 }
 select option { background: #11222C; color: var(--white); }
 label { color: var(--white); }
+
+/* ---------------------------------------------------------------------
+   Conséquences du passage à l'encre, relevées à l'audit
+   --------------------------------------------------------------------- */
+
+/* --gray sur --bg-card-2 tombait à 4,16:1. Relevé à 4,55:1, teinte conservée. */
+:root { --gray: #87A0AC; }
+
+/* Ombres et halos orange hérités : invisibles sur fond clair, ils deviennent
+   un halo coloré sur l'encre. Neutralisés en élévation sobre. */
+.btn-primary, .btn-lime, .process-badge, .badge-card,
+.pricing-card.featured, .tilt-card, .cta-banner, .wa-screenshot-card {
+  box-shadow: none !important;
+}
+.hero::before, .page-header::before,
+.bg-glow-soft::before, .bg-glow-soft::after { background: none !important; }
+
+/* Barre d'onglets mobile : 9,5 px sur des cibles tactiles */
+.mobile-tab span { font-size: 11.5px !important; }
+
+/* Ces pages chargeaient Archivo sans jamais s'en servir : elles rendaient en
+   Inter pendant que l'accueil rendait en Archivo. Une seule police sur le
+   site. Le serif d'accentuation des pages héritées est conservé tel quel. */
+body, .navbar, .footer, button, input, textarea, select,
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+.serif { font-family: 'Playfair Display', Georgia, serif; }
+
+/* Halo radial encore rendu derrière la bande d'appel à l'action : décoration
+   sans contenu, et sur l'encre ça fait « lueur ». */
+.cta-section { background-image: none !important; }
