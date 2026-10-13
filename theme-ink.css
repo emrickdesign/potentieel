@@ -230,3 +230,10 @@ h1, h2, h3, h4, h5, h6, .serif, .pricing-price, .stat-item .num, .hero-stat .val
    traquées, et ce sont des libellés fonctionnels, pas des mentions légales. */
 .pricing-eyebrow, .pricing-option-eyebrow, .hero-stat .lbl,
 .mock-stat-label, .mock-back-title { font-size: 11px !important; }
+
+/* Les rangées de boutons des pages héritées étaient à 14 px quand l'accueil
+   est passé à 28 px : même écart partout, sur ordinateur. */
+.hero-ctas, .cta-section .container > div { gap: 28px; }
+@media (max-width: 860px) {
+  .hero-ctas, .cta-section .container > div { gap: 12px; }
+}
