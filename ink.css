@@ -178,7 +178,7 @@ section { position: relative; }
 .btn-ghost { border-color: var(--rule); color: var(--chalk); }
 .btn-ghost:hover { border-color: var(--dim); background: rgba(159,179,190,.06); }
 
-.btn-row { display: flex; flex-wrap: wrap; gap: 12px; }
+.btn-row { display: flex; flex-wrap: wrap; gap: 18px; }
 
 /* ---------- Barre de navigation ------------------------------------------ */
 
@@ -623,6 +623,68 @@ section { position: relative; }
   0%   { transform: translate(-50%,-50%) scale(.6); opacity: 0; }
   35%  { opacity: 1; }
   100% { transform: translate(-50%,-50%) scale(1); opacity: 1; }
+}
+
+/* --- Pourquoi ça amène des appels ------------------------------------------
+   Traitement volontairement différent des deux autres grilles de la zone :
+   ici pas de carte ni de cadre, mais une pastille de couleur par raison, posée
+   sur la surface. Les quatre raisons se lisent comme une rangée, pas comme un
+   tableau de plus. --------------------------------------------------------- */
+.gwhy {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 28px 30px;
+}
+.gcard { position: relative; padding-top: 4px; }
+
+.gcard-ico {
+  display: grid; place-items: center;
+  width: 42px; height: 42px; border-radius: 50%;
+  margin-bottom: 14px;
+  transform: scale(.72); opacity: 0;
+  transition: transform .45s cubic-bezier(.34,1.5,.5,1), opacity .3s ease;
+}
+.gcard-ico svg { width: 20px; height: 20px; }
+.is-in .gcard-ico { transform: scale(1); opacity: 1; }
+.is-in .g-blue   .gcard-ico { transition-delay: .05s; }
+.is-in .g-red    .gcard-ico { transition-delay: .14s; }
+.is-in .g-yellow .gcard-ico { transition-delay: .23s; }
+.is-in .g-green  .gcard-ico { transition-delay: .32s; }
+
+.g-blue   .gcard-ico { background: #E8F0FE; color: #1A73E8; }
+.g-red    .gcard-ico { background: #FCE8E6; color: #C5221F; }
+.g-yellow .gcard-ico { background: #FEF7E0; color: #8A5300; }
+.g-green  .gcard-ico { background: #E6F4EA; color: #137333; }
+
+.gcard-k {
+  display: block; font-size: 1.0625rem; font-weight: 500;
+  color: #202124; margin-bottom: 9px; letter-spacing: -.004em;
+}
+.gcard p { font-size: .9rem; line-height: 1.64; color: #5F6368; max-width: 34ch; }
+.gcard b { font-weight: 500; }
+.g-blue   b { color: #176EE1; }
+.g-red    b { color: #C5221F; }
+.g-yellow b { color: #8A5300; }
+.g-green  b { color: #137333; }
+
+/* le filet de couleur sous la pastille, qui relie la rangée */
+.gcard::before {
+  content: ''; position: absolute; left: 0; top: 0;
+  width: 42px; height: 2px; border-radius: 2px;
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .5s cubic-bezier(.2,.8,.3,1);
+}
+.g-blue::before   { background: #4285F4; }
+.g-red::before    { background: #EA4335; }
+.g-yellow::before { background: #FBBC04; }
+.g-green::before  { background: #34A853; }
+.is-in .gcard::before { transform: scaleX(1); }
+.is-in .g-red::before    { transition-delay: .09s; }
+.is-in .g-yellow::before { transition-delay: .18s; }
+.is-in .g-green::before  { transition-delay: .27s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .gcard-ico { transform: none; opacity: 1; }
+  .gcard::before { transform: scaleX(1); }
 }
 
 /* --- Les quatre faits, illustrés par des maquettes d'interface --- */

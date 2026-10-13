@@ -304,38 +304,54 @@
     <h3 class="gzone-h">Pourquoi ça amène des appels</h3>
     <div class="gwhy">
       <article class="gcard g-blue">
+        <span class="gcard-ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.2"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/></svg>
+        </span>
         <span class="gcard-k">L'intention</span>
         <p>
-          Personne ne tape « ravalement de façade » par hasard. La personne a
-          déjà le projet en tête. Vous n'avez pas à la convaincre qu'elle en a
-          besoin, seulement qu'elle doit vous appeler vous.
+          Personne ne tape « ravalement de façade » par hasard. <b>La personne a
+          déjà le projet en tête.</b> Vous n'avez pas à la convaincre qu'elle en
+          a besoin, seulement qu'elle doit vous appeler vous.
         </p>
       </article>
+
       <article class="gcard g-red">
+        <span class="gcard-ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="15" rx="2.5"/><circle cx="8.5" cy="10" r="1.8"/><path d="m4 17 5-4.5 4 3.5 3-2.5 4 3.5"/></svg>
+        </span>
         <span class="gcard-k">La preuve</span>
         <p>
-          La page montre vos chantiers en photo, chez des gens du coin. C'est ce
-          qu'une plateforme de mise en relation ne peut pas montrer, parce
-          qu'elle n'a rien fait de ses mains.
+          <b>Vos chantiers en photo</b>, chez des gens du coin. C'est ce qu'une
+          plateforme de mise en relation ne peut pas montrer, parce qu'elle n'a
+          rien fait de ses mains.
         </p>
       </article>
+
       <article class="gcard g-yellow">
+        <span class="gcard-ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 4.5 5.8v5.6c0 4.6 3.1 8.5 7.5 10.1 4.4-1.6 7.5-5.5 7.5-10.1V5.8z"/><path d="m8.8 11.8 2.3 2.3 4.1-4.6"/></svg>
+        </span>
         <span class="gcard-k">La réassurance</span>
         <p>
           Votre zone, vos avis, vos garanties, votre nom. La personne voit
-          qu'elle a affaire à une entreprise installée près de chez elle, pas à
-          un intermédiaire qui va revendre sa demande.
+          qu'elle a affaire à <b>une entreprise installée près de chez elle</b>,
+          pas à un intermédiaire qui va revendre sa demande.
         </p>
       </article>
+
       <article class="gcard g-green">
+        <span class="gcard-ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 3h3l1.5 4.2-2.1 1.6a12.5 12.5 0 0 0 5.8 5.8l1.6-2.1L20.5 14v3a2.2 2.2 0 0 1-2.4 2.2A17 17 0 0 1 3.8 5.4 2.2 2.2 0 0 1 6 3z"/></svg>
+        </span>
         <span class="gcard-k">Le contact direct</span>
         <p>
           Votre numéro en grand, un bouton pour appeler, un formulaire court.
-          L'appel arrive chez vous, tout de suite, et il n'est revendu à
+          <b>L'appel arrive chez vous</b>, tout de suite, et il n'est revendu à
           personne d'autre.
         </p>
       </article>
     </div>
+
 
     <h3 class="gzone-h">Ce qu'il faut savoir sur Google Ads</h3>
     <div class="gfacts">
@@ -535,8 +551,8 @@
           gestionnaire que vous ne verrez jamais.
         </p>
         <div class="team-who">
-          <div><b>Emrick Perilliat</b><span>Co-fondateur</span></div>
-          <div><b>Éloïse</b><span>Co-fondatrice</span></div>
+          <div><b>Emrick Perilliat</b><span>Gestion des campagnes</span></div>
+          <div><b>Éloïse</b><span>Gestion des clients</span></div>
         </div>
       </div>
       <img class="team-photo" src="assets/team-ink-wide.png" alt="Emrick Perilliat et Éloïse, fondateurs de Potentieel" width="936" height="768" decoding="async">
@@ -703,7 +719,7 @@
    l'écran. Comme pour le logo, rien n'est masqué au départ : l'animation
    s'ajoute, elle ne conditionne pas l'affichage. */
 (function () {
-  var groupes = document.querySelectorAll('.gsteps, .gfacts');
+  var groupes = document.querySelectorAll('.gsteps, .gwhy, .gfacts');
   if (!groupes.length) return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
       !('IntersectionObserver' in window)) {
