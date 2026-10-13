@@ -175,11 +175,14 @@ label { color: var(--white); }
 /* Ces pages chargeaient Archivo sans jamais s'en servir : elles rendaient en
    Inter pendant que l'accueil rendait en Archivo. Une seule police sur le
    site. Le serif d'accentuation des pages héritées est conservé tel quel. */
-body, .navbar, .footer, button, input, textarea, select,
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+body, .navbar, .footer, button, input, textarea, select {
+  font-family: 'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
-.serif { font-family: 'Playfair Display', Georgia, serif; }
+h1, h2, h3, h4, h5, h6, .serif, .pricing-price, .stat-item .num, .hero-stat .val {
+  font-family: 'Spectral', 'Iowan Old Style', Georgia, serif;
+}
+/* Playfair portait les accents en italique : Spectral reprend le role. */
+.serif { font-style: italic; font-weight: 400; }
 
 /* Halo radial encore rendu derrière la bande d'appel à l'action : décoration
    sans contenu, et sur l'encre ça fait « lueur ». */

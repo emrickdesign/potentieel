@@ -38,6 +38,15 @@
         ],
         "createdAt": "2026-10-13T13:34:45.990Z",
         "reason": "Claude: ne concerne que le titrage d'affichage (h1 1.06, h2 1.08, montants 1.08). Le skill frontend-design impose 1.05-1.15 a ces tailles ; le texte courant est a 1.6."
+      },
+      {
+        "rule": "overused-font",
+        "value": "arial",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-10-13T14:30:08.138Z",
+        "reason": "Claude: Arial n'est utilise que dans la maquette de resultat Google (.serp), ou c'est la police reelle de Google - c'est ce qui rend la maquette credible. Les polices de la page sont Spectral et Libre Franklin."
       }
     ]
   }

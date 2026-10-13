@@ -5,8 +5,9 @@
 
    Palette : encre #0D1B24 · ardoise #162C39 · craie #E9EFF2 · estompe #9FB3BE
              laiton #D2A54C  (contrastes AAA vérifiés)
-   Type    : Archivo variable — chasse Expanded pour le titrage, normale pour
-             le texte. Titres en graisse légère, chiffres d'argent en gras.
+   Type    : Spectral (serif) pour le titrage et les montants, Libre Franklin
+             (grotesque) pour le texte et l'interface. Titres en graisse
+             normale, chiffres d'argent en gras — c'est l'argent qui crie.
    ========================================================================= */
 
 :root {
@@ -38,6 +39,9 @@
   --fs-2xl:  clamp(1.8906rem, 1.5993rem + 1.2431vw, 2.5938rem);
   --fs-3xl:  clamp(2.1819rem, 1.7314rem + 1.9222vw, 3.2422rem);
 
+  --serif: 'Spectral', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+  --sans:  'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
   --wrap: 1180px;
   --col:  62ch;
 }
@@ -51,7 +55,7 @@ body {
   margin: 0;
   background: var(--ink);
   color: var(--chalk);
-  font-family: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-family: var(--sans);
   font-size: var(--fs-base);
   line-height: 1.6;
   font-variant-numeric: tabular-nums;
@@ -83,29 +87,29 @@ a { color: inherit; }
 /* ---------- Titrage ------------------------------------------------------ */
 
 h1, h2, h3 {
-  font-family: 'Archivo', system-ui, sans-serif;
+  font-family: var(--serif);
   margin: 0;
   text-wrap: balance;
 }
 
 h1 {
-  font-variation-settings: 'wdth' 112, 'wght' 300;
-  font-size: clamp(2.3rem, 1.62rem + 2.7vw, 3.6rem);
-  line-height: 1.06;
+  font-weight: 400;
+  font-size: clamp(2.2rem, 1.62rem + 2.4vw, 3.3rem);
+  line-height: 1.12;
   letter-spacing: -0.028em;
 }
 
 h2 {
-  font-variation-settings: 'wdth' 110, 'wght' 400;
+  font-weight: 400;
   font-size: var(--fs-2xl);
-  line-height: 1.08;
+  line-height: 1.16;
   letter-spacing: -0.022em;
 }
 
 h3 {
-  font-variation-settings: 'wdth' 100, 'wght' 600;
+  font-weight: 600;
   font-size: var(--fs-md);
-  line-height: 1.25;
+  line-height: 1.3;
   letter-spacing: -0.008em;
 }
 
@@ -122,7 +126,8 @@ strong { font-weight: 600; color: var(--chalk); }
 
 /* Les chiffres d'argent : la seule graisse lourde de la page. */
 .sum {
-  font-variation-settings: 'wdth' 100, 'wght' 800;
+  font-family: var(--serif);
+  font-weight: 700;
   letter-spacing: -0.03em;
   color: var(--brass);
   font-size: var(--fs-xl);
@@ -130,9 +135,10 @@ strong { font-weight: 600; color: var(--chalk); }
   display: block;
 }
 .sum-unit {
+  font-family: var(--sans);
   display: block; margin-top: 8px;
   font-size: 13.5px; line-height: 1.45;
-  font-variation-settings: 'wght' 500;
+  font-weight: 500;
   letter-spacing: 0.005em; color: var(--dim);
 }
 
@@ -158,7 +164,7 @@ section { position: relative; }
 .btn {
   display: inline-flex; align-items: center; gap: 10px;
   font: inherit; font-size: var(--fs-sm);
-  font-variation-settings: 'wght' 600;
+  font-weight: 600;
   letter-spacing: 0.005em;
   padding: 15px 26px;
   border-radius: 3px;
@@ -190,7 +196,7 @@ section { position: relative; }
 .nav-logo {
   display: inline-flex; align-items: center; gap: 9px;
   text-decoration: none; color: var(--chalk);
-  font-variation-settings: 'wdth' 108, 'wght' 700;
+  font-weight: 700;
   font-size: 15px; letter-spacing: 0.1em;
   margin-right: auto;
 }
@@ -198,7 +204,7 @@ section { position: relative; }
 .nav-links { display: flex; align-items: center; gap: 28px; }
 .nav-links a {
   text-decoration: none; color: var(--dim);
-  font-size: var(--fs-sm); font-variation-settings: 'wght' 500;
+  font-size: var(--fs-sm); font-weight: 500;
   padding: 6px 0; position: relative;
   transition: color .16s ease;
 }
@@ -210,7 +216,7 @@ section { position: relative; }
 }
 .nav-cta {
   text-decoration: none; color: var(--chalk);
-  font-size: var(--fs-sm); font-variation-settings: 'wght' 600;
+  font-size: var(--fs-sm); font-weight: 600;
   border: 1px solid var(--rule); border-radius: 3px;
   padding: 9px 16px;
   transition: border-color .16s ease, background .16s ease;
@@ -219,22 +225,42 @@ section { position: relative; }
 
 /* ---------- Hero --------------------------------------------------------- */
 
-.hero { position: relative; overflow: hidden; padding: clamp(40px, 5vw, 72px) 0 clamp(60px, 7vw, 96px); }
+.hero { position: relative; overflow: hidden; padding: clamp(34px, 4vw, 56px) 0 clamp(44px, 5vw, 64px); }
 
 .hero-photo {
   position: absolute; top: 0; right: 0;
-  height: 100%; width: 50%;
-  object-fit: cover; object-position: 88% 16%;
+  height: 100%; width: 60%; top: auto; bottom: 0;
+  object-fit: contain; object-position: right bottom;
   z-index: 0; pointer-events: none;
   opacity: .92;
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,.26) 13%, rgba(0,0,0,.78) 34%, #000 55%);
-          mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,.26) 13%, rgba(0,0,0,.78) 34%, #000 55%);
 }
 
 .hero-in { position: relative; z-index: 1; max-width: 640px; }
 
-.hero h1 { margin-bottom: 18px; }
-.hero .lede { margin-bottom: 34px; max-width: 48ch; }
+.hero h1 { margin-bottom: 14px; max-width: 21ch; }
+
+/* La ligne qui nomme le système, juste sous le titre. */
+.hero-claim {
+  font-size: var(--fs-md); line-height: 1.45;
+  color: var(--chalk); max-width: 58ch;
+  margin-bottom: 24px;
+}
+
+/* La douleur et le souhait, côte à côte, en petits caractères : la colonne
+   de droite est volontairement plus claire que celle de gauche. */
+.states {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+  background: var(--rule-soft); border: 1px solid var(--rule-soft);
+  max-width: 620px; margin-bottom: 28px;
+}
+.state { background: var(--ink); padding: 17px 19px 19px; }
+.state-k {
+  display: block; font-size: var(--fs-xs); font-weight: 600;
+  color: var(--dim-2); margin-bottom: 9px;
+}
+.state p { font-size: var(--fs-sm); line-height: 1.62; color: var(--dim); max-width: none; }
+.state-after .state-k { color: var(--brass); }
+.state-after p { color: var(--chalk); }
 .hero .btn-row { margin-top: 28px; }
 
 .hero-note {
@@ -252,7 +278,7 @@ section { position: relative; }
   border-radius: 10px;
   max-width: 505px;
   padding: 15px 17px 17px;
-  font-family: 'Archivo', Arial, sans-serif;
+  font-family: Arial, 'Liberation Sans', sans-serif;
   box-shadow: 0 24px 60px -20px rgba(0,0,0,.6);
 }
 
@@ -284,7 +310,7 @@ section { position: relative; }
 .serp.is-done .serp-bar { margin-bottom: 18px; transition: margin-bottom .45s ease; }
 
 .serp-tag {
-  font-size: 12.5px; font-variation-settings: 'wght' 700;
+  font-size: 12.5px; font-weight: 700;
   color: #1f1f1f; margin-bottom: 6px;
 }
 .serp-site { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
@@ -292,13 +318,13 @@ section { position: relative; }
   width: 26px; height: 26px; border-radius: 50%; flex: none;
   background: var(--ink); color: var(--brass);
   display: grid; place-items: center;
-  font-size: 11px; font-variation-settings: 'wght' 700;
+  font-size: 11px; font-weight: 700;
 }
-.serp-site b { font-size: 13px; font-variation-settings: 'wght' 500; color: #202124; display: block; line-height: 1.3; }
+.serp-site b { font-size: 13px; font-weight: 500; color: #202124; display: block; line-height: 1.3; }
 .serp-site span { font-size: 12.5px; color: #4d5156; display: block; line-height: 1.3; }
 .serp-title {
   font-size: 19px; line-height: 1.3; color: #1a0dab;
-  font-variation-settings: 'wght' 400; margin: 4px 0 4px;
+  font-weight: 400; margin: 4px 0 4px;
 }
 .serp-desc { font-size: 13.5px; line-height: 1.58; color: #4d5156; margin-bottom: 10px; }
 .serp-links { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -307,10 +333,21 @@ section { position: relative; }
   border: 1px solid #dfe1e5; border-radius: 999px; padding: 5px 12px;
 }
 
+.serp-lead {
+  display: grid; grid-template-columns: minmax(0, 505px) minmax(0, 1fr);
+  gap: clamp(24px, 4vw, 52px); align-items: center;
+  margin-bottom: clamp(32px, 4vw, 52px);
+}
+
+.serp-side > p:first-child {
+  font-size: var(--fs-md); line-height: 1.5;
+  color: var(--chalk); max-width: 34ch; margin-bottom: 20px;
+}
+
 .serp-after {
-  margin-top: 14px; max-width: 46ch;
-  font-size: var(--fs-sm); line-height: 1.6; color: var(--dim);
-  border-left: 2px solid var(--brass); padding-left: 14px;
+  margin-top: 0; max-width: 46ch;
+  font-size: var(--fs-base); line-height: 1.68; color: var(--dim);
+  border-left: 2px solid var(--brass); padding-left: 18px; max-width: 42ch;
 }
 
 /* ---------- Le constat --------------------------------------------------- */
@@ -334,10 +371,10 @@ section { position: relative; }
 .band .flow-cell { background: var(--slate); }
 .flow-head {
   font-size: var(--fs-xs); color: var(--dim-2);
-  font-variation-settings: 'wght' 600;
+  font-weight: 600;
   margin-bottom: 14px;
 }
-.flow-cell strong { display: block; font-size: var(--fs-base); margin-bottom: 7px; font-variation-settings: 'wght' 600; }
+.flow-cell strong { display: block; font-size: var(--fs-base); margin-bottom: 7px; font-weight: 600; }
 .flow-cell p { font-size: var(--fs-sm); color: var(--dim); line-height: 1.62; }
 .flow-kw { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .flow-kw span {
@@ -358,13 +395,13 @@ section { position: relative; }
 .gmark { display: flex; align-items: center; gap: 18px; margin-bottom: 26px; }
 .gmark img { width: 46px; height: auto; }
 .gmark b {
-  font-size: var(--fs-lg); font-variation-settings: 'wdth' 100, 'wght' 500;
+  font-size: var(--fs-lg); font-weight: 500;
   letter-spacing: -0.015em; color: var(--chalk);
 }
 .gfacts { display: grid; gap: 1px; background: var(--rule-soft); border: 1px solid var(--rule-soft); }
 .gfact { background: var(--slate); padding: 20px 22px; display: flex; gap: 18px; align-items: baseline; }
 .gfact dt {
-  font-size: var(--fs-sm); color: var(--chalk); font-variation-settings: 'wght' 600;
+  font-size: var(--fs-sm); color: var(--chalk); font-weight: 600;
   flex: none; width: 150px;
 }
 .gfact dd { margin: 0; font-size: var(--fs-sm); color: var(--dim); line-height: 1.62; }
@@ -375,7 +412,7 @@ section { position: relative; }
 .fare-step { background: var(--ink); padding: 28px 26px 30px; display: flex; flex-direction: column; }
 .fare-when {
   font-size: var(--fs-xs); color: var(--dim-2);
-  font-variation-settings: 'wght' 600; margin-bottom: 18px;
+  font-weight: 600; margin-bottom: 18px;
 }
 .fare-step .sum { margin-bottom: 10px; }
 .fare-step p { font-size: var(--fs-sm); color: var(--dim); line-height: 1.64; }
@@ -386,7 +423,7 @@ section { position: relative; }
   padding: 24px 26px 26px;
   display: grid; grid-template-columns: 170px minmax(0,1fr); gap: 24px; align-items: start;
 }
-.fare-budget b { font-size: var(--fs-sm); font-variation-settings: 'wght' 600; }
+.fare-budget b { font-size: var(--fs-sm); font-weight: 600; }
 .fare-budget p { font-size: var(--fs-sm); color: var(--dim); line-height: 1.68; max-width: 70ch; }
 
 /* ---------- Pour qui / pas pour qui -------------------------------------- */
@@ -415,7 +452,7 @@ section { position: relative; }
 .team-photo { width: 100%; height: auto; opacity: .95; }
 .team-who { display: grid; gap: 1px; background: var(--rule-soft); border: 1px solid var(--rule-soft); margin-top: 28px; }
 .team-who > div { background: var(--ink); padding: 18px 22px; }
-.team-who b { display: block; font-size: var(--fs-base); font-variation-settings: 'wght' 600; }
+.team-who b { display: block; font-size: var(--fs-base); font-weight: 600; }
 .team-who span { font-size: var(--fs-sm); color: var(--dim); }
 
 /* ---------- FAQ ---------------------------------------------------------- */
@@ -425,7 +462,7 @@ section { position: relative; }
 .faq summary {
   cursor: pointer; list-style: none;
   padding: 21px 44px 21px 0; position: relative;
-  font-size: var(--fs-base); font-variation-settings: 'wght' 600;
+  font-size: var(--fs-base); font-weight: 600;
   color: var(--chalk);
 }
 .faq summary::-webkit-details-marker { display: none; }
@@ -446,7 +483,7 @@ section { position: relative; }
 .also-prices { display: grid; gap: 1px; background: var(--rule-soft); border: 1px solid var(--rule-soft); }
 .also-prices > div { background: var(--slate); padding: 22px 24px; }
 .also-prices .sum { font-size: var(--fs-lg); margin-bottom: 6px; }
-.also-prices b { display: block; font-size: var(--fs-sm); font-variation-settings: 'wght' 600; margin-bottom: 5px; }
+.also-prices b { display: block; font-size: var(--fs-sm); font-weight: 600; margin-bottom: 5px; }
 .also-prices p { font-size: var(--fs-sm); color: var(--dim); line-height: 1.62; }
 
 /* ---------- CTA ---------------------------------------------------------- */
@@ -459,7 +496,7 @@ section { position: relative; }
 
 .foot { border-top: 1px solid var(--rule-soft); padding: 56px 0 32px; background: var(--ink-deep); }
 .foot-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 40px; }
-.foot .foot-h { margin: 0 0 14px; font-size: var(--fs-xs); color: var(--dim-2); font-variation-settings: 'wght' 700; }
+.foot .foot-h { margin: 0 0 14px; font-size: var(--fs-xs); color: var(--dim-2); font-weight: 700; }
 .foot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
 .foot a { color: var(--dim); text-decoration: none; font-size: var(--fs-sm); }
 .foot a:hover { color: var(--chalk); }
@@ -483,8 +520,10 @@ section { position: relative; }
   .hero-photo { display: none; }
   .hero-in { max-width: 100%; }
   .hero .btn-row .btn { flex: 1 1 100%; justify-content: center; }
+  .states { grid-template-columns: 1fr; max-width: 100%; }
 
   .serp { max-width: 100%; }
+  .serp-lead { grid-template-columns: 1fr; }
 
   .flow-row { grid-template-columns: 1fr; }
   .fare { grid-template-columns: 1fr; }
@@ -506,7 +545,7 @@ section { position: relative; }
     display: grid; justify-items: center; gap: 3px;
     padding: 9px 4px 10px; text-decoration: none;
     color: var(--dim-2); font-size: 11px;
-    font-variation-settings: 'wght' 500;
+    font-weight: 500;
   }
   .tabbar a[aria-current="page"] { color: var(--brass); }
   .tabbar svg { width: 19px; height: 19px; }
