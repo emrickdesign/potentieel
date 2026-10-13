@@ -21,6 +21,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap">
+  <link rel="stylesheet" href="theme-ink.css">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -40,7 +42,7 @@
 <nav class="navbar">
   <a href="index.html" class="navbar-logo">
     <span class="arrow-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#c1531e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#D2A54C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
       </svg>
     </span>
@@ -48,15 +50,10 @@
   </a>
   <div class="navbar-links">
     <a href="index.html">Accueil</a>
-    <a href="agence.html">À Propos</a>
-    <div class="has-dropdown">
-      <span class="dropdown-trigger" tabindex="0">Services <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
-      <div class="navbar-dropdown">
-        <a href="offre.html">Sites internet<small>Du site vitrine au sur-mesure</small></a>
-        <a href="google-ads.html">Google Ads<small>Campagnes gérées pour les artisans</small></a>
-      </div>
-    </div>
-    <a href="blog.html">Blog</a>
+    <a href="google-ads.html">Google Ads</a>
+    <a href="offre.html">Sites internet</a>
+    <a href="index.html#tarifs">Tarifs</a>
+    <a href="agence.html">L'agence</a>
     <a href="contact.html" class="active">Contact</a>
   </div>
   <a href="auth.html" class="btn-crm">
@@ -199,38 +196,43 @@
             <input type="tel" id="telephone" name="telephone" placeholder="06 12 34 56 78" autocomplete="tel">
           </div>
           <div class="form-group">
-            <label for="metier">Votre métier / activité *</label>
-            <input type="text" id="metier" name="metier" autocomplete="organization-title" placeholder="Ex : Garagiste indépendant, Kinesithérapeute..." required>
+            <label for="ville">Votre ville / zone d'intervention *</label>
+            <input type="text" id="ville" name="ville" autocomplete="address-level2" placeholder="Ex : Nantes et 30 km alentour" required>
+          </div>
+          <div class="form-group">
+            <label for="metier">Votre métier *</label>
+            <input type="text" id="metier" name="metier" autocomplete="organization-title" placeholder="Ex : couvreur, maçon, peintre, entreprise tous corps d'état" required>
           </div>
           <div class="form-group">
             <label for="service">Ce qui vous intéresse</label>
             <select id="service" name="service">
               <option value="">Sélectionnez une option</option>
-              <option>Création de site internet</option>
-              <option>Création + maintenance mensuelle (49€/mois)</option>
-              <option>Google Ads clé en main</option>
-              <option>Pack complet : site + maintenance + Google Ads</option>
+              <option>Google Ads : recevoir des appels dans ma ville</option>
+              <option>Un site vitrine (990 €)</option>
+              <option>Un site avec espace de gestion ou CRM (sur devis)</option>
+              <option>Google Ads + un site</option>
               <option>Je veux juste des informations</option>
             </select>
           </div>
           <div class="form-group">
-            <label for="budget">Budget envisagé</label>
+            <label for="budget">Budget publicitaire mensuel envisagé</label>
             <select id="budget" name="budget">
               <option value="">Sélectionnez</option>
-              <option>Moins de 1 000€</option>
-              <option>1 000€ – 2 000€</option>
-              <option>2 000€ – 5 000€</option>
-              <option>Plus de 5 000€</option>
-              <option>Je ne sais pas encore</option>
+              <option>800 € / mois (le minimum)</option>
+              <option>800 à 1 500 € / mois</option>
+              <option>Plus de 1 500 € / mois</option>
+              <option>Je ne sais pas encore, à voir ensemble</option>
+              <option>Sans objet : je veux seulement un site</option>
             </select>
           </div>
           <div class="form-group">
             <label for="message">Parlez-nous de votre projet *</label>
-            <textarea id="message" name="message" placeholder="Décrivez votre activité, ce que vous souhaitez pour votre site, vos objectifs..." required></textarea>
+            <textarea id="message" name="message" placeholder="Votre ville et votre zone d'intervention, les prestations que vous voulez remplir en priorité, ce que vous faites aujourd'hui pour trouver des chantiers..." required></textarea>
           </div>
+          <p id="formError" role="alert" style="display:none;color:var(--orange);font-size:14px;line-height:1.6;margin:0 0 14px;"></p>
           <div class="form-submit">
             <button type="submit" class="btn-primary">
-              Envoyer ma demande &rarr;
+              Envoyer ma demande
             </button>
           </div>
           <p style="font-size:12px;color:var(--gray);margin-top:14px;text-align:center;">En envoyant ce formulaire, vous acceptez d'être recontacté par Potentieel concernant votre projet.</p>
@@ -266,7 +268,7 @@
     <div class="footer-grid">
       <div>
         <div class="navbar-logo" style="margin-bottom:16px;">
-          <span class="arrow-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#c1531e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+          <span class="arrow-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#D2A54C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
           POTENTIEEL
         </div>
         <p style="font-size:14px;color:var(--gray);line-height:1.7;margin-bottom:20px;max-width:300px;">Votre site web professionnel enfin accessible. Des sites simples, soignés et suivis.</p>
@@ -306,6 +308,7 @@
 .faq-item.open .faq-arrow { transform:rotate(45deg); }
 </style>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // Sparkles handled by scripts.js
 
@@ -318,13 +321,54 @@ function toggleFaq(btn){
 }
 
 // Form submit (frontend only — à brancher sur un vrai backend ou Formspree)
-function handleSubmit(e){
+const SUPABASE_URL = 'https://alpzagoprkpzirgtrdup.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFscHphZ29wcmtwemlyZ3RyZHVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3OTg2MDEsImV4cCI6MjA5MjM3NDYwMX0.R7R6esDFce1W4k_wK-aBtAG20oUtK2SmSNCVKENS91g';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+async function handleSubmit(e){
   e.preventDefault();
-  // Simuler un envoi
-  setTimeout(()=>{
-    document.getElementById('contactForm').style.display='none';
-    document.getElementById('successMsg').style.display='block';
-  },800);
+  const f = e.target;
+  const btn = f.querySelector('button[type=submit]');
+  const err = document.getElementById('formError');
+  const v = id => (document.getElementById(id).value || '').trim();
+
+  btn.disabled = true;
+  btn.textContent = 'Envoi en cours...';
+  if (err) err.style.display = 'none';
+
+  const qp = new URLSearchParams(location.search);
+  const details = [
+    v('message'),
+    v('budget') ? 'Budget publicitaire envisage : ' + v('budget') : ''
+  ].filter(Boolean).join('\n\n');
+
+  const { error } = await sb.from('form_submissions').insert({
+    prenom:    [v('prenom'), v('nom')].filter(Boolean).join(' '),
+    email:     v('email') || null,
+    telephone: v('telephone') || null,
+    ville:     v('ville') || null,
+    domaine:   v('metier') || null,
+    theme:     v('service') || null,
+    details:   details || null,
+    source:    'contact',
+    campagne:  qp.get('utm_campaign'),
+    publicite: qp.get('utm_source'),
+    gclid:     qp.get('gclid'),
+    fbclid:    qp.get('fbclid')
+  });
+
+  if (error) {
+    btn.disabled = false;
+    btn.textContent = 'Reessayer';
+    if (err) {
+      err.textContent = "L'envoi n'a pas abouti. Reessayez, ou appelez-nous au 07 69 38 76 13.";
+      err.style.display = 'block';
+    }
+    return;
+  }
+
+  f.style.display = 'none';
+  document.getElementById('successMsg').style.display = 'block';
 }
 </script>
 

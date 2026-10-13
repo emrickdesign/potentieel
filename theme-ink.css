@@ -1,0 +1,154 @@
+/* =========================================================================
+   POTENTIEEL — passage à l'encre des pages encore sur styles.css
+   À charger APRÈS styles.css, et uniquement sur les pages publiques.
+   Les pages applicatives (application / auth / espace-client / reset) ne
+   chargent pas ce fichier et gardent leur thème clair.
+
+   Le fichier ne redessine rien : il rebranche les jetons de styles.css sur la
+   palette de ink.css, puis rattrape les quelques couleurs codées en dur.
+   ========================================================================= */
+
+:root {
+  --bg:           #0D1B24;
+  --bg-card:      #162C39;
+  --bg-card-2:    #1C3745;
+  --bg-card-3:    #23404F;
+
+  /* Un seul accent : le laiton. L'orange et le vert d'origine disparaissent
+     pour que Google reste le seul événement de couleur du site. */
+  --orange:       #D2A54C;
+  --orange-light: #E8BC63;
+  --orange-btn:   #D2A54C;
+  --lime:         #B9C8D0;
+  --lime-dim:     #8FA6B2;
+
+  --white:        #E9EFF2;
+  --gray-light:   #9FB3BE;
+  --gray:         #7E99A6;
+  --gray-dark:    #2A4552;
+  --border:       rgba(159, 179, 190, 0.16);
+  --border-card:  #24404F;
+
+  --radius:       10px;
+  --radius-sm:    6px;
+}
+
+html, body { background: var(--bg); color: var(--white); }
+
+/* Barre de navigation et barre d'onglets mobile : fonds codés en blanc */
+.navbar {
+  background: rgba(13, 27, 36, 0.86);
+  border-bottom: 1px solid rgba(159, 179, 190, 0.16);
+}
+.mobile-tabbar {
+  background: rgba(9, 19, 25, 0.95) !important;
+  border: 1px solid rgba(159, 179, 190, 0.16) !important;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Lien d'évitement : texte sombre sur laiton */
+.skip-link { color: #0D1B24; }
+
+/* Les pastilles et onglets qui posaient du blanc sur l'orange : le laiton est
+   clair, il leur faut un texte sombre. */
+.profile-tab.active,
+.type-tab.active .type-tab-icon,
+.btn-primary,
+.badge-title,
+.pricing-eyebrow { color: #0D1B24; }
+
+.btn-primary { background: var(--orange); border-color: var(--orange); }
+.btn-primary:hover { background: var(--orange-light); border-color: var(--orange-light); }
+
+/* Ombres calibrées pour un fond clair : inopérantes et sales sur l'encre */
+.tilt-card, .pricing-card, .testimonial-card, .blog-card {
+  box-shadow: none;
+}
+
+/* La photo d'équipe en version encre : plus de calque à 45 % qui la délave */
+.hero-image {
+  content: url("assets/team-ink.png");
+  opacity: 0.92;
+  object-position: 88% 16%;
+  width: 50%;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,.26) 13%, rgba(0,0,0,.78) 34%, #000 55%);
+          mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,.26) 13%, rgba(0,0,0,.78) 34%, #000 55%);
+}
+@media (max-width: 900px) {
+  .hero-image { display: none; }
+}
+
+/* Les étincelles du hero : retirées, elles faisaient « fond d'écran animé » */
+.sparkles { display: none; }
+
+/* Texte blanc posé sur ce qui est devenu un fond sombre */
+.cta-banner h3 { color: var(--white); }
+.cta-banner p  { color: var(--gray-light); }
+.btn-white { background: var(--orange); color: #0D1B24; }
+.btn-white:hover { background: var(--orange-light); box-shadow: none; }
+
+/* Les aplats qui comptaient sur un fond clair */
+.social-proof, .stats-bar { background: var(--bg-card); }
+
+::selection { background: #D2A54C; color: #0D1B24; }
+
+/* ---------------------------------------------------------------------
+   Rattrapages hérités : ces règles étaient calibrées pour un fond clair.
+   --------------------------------------------------------------------- */
+
+/* Halo orange sous les cartes : sur l'encre, c'est le « glow » générique */
+.tilt-card, .pricing-card, .testimonial-card, .blog-card,
+.pricing-option-card, .offer-type-panel, .badge-card {
+  box-shadow: none !important;
+}
+
+/* La bulle de la barre d'onglets mobile n'a plus d'ombre colorée */
+.mobile-tabbar { box-shadow: 0 10px 32px rgba(0,0,0,.5) !important; }
+
+/* Les listes à puces et petits textes hérités passaient sous le seuil AA
+   une fois le fond devenu sombre. */
+.pricing-list li, .faq-answer, .footer p, .footer a,
+.pricing-option-eyebrow, .offer-price-note { color: var(--gray-light); }
+.footer a:hover { color: var(--white); }
+
+/* Le dégradé obligatoire entre deux teintes de section (règle maison) */
+.social-proof, .stats-bar, .wa-carousel-section {
+  background: linear-gradient(to bottom, var(--bg) 0%, var(--bg-card) 10%,
+                              var(--bg-card) 90%, var(--bg) 100%);
+}
+
+/* Les sections héritées posent leur fond en style inline. Sur l'encre, la
+   coupure franche se voit : on la remplace par un fondu (règle maison). */
+section[style*="var(--bg-card)"],
+div[style*="var(--bg-card)"].section-band {
+  background: linear-gradient(to bottom,
+              var(--bg) 0%, var(--bg-card) 8%,
+              var(--bg-card) 92%, var(--bg) 100%) !important;
+}
+
+/* Les « blobs » colorés dérivants : sur fond clair ils passaient inaperçus,
+   sur l'encre ils deviennent un halo de fond d'écran. On les retire, et avec
+   eux le vert acide qui n'appartient plus à la palette. */
+.blob, .blob.b1, .blob.b2, .blob.b3 { display: none !important; }
+.mock-bars span.b-lime { background: linear-gradient(180deg, var(--lime), var(--lime-dim)) !important; }
+
+/* La flèche du logo est codée en orange dans le SVG inline de chaque page */
+.navbar-logo svg line, .navbar-logo svg polyline,
+.arrow-icon svg line, .arrow-icon svg polyline { stroke: #D2A54C !important; }
+
+/* Les étoiles d'avis gardent leur or, mais calé sur le laiton */
+.sp-stars, .stars { color: #D2A54C !important; }
+
+/* Champs de formulaire : les indications de saisie devenaient illisibles */
+input, textarea, select {
+  background: #11222C !important;
+  border: 1px solid var(--border-card) !important;
+  color: var(--white) !important;
+}
+input::placeholder, textarea::placeholder { color: #7E99A6 !important; opacity: 1; }
+input:focus, textarea:focus, select:focus {
+  border-color: var(--orange) !important;
+  outline: 2px solid rgba(210,165,76,.35); outline-offset: 1px;
+}
+select option { background: #11222C; color: var(--white); }
+label { color: var(--white); }

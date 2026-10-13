@@ -21,6 +21,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap">
+  <link rel="stylesheet" href="theme-ink.css">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -52,7 +54,7 @@
 <nav class="navbar">
   <a href="index.html" class="navbar-logo">
     <span class="arrow-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#c1531e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#D2A54C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
       </svg>
     </span>
@@ -60,15 +62,10 @@
   </a>
   <div class="navbar-links">
     <a href="index.html">Accueil</a>
-    <a href="agence.html">À Propos</a>
-    <div class="has-dropdown">
-      <span class="dropdown-trigger" tabindex="0">Services <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
-      <div class="navbar-dropdown">
-        <a href="offre.html">Sites internet<small>Du site vitrine au sur-mesure</small></a>
-        <a href="google-ads.html">Google Ads<small>Campagnes gérées pour les artisans</small></a>
-      </div>
-    </div>
-    <a href="blog.html">Blog</a>
+    <a href="google-ads.html" class="active">Google Ads</a>
+    <a href="offre.html">Sites internet</a>
+    <a href="index.html#tarifs">Tarifs</a>
+    <a href="agence.html">L'agence</a>
     <a href="contact.html">Contact</a>
   </div>
   <a href="auth.html" class="btn-crm">
@@ -161,15 +158,47 @@
     </div>
   </section>
 
-  <!-- BUDGET -->
-  <section style="padding:56px 0;background:var(--bg-card);">
+  <!-- TARIFS -->
+  <section style="padding:72px 0;background:var(--bg-card);">
+    <div class="container" style="max-width:1000px;">
+      <h2 style="font-size:clamp(28px,3.5vw,40px);font-weight:800;letter-spacing:-0.02em;margin:0 0 14px;">Ce que ça coûte, et quand</h2>
+      <p style="color:var(--gray-light);max-width:620px;margin:0 0 36px;line-height:1.7;">Deux lignes seulement : ce que vous nous payez, et ce que vous payez à Google. Elles ne se mélangent jamais.</p>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1px;background:var(--border-card);border:1px solid var(--border-card);">
+        <div style="background:var(--bg);padding:26px 24px 28px;">
+          <div style="font-size:13px;color:var(--gray);font-weight:600;margin-bottom:16px;">À la signature</div>
+          <div style="font-size:32px;font-weight:800;color:var(--orange);letter-spacing:-0.03em;line-height:1;">700&nbsp;€</div>
+          <div style="font-size:13px;color:var(--gray);margin:7px 0 12px;">une seule fois</div>
+          <p style="font-size:14.5px;color:var(--gray-light);line-height:1.65;margin:0;">Création des pages d'arrivée, ouverture et paramétrage du compte, construction des campagnes, suivi des appels, mise en ligne.</p>
+        </div>
+        <div style="background:var(--bg);padding:26px 24px 28px;">
+          <div style="font-size:13px;color:var(--gray);font-weight:600;margin-bottom:16px;">Mois 1 et mois 2</div>
+          <div style="font-size:32px;font-weight:800;color:var(--white);letter-spacing:-0.03em;line-height:1;">0&nbsp;€</div>
+          <div style="font-size:13px;color:var(--gray);margin:7px 0 12px;">d'honoraires</div>
+          <p style="font-size:14.5px;color:var(--gray-light);line-height:1.65;margin:0;">Vous ne payez que Google. Nous suivons et corrigeons les campagnes sans rien facturer : c'est la période de réglage, et c'est sur elle que porte l'engagement de deux mois.</p>
+        </div>
+        <div style="background:var(--bg);padding:26px 24px 28px;">
+          <div style="font-size:13px;color:var(--gray);font-weight:600;margin-bottom:16px;">À partir du mois 3</div>
+          <div style="font-size:32px;font-weight:800;color:var(--orange);letter-spacing:-0.03em;line-height:1;">130&nbsp;€ + 20&nbsp;%</div>
+          <div style="font-size:13px;color:var(--gray);margin:7px 0 12px;">par mois, les 20&nbsp;% portant sur le budget publicitaire</div>
+          <p style="font-size:14.5px;color:var(--gray-light);line-height:1.65;margin:0;">Pour un budget de 800&nbsp;€, cela fait 290&nbsp;€ par mois ; pour 1&nbsp;500&nbsp;€, 430&nbsp;€ par mois.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUDGET PUBLICITAIRE -->
+  <section style="padding:56px 0;">
     <div class="container" style="max-width:760px;">
       <h2 style="font-size:clamp(24px,3vw,32px);font-weight:800;letter-spacing:-0.02em;margin:0 0 16px;">Votre budget publicitaire ne passe pas par nous</h2>
       <p style="font-size:15.5px;color:var(--gray-light);line-height:1.75;margin:0 0 14px;">
-        Le budget que vous investissez en publicité est <strong style="color:var(--white);">payé directement par vous à Google</strong>, sur votre propre compte Google Ads, avec votre propre moyen de paiement. Nous ne percevons aucune commission dessus et nous ne l'encaissons jamais.
+        Comptez <strong style="color:var(--white);">800&nbsp;€ par mois au minimum</strong>, et jusqu'à environ <strong style="color:var(--white);">1&nbsp;500&nbsp;€</strong> selon votre ville et la concurrence sur votre métier — davantage si vous voulez plus de chantiers.
+      </p>
+      <p style="font-size:15.5px;color:var(--gray-light);line-height:1.75;margin:0 0 14px;">
+        Ce budget est <strong style="color:var(--white);">payé directement par vous à Google</strong>, sur votre propre compte Google Ads et avec votre propre moyen de paiement. Nous ne l'encaissons jamais. Vous voyez donc à l'euro près ce qui part en publicité, séparément de ce que vous nous payez.
       </p>
       <p style="font-size:15.5px;color:var(--gray-light);line-height:1.75;margin:0;">
-        Vous voyez donc à l'euro près ce qui part en publicité, et ce que vous payez pour notre travail est séparé. Les conditions complètes sont détaillées dans nos <a href="legal/cgv.html" style="color:var(--orange);font-weight:600;">CGV</a>.
+        Les conditions complètes sont détaillées dans nos <a href="legal/cgv.html" style="color:var(--orange);font-weight:600;">CGV</a>.
       </p>
     </div>
   </section>
@@ -218,11 +247,11 @@
         </details>
         <details class="faq-item">
           <summary class="faq-question">Quel budget publicitaire faut-il prévoir ?</summary>
-          <div class="faq-answer">Cela dépend de votre métier et de votre zone : le coût d'un clic n'est pas le même pour un couvreur en zone rurale et pour une entreprise tous corps d'état en région parisienne. Nous mesurons ces chiffres sur votre secteur avant de vous donner un montant, plutôt que d'annoncer une somme au hasard.</div>
+          <div class="faq-answer">800&nbsp;€ par mois au minimum, et jusqu'à environ 1&nbsp;500&nbsp;€ selon votre ville et la concurrence sur votre métier. Le coût d'un clic n'est pas le même pour un couvreur en zone rurale et pour une entreprise tous corps d'état en région parisienne : nous mesurons ces chiffres sur votre secteur avant de fixer le montant exact, dans cette fourchette.</div>
         </details>
         <details class="faq-item">
           <summary class="faq-question">Faut-il un site internet pour lancer des campagnes ?</summary>
-          <div class="faq-answer">Il faut au moins une page vers laquelle envoyer les visiteurs, et qui donne envie d'appeler. Si vous n'en avez pas, nous la créons — c'est l'autre métier de l'agence, détaillé sur la page <a href="offre.html">Sites internet</a>.</div>
+          <div class="faq-answer">Non. Les pages d'arrivée — une par prestation — sont comprises dans la mise en place à 700&nbsp;€ et suffisent à faire tourner les campagnes. Si vous voulez aussi un vrai site vitrine, c'est l'autre métier de l'agence, détaillé sur la page <a href="offre.html">Sites internet</a>.</div>
         </details>
         <details class="faq-item">
           <summary class="faq-question">Est-ce que vous garantissez des résultats ?</summary>
@@ -251,7 +280,7 @@
     <div class="footer-grid">
       <div>
         <div class="navbar-logo" style="margin-bottom:16px;">
-          <span class="arrow-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#c1531e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+          <span class="arrow-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#D2A54C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
           POTENTIEEL
         </div>
         <p style="font-size:14px;color:var(--gray);line-height:1.7;margin-bottom:20px;max-width:300px;">Sites internet et campagnes Google Ads pour les entreprises du bâtiment.</p>

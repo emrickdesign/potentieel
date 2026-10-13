@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "clipped-overflow-container",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-10-13T13:00:38.965Z",
+        "reason": "Claude: .hero clippe volontairement la photo de fond en bleed; aucun calque flottant (menu, tooltip, popover) n'a besoin d'en sortir."
+      },
+      {
+        "rule": "clipped-overflow-container",
+        "value": "*",
+        "files": [
+          "contact.html"
+        ],
+        "createdAt": "2026-10-13T13:14:52.777Z",
+        "reason": "Claude: .hero herite clippe volontairement la photo de fond; aucun calque flottant n'a besoin d'en sortir."
+      }
+    ]
+  }
+}
