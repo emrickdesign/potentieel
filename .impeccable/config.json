@@ -47,6 +47,15 @@
         ],
         "createdAt": "2026-10-13T14:30:08.138Z",
         "reason": "Claude: Arial n'est utilise que dans la maquette de resultat Google (.serp), ou c'est la police reelle de Google - c'est ce qui rend la maquette credible. Les polices de la page sont Spectral et Libre Franklin."
+      },
+      {
+        "rule": "overused-font",
+        "value": "roboto",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-10-13T15:01:25.048Z",
+        "reason": "Client: a demande que la zone Google reprenne la DA de Google Ads, couleurs comprises. Roboto y est une citation de l'identite de Google, bornee a la section .gzone - le reste de la page est en Spectral et Libre Franklin."
       }
     ]
   }

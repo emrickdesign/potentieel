@@ -360,51 +360,120 @@ section { position: relative; }
 .two-col h3 { margin-bottom: 12px; }
 .two-col p { font-size: var(--fs-sm); line-height: 1.68; color: var(--dim); }
 
-/* ---------- Le système : prestation → page → campagne -------------------- */
 
-.flow { display: grid; gap: 1px; background: var(--rule-soft); border: 1px solid var(--rule-soft); }
-.flow-row {
-  display: grid; grid-template-columns: 1.05fr 1fr 1fr;
-  gap: 1px; background: var(--rule-soft);
+/* ---------- La zone Google -----------------------------------------------
+   Seul endroit du site qui quitte l'encre : il reprend la langue visuelle de
+   Google Ads — surface claire, Roboto, les quatre couleurs de la marque.
+   -------------------------------------------------------------------------- */
+
+.gzone {
+  position: relative;
+  background: #F8F9FA;
+  color: #202124;
+  font-family: 'Roboto', system-ui, Arial, sans-serif;
+  padding: clamp(104px, 11vw, 168px) 0 clamp(88px, 9vw, 136px);
 }
-.flow-cell { background: var(--ink); padding: 24px 24px 26px; }
-.band .flow-cell { background: var(--slate); }
-.flow-head {
-  font-size: var(--fs-xs); color: var(--dim-2);
-  font-weight: 600;
+/* Le passage encre -> clair se fait en fondu, jamais en ligne franche. */
+.gzone::before, .gzone::after {
+  content: ''; position: absolute; left: 0; right: 0;
+  height: 110px; pointer-events: none; z-index: 1;
+}
+.gzone::before { top: 0;    background: linear-gradient(to bottom, var(--ink) 0%, #F8F9FA 100%); }
+.gzone::after  { bottom: 0; background: linear-gradient(to top,    var(--ink) 0%, #F8F9FA 100%); }
+.gzone > .wrap { position: relative; z-index: 2; }
+
+.gzone p { max-width: 68ch; }
+
+.gzone-head {
+  display: grid; grid-template-columns: 44px minmax(0, 1fr);
+  gap: 20px; align-items: start;
+  margin-bottom: clamp(36px, 4.5vw, 56px);
+}
+.gzone-head img { width: 44px; height: 44px; margin-top: 4px; }
+.gzone-head h2 {
+  font-family: 'Roboto', system-ui, sans-serif;
+  font-weight: 400; color: #202124;
+  font-size: clamp(1.75rem, 1.3rem + 1.9vw, 2.5rem);
+  line-height: 1.2; letter-spacing: -0.012em;
   margin-bottom: 14px;
 }
-.flow-cell strong { display: block; font-size: var(--fs-base); margin-bottom: 7px; font-weight: 600; }
-.flow-cell p { font-size: var(--fs-sm); color: var(--dim); line-height: 1.62; }
-.flow-kw { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-.flow-kw span {
-  font-size: 13px; color: var(--dim);
-  border: 1px solid var(--rule); border-radius: 3px; padding: 4px 10px;
-}
-.flow-url {
-  font-size: 12.5px; color: var(--brass);
-  word-break: break-all; margin-top: 8px; display: block;
+.gzone-head p { font-size: 1.0625rem; line-height: 1.6; color: #5F6368; max-width: 56ch; }
+
+.gzone-h {
+  font-family: 'Roboto', system-ui, sans-serif;
+  font-weight: 500; font-size: 1.0625rem; color: #202124;
+  letter-spacing: 0; line-height: 1.4;
+  margin: clamp(44px, 5vw, 64px) 0 20px;
+  padding-top: 18px; border-top: 1px solid #DADCE0;
 }
 
-/* ---------- La bande Google ---------------------------------------------- */
+/* Les trois étapes : c'est une vraie séquence, donc elle est numérotée. */
+.gsteps {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
+  gap: 16px; counter-reset: gs;
+}
+.gsteps li {
+  counter-increment: gs;
+  background: #fff; border: 1px solid #DADCE0; border-radius: 8px;
+  padding: 22px 22px 24px;
+}
+.gsteps li::before {
+  content: counter(gs);
+  display: grid; place-items: center;
+  width: 26px; height: 26px; border-radius: 50%;
+  background: #E8F0FE; color: #174EA6;
+  font-size: 13px; font-weight: 500;
+  margin-bottom: 14px;
+}
+.gsteps strong { display: block; font-size: 1rem; font-weight: 500; color: #202124; margin-bottom: 8px; }
+.gsteps p { font-size: 0.9rem; line-height: 1.62; color: #5F6368; }
 
-.gband-grid {
-  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
-  gap: clamp(32px, 5vw, 72px); align-items: center;
+/* Les quatre raisons, dans les quatre couleurs de Google. La couleur est
+   portée par une barre, jamais par du texte : le jaune et le vert de Google
+   ne passent pas le seuil de contraste sur du blanc. */
+.gwhy {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(242px, 1fr));
+  gap: 16px;
 }
-.gmark { display: flex; align-items: center; gap: 18px; margin-bottom: 26px; }
-.gmark img { width: 46px; height: auto; }
-.gmark b {
-  font-size: var(--fs-lg); font-weight: 500;
-  letter-spacing: -0.015em; color: var(--chalk);
+.gcard {
+  background: #fff; border: 1px solid #DADCE0; border-radius: 8px;
+  padding: 20px 20px 22px; position: relative; overflow: hidden;
 }
-.gfacts { display: grid; gap: 1px; background: var(--rule-soft); border: 1px solid var(--rule-soft); }
-.gfact { background: var(--slate); padding: 20px 22px; display: flex; gap: 18px; align-items: baseline; }
-.gfact dt {
-  font-size: var(--fs-sm); color: var(--chalk); font-weight: 600;
-  flex: none; width: 150px;
+.gcard::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 3px; }
+.g-blue::before   { background: #4285F4; }
+.g-red::before    { background: #EA4335; }
+.g-yellow::before { background: #FBBC04; }
+.g-green::before  { background: #34A853; }
+.gcard-k { display: block; font-size: 1rem; font-weight: 500; color: #202124; margin-bottom: 9px; }
+.gcard p { font-size: 0.9rem; line-height: 1.62; color: #5F6368; }
+
+.gzone .gnote {
+  max-width: 92ch;
+  margin-top: 28px; padding: 18px 20px;
+  background: #E8F0FE; border-radius: 8px;
+  font-size: 0.9rem; line-height: 1.65; color: #174EA6;
 }
-.gfact dd { margin: 0; font-size: var(--fs-sm); color: var(--dim); line-height: 1.62; }
+
+.gfacts {
+  margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
+  gap: 16px;
+}
+.gfact { background: #fff; border: 1px solid #DADCE0; border-radius: 8px; padding: 20px; }
+.gfact dt { font-size: 0.9rem; font-weight: 500; color: #202124; margin-bottom: 7px; }
+.gfact dd { margin: 0; font-size: 0.9rem; line-height: 1.62; color: #5F6368; }
+
+/* La maquette de résultat devient une carte Material sur cette surface. */
+.gzone .serp { box-shadow: 0 1px 3px rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15); }
+.gzone .serp-side > p:first-child {
+  color: #202124; font-size: 1.0625rem; line-height: 1.6; max-width: 38ch;
+}
+.gzone .serp-after { color: #5F6368; font-size: 0.9rem; line-height: 1.62; border-left-color: #1A73E8; }
+.gzone .serp-bar { border-color: #DADCE0; }
+
+@media (max-width: 860px) {
+  .gzone-head { grid-template-columns: 1fr; gap: 14px; }
+}
 
 /* ---------- La frise tarifaire ------------------------------------------- */
 
