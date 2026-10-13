@@ -424,6 +424,20 @@ section { position: relative; }
   display: grid; grid-template-columns: 170px minmax(0,1fr); gap: 24px; align-items: start;
 }
 .fare-budget b { font-size: var(--fs-sm); font-weight: 600; }
+.incl {
+  margin: 0; padding: 0; list-style: none;
+  columns: 2; column-gap: 34px; max-width: 70ch;
+}
+.incl li {
+  font-size: var(--fs-sm); line-height: 1.55; color: var(--dim);
+  padding: 5px 0 5px 17px; position: relative;
+  break-inside: avoid;
+}
+.incl li::before {
+  content: ''; position: absolute; left: 0; top: 13px;
+  width: 8px; height: 1.5px; background: var(--brass);
+}
+@media (max-width: 860px) { .incl { columns: 1; } }
 .fare-budget p { font-size: var(--fs-sm); color: var(--dim); line-height: 1.68; max-width: 70ch; }
 
 /* ---------- Pour qui / pas pour qui -------------------------------------- */

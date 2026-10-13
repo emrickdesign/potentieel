@@ -10,6 +10,16 @@
       "source": "/avis",
       "destination": "/",
       "permanent": true
+    },
+    {
+      "source": "/blog.html",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/blog",
+      "destination": "/",
+      "permanent": false
     }
   ]
 }
