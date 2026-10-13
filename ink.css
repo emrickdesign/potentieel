@@ -239,28 +239,18 @@ section { position: relative; }
 
 .hero h1 { margin-bottom: 14px; max-width: 21ch; }
 
-/* La ligne qui nomme le système, juste sous le titre. */
+/* La phrase d'accroche, juste sous le titre. En serif et en corps généreux :
+   c'est le seul texte courant de la page qui a droit au titrage. */
 .hero-claim {
-  font-size: var(--fs-md); line-height: 1.45;
-  color: var(--chalk); max-width: 62ch;
-  margin-bottom: 20px;
+  font-family: var(--serif);
+  font-size: clamp(1.1875rem, 1.06rem + 0.53vw, 1.4375rem);
+  line-height: 1.52;
+  letter-spacing: -0.004em;
+  color: var(--chalk);
+  max-width: 52ch;
+  margin-bottom: 26px;
 }
 
-/* La douleur et le souhait, côte à côte, en petits caractères : la colonne
-   de droite est volontairement plus claire que celle de gauche. */
-.states {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
-  background: var(--rule-soft); border: 1px solid var(--rule-soft);
-  max-width: 620px; margin-bottom: 24px;
-}
-.state { background: var(--ink); padding: 15px 18px 17px; }
-.state-k {
-  display: block; font-size: var(--fs-xs); font-weight: 600;
-  color: var(--dim-2); margin-bottom: 9px;
-}
-.state p { font-size: var(--fs-sm); line-height: 1.62; color: var(--dim); max-width: none; }
-.state-after .state-k { color: var(--brass); }
-.state-after p { color: var(--chalk); }
 .hero .btn-row { margin-top: 20px; }
 
 .hero-note {
@@ -651,7 +641,6 @@ section { position: relative; }
   .hero-photo { display: none; }
   .hero-in { max-width: 100%; }
   .hero .btn-row .btn { flex: 1 1 100%; justify-content: center; }
-  .states { grid-template-columns: 1fr; max-width: 100%; }
 
   .serp { max-width: 100%; }
 
