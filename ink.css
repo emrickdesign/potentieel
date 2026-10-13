@@ -239,24 +239,33 @@ section { position: relative; }
 
 .hero h1 { margin-bottom: 14px; max-width: 21ch; }
 
-/* La phrase d'accroche, juste sous le titre. En serif et en corps généreux :
-   c'est le seul texte courant de la page qui a droit au titrage. */
-.hero-claim {
+/* Sous le titre : un filet de laiton, la phrase d'accroche en serif, puis
+   les trois objectifs en liste. Trois registres typographiques, une seule
+   couleur d'accent — c'est la hiérarchie qui fait le dessin, pas la décoration. */
+.hero-hook {
+  position: relative;
   font-family: var(--serif);
-  font-size: clamp(1.1875rem, 1.06rem + 0.53vw, 1.4375rem);
-  line-height: 1.52;
-  letter-spacing: -0.004em;
+  font-size: clamp(1.25rem, 1.08rem + 0.7vw, 1.6rem);
+  line-height: 1.35;
+  letter-spacing: -0.008em;
   color: var(--chalk);
-  max-width: 52ch;
-  margin-bottom: 26px;
+  max-width: 30ch;
+  padding-top: 24px;
+  margin-bottom: 18px;
+}
+.hero-hook::before {
+  content: ''; position: absolute; top: 0; left: 0;
+  width: 46px; height: 2px; background: var(--brass);
 }
 
-.hero .btn-row { margin-top: 20px; }
-
-.hero-note {
-  margin-top: 18px;
-  font-size: var(--fs-sm); color: var(--dim-2);
-  max-width: 46ch; line-height: 1.55;
+.hero-aims { list-style: none; margin: 0 0 24px; padding: 0; display: grid; gap: 9px; }
+.hero-aims li {
+  position: relative; padding-left: 20px;
+  font-size: 0.95rem; line-height: 1.5; color: var(--dim);
+}
+.hero-aims li::before {
+  content: ''; position: absolute; left: 0; top: 0.62em;
+  width: 10px; height: 1.5px; background: var(--brass);
 }
 
 /* ---------- La maquette de recherche Google ------------------------------ */
