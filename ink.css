@@ -425,15 +425,13 @@ section { position: relative; }
   background: #F8F9FA;
   color: #202124;
   font-family: 'Roboto', system-ui, Arial, sans-serif;
-  padding: clamp(104px, 11vw, 168px) 0 clamp(88px, 9vw, 136px);
+  padding: clamp(64px, 7vw, 104px) 0 clamp(60px, 6.5vw, 96px);
 }
-/* Le passage encre -> clair se fait en fondu, jamais en ligne franche. */
-.gzone::before, .gzone::after {
-  content: ''; position: absolute; left: 0; right: 0;
-  height: 110px; pointer-events: none; z-index: 1;
-}
-.gzone::before { top: 0;    background: linear-gradient(to bottom, var(--ink) 0%, #F8F9FA 100%); }
-.gzone::after  { bottom: 0; background: linear-gradient(to top,    var(--ink) 0%, #F8F9FA 100%); }
+/* Le passage encre -> clair se fait franchement. Un fondu entre deux valeurs
+   aussi eloignees ne se lit pas comme une transition mais comme une bande
+   grise sale : la coupure nette est plus propre, et elle dit « on entre
+   ailleurs ». (Exception assumee a la regle maison du degrade entre sections,
+   demandee par le client.) */
 .gzone > .wrap { position: relative; z-index: 2; }
 
 .gzone p { max-width: 68ch; }
