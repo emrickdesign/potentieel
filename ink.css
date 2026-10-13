@@ -229,7 +229,7 @@ section { position: relative; }
 
 .hero-photo {
   position: absolute; top: 0; right: 0;
-  height: 100%; width: 60%; top: auto; bottom: 0;
+  height: 100%; width: 64%; top: auto; bottom: 0;
   object-fit: contain; object-position: right bottom;
   z-index: 0; pointer-events: none;
   opacity: .92;
@@ -640,6 +640,12 @@ section { position: relative; }
 /* ---------- Barre mobile ------------------------------------------------- */
 
 .tabbar { display: none; }
+
+/* Entre 860 et 1150 px la colonne de texte et le portrait se disputent la
+   place : on recule le portrait pour qu'il reste un fond, pas un obstacle. */
+@media (max-width: 1150px) and (min-width: 861px) {
+  .hero-photo { width: 48%; opacity: .62; }
+}
 
 @media (max-width: 860px) {
   .wrap, .nav-in { padding: 0 20px; }
