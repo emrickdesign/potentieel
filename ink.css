@@ -443,7 +443,79 @@ section { position: relative; }
   gap: 20px; align-items: start;
   margin-bottom: clamp(36px, 4.5vw, 56px);
 }
-.gzone-head img { width: 44px; height: 44px; margin-top: 4px; }
+.gzone-head .gmark { width: 44px; height: 44px; margin-top: 4px; overflow: visible; }
+
+/* Le logo Google Ads s'assemble quand la zone entre à l'écran : les deux
+   barres poussent depuis leur sommet commun, le rond vert arrive en dernier.
+   Par défaut le logo est VISIBLE : c'est le script qui arme l'animation, pour
+   qu'une panne de script ou d'observateur ne laisse jamais un logo invisible. */
+.gmark path { transform-box: view-box; }
+
+.gmark.anim path { opacity: 0; }
+.gmark.anim .ga-blue, .gmark.anim .ga-yellow,
+.gmark.anim .ga-mix { transform-origin: 50% 4%; }
+.gmark.anim .ga-green { transform-origin: 19% 82%; }
+
+.gmark.anim .ga-blue   { transform: scaleY(.12) rotate(10deg); }
+.gmark.anim .ga-yellow { transform: scaleY(.12) rotate(-10deg); }
+.gmark.anim .ga-mix    { transform: scaleY(.12); }
+.gmark.anim .ga-green  { transform: scale(0); }
+
+.gmark.anim.is-in path { opacity: 1; transform: none; }
+.gmark.anim.is-in .ga-blue {
+  transition: transform .55s cubic-bezier(.2,.76,.28,1), opacity .3s ease;
+}
+.gmark.anim.is-in .ga-yellow {
+  transition: transform .55s cubic-bezier(.2,.76,.28,1) .1s, opacity .3s ease .1s;
+}
+.gmark.anim.is-in .ga-mix {
+  transition: transform .5s cubic-bezier(.2,.76,.28,1) .18s, opacity .32s ease .26s;
+}
+.gmark.anim.is-in .ga-green {
+  transition: transform .5s cubic-bezier(.34,1.56,.5,1) .28s, opacity .2s ease .28s;
+}
+
+.gzone p { max-width: 68ch; }
+
+.gzone-head {
+  display: grid; grid-template-columns: 44px minmax(0, 1fr);
+  gap: 20px; align-items: start;
+  margin-bottom: clamp(36px, 4.5vw, 56px);
+}
+.gzone-head .gmark { width: 44px; height: 44px; margin-top: 4px; overflow: visible; }
+
+/* Le logo Google Ads s'assemble quand la zone entre à l'écran : les deux
+   barres pivotent depuis leur sommet commun, le rond vert arrive en dernier.
+   Un seul passage, déclenché une fois. */
+.gmark path {
+  transform-box: view-box;
+  opacity: 0;
+}
+.gmark .ga-blue, .gmark .ga-yellow, .gmark .ga-mix { transform-origin: 50% 4%; }
+.gmark .ga-green { transform-origin: 19% 82%; }
+
+.gmark .ga-blue   { transform: scaleY(.12) rotate(10deg); }
+.gmark .ga-yellow { transform: scaleY(.12) rotate(-10deg); }
+.gmark .ga-mix    { transform: scaleY(.12); }
+.gmark .ga-green  { transform: scale(0); }
+
+.gmark.is-in path { opacity: 1; transform: none; }
+.gmark.is-in .ga-blue {
+  transition: transform .55s cubic-bezier(.2,.76,.28,1), opacity .3s ease;
+}
+.gmark.is-in .ga-yellow {
+  transition: transform .55s cubic-bezier(.2,.76,.28,1) .1s, opacity .3s ease .1s;
+}
+.gmark.is-in .ga-mix {
+  transition: transform .5s cubic-bezier(.2,.76,.28,1) .18s, opacity .32s ease .26s;
+}
+.gmark.is-in .ga-green {
+  transition: transform .5s cubic-bezier(.34,1.56,.5,1) .28s, opacity .2s ease .28s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gmark path { opacity: 1; transform: none; }
+}
 .gzone-head h2 {
   font-family: 'Roboto', system-ui, sans-serif;
   font-weight: 400; color: #202124;
