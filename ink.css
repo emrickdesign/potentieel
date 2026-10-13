@@ -178,7 +178,7 @@ section { position: relative; }
 .btn-ghost { border-color: var(--rule); color: var(--chalk); }
 .btn-ghost:hover { border-color: var(--dim); background: rgba(159,179,190,.06); }
 
-.btn-row { display: flex; flex-wrap: wrap; gap: 18px; }
+.btn-row { display: flex; flex-wrap: wrap; gap: 28px; }
 
 /* ---------- Barre de navigation ------------------------------------------ */
 
@@ -944,6 +944,7 @@ section { position: relative; }
   .hero { padding-top: 28px; }
   .hero-photo { display: none; }
   .hero-in { max-width: 100%; }
+  .hero .btn-row { gap: 12px; }
   .hero .btn-row .btn { flex: 1 1 100%; justify-content: center; }
 
   .serp { max-width: 100%; }
