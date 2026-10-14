@@ -188,18 +188,27 @@
     <div class="container" style="max-width:1000px;">
       <h2 style="font-size:clamp(28px,3.5vw,40px);font-weight:800;letter-spacing:-0.02em;margin:0 0 14px;">Pourquoi la demande vous échappe</h2>
       <p style="color:var(--gray-light);max-width:620px;margin:0 0 40px;line-height:1.7;">Le problème n'est presque jamais le manque de demande. C'est que la demande existe, et qu'elle est captée par quelqu'un d'autre avant d'arriver jusqu'à vous.</p>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;">
-        <div style="background:var(--bg);border:1px solid var(--border-card);border-radius:var(--radius);padding:24px;">
-          <h3 style="font-size:17px;font-weight:700;margin:0 0 10px;">Les plateformes passent devant</h3>
-          <p style="font-size:14.5px;color:var(--gray-light);line-height:1.7;margin:0;">Sur une recherche « maçon » + votre ville, il faut souvent passer plusieurs blocs d'annonces et d'annuaires avant de voir une vraie entreprise. Ces plateformes revendent ensuite la même demande à plusieurs artisans.</p>
+      <div class="alerte">
+        <div class="alerte-c alerte-r">
+          <span class="alerte-ic">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v6"/><path d="m12 11-6 6"/><path d="m12 11 6 6"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="19" r="2"/><circle cx="12" cy="4" r="2"/></svg>
+          </span>
+          <h3>Votre demande part chez quatre entreprises</h3>
+          <p>Les plateformes de mise en relation récupèrent la demande du particulier et la revendent — la même, à quatre artisans qui se la disputent au prix. Vous payez pour un contact que trois concurrents ont déjà, et le chantier se gagne en cassant votre marge.</p>
         </div>
-        <div style="background:var(--bg);border:1px solid var(--border-card);border-radius:var(--radius);padding:24px;">
-          <h3 style="font-size:17px;font-weight:700;margin:0 0 10px;">Le premier qui répond emporte le chantier</h3>
-          <p style="font-size:14.5px;color:var(--gray-light);line-height:1.7;margin:0;">Sur une recherche urgente — une fuite, un dégât, un délai — le particulier appelle les premiers numéros qu'il trouve. Si vous n'y êtes pas à ce moment-là, vous n'existez pas pour ce chantier.</p>
+        <div class="alerte-c alerte-o">
+          <span class="alerte-ic">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9.5V13l2.5 1.8"/><path d="M9 2h6"/></svg>
+          </span>
+          <h3>Le premier qui répond emporte le chantier</h3>
+          <p>Sur une recherche urgente — une fuite, un dégât, un délai — le particulier appelle les premiers numéros qu'il trouve et s'arrête dès que quelqu'un décroche. Si vous n'êtes pas là à ce moment précis, vous n'existez pas pour ce chantier.</p>
         </div>
-        <div style="background:var(--bg);border:1px solid var(--border-card);border-radius:var(--radius);padding:24px;">
-          <h3 style="font-size:17px;font-weight:700;margin:0 0 10px;">Le référencement naturel met des mois</h3>
-          <p style="font-size:14.5px;color:var(--gray-light);line-height:1.7;margin:0;">Travailler son site pour remonter dans les résultats naturels reste utile, mais c'est long. Les annonces placent votre entreprise en haut dès la mise en ligne de la campagne.</p>
+        <div class="alerte-c alerte-j">
+          <span class="alerte-ic">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3h11"/><path d="M6.5 21h11"/><path d="M8 3v3.2c0 2.2 4 3.6 4 5.8s-4 3.6-4 5.8V21"/><path d="M16 3v3.2c0 2.2-4 3.6-4 5.8s4 3.6 4 5.8V21"/></svg>
+          </span>
+          <h3>Le référencement naturel met des mois</h3>
+          <p>Travailler son site pour remonter dans les résultats naturels reste utile, mais il faut compter en trimestres. Les annonces, elles, placent votre entreprise en haut le jour où la campagne part.</p>
         </div>
       </div>
     </div>
@@ -210,46 +219,38 @@
     <div class="container" style="max-width:880px;">
       <h2 style="font-size:clamp(28px,3.5vw,40px);font-weight:800;letter-spacing:-0.02em;margin:0 0 40px;">Ce que nous faisons, concrètement</h2>
 
-      <div style="display:flex;flex-direction:column;gap:28px;">
-        <div style="display:flex;gap:20px;align-items:flex-start;">
-          <span style="flex:none;font-weight:800;color:var(--orange);font-size:15px;border:1.5px solid var(--orange);border-radius:999px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;">1</span>
-          <div style="min-width:0;">
-            <h3 style="font-size:18px;font-weight:700;margin:4px 0 8px;">On mesure la demande réelle sur votre zone</h3>
-            <p style="font-size:15px;color:var(--gray-light);line-height:1.7;margin:0;">Avant toute chose, on regarde combien de personnes cherchent vos prestations autour de vous, chaque mois, et ce que coûte un clic sur votre métier. Si le volume ne justifie pas une campagne, on vous le dit à ce moment-là.</p>
+      <div class="etapes">
+        <div class="etape" style="--i:0">
+          <span class="etape-n">1</span>
+          <div>
+            <h3>On mesure la demande réelle sur votre zone</h3>
+            <p>Avant toute chose, on regarde combien de personnes cherchent vos prestations autour de vous, chaque mois, et ce que coûte un clic sur votre métier. Si le volume ne justifie pas une campagne, on vous le dit à ce moment-là.</p>
           </div>
         </div>
-
-        <div style="display:flex;gap:20px;align-items:flex-start;">
-          <span style="flex:none;font-weight:800;color:var(--orange);font-size:15px;border:1.5px solid var(--orange);border-radius:999px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;">2</span>
-          <div style="min-width:0;">
-            <h3 style="font-size:18px;font-weight:700;margin:4px 0 8px;">On construit les campagnes</h3>
-            <p style="font-size:15px;color:var(--gray-light);line-height:1.7;margin:0;">Choix des recherches sur lesquelles apparaître et de celles à exclure, découpage par prestation, zone géographique précise, rédaction des annonces, et la page vers laquelle elles envoient. Le compte Google Ads est à votre nom et vous en restez propriétaire.</p>
+        <div class="etape" style="--i:1">
+          <span class="etape-n">2</span>
+          <div>
+            <h3>On construit les campagnes</h3>
+            <p>Choix des recherches sur lesquelles apparaître et de celles à exclure, découpage par prestation, zone géographique précise, rédaction des annonces, et la page vers laquelle elles envoient. Le compte Google Ads est à votre nom et vous en restez propriétaire.</p>
           </div>
         </div>
-
-        <div style="display:flex;gap:20px;align-items:flex-start;">
-          <span style="flex:none;font-weight:800;color:var(--orange);font-size:15px;border:1.5px solid var(--orange);border-radius:999px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;">3</span>
-          <div style="min-width:0;">
-            <h3 style="font-size:18px;font-weight:700;margin:4px 0 8px;">On suit ce que ça rapporte, pas ce que ça affiche</h3>
-            <p style="font-size:15px;color:var(--gray-light);line-height:1.7;margin:0;">Des clics et des impressions ne paient pas un chantier. Ce qu'on suit, ce sont les appels et les demandes de devis réellement arrivés chez vous, visibles dans votre espace client.</p>
+        <div class="etape" style="--i:2">
+          <span class="etape-n">3</span>
+          <div>
+            <h3>On suit ce que ça rapporte, pas ce que ça affiche</h3>
+            <p>Des clics et des impressions ne paient pas un chantier. Ce qu'on suit, ce sont les appels et les demandes de devis réellement arrivés chez vous, visibles dans votre espace client.</p>
           </div>
         </div>
-
-        <div style="display:flex;gap:20px;align-items:flex-start;">
-          <span style="flex:none;font-weight:800;color:var(--orange);font-size:15px;border:1.5px solid var(--orange);border-radius:999px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;">4</span>
-          <div style="min-width:0;">
-            <h3 style="font-size:18px;font-weight:700;margin:4px 0 8px;">On ajuste tous les mois</h3>
-            <p style="font-size:15px;color:var(--gray-light);line-height:1.7;margin:0;">On coupe les recherches qui consomment du budget sans rien rapporter, on renforce celles qui amènent de vraies demandes, on ajuste les zones et les enchères. Une campagne qu'on ne touche plus se dégrade.</p>
+        <div class="etape" style="--i:3">
+          <span class="etape-n">4</span>
+          <div>
+            <h3>On ajuste tous les mois</h3>
+            <p>On coupe les recherches qui consomment du budget sans rien rapporter, on renforce celles qui amènent de vraies demandes, on ajuste les zones et les enchères. Une campagne qu'on ne touche plus se dégrade.</p>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Le tableau de bord qu'on surveille et qu'on ajuste, à la suite des
-         quatre étapes. Chiffres d'illustration, cohérents entre eux : les
-         totaux des tuiles sont ceux que tracent les deux courbes. -->
-  <div class="gads-zone">
-    <!-- Le compte Google Ads tel qu'il se présente : les quatre métriques, les
+<!-- Le compte Google Ads tel qu'il se présente : les quatre métriques, les
          quatre courbes du mois, et le détail par campagne — une prestation par
          ligne, comme on les monte. Chiffres d'illustration qui s'additionnent :
          les trois lignes font les totaux affichés au-dessus. -->
@@ -363,62 +364,83 @@
   <!-- CE QUE COMPREND LA MISE EN PLACE -->
   <section style="padding:64px 0;">
     <div class="container" style="max-width:1000px;">
-      <h2 style="font-size:clamp(24px,3vw,32px);font-weight:800;letter-spacing:-0.02em;margin:0 0 28px;">Ce que comprend la mise en place</h2>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:1px;background:var(--border-card);border:1px solid var(--border-card);">
-        <div style="background:var(--bg);padding:24px 26px;">
-          <h3 style="font-size:16px;font-weight:700;margin:0 0 12px;color:var(--orange);">Pour être trouvé</h3>
-          <ul style="margin:0;padding-left:18px;color:var(--gray-light);font-size:14.5px;line-height:1.85;">
+      <h2 style="font-size:clamp(28px,3.5vw,40px);font-weight:800;letter-spacing:-0.02em;margin:0 0 32px;">Ce que comprend la mise en place</h2>
+      <div class="inclus">
+        <div class="inclus-c">
+          <h3><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4.5 4.5"/></svg> Pour être trouvé</h3>
+          <ul>
             <li>Une page d'arrivée par prestation phare</li>
             <li>Les campagnes Google Ads sur votre zone</li>
             <li>Les Local Services Ads si votre métier et votre zone y sont éligibles</li>
             <li>L'optimisation de votre fiche Google Business</li>
           </ul>
         </div>
-        <div style="background:var(--bg);padding:24px 26px;">
-          <h3 style="font-size:16px;font-weight:700;margin:0 0 12px;">Pour ne rien perdre</h3>
-          <ul style="margin:0;padding-left:18px;color:var(--gray-light);font-size:14.5px;line-height:1.85;">
+        <div class="inclus-c">
+          <h3><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3h3l1.5 4.2-2.1 1.6a12.5 12.5 0 0 0 5.8 5.8l1.6-2.1L20.5 14v3a2.2 2.2 0 0 1-2.4 2.2A17 17 0 0 1 3.8 5.4 2.2 2.2 0 0 1 6 3z"/></svg> Pour ne rien perdre</h3>
+          <ul>
             <li>Un numéro de suivi, pour savoir quel appel vient de quelle campagne</li>
             <li>La relance des demandes restées sans suite</li>
             <li>La collecte des avis Google</li>
           </ul>
         </div>
-        <div style="background:var(--bg);padding:24px 26px;">
-          <h3 style="font-size:16px;font-weight:700;margin:0 0 12px;">Pour suivre</h3>
-          <ul style="margin:0;padding-left:18px;color:var(--gray-light);font-size:14.5px;line-height:1.85;">
+        <div class="inclus-c">
+          <h3><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9"/><path d="M10 19V5"/><path d="M16 19v-7"/><path d="M3 21h18"/></svg> Pour suivre</h3>
+          <ul>
             <li>Votre espace client, où vous voyez les demandes arriver</li>
             <li>Un point hebdomadaire sur WhatsApp</li>
             <li>La gestion des campagnes, sans honoraires pendant deux mois</li>
           </ul>
         </div>
       </div>
-      <p style="margin:24px 0 0;font-size:14.5px;color:var(--gray);line-height:1.7;">Périmètre : tous les corps d'état du bâtiment, à l'exception de la plomberie. La zone exacte figure sur votre devis.</p>
+      <p class="inclus-note">Périmètre : tous les corps d'état du bâtiment, à l'exception de la plomberie. La zone exacte figure sur votre devis.</p>
     </div>
   </section>
 
   <!-- BUDGET PUBLICITAIRE -->
   <section style="padding:56px 0;">
-    <div class="container" style="max-width:760px;">
-      <h2 style="font-size:clamp(24px,3vw,32px);font-weight:800;letter-spacing:-0.02em;margin:0 0 16px;">Votre budget publicitaire ne passe pas par nous</h2>
-      <p style="font-size:15.5px;color:var(--gray-light);line-height:1.75;margin:0 0 14px;">
-        Comptez <strong style="color:var(--white);">800&nbsp;€ par mois au minimum</strong>, et jusqu'à environ <strong style="color:var(--white);">1&nbsp;500&nbsp;€</strong> selon votre ville et la concurrence sur votre métier — davantage si vous voulez plus de chantiers.
-      </p>
-      <p style="font-size:15.5px;color:var(--gray-light);line-height:1.75;margin:0 0 14px;">
-        Ce budget est <strong style="color:var(--white);">payé directement par vous à Google</strong>, sur votre propre compte Google Ads et avec votre propre moyen de paiement. Nous ne l'encaissons jamais. Vous voyez donc à l'euro près ce qui part en publicité, séparément de ce que vous nous payez.
-      </p>
-      <p style="font-size:15.5px;color:var(--gray-light);line-height:1.75;margin:0;">
-        Les conditions complètes sont détaillées dans nos <a href="legal/cgv.html" style="color:var(--orange);font-weight:600;">CGV</a>.
-      </p>
+    <div class="container" style="max-width:1000px;">
+      <h2 style="font-size:clamp(28px,3.5vw,40px);font-weight:800;letter-spacing:-0.02em;margin:0 0 28px;">Votre budget publicitaire ne passe pas par nous</h2>
+      <div class="budget">
+        <div class="budget-chiffre">
+          <span>Budget Google, par mois</span>
+          <b>800 € – 1 500 €</b>
+          <i>Selon votre ville et la concurrence sur votre métier. Davantage si vous voulez plus de chantiers.</i>
+        </div>
+        <div class="budget-points">
+          <div class="budget-p">
+            <span><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="13" rx="2.5"/><path d="M2.5 10.5h19"/></svg></span>
+            <div>
+              <b>Votre compte, votre carte</b>
+              <p>Le budget est payé directement par vous à Google, sur votre propre compte et avec votre propre moyen de paiement. Nous ne l'encaissons jamais.</p>
+            </div>
+          </div>
+          <div class="budget-p">
+            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></span>
+            <div>
+              <b>À l'euro près, séparément</b>
+              <p>Vous voyez ce qui part en publicité dans votre compte, et ce que vous nous payez sur notre facture. Les deux lignes ne se mélangent jamais.</p>
+            </div>
+          </div>
+          <div class="budget-p">
+            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l5 5v13H6z"/><path d="M14 3v6h6"/><path d="M9.5 14h6M9.5 17.5h4"/></svg></span>
+            <div>
+              <b>Écrit noir sur blanc</b>
+              <p>Les conditions complètes sont détaillées dans nos <a href="legal/cgv.html" style="color:var(--orange);">CGV</a>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- POUR QUI -->
   <section style="padding:72px 0;">
     <div class="container" style="max-width:1000px;">
-      <h2 style="font-size:clamp(28px,3.5vw,40px);font-weight:800;letter-spacing:-0.02em;margin:0 0 36px;">Pour qui c'est fait</h2>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;">
-        <div style="border:1px solid var(--border-card);border-radius:var(--radius);padding:26px;">
-          <h3 style="font-size:17px;font-weight:700;margin:0 0 14px;color:var(--lime);">Ça marche bien pour</h3>
-          <ul style="margin:0;padding-left:18px;color:var(--gray-light);font-size:15px;line-height:1.9;">
+      <h2 style="font-size:clamp(28px,3.5vw,40px);font-weight:800;letter-spacing:-0.02em;margin:0 0 32px;">Pour qui c'est fait</h2>
+      <div class="pourqui">
+        <div class="pourqui-c pourqui-oui">
+          <h3><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span> Ça marche bien pour</h3>
+          <ul>
             <li>Maçonnerie et gros œuvre</li>
             <li>Couverture et charpente</li>
             <li>Peinture et finitions</li>
@@ -426,18 +448,18 @@
             <li>Les entreprises capables d'absorber de nouveaux chantiers</li>
           </ul>
         </div>
-        <div style="border:1px solid var(--border-card);border-radius:var(--radius);padding:26px;">
-          <h3 style="font-size:17px;font-weight:700;margin:0 0 14px;">Ça marche mal pour</h3>
-          <ul style="margin:0;padding-left:18px;color:var(--gray-light);font-size:15px;line-height:1.9;">
+        <div class="pourqui-c pourqui-non">
+          <h3><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></span> Ça marche mal pour</h3>
+          <ul>
             <li>Les zones où personne ne cherche votre métier</li>
-            <li>Les entreprises qui ne rappellent pas sous 24 h</li>
+            <li>Les entreprises qui ne rappellent pas dans la journée</li>
             <li>Les chantiers à marge trop faible pour supporter un coût d'acquisition</li>
-            <li>Ceux qui cherchent un résultat sans budget publicitaire</li>
+            <li>Ceux qui attendent un résultat sans budget publicitaire</li>
             <li>La plomberie, que nous ne couvrons pas</li>
           </ul>
         </div>
       </div>
-      <p style="margin:28px 0 0;font-size:14.5px;color:var(--gray);line-height:1.7;">Nous le disons avant de commencer, pas après : si votre secteur ou votre zone ne s'y prête pas, nous ne lançons pas de campagne.</p>
+      <p class="pourqui-note">Nous le disons avant de commencer, pas après : si votre secteur ou votre zone ne s'y prête pas, nous ne lançons pas de campagne.</p>
     </div>
   </section>
 
@@ -519,7 +541,7 @@
    visible par défaut : on n'arme l'animation que si on sait pouvoir la jouer,
    et un garde-fou pose l'état final si l'observateur ne vient jamais. */
 (function () {
-  var blocs = document.querySelectorAll('.gads-zone, .ga-scene');
+  var blocs = document.querySelectorAll('.gads-zone, .ga-scene, .etapes');
   if (!blocs.length) return;
   var i = 0;
   [].forEach.call(document.querySelectorAll('.gads-tuile'), function (t) {

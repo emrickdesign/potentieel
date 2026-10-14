@@ -343,3 +343,202 @@ html, body { background: var(--bg-card); }
   .gads-zone .gads-trait { stroke-dasharray: none !important; stroke-dashoffset: 0 !important; }
   .gads-zone .gads-tuile b { opacity: 1 !important; }
 }
+
+/* ---------- ce qui vous fait perdre les chantiers -----------------------
+   Trois cartes d'alerte, du rouge au jaune : l'ordre des couleurs suit
+   l'ordre de gravité. Chaque teinte est mesurée au-dessus de 6:1 sur le
+   fond, donc le texte d'accent reste lisible et n'est pas qu'un effet.
+   -------------------------------------------------------------------------- */
+
+.alerte { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 18px; }
+/* C'est la bordure entière qui prend la teinte, pas un bandeau posé sur une
+   arête : le filet coloré en haut de carte est le tic le plus reconnaissable
+   des interfaces fabriquées à la chaîne. */
+.alerte-c {
+  position: relative; overflow: hidden;
+  padding: 24px 24px 26px; border-radius: 14px;
+  border: 1px solid var(--bord);
+  background: var(--bg);
+}
+.alerte-c::after {
+  content: ''; position: absolute; right: -60px; top: -70px;
+  width: 190px; height: 190px; border-radius: 50%;
+  background: radial-gradient(circle, var(--voile), transparent 68%);
+  pointer-events: none;
+}
+.alerte-r { --ton: #F28B82; --voile: rgba(242, 139, 130, .13); --bord: rgba(242, 139, 130, .34); }
+.alerte-o { --ton: #F6A463; --voile: rgba(246, 164, 99, .13); --bord: rgba(246, 164, 99, .34); }
+.alerte-j { --ton: #F2C14E; --voile: rgba(242, 193, 78, .12); --bord: rgba(242, 193, 78, .32); }
+
+.alerte-ic {
+  position: relative; z-index: 1;
+  width: 38px; height: 38px; border-radius: 11px;
+  display: grid; place-items: center; margin-bottom: 15px;
+  background: var(--voile); color: var(--ton);
+}
+.alerte-ic svg {
+  width: 20px; height: 20px; fill: none; stroke: currentColor;
+  stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round;
+}
+.alerte-c h3 {
+  position: relative; z-index: 1;
+  font-size: 17px; font-weight: 700; margin: 0 0 9px; color: var(--ton);
+}
+.alerte-c p {
+  position: relative; z-index: 1;
+  font-size: 15px; color: var(--gray-light); line-height: 1.7; margin: 0;
+}
+
+/* ---------- les quatre étapes, qui se posent une à une ------------------- */
+
+.etapes { display: flex; flex-direction: column; gap: 26px; }
+.etape { display: flex; gap: 20px; align-items: flex-start; }
+.etape-n {
+  flex: none; width: 34px; height: 34px; border-radius: 999px;
+  display: grid; place-items: center;
+  font-weight: 800; font-size: 15px; color: var(--orange);
+  border: 1.5px solid var(--orange);
+}
+.etape h3 { font-size: 18px; font-weight: 700; margin: 4px 0 8px; }
+.etape p { font-size: 15px; color: var(--gray-light); line-height: 1.7; margin: 0; }
+
+.etapes.anim .etape { opacity: 0; transform: translateY(14px); }
+.etapes.anim.is-in .etape {
+  opacity: 1; transform: none;
+  transition: opacity .55s ease calc(var(--i) * .13s),
+              transform .65s cubic-bezier(.2,.8,.2,1) calc(var(--i) * .13s);
+}
+/* le rond du numéro se remplit au passage */
+.etapes.anim.is-in .etape-n {
+  animation: etapeN .7s cubic-bezier(.2,.8,.2,1) calc(var(--i) * .13s + .2s) both;
+}
+@keyframes etapeN {
+  0%   { background: transparent; color: var(--orange); }
+  45%  { background: var(--orange); color: var(--bg); }
+  100% { background: transparent; color: var(--orange); }
+}
+
+/* ---------- ce que comprend la mise en place ---------------------------- */
+
+.inclus { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+.inclus-c {
+  border: 1px solid var(--border-card); border-radius: 14px;
+  background: var(--bg); padding: 22px 24px 10px;
+}
+/* en bas de casse : les capitales traquées sont le tic de mise en page que
+   la charte proscrit, et l'intitulé se lit mieux ainsi. */
+.inclus-c h3 {
+  display: flex; align-items: center; gap: 9px;
+  font-size: 15px; font-weight: 700; color: var(--orange);
+  margin: 0 0 12px;
+}
+.inclus-c h3 svg {
+  width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+.inclus-c ul { list-style: none; margin: 0; padding: 0; }
+.inclus-c li {
+  display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 11px;
+  align-items: start;
+  padding: 12px 0; border-top: 1px solid var(--border-card);
+  font-size: 14.5px; color: var(--gray-light); line-height: 1.6;
+}
+.inclus-c li:first-of-type { border-top: 0; }
+.inclus-c li::before {
+  content: ''; width: 18px; height: 18px; margin-top: 2px;
+  background: var(--orange);
+  -webkit-mask: var(--coche) center / 13px no-repeat;
+  mask: var(--coche) center / 13px no-repeat;
+}
+.inclus {
+  --coche: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 12.5l5.5 5.5L20 6'/%3E%3C/svg%3E");
+}
+.inclus-note {
+  font-size: 14px; color: var(--gray); line-height: 1.65;
+  margin: 24px 0 0; max-width: 76ch;
+}
+
+/* ---------- le budget publicitaire -------------------------------------- */
+
+.budget {
+  display: grid; grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 56px); align-items: center;
+  border: 1px solid var(--border-card); border-radius: 16px;
+  background: var(--bg); padding: clamp(26px, 3vw, 36px);
+}
+.budget-chiffre { text-align: left; }
+.budget-chiffre span {
+  display: block; font-size: 14px; color: var(--gray); margin-bottom: 10px;
+}
+.budget-chiffre b {
+  display: block; font-family: 'Spectral', Georgia, serif;
+  font-size: clamp(34px, 4vw, 48px); font-weight: 600; line-height: 1.05;
+  color: var(--orange); letter-spacing: -.02em;
+}
+.budget-chiffre i {
+  display: block; font-style: normal; font-size: 14px;
+  color: var(--gray-light); margin-top: 10px; line-height: 1.6;
+}
+.budget-points { display: grid; gap: 16px; }
+.budget-p { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 14px; align-items: start; }
+.budget-p span {
+  width: 34px; height: 34px; border-radius: 10px;
+  display: grid; place-items: center;
+  background: rgba(210, 165, 76, .14); color: var(--orange);
+}
+.budget-p span svg {
+  width: 17px; height: 17px; fill: none; stroke: currentColor;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+.budget-p b { display: block; font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.budget-p p { font-size: 14.5px; color: var(--gray-light); line-height: 1.65; margin: 0; }
+
+/* ---------- pour qui c'est fait ----------------------------------------- */
+
+.pourqui { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+.pourqui-c {
+  border: 1px solid var(--bord); border-radius: 14px;
+  background: var(--bg); padding: 22px 24px 12px;
+  position: relative; overflow: hidden;
+}
+.pourqui-c::after {
+  content: ''; position: absolute; right: -70px; top: -80px;
+  width: 200px; height: 200px; border-radius: 50%;
+  background: radial-gradient(circle, var(--voile), transparent 68%);
+  pointer-events: none;
+}
+.pourqui-c > * { position: relative; z-index: 1; }
+.pourqui-oui { --ton: #6DD58C; --voile: rgba(109, 213, 140, .14); --bord: rgba(109, 213, 140, .34); }
+.pourqui-non { --ton: #F28B82; --voile: rgba(242, 139, 130, .14); --bord: rgba(242, 139, 130, .34); }
+.pourqui-c h3 {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 17px; font-weight: 700; color: var(--ton); margin: 0 0 14px;
+}
+.pourqui-c h3 span {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--voile);
+}
+.pourqui-c h3 svg {
+  width: 15px; height: 15px; fill: none; stroke: currentColor;
+  stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round;
+}
+.pourqui-c ul { list-style: none; margin: 0; padding: 0; }
+.pourqui-c li {
+  padding: 11px 0 11px 20px; position: relative;
+  border-top: 1px solid var(--border-card);
+  font-size: 14.5px; color: var(--gray-light); line-height: 1.6;
+}
+.pourqui-c li:first-child { border-top: 0; }
+.pourqui-c li::before {
+  content: ''; position: absolute; left: 0; top: 19px;
+  width: 9px; height: 1.5px; background: var(--ton);
+}
+.pourqui-note {
+  font-size: 14px; color: var(--gray); line-height: 1.65;
+  margin: 24px 0 0; max-width: 76ch;
+}
+
+@media (max-width: 760px) {
+  .budget { grid-template-columns: 1fr; gap: 26px; }
+}
