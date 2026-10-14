@@ -286,26 +286,34 @@ section { position: relative; }
 /* Seul objet clair de la page : Google est le seul événement chromatique. */
 
 .serp {
-  background: #fff;
+  position: relative;
   color: #1f1f1f;
-  border-radius: 14px;
   max-width: 505px;
-  padding: 18px;
   font-family: Arial, 'Liberation Sans', sans-serif;
+  padding-top: 32px;
+}
+/* la carte de résultats commence sous la barre, qui la chevauche */
+.serp-slot {
+  background: #fff; border-radius: 14px;
   box-shadow: 0 24px 60px -20px rgba(0,0,0,.6);
 }
 
+
 /* L'en-tête reprend celui de Google : le mot-symbole, puis la barre de
    recherche en pilule flottante — pas de bordure, une vraie ombre portée. */
-.serp-head { display: flex; align-items: center; gap: 16px; }
+/* la barre flotte au-dessus de la carte */
+.serp-head {
+  position: absolute; left: 14px; right: 14px; top: 0; z-index: 3;
+  display: flex; align-items: center; gap: 14px;
+}
 .serp-logo { width: 74px; height: 25px; flex: none; }
 
 .serp-bar {
   flex: 1; min-width: 0;
   display: flex; align-items: center; gap: 12px;
   background: #fff; border: 0; border-radius: 999px;
-  padding: 11px 16px;
-  box-shadow: 0 1px 6px rgba(32,33,36,.28);
+  padding: 12px 17px;
+  box-shadow: 0 2px 5px 1px rgba(64,60,67,.16), 0 8px 22px -6px rgba(0,0,0,.4);
 }
 .serp-mag { width: 17px; height: 17px; flex: none; }
 .serp-vox { width: 17px; height: 17px; flex: none; margin-left: auto; }
@@ -325,10 +333,9 @@ section { position: relative; }
   transition: grid-template-rows .5s cubic-bezier(.22,.7,.3,1), opacity .4s ease .12s;
   opacity: 0;
 }
-.serp-res { overflow: hidden; min-height: 0; }
+.serp-res { overflow: hidden; min-height: 0; padding: 30px 18px 18px; }
 .serp.is-done .serp-slot { grid-template-rows: 1fr; opacity: 1; }
-.serp-head { margin-bottom: 0; }
-.serp.is-done .serp-head { margin-bottom: 20px; transition: margin-bottom .45s ease; }
+
 
 .serp-tag {
   font-size: 12.5px; font-weight: 700;
@@ -1066,46 +1073,96 @@ section { position: relative; }
 }
 
 /* --- Les Local Services Ads, présentés comme un supplément ------------------
-   Volontairement compact et posé à part : ce n'est pas l'offre, c'est ce qui
-   vient avec. -------------------------------------------------------------- */
+   Sur fond bleu Google, pour se détacher nettement des cartes blanches de la
+   zone : ce n'est pas l'offre, c'est ce qui vient avec. Une maquette de
+   l'emplacement montre ce que le prospect voit.
+   -------------------------------------------------------------------------- */
 .glsa {
-  display: grid; grid-template-columns: 48px minmax(0, 1fr);
-  gap: 20px; align-items: start;
+  display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 52px); align-items: start;
   margin-top: clamp(36px, 4vw, 52px);
-  padding: 24px 26px 26px;
-  background: #fff;
-  border: 1px solid #DADCE0; border-radius: 8px;
+  padding: clamp(26px, 3vw, 34px);
+  background: #E8F0FE;
+  border-radius: 12px;
+  position: relative; overflow: hidden;
 }
-.glsa-mark { display: grid; place-items: center; padding-top: 2px; }
-.glsa-plus {
-  display: grid; place-items: center;
-  width: 38px; height: 38px; border-radius: 50%;
-  background: #E6F4EA; color: #137333;
-  font-size: 22px; font-weight: 400; line-height: 1;
+/* un halo très léger, pour que l'aplat ne soit pas tout à fait plat */
+.glsa::before {
+  content: ''; position: absolute; right: -90px; top: -110px;
+  width: 300px; height: 300px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,.75), rgba(255,255,255,0) 68%);
+  pointer-events: none;
 }
+.glsa > * { position: relative; z-index: 1; }
+
 .glsa-k {
-  display: block; font-size: .8125rem; font-weight: 500;
-  color: #137333; margin-bottom: 5px;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: .8125rem; font-weight: 500; color: #137333;
+  background: #fff; border-radius: 999px;
+  padding: 5px 12px 5px 6px; margin-bottom: 12px;
+}
+.glsa-k i {
+  display: grid; place-items: center; font-style: normal;
+  width: 19px; height: 19px; border-radius: 50%;
+  background: #E6F4EA; color: #137333; font-size: 14px; line-height: 1;
 }
 .glsa h4 {
   font-family: 'Roboto', system-ui, sans-serif;
-  font-size: 1.25rem; font-weight: 500; color: #202124; margin: 0 0 10px;
+  font-size: 1.375rem; font-weight: 500; color: #174EA6; margin: 0 0 10px;
 }
-.glsa-lede { font-size: .95rem; line-height: 1.6; color: #3C4043; max-width: 78ch; }
-.glsa b { font-weight: 500; color: #202124; }
+.glsa-lede { font-size: .95rem; line-height: 1.6; color: #1F3A66; max-width: 60ch; }
+.glsa b { font-weight: 500; color: #174EA6; }
 
 .glsa-cols {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
-  gap: 20px 32px; margin: 18px 0 0;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 18px 28px; margin: 20px 0 0;
 }
 .glsa-cols dt {
-  font-size: .9rem; font-weight: 500; color: #202124; margin-bottom: 6px;
-  padding-top: 12px; border-top: 1px solid #E8EAED;
+  font-size: .9rem; font-weight: 500; color: #174EA6; margin-bottom: 6px;
+  padding-top: 12px; border-top: 1px solid rgba(23,78,166,.22);
 }
-.glsa-cols dd { margin: 0; font-size: .875rem; line-height: 1.62; color: #5F6368; }
-.glsa-note { margin-top: 16px; font-size: .8125rem; line-height: 1.55; color: #5F6368; }
+.glsa-cols dd { margin: 0; font-size: .875rem; line-height: 1.62; color: #3C5A85; }
+.glsa-note { margin-top: 16px; font-size: .8125rem; line-height: 1.55; color: #4E6A92; }
+
+/* la maquette de l'emplacement */
+.glsa-shot { margin: 0; }
+.glsa-shot figcaption {
+  font-size: .75rem; color: #4E6A92; margin-bottom: 9px;
+}
+.lsa-card {
+  display: grid; gap: 9px;
+  background: #fff; border-radius: 10px; padding: 14px;
+  box-shadow: 0 1px 2px rgba(60,64,67,.22), 0 6px 18px -6px rgba(60,64,67,.28);
+}
+.lsa-top { display: flex; align-items: center; gap: 10px; }
+.lsa-av {
+  display: grid; place-items: center; flex: none;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: #174EA6; color: #fff; font-size: 11px; font-weight: 500;
+}
+.lsa-id b { display: block; font-size: 12.5px; font-weight: 500; color: #202124; }
+.lsa-id i { display: block; font-style: normal; font-size: 11px; color: #5F6368; margin-top: 1px; }
+.lsa-id em { font-style: normal; color: #F9AB00; letter-spacing: .4px; }
+.lsa-badge {
+  justify-self: start;
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 500; color: #137333;
+  background: #E6F4EA; border-radius: 999px; padding: 5px 11px;
+}
+.lsa-badge svg { width: 12px; height: 12px; }
+.lsa-meta { font-size: 11px; color: #5F6368; }
+.lsa-cta {
+  justify-self: start;
+  font-size: 11.5px; font-weight: 500; color: #fff;
+  background: #137333; border-radius: 4px; padding: 7px 15px;
+}
+.lsa-under { display: block; font-size: .75rem; color: #4E6A92; margin: 14px 0 8px; }
+.lsa-ghost {
+  display: block; height: 7px; border-radius: 4px;
+  background: rgba(23,78,166,.16); margin-bottom: 6px;
+}
+.lsa-ghost.w70 { width: 70%; }
 
 @media (max-width: 860px) {
-  .glsa { grid-template-columns: 1fr; gap: 14px; padding: 20px; }
-  .glsa-mark { justify-items: start; }
+  .glsa { grid-template-columns: 1fr; gap: 24px; }
 }
