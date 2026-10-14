@@ -1,0 +1,122 @@
+/* =========================================================================
+   POTENTIEEL — le header de la page sites internet
+
+   Même principe que celui de la page Google Ads : deux colonnes bord à bord,
+   alignées sur la barre de navigation. À gauche ce qu'on promet, à droite ce
+   qu'on livre — un site réellement mis en ligne, en grand et sur téléphone.
+   Pas de carte qui se retourne ni de badges flottants : ils portaient des
+   chiffres que rien n'étaye.
+
+   À charger APRÈS theme-ink.css.
+   ========================================================================= */
+
+.si-hero { padding: clamp(84px, 8vw, 104px) 0 clamp(40px, 5vw, 64px); }
+.si-wrap {
+  /* 26 px : le retrait du logo dans la barre de navigation, pour que le
+     titre commence exactement sous lui. */
+  max-width: 1180px; margin: 0 auto; padding: 0 26px;
+}
+.si-grille {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 440px);
+  gap: clamp(32px, 4.4vw, 68px); align-items: center;
+}
+
+.si-marque {
+  display: inline-flex; align-items: center; gap: 10px;
+  margin: 0 0 clamp(18px, 1.8vw, 22px);
+  padding: 6px 15px 6px 11px; border-radius: 999px;
+  background: rgba(233, 239, 242, .05);
+  border: 1px solid rgba(233, 239, 242, .16);
+}
+.si-marque svg {
+  width: 19px; height: 19px; display: block;
+  fill: none; stroke: var(--orange); stroke-width: 1.7;
+}
+.si-marque svg circle { fill: var(--orange); stroke: none; }
+.si-marque span { font-size: 14.5px; font-weight: 600; color: var(--white); }
+
+.si-titre {
+  font-size: clamp(29px, 3.5vw, 46px);
+  font-weight: 700; line-height: 1.09; letter-spacing: -0.025em;
+  margin: 0 0 clamp(18px, 2vw, 24px);
+  max-width: 19ch;
+}
+.si-lede {
+  font-size: clamp(15.5px, 1.4vw, 17px);
+  color: var(--gray-light); line-height: 1.72;
+  max-width: 52ch; margin: 0 0 clamp(24px, 2.6vw, 32px);
+}
+.si-actions { display: grid; justify-items: start; gap: 13px; }
+.si-boutons { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.si-prix { font-size: 13px; color: var(--gray); line-height: 1.5; margin: 0; }
+.si-prix b { color: var(--gray-light); font-weight: 600; }
+
+.si-tarifs {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 15px 24px; border-radius: 999px;
+  font-size: 15.5px; font-weight: 600; letter-spacing: .005em;
+  color: var(--white); text-decoration: none; white-space: nowrap;
+  background: rgba(233, 239, 242, .06);
+  border: 1px solid rgba(233, 239, 242, .3);
+  transition: background .25s ease, border-color .25s ease;
+}
+.si-tarifs:hover { background: rgba(233, 239, 242, .14); border-color: rgba(233, 239, 242, .5); }
+.si-tarifs:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+.si-tarifs svg {
+  width: 17px; height: 17px; flex: none;
+  fill: none; stroke: currentColor; stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* ---------- la scène : un site livré ------------------------------------ */
+
+.si-scene { position: relative; justify-self: end; width: 100%; max-width: 440px; }
+
+.si-ecran {
+  border-radius: 12px; overflow: hidden;
+  background: var(--bg-card);
+  border: 1px solid rgba(233, 239, 242, .18);
+  box-shadow: 0 1px 0 rgba(255,255,255,.06) inset, 0 30px 64px -26px rgba(0,0,0,.9);
+}
+.si-barre {
+  display: flex; align-items: center; gap: 7px;
+  padding: 10px 14px;
+  background: linear-gradient(180deg, #1C3745 0%, #162C39 100%);
+  border-bottom: 1px solid rgba(233, 239, 242, .12);
+}
+.si-pt { width: 8px; height: 8px; border-radius: 50%; background: rgba(233, 239, 242, .26); }
+/* le nom du client tient lieu d'adresse : le site est hébergé sous un
+   domaine technique, l'afficher n'apprendrait rien à personne. */
+.si-nom {
+  margin-left: 8px; min-width: 0;
+  font-size: 11.5px; color: var(--gray-light);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.si-ecran img { display: block; width: 100%; height: auto; }
+
+/* le même site sur téléphone, posé en bas à gauche */
+.si-tel {
+  position: absolute; left: -16px; bottom: -34px;
+  width: 118px; height: 236px; overflow: hidden;
+  border-radius: 18px; background: #fff;
+  border: 4px solid #0F2029;
+  box-shadow: 0 20px 40px -16px rgba(0, 0, 0, .9);
+}
+.si-tel img {
+  display: block; width: 100%; height: auto;
+}
+
+@media (max-width: 1000px) {
+  .si-grille { grid-template-columns: 1fr; gap: 48px; }
+  .si-scene { justify-self: start; max-width: 520px; }
+  .si-titre { max-width: 20ch; }
+  .si-lede { max-width: 62ch; }
+}
+@media (max-width: 560px) {
+  .si-wrap { padding: 0 20px; }
+  .si-actions { justify-items: stretch; }
+  .si-boutons { width: 100%; }
+  .si-boutons .btn-primary, .si-tarifs { flex: 1 1 auto; justify-content: center; text-align: center; }
+  .si-tel { left: auto; right: -8px; bottom: -26px; width: 92px; height: 184px; }
+  .si-nom { font-size: 10.5px; }
+}
