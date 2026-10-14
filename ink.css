@@ -603,93 +603,134 @@ section { position: relative; }
 .gs-yellow b { color: #8A5300; }
 .gs-green  b { color: #137333; }
 
-/* L'illustration de chaque étape, en haut de la carte */
+/* Les illustrations des trois étapes, reprises des schémas de référence :
+   à plat, sans dégradé, avec du vrai texte là où il porte du sens. */
 .gs-art {
-  display: block; position: relative; height: 134px;
-  margin: 0 -22px 18px; padding: 14px 20px 0;
+  display: block; position: relative; height: 166px;
+  margin: 0 -22px 18px; padding: 15px 18px;
   background: #F8F9FA; border-bottom: 1px solid #E8EAED;
   overflow: hidden;
 }
-.gs-art u { text-decoration: none; }
-
-/* 1 — les prestations, avec leur part de chiffre, dont une retenue */
-.gs-pres {
-  display: block; font-style: normal; position: relative;
-  background: #fff; border: 1px solid #DADCE0; border-radius: 6px;
-  padding: 6px 10px 7px; margin-bottom: 3px;
-  transition: border-color .4s ease, box-shadow .4s ease, transform .4s ease;
-}
-.gs-pres b { display: block; font-size: 11px; line-height: 1.25; font-weight: 500; color: #5F6368; }
-.gs-pres em { display: block; height: 3px; border-radius: 2px; background: #E8EAED; margin-top: 4px; }
-.gs-pres em u {
-  display: block; height: 100%; border-radius: 2px; background: #DADCE0;
-  transform: scaleX(0); transform-origin: left;
-  transition: transform .7s cubic-bezier(.2,.8,.3,1) .25s;
-}
-.is-in .gs-pres em u { transform: scaleX(1); }
-.is-in .gs-pres.is-on {
-  border-color: #1A73E8; transform: translateX(3px);
-  box-shadow: 0 1px 3px rgba(26,115,232,.3);
-}
-.is-in .gs-pres.is-on b { color: #174EA6; font-weight: 500; }
-.is-in .gs-pres.is-on em u { background: #1A73E8; }
-
-/* 2 — la page de conversion */
-.gs-art-page { padding: 16px 20px 0; }
-.gs-win {
-  display: block; background: #fff; border-radius: 6px 6px 0 0;
-  box-shadow: 0 1px 3px rgba(60,64,67,.24);
-  padding: 9px 9px 0; height: 112px; overflow: hidden;
-}
-.gs-photo {
-  display: block; height: 34px; border-radius: 4px;
-  background: linear-gradient(115deg, #DDE3E8 0%, #EEF1F3 52%, #DDE3E8 100%);
-  margin-bottom: 8px;
-}
-.gs-t1, .gs-t2 { display: block; height: 6px; border-radius: 3px; background: #DADCE0; }
-.gs-t1 { width: 72%; margin-bottom: 5px; }
-.gs-t2 { width: 48%; margin-bottom: 10px; }
-.gs-btn2 {
-  display: inline-block; font-size: 10.5px; font-weight: 500; color: #fff;
-  background: #137333; border-radius: 4px; padding: 6px 13px;
-}
-.is-in .gs-btn2 { animation: gsPulse 2.6s ease-in-out 1.1s 2; }
-@keyframes gsPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(19,115,51,.5); }
-  45%      { box-shadow: 0 0 0 9px rgba(19,115,51,0); }
+.gs-art u, .gs-art s, .gs-art i, .gs-art em, .gs-art b {
+  text-decoration: none; font-style: normal;
 }
 
-/* 3 — la première place, et la zone couverte */
-.gs-art-rank { padding: 18px 20px 0; }
-.gs-res {
-  display: flex; align-items: center; gap: 8px;
-  background: #fff; border: 1px solid #E8EAED; border-radius: 5px;
-  padding: 7px 9px; margin-bottom: 6px; position: relative; z-index: 2;
-  transition: border-color .4s ease, box-shadow .4s ease;
+/* ---- 1 · les prestations classées, couronne à l'appui ---- */
+.pr {
+  display: flex; align-items: center; gap: 10px;
+  background: #fff; border: 1px solid #E8EAED; border-radius: 8px;
+  padding: 7px 10px; margin-bottom: 7px; position: relative;
 }
-.gs-res:not(.is-first) { opacity: .5; }
-.gs-badge {
+.pr:last-child { margin-bottom: 0; }
+.is-in .pr.is-on { border-color: #1A73E8; background: #E8F0FE; }
+.pr-n {
   display: grid; place-items: center; flex: none;
-  width: 17px; height: 17px; border-radius: 50%;
-  background: #E6F4EA; color: #137333; font-size: 10px; font-weight: 500;
-  font-style: normal;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: #E8F0FE; color: #1568D6; font-size: 11px; font-weight: 500;
 }
-.gs-txt { display: block; height: 5px; border-radius: 3px; background: #DADCE0; }
-.gs-txt.w72 { width: 72%; } .gs-txt.w54 { width: 54%; } .gs-txt.w44 { width: 44%; }
-.is-in .gs-res.is-first { border-color: #34A853; box-shadow: 0 1px 3px rgba(52,168,83,.3); }
+.is-in .pr.is-on .pr-n { background: #1A73E8; color: #fff; }
+.pr-c { flex: 1; min-width: 0; }
+.pr-c b { display: block; font-size: 11.5px; font-weight: 500; color: #3C4043; line-height: 1.25; }
+.is-in .pr.is-on .pr-c b { color: #174EA6; }
+.pr-c s { display: block; height: 5px; border-radius: 3px; background: #E3E6E8; margin-top: 5px; overflow: hidden; }
+.pr-c s em {
+  display: block; height: 100%; border-radius: 3px; background: #8AB4F8;
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .8s cubic-bezier(.2,.8,.3,1) .3s;
+}
+.is-in .pr-c s em { transform: scaleX(var(--w, 0)); }
+.is-in .pr.is-on .pr-c s em { background: #1A73E8; }
+.pr-k { width: 17px; height: 17px; flex: none; fill: #C4C7CA; }
+.is-in .pr.is-on .pr-k { fill: #1A73E8; }
+.pr-ray {
+  position: absolute; right: 7px; top: 1px;
+  width: 17px; height: 17px; color: #8AB4F8; opacity: 0;
+}
+.is-in .pr.is-on .pr-ray { animation: prRay 2.6s ease-in-out 1.1s 2; }
+@keyframes prRay { 0%,100% { opacity: 0; transform: translateY(2px); } 40% { opacity: 1; transform: none; } }
 
-.gs-pin, .gs-ring {
-  position: absolute; right: 22px; bottom: -26px; border-radius: 50%; z-index: 1;
+/* ---- 2 · la page de conversion, dans sa fenêtre ---- */
+.win {
+  display: block; background: #fff; border: 1px solid #E3E6E8; border-radius: 9px;
+  box-shadow: 0 1px 3px rgba(60,64,67,.14); overflow: hidden; height: 100%;
 }
-.gs-pin { width: 11px; height: 11px; background: #34A853; right: 46px; bottom: 22px; }
-.gs-ring { width: 56px; height: 56px; border: 1.5px solid rgba(52,168,83,.4); right: 24px; bottom: 0; }
-.gs-ring.r2 { width: 94px; height: 94px; border-color: rgba(52,168,83,.18); right: 5px; bottom: -19px; }
-.is-in .gs-ring   { animation: gsRing 3s ease-out 1.2s 2; }
-.is-in .gs-ring.r2{ animation: gsRing 3s ease-out 1.45s 2; }
-@keyframes gsRing {
-  0%   { transform: scale(.55); opacity: 0; }
-  35%  { opacity: 1; }
-  100% { transform: scale(1); opacity: 1; }
+.win-bar {
+  display: flex; align-items: center; gap: 4px;
+  height: 20px; padding: 0 9px; background: #F1F3F4; border-bottom: 1px solid #E8EAED;
+}
+.win-bar s { width: 6px; height: 6px; border-radius: 50%; background: #D2D6DA; }
+.win-body { display: flex; gap: 11px; padding: 11px; }
+.win-left { flex: 1; min-width: 0; }
+.win-h { display: block; height: 13px; border-radius: 4px; background: #FDE293; margin-bottom: 8px; }
+.win-l { display: block; height: 5px; border-radius: 3px; background: #DADCE0; margin-bottom: 5px; }
+.win-l.w82 { width: 82%; } .win-l.w58 { width: 58%; }
+.win-cta {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 7px;
+  background: #F9AB00; color: #202124; border-radius: 5px;
+  padding: 7px 12px; font-size: 11px; font-weight: 500;
+}
+.win-cta svg { width: 12px; height: 12px; }
+.is-in .win-cta { animation: winPulse 2.8s ease-in-out 1.1s 2; }
+@keyframes winPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(249,171,0,.55); }
+  45%     { box-shadow: 0 0 0 9px rgba(249,171,0,0); }
+}
+.win-photo {
+  flex: none; width: 78px; border-radius: 6px; background: #EDEFF1;
+  display: grid; place-items: center; overflow: hidden;
+}
+.win-photo svg { width: 100%; height: auto; display: block; }
+
+/* ---- 3 · la première place, et la zone couverte ---- */
+.rk { display: flex; gap: 10px; height: 100%; }
+.rk-list { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.rk-search {
+  display: flex; align-items: center; gap: 7px;
+  background: #fff; border: 1px solid #E3E6E8; border-radius: 999px; padding: 6px 10px;
+}
+.rk-search svg { width: 11px; height: 11px; flex: none; }
+.rk-search em { flex: 1; height: 5px; border-radius: 3px; background: #DADCE0; }
+.rk-row {
+  display: flex; align-items: center; gap: 8px;
+  background: #fff; border: 1px solid #E8EAED; border-radius: 7px; padding: 7px 9px;
+}
+.rk-row:not(.is-first) { opacity: .55; }
+.is-in .rk-row.is-first { border-color: #34A853; background: #E6F4EA; }
+.rk-n {
+  display: grid; place-items: center; flex: none;
+  width: 19px; height: 19px; border-radius: 50%;
+  background: #E8EAED; color: #656A6E; font-size: 10px; font-weight: 500;
+}
+.is-in .rk-row.is-first .rk-n { background: #CEEAD6; color: #137333; }
+.rk-t { flex: 1; min-width: 0; display: grid; gap: 4px; }
+.rk-t i { display: block; height: 5px; border-radius: 3px; background: #DADCE0; width: calc(var(--w) * 100%); }
+.is-in .rk-row.is-first .rk-t i { background: #34A853; }
+.is-in .rk-row.is-first .rk-t i:last-child { background: #A8DAB5; }
+
+.rk-map {
+  flex: none; width: 102px; position: relative; overflow: hidden;
+  border-radius: 8px; background: #E9F2EC;
+}
+.rk-road { position: absolute; background: #fff; }
+.rk-road.r1 { left: -20%; top: 26%; width: 140%; height: 7px; transform: rotate(-16deg); }
+.rk-road.r2 { left: 34%; top: -20%; width: 7px; height: 140%; transform: rotate(12deg); }
+.rk-road.r3 { left: -20%; top: 72%; width: 140%; height: 6px; transform: rotate(9deg); }
+.rk-halo, .rk-dash {
+  position: absolute; left: 50%; top: 52%; transform: translate(-50%,-50%);
+  border-radius: 50%;
+}
+.rk-halo { width: 54px; height: 54px; background: rgba(52,168,83,.26); }
+.rk-dash { width: 80px; height: 80px; border: 1.5px dashed #34A853; opacity: .75; }
+.is-in .rk-dash { animation: rkPulse 3.4s ease-out 1.2s 2; }
+@keyframes rkPulse {
+  0%   { transform: translate(-50%,-50%) scale(.55); opacity: 0; }
+  40%  { opacity: .75; }
+  100% { transform: translate(-50%,-50%) scale(1); opacity: .75; }
+}
+.rk-pin {
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%,-72%);
+  width: 21px; height: 28px;
 }
 
 /* --- Pourquoi ça amène des appels ------------------------------------------
