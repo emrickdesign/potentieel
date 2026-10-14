@@ -65,6 +65,15 @@
         ],
         "createdAt": "2026-10-14T13:44:40.154418Z",
         "reason": "Client: a choisi l'animation glass folder de 21st.dev pour les dossiers de realisations. Ce ressort donne la bascule du panneau sur sa charniere et le rebond des fiches qui sortent de la poche ; l'aplatir en ease-out enleve l'effet demande. Borne a realisations.css."
+      },
+      {
+        "rule": "overused-font",
+        "value": "roboto",
+        "files": [
+          "google-ads.css"
+        ],
+        "createdAt": "2026-10-14T14:41:57.638637Z",
+        "reason": "Client: a demande que le logo Google Ads soit mis en avant. Roboto n'est utilise que sur le verrou 'Google Ads' du header, ou c'est la police de Google - c'est ce qui rend le logo juste. Le reste de la page est en Spectral et Libre Franklin."
       }
     ]
   }
