@@ -1019,11 +1019,10 @@ section { position: relative; }
 }
 
 /* ---------- L'équipe -----------------------------------------------------
-   Un portrait, pas un article : le récit est coupé en trois bulles et la
-   section entière est composée dans la serif, une seule police. Rien ne
-   change de taille d'une bulle à l'autre — ce sont la teinte et la matière
-   qui portent la hiérarchie. La photo tient toute la hauteur à droite, les
-   deux noms se posent dessus.
+   Un témoignage, pas un article : le récit est posé en citation, ouvert par
+   un guillemet de laiton, sans cadre ni bulle. Rien ne change de taille —
+   ce sont la teinte et la graisse qui marquent les mots qui comptent. Les
+   deux noms se rangent sous la citation : rien ne passe sur la photo.
    ------------------------------------------------------------------------ */
 .team {
   position: relative; overflow: hidden;
@@ -1047,24 +1046,26 @@ section { position: relative; }
   padding-bottom: clamp(32px, 3.6vw, 48px);
 }
 
-/* les trois bulles du récit */
-.team-story { display: grid; gap: 14px; margin-bottom: auto; }
-.tb {
+/* la citation */
+.team-quote {
+  position: relative; margin: 0 0 auto;
+  padding-left: clamp(42px, 4.4vw, 58px);
+}
+.team-quote::before {
+  content: '«';
+  position: absolute; left: 0; top: -0.3em;
+  font-family: var(--serif); font-size: 3.4rem; line-height: 1;
+  color: var(--brass); opacity: .72;
+}
+.team-quote p {
   font-family: var(--serif);
-  font-size: var(--fs-base); line-height: 1.66; color: var(--dim);
-  background: var(--slate);
-  border: 1px solid var(--rule-soft);
-  border-radius: 16px;
-  padding: 18px 22px 19px;
+  font-size: var(--fs-base); line-height: 1.72; color: var(--dim);
+  max-width: 50ch;
 }
-/* le tournant : même corps, autre matière */
-.tb-key {
-  color: var(--chalk);
-  background:
-    linear-gradient(90deg, rgba(210,165,76,.13), rgba(210,165,76,0) 58%),
-    var(--slate);
-  border-color: rgba(210, 165, 76, .34);
-}
+.team-quote p + p { margin-top: 16px; }
+/* les mots qui comptent : meme corps, autre teinte */
+.q-up  { font-weight: 600; color: var(--chalk); }
+.q-key { font-weight: 600; color: var(--brass); }
 
 .team-note {
   font-family: var(--serif);
@@ -1073,7 +1074,7 @@ section { position: relative; }
   border-left: 1px solid rgba(210, 165, 76, .4);
 }
 
-/* la scène de droite : la photo tient la hauteur, les noms se posent dessus */
+/* la photo, seule sur sa colonne */
 .team-stage { position: relative; display: flex; align-items: flex-end; }
 .team-stage::before {
   content: ''; position: absolute; z-index: 0;
@@ -1089,17 +1090,19 @@ section { position: relative; }
   display: block; opacity: .96;
 }
 
+/* les deux noms, rangés sous la citation */
 .team-who {
-  position: absolute; z-index: 2;
-  left: clamp(-56px, -3.6vw, -20px); bottom: clamp(26px, 4vw, 52px);
-  display: grid; gap: 10px;
+  display: grid; justify-items: start;
+  gap: 10px; margin-top: clamp(24px, 2.8vw, 34px);
 }
+/* a leur largeur de contenu : cote a cote, le role d'Eloise passait sur deux
+   lignes et desequilibrait la paire. */
 .team-who > div {
-  background: rgba(13, 27, 36, .82);
-  backdrop-filter: blur(14px) saturate(130%);
+  width: fit-content; max-width: 100%;
+  background: var(--slate);
   border: 1px solid var(--rule-soft);
   border-radius: 999px;
-  padding: 12px 22px 13px;
+  padding: 12px 26px 14px;
 }
 .team-who b {
   display: block; font-family: var(--serif);
@@ -1115,14 +1118,9 @@ section { position: relative; }
   .team-head { grid-template-columns: 1fr; gap: 18px; margin-bottom: 24px; align-items: start; }
   .team-grid { grid-template-columns: 1fr; gap: 10px; }
   .team-text { padding-bottom: 0; }
-  .tb { max-width: none; }
-  /* la scene repasse en bloc : sans ca les pastilles se rangent a cote de la
-     photo au lieu de se poser dessous. */
+  .team-quote p { max-width: none; }
   .team-stage { display: block; margin-top: 24px; }
   .team-photo { width: 100%; margin-right: 0; margin-left: 0; }
-  .team-who {
-    position: static; grid-template-columns: 1fr; gap: 10px; margin-top: 16px;
-  }
   .team-who > div { border-radius: 14px; }
 }
 
