@@ -109,8 +109,12 @@
       '<div class="fold-stage">' +
         '<div class="fold-shadow" aria-hidden="true"></div>' +
         '<div class="fold-back" aria-hidden="true"></div>' +
+        '<svg class="fold-rim fold-rim-back" viewBox="0 0 340 272" aria-hidden="true">' +
+          '<path d="M0 56A22 22 0 0 1 22 34L146 34C170 34 172 0 198 0L318 0A22 22 0 0 1 340 22L340 250A22 22 0 0 1 318 272L22 272A22 22 0 0 1 0 250Z"/></svg>' +
         '<div class="fold-files" role="list">' + fiches + '</div>' +
         '<div class="fold-front">' +
+          '<svg class="fold-rim fold-rim-front" viewBox="0 0 340 198" aria-hidden="true">' +
+            '<path d="M0 22A22 22 0 0 1 22 0L118 0C144 0 146 32 172 32L318 32A22 22 0 0 1 340 54L340 176A22 22 0 0 1 318 198L22 198A22 22 0 0 1 0 176Z"/></svg>' +
           '<button type="button" class="fold-hit" aria-expanded="false">' +
             '<span class="sr-only">Ouvrir le dossier ' + echappe(d.titre) + ', ' + n + ' sites</span>' +
           '</button>' +

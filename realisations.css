@@ -69,22 +69,34 @@
 .fold-stage { position: absolute; left: 0; top: 110px; width: 340px; height: 272px; }
 
 .fold-shadow {
-  position: absolute; left: 18px; right: 18px; bottom: -6px; height: 60px;
-  border-radius: 40px; background: rgba(0, 0, 0, .55); filter: blur(22px);
+  position: absolute; left: 14px; right: 14px; bottom: -10px; height: 70px;
+  border-radius: 40px; background: rgba(0, 0, 0, .78); filter: blur(26px);
 }
 
 /* le panneau de fond, découpé en forme de dossier */
 .fold-back {
   position: absolute; inset: 0; overflow: hidden;
-  background: linear-gradient(170deg, var(--bg-card-3) 0%, var(--bg-card) 62%, #11232E 100%);
+  /* nettement plus clair que la page : le dossier doit se lire comme un
+     objet posé dessus, pas se fondre dedans. Mesuré 2,66:1 contre le fond. */
+  background: linear-gradient(170deg, #3A6276 0%, #2C5468 56%, #24495C 100%);
   clip-path: path('M0 56A22 22 0 0 1 22 34L146 34C170 34 172 0 198 0L318 0A22 22 0 0 1 340 22L340 250A22 22 0 0 1 318 272L22 272A22 22 0 0 1 0 250Z');
 }
 .fold-back::after {
   content: ''; position: absolute; inset: 0;
   background:
-    linear-gradient(180deg, rgba(255,255,255,.07) 0%, rgba(255,255,255,0) 24%),
-    radial-gradient(120% 80% at 78% 0%, rgba(210,165,76,.14), rgba(210,165,76,0) 62%);
+    linear-gradient(180deg, rgba(255,255,255,.1) 0%, rgba(255,255,255,0) 26%),
+    radial-gradient(120% 80% at 78% 0%, rgba(210,165,76,.18), rgba(210,165,76,0) 62%);
 }
+
+/* Le liseré : la forme découpée n'a pas de bordure possible, on la retrace. */
+.fold-rim {
+  position: absolute; left: 0; top: 0;
+  max-width: none; overflow: visible; pointer-events: none; fill: none;
+}
+.fold-rim-back { width: 340px; height: 272px; z-index: 1; }
+.fold-rim-back path { stroke: rgba(233, 239, 242, .3); stroke-width: 1.2; }
+.fold-rim-front { width: 340px; height: 198px; z-index: 3; }
+.fold-rim-front path { stroke: rgba(233, 239, 242, .42); stroke-width: 1.4; }
 
 /* les fiches */
 .fold-files {
@@ -171,11 +183,13 @@
 }
 .fold-front::before {
   content: ''; position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(22,44,57,.3) 0%, rgba(13,27,36,.72) 46%, rgba(9,20,27,.95) 100%);
+  /* le verre reste au-dessus du ton de la page sur toute sa hauteur : avant,
+     il s'éteignait vers #09141B et la moitié basse du dossier disparaissait. */
+  background: linear-gradient(180deg, rgba(74,110,130,.5) 0%, rgba(50,84,102,.86) 46%, rgba(39,72,90,.96) 100%);
 }
 .fold-front::after {
   content: ''; position: absolute; inset: 0;
-  background: radial-gradient(260px 200px at 50% 26%, rgba(255,255,255,.1), rgba(255,255,255,0) 72%);
+  background: radial-gradient(260px 200px at 50% 26%, rgba(255,255,255,.14), rgba(255,255,255,0) 72%);
   pointer-events: none;
 }
 
@@ -191,15 +205,17 @@
   font-size: 18px; font-weight: 600; line-height: 1.2;
   letter-spacing: -.012em; color: var(--white);
 }
-.fold-label span { font-size: 12.5px; color: var(--gray-light); }
+/* la face éclaircie fait tomber --gray-light à 4,47:1 : on remonte juste
+   ce qu'il faut pour repasser le seuil, teinte conservée (4,53:1). */
+.fold-label span { font-size: 12.5px; color: #A1B4BF; }
 
 /* la poignée : elle tourne quand le dossier s'ouvre */
 .fold-key {
   position: absolute; right: 22px; bottom: 22px; z-index: 12;
   width: 50px; height: 50px; border-radius: 16px;
   display: grid; place-items: center; pointer-events: none;
-  background: linear-gradient(180deg, rgba(233,239,242,.12) 0%, rgba(233,239,242,.04) 100%);
-  border: 1px solid rgba(233, 239, 242, .16);
+  background: linear-gradient(180deg, rgba(13,27,36,.42) 0%, rgba(13,27,36,.24) 100%);
+  border: 1px solid rgba(233, 239, 242, .26);
   -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
   transition: transform .5s var(--spring), background .4s var(--ease);
 }
