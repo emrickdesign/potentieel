@@ -1032,8 +1032,8 @@ section { position: relative; }
 /* Le titre et la phrase de cloture passent en bandeau : la colonne de gauche
    raccourcit d'autant, et le haut a droite cesse d'etre vide. */
 .team-head {
-  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.02fr);
-  gap: clamp(28px, 4vw, 56px); align-items: center;
+  display: grid; grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+  gap: clamp(24px, 3vw, 44px); align-items: center;
   margin-bottom: clamp(26px, 3vw, 38px);
 }
 .team-grid {
@@ -1066,7 +1066,9 @@ section { position: relative; }
 .team-quote p + p { margin-top: 16px; }
 .team-quote::after {
   content: '»';
-  position: absolute; right: 6px; bottom: -4px;
+  position: absolute; bottom: -4px;
+  left: clamp(42px, 4.4vw, 58px); right: 0;
+  text-align: center;
   font-family: var(--serif); font-size: 3.4rem; line-height: 1;
   color: var(--brass); opacity: .72;
 }
@@ -1091,11 +1093,14 @@ section { position: relative; }
 }
 
 /* les deux noms, rangés sous la citation */
-.team-who { display: grid; justify-items: start; gap: 10px; }
+.team-who {
+  display: flex; flex-wrap: wrap; align-items: stretch;
+  gap: 10px;
+}
 /* a leur largeur de contenu : cote a cote, le role d'Eloise passait sur deux
    lignes et desequilibrait la paire. */
 .team-who > div {
-  width: fit-content; max-width: 100%;
+  flex: 0 1 auto; max-width: 100%;
   background: var(--slate);
   border: 1px solid var(--rule-soft);
   border-radius: 999px;
