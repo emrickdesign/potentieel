@@ -1155,7 +1155,8 @@ section { position: relative; }
 .glsa b { font-weight: 500; color: #174EA6; }
 
 /* la capture de l'emplacement, prise sur une vraie page de résultats */
-.glsa-shot { margin: clamp(22px, 2.6vw, 30px) 0 0; max-width: 560px; }
+.glsa-shot { margin: clamp(22px, 2.6vw, 30px) 0 0; max-width: 740px; }
+.glsa-shot picture { display: block; }
 .glsa-shot img {
   width: 100%; height: auto; display: block;
   border-radius: 10px; border: 1px solid rgba(23,78,166,.18);
