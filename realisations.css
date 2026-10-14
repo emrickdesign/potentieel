@@ -235,98 +235,108 @@
 .fold.is-in .fold-file { transition-delay: calc(var(--depth) * 40ms); }
 .fold.is-in .fold-front { transition: transform .8s var(--spring) .3s, opacity .8s var(--ease) .3s; }
 
-/* ---------- l'aperçu ----------------------------------------------------- */
+/* ---------- l'aperçu : le vrai site, en plein écran ----------------------
+   Le site est chargé par son adresse et fonctionne entièrement : images à
+   leur qualité d'origine, liens, défilement, tout. Il occupe l'écran, et
+   une flèche en haut à gauche ramène à Potentieel. Le cadre n'est bridé que
+   sur un point : il ne peut pas remplacer notre page par la sienne.
+   -------------------------------------------------------------------------- */
 
 .peek {
   position: fixed; inset: 0; z-index: 2000;
-  display: grid; place-items: center;
-  padding: clamp(10px, 2vw, 28px);
-  background: rgba(5, 12, 17, .82);
-  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  background: #0A141B;
   opacity: 0; visibility: hidden;
-  transition: opacity .3s var(--ease), visibility 0s .3s;
+  transition: opacity .28s var(--ease), visibility 0s .28s;
 }
 .peek.is-on { opacity: 1; visibility: visible; transition-delay: 0s; }
 
 .peek-box {
-  /* 1240 de rendu + 2 de bordure + la barre de défilement du conteneur :
-     sans cette marge, la zone utile tombe sous 1240 et le site bascule sur
-     sa version tablette. */
-  position: relative; width: min(1257px, 100%); height: min(820px, 100%);
+  position: absolute; inset: 0;
   display: flex; flex-direction: column;
-  background: #0A141B; border: 1px solid rgba(233, 239, 242, .14);
-  border-radius: 16px; overflow: hidden;
-  box-shadow: 0 40px 90px -30px rgba(0, 0, 0, .9);
-  transform: translateY(18px) scale(.98);
-  transition: transform .45s var(--spring);
+  background: #0A141B;
 }
-.peek.is-on .peek-box { transform: none; }
 
-/* le bandeau tient lieu de légende : pas d'adresse, le nom du client */
+/* le bandeau : la flèche de retour, puis le nom du client */
 .peek-bar {
   flex: none; display: flex; align-items: center; gap: 14px;
-  padding: 13px 16px 13px 20px;
-  border-bottom: 1px solid rgba(233, 239, 242, .12);
+  padding: 9px 16px 9px 10px;
+  border-bottom: 1px solid rgba(233, 239, 242, .14);
   background: linear-gradient(180deg, #16262F 0%, #101E27 100%);
 }
-.peek-bar .peek-who { min-width: 0; display: grid; gap: 2px; }
+.peek-retour {
+  flex: none; display: inline-flex; align-items: center; gap: 9px;
+  padding: 9px 16px 9px 11px; border-radius: 10px; cursor: pointer;
+  background: rgba(233, 239, 242, .09);
+  border: 1px solid rgba(233, 239, 242, .18);
+  color: var(--white); font: inherit; font-size: 13.5px; font-weight: 600;
+  transition: background .2s var(--ease);
+}
+.peek-retour:hover { background: rgba(233, 239, 242, .18); }
+.peek-retour:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+.peek-retour svg {
+  width: 17px; height: 17px; flex: none;
+  fill: none; stroke: currentColor; stroke-width: 2.1;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+
+.peek-bar .peek-who { min-width: 0; display: grid; gap: 1px; }
 .peek-bar b {
-  font-size: 15px; font-weight: 600; color: var(--white);
+  font-size: 14.5px; font-weight: 600; color: var(--white);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .peek-bar span {
-  font-size: 12.5px; color: var(--gray-light);
+  font-size: 12.5px; color: #A1B4BF;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .peek-note {
   margin-left: auto; flex: none; display: inline-flex; align-items: center; gap: 7px;
-  font-size: 12px; color: var(--gray);
+  font-size: 12.5px; color: #93A8B4;
 }
 .peek-note svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.8; }
-.peek-close {
-  flex: none; width: 36px; height: 36px; border-radius: 10px;
-  display: grid; place-items: center; cursor: pointer;
-  background: rgba(233, 239, 242, .08); border: 1px solid rgba(233, 239, 242, .14);
-  color: var(--white);
+.peek-onglet {
+  color: var(--orange); text-decoration: underline;
+  text-underline-offset: 3px; font-weight: 600;
 }
-.peek-close:hover { background: rgba(233, 239, 242, .16); }
-.peek-close:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
-.peek-close svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.peek-onglet:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; border-radius: 4px; }
 
-/* La page entière, en capture, à sa taille de rendu réelle — 1240 px sur un
-   grand écran, 390 px sur un téléphone. On la parcourt du haut au pied du
-   site ; rien n'y est cliquable, par construction. Un cadre vivant ne peut
-   pas faire ça : sa hauteur d'élément EST sa hauteur de fenêtre, donc les
-   sections en 100vh d'un site s'étirent à la hauteur du cadre. */
+/* le site lui-même, vivant et entier */
 .peek-vue {
-  flex: 1; min-height: 0; position: relative;
+  flex: 1; min-height: 0; position: relative; background: #fff;
+}
+.peek-vue iframe {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; border: 0; display: block;
+}
+
+/* Si un site refusait un jour d'être affiché ainsi, sa capture prend le
+   relais et le bandeau propose de l'ouvrir dans un onglet. */
+.peek-repli {
+  position: absolute; inset: 0; z-index: 2; display: none;
   overflow: hidden auto; overscroll-behavior: contain;
   background: #0A141B;
-  display: flex; justify-content: center; align-items: flex-start;
+  justify-content: center; align-items: flex-start;
 }
-.peek-page {
-  flex: none; display: block;
-  max-width: none; height: auto;
-  background: #fff;
-}
+.peek-box.is-repli .peek-repli { display: flex; }
+.peek-box.is-repli .peek-vue iframe { display: none; }
+.peek-page { flex: none; display: block; max-width: none; height: auto; background: #fff; }
 
 .peek-wait {
-  position: absolute; inset: 0; z-index: 2;
+  position: absolute; inset: 0; z-index: 3;
   display: grid; place-items: center;
   color: var(--gray); font-size: 14px;
-  background: #0A141B; transition: opacity .4s var(--ease);
+  background: #0A141B;
 }
 .peek-wait[hidden] { display: none; }
+
+@media (max-width: 620px) {
+  .peek-note { display: none; }
+  .peek-retour span { display: none; }
+  .peek-retour { padding: 10px; }
+}
 
 @media (max-width: 860px) {
   /* ecran etroit : l'escalier se resserre pour rester dans le cadre du dossier */
   .fold.is-open { --lift: -62px; --stack: 48px; }
-}
-
-@media (max-width: 760px) {
-  .peek { padding: 0; }
-  .peek-box { width: 100%; height: 100%; border-radius: 0; border: 0; }
-  .peek-note { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

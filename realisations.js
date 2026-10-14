@@ -187,122 +187,118 @@
   peek.innerHTML =
     '<div class="peek-box">' +
       '<div class="peek-bar">' +
+        '<button type="button" class="peek-retour">' +
+          '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>' +
+          '<span>Retour à Potentieel</span>' +
+        '</button>' +
         '<div class="peek-who"><b></b><span></span></div>' +
         '<span class="peek-note">' +
           '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>' +
-          'Aperçu : la page entière, en lecture seule' +
+          'Le site du client, en vrai' +
         '</span>' +
-        '<button type="button" class="peek-close" aria-label="Fermer l’aperçu">' +
-          '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>' +
-        '</button>' +
       '</div>' +
-      /* data-lenis-prevent : la page utilise Lenis, qui capte la molette pour
-         tout le document. Sans cet attribut, l'aperçu ne défile pas. */
-      /* data-lenis-prevent : la page utilise Lenis, qui capte la molette pour
-         tout le document. Sans cet attribut, l'aperçu ne défile pas. */
-      '<div class="peek-vue" data-lenis-prevent>' +
-        '<div class="peek-wait">Chargement de la page…</div>' +
+      '<div class="peek-vue">' +
+        '<iframe title="" referrerpolicy="no-referrer" allow="autoplay; fullscreen" ' +
+          'sandbox="allow-scripts allow-same-origin allow-forms allow-popups ' +
+          'allow-popups-to-escape-sandbox allow-downloads allow-pointer-lock"></iframe>' +
+        // data-lenis-prevent : la page utilise Lenis, qui capte la molette pour
+        // tout le document ; sans lui le repli ne défilerait pas.
+        '<div class="peek-repli" data-lenis-prevent></div>' +
+        '<div class="peek-wait">Ouverture du site…</div>' +
       '</div>' +
     '</div>';
   document.body.appendChild(peek);
 
   var boite  = peek.querySelector('.peek-box');
   var vue    = peek.querySelector('.peek-vue');
+  var cadre  = peek.querySelector('iframe');
+  var repli  = peek.querySelector('.peek-repli');
   var attend = peek.querySelector('.peek-wait');
+  var retour = peek.querySelector('.peek-retour');
   var nomEl  = peek.querySelector('.peek-bar b');
-  var metEl  = peek.querySelector('.peek-bar span');
+  var metEl  = peek.querySelector('.peek-who span');
   var rendu  = null;      // l'élément à qui rendre le focus
   var minuteur = 0;
+  var siteOuvert = null;
 
-  /* Les largeurs auxquelles les pages ont été capturées. On prend
-     deux largeurs de rendu : celle d'un ordinateur et celle d'un téléphone.
-     On prend la première qui tient dans la zone, jamais de mise à l'échelle. */
+  /* Largeurs auxquelles les captures de repli ont été prises. */
   var LARGEURS = [1240, 390];
 
-  function largeurDeRendu() {
-    var dispo = vue.clientWidth;
-    // 6 px de tolérance : selon le système la barre de défilement prend une
-    // largeur différente, et on ne veut pas basculer d'un cran pour 2 px.
-    return LARGEURS[0] <= dispo + 6 ? LARGEURS[0] : LARGEURS[1];
-  }
-
-  var imageEnCours = null;
-
-  function poser(site) {
-    var w = largeurDeRendu();
-    var d = site.plein && site.plein[w];
+  /* Le repli : si le cadre reste vide, on montre la capture pleine page et
+     on propose d'ouvrir le site dans un onglet. */
+  function basculerSurRepli() {
+    if (!siteOuvert || boite.classList.contains('is-repli')) return;
+    var w = vue.clientWidth >= 1234 ? LARGEURS[0] : LARGEURS[1];
+    var d = siteOuvert.plein && siteOuvert.plein[w];
     var img = document.createElement('img');
     img.className = 'peek-page';
     img.decoding = 'async';
-    // dimensions réelles de la capture : la place est réservée avant le
-    // chargement, et l'image s'affiche au pixel près, sans redimensionnement.
     if (d) { img.width = d[0]; img.height = d[1]; }
-    img.alt = 'La page d’accueil du site de ' + site.nom + ', en entier.';
-    img.src = 'assets/apercus/plein/' + site.cle + '-' + w + '.webp';
+    img.alt = 'La page d’accueil du site de ' + siteOuvert.nom + ', en entier.';
+    img.src = 'assets/apercus/plein/' + siteOuvert.cle + '-' + w + '.webp';
+    repli.innerHTML = '';
+    repli.appendChild(img);
+    attend.hidden = true;
+    boite.classList.add('is-repli');
 
-    img.addEventListener('load', function () {
-      if (img !== imageEnCours) return;
-      attend.hidden = true;
-      clearTimeout(minuteur);
-    });
-    img.addEventListener('error', function () {
-      if (img !== imageEnCours) return;
-      attend.textContent = 'Cet aperçu n’est pas disponible pour le moment.';
-    });
-
-    var ancienne = vue.querySelector('.peek-page');
-    if (ancienne) ancienne.remove();
-    vue.insertBefore(img, attend);
-    img.setAttribute('data-w', w);
-    imageEnCours = img;
-    return w;
+    if (!peek.querySelector('.peek-onglet')) {
+      var a = document.createElement('a');
+      a.className = 'peek-note peek-onglet';
+      a.href = siteOuvert.url;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.textContent = 'Ouvrir le site dans un onglet';
+      var note = peek.querySelector('.peek-note');
+      if (note) note.replaceWith(a);
+    }
   }
 
   function ouvrir(f) {
     rendu = f;
     var site = CATALOGUE[f.dataset.url];
     if (!site) return;
+    siteOuvert = site;
     nomEl.textContent = site.nom;
     metEl.textContent = site.metier;
-    attend.textContent = 'Chargement de la page…';
+    cadre.title = 'Site de ' + site.nom;
+    attend.textContent = 'Ouverture du site…';
     attend.hidden = false;
-    vue.scrollTop = 0;
-    poser(site);
+    boite.classList.remove('is-repli');
+    repli.innerHTML = '';
+    cadre.src = site.url;
 
     peek.classList.add('is-on');
     document.documentElement.style.overflow = 'hidden';
-    peek.querySelector('.peek-close').focus();
+    retour.focus();
 
+    // si rien ne vient au bout de 9 s, le site refuse probablement le cadre
     clearTimeout(minuteur);
-    minuteur = setTimeout(function () {
-      if (!attend.hidden) attend.textContent = 'La page met du temps à venir…';
-    }, 9000);
+    minuteur = setTimeout(basculerSurRepli, 9000);
   }
 
   function fermer() {
     clearTimeout(minuteur);
     peek.classList.remove('is-on');
     document.documentElement.style.overflow = '';
-    var img = vue.querySelector('.peek-page');
-    if (img) { img.remove(); imageEnCours = null; }
+    cadre.src = 'about:blank';      // on arrête le site qui tournait
+    repli.innerHTML = '';
+    boite.classList.remove('is-repli');
+    siteOuvert = null;
     if (rendu) { rendu.focus(); rendu = null; }
   }
+
+  cadre.addEventListener('load', function () {
+    if (!cadre.src || cadre.src === 'about:blank') return;
+    attend.hidden = true;
+    clearTimeout(minuteur);
+  });
 
   hote.addEventListener('click', function (e) {
     var f = e.target.closest('.fold-file');
     if (f) ouvrir(f);
   });
 
-  window.addEventListener('resize', function () {
-    if (!peek.classList.contains('is-on') || !rendu) return;
-    var site = CATALOGUE[rendu.dataset.url];
-    var img = vue.querySelector('.peek-page');
-    // on ne recharge que si on change de largeur de rendu
-    if (site && img && img.getAttribute('data-w') !== String(largeurDeRendu())) { attend.hidden = false; poser(site); }
-  });
-
-  peek.querySelector('.peek-close').addEventListener('click', fermer);
-  peek.addEventListener('click', function (e) { if (e.target === peek) fermer(); });
+  retour.addEventListener('click', fermer);
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && peek.classList.contains('is-on')) fermer();
   });
@@ -310,6 +306,6 @@
   peek.addEventListener('keydown', function (e) {
     if (e.key !== 'Tab') return;
     e.preventDefault();
-    peek.querySelector('.peek-close').focus();
+    retour.focus();
   });
 })();
