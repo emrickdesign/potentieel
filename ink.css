@@ -263,6 +263,8 @@ section { position: relative; }
   position: relative; padding-left: 20px;
   font-size: 0.95rem; line-height: 1.5; color: var(--dim);
 }
+.hero .btn-row { margin-top: 40px; }
+
 .hero-aims li::before {
   content: ''; position: absolute; left: 0; top: 0.62em;
   width: 10px; height: 1.5px; background: var(--brass);
@@ -274,19 +276,27 @@ section { position: relative; }
 .serp {
   background: #fff;
   color: #1f1f1f;
-  border-radius: 10px;
+  border-radius: 14px;
   max-width: 505px;
-  padding: 15px 17px 17px;
+  padding: 18px;
   font-family: Arial, 'Liberation Sans', sans-serif;
   box-shadow: 0 24px 60px -20px rgba(0,0,0,.6);
 }
 
+/* L'en-tête reprend celui de Google : le mot-symbole, puis la barre de
+   recherche en pilule flottante — pas de bordure, une vraie ombre portée. */
+.serp-head { display: flex; align-items: center; gap: 16px; }
+.serp-logo { width: 74px; height: 25px; flex: none; }
+
 .serp-bar {
+  flex: 1; min-width: 0;
   display: flex; align-items: center; gap: 12px;
-  border: 1px solid #dfe1e5; border-radius: 999px;
-  padding: 10px 16px; margin-bottom: 18px;
+  background: #fff; border: 0; border-radius: 999px;
+  padding: 11px 16px;
+  box-shadow: 0 1px 6px rgba(32,33,36,.28);
 }
-.serp-bar svg { width: 17px; height: 17px; flex: none; }
+.serp-mag { width: 17px; height: 17px; flex: none; }
+.serp-vox { width: 17px; height: 17px; flex: none; margin-left: auto; }
 .serp-q {
   font-size: 15px; color: #1f1f1f; min-height: 1.3em;
   white-space: nowrap; overflow: hidden;
@@ -305,8 +315,8 @@ section { position: relative; }
 }
 .serp-res { overflow: hidden; min-height: 0; }
 .serp.is-done .serp-slot { grid-template-rows: 1fr; opacity: 1; }
-.serp-bar { margin-bottom: 0; }
-.serp.is-done .serp-bar { margin-bottom: 18px; transition: margin-bottom .45s ease; }
+.serp-head { margin-bottom: 0; }
+.serp.is-done .serp-head { margin-bottom: 20px; transition: margin-bottom .45s ease; }
 
 .serp-tag {
   font-size: 12.5px; font-weight: 700;
@@ -457,7 +467,11 @@ section { position: relative; }
 .gmark.anim .ga-blue   { transform: scaleY(.12) rotate(10deg); }
 .gmark.anim .ga-yellow { transform: scaleY(.12) rotate(-10deg); }
 .gmark.anim .ga-mix    { transform: scaleY(.12); }
-.gmark.anim .ga-green  { transform: scale(0); }
+/* Le rond vert part du sommet et descend le long de la barre jaune, comme
+   dans l'animation de Google : la barre est une droite du sommet (125, 20)
+   au coin bas-gauche (46, 196), donc un simple déplacement suffit à suivre
+   son trajet. */
+.gmark.anim .ga-green  { transform: translate(79px, -176px) scale(.34); }
 
 .gmark.anim.is-in path { opacity: 1; transform: none; }
 .gmark.anim.is-in .ga-blue {
@@ -470,7 +484,7 @@ section { position: relative; }
   transition: transform .5s cubic-bezier(.2,.76,.28,1) .18s, opacity .32s ease .26s;
 }
 .gmark.anim.is-in .ga-green {
-  transition: transform .5s cubic-bezier(.34,1.56,.5,1) .28s, opacity .2s ease .28s;
+  transition: transform .62s cubic-bezier(.34,.9,.3,1.18) .3s, opacity .18s ease .3s;
 }
 
 .gzone p { max-width: 68ch; }
@@ -572,119 +586,168 @@ section { position: relative; }
 .gs-yellow b { color: #8A5300; }
 .gs-green  b { color: #137333; }
 
-/* L'illustration de chaque étape */
+/* L'illustration de chaque étape, en haut de la carte */
 .gs-art {
-  display: block; position: relative; height: 92px;
-  margin: 0 -22px 18px; padding: 18px 22px 0;
+  display: block; position: relative; height: 134px;
+  margin: 0 -22px 18px; padding: 14px 20px 0;
   background: #F8F9FA; border-bottom: 1px solid #E8EAED;
   overflow: hidden;
 }
+.gs-art u { text-decoration: none; }
 
-/* 1 — les prestations, dont une retenue */
-.gs-chip {
-  display: inline-block; font-style: normal;
-  font-size: 11.5px; line-height: 1; color: #5F6368;
-  background: #fff; border: 1px solid #DADCE0; border-radius: 999px;
-  padding: 6px 10px; margin: 0 5px 6px 0;
-  transition: background .4s ease, color .4s ease, border-color .4s ease;
+/* 1 — les prestations, avec leur part de chiffre, dont une retenue */
+.gs-pres {
+  display: block; font-style: normal; position: relative;
+  background: #fff; border: 1px solid #DADCE0; border-radius: 6px;
+  padding: 6px 10px 7px; margin-bottom: 3px;
+  transition: border-color .4s ease, box-shadow .4s ease, transform .4s ease;
 }
-.is-in .gs-chip.is-on { background: #1A73E8; border-color: #1A73E8; color: #fff; }
+.gs-pres b { display: block; font-size: 11px; line-height: 1.25; font-weight: 500; color: #5F6368; }
+.gs-pres em { display: block; height: 3px; border-radius: 2px; background: #E8EAED; margin-top: 4px; }
+.gs-pres em u {
+  display: block; height: 100%; border-radius: 2px; background: #DADCE0;
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .7s cubic-bezier(.2,.8,.3,1) .25s;
+}
+.is-in .gs-pres em u { transform: scaleX(1); }
+.is-in .gs-pres.is-on {
+  border-color: #1A73E8; transform: translateX(3px);
+  box-shadow: 0 1px 3px rgba(26,115,232,.3);
+}
+.is-in .gs-pres.is-on b { color: #174EA6; font-weight: 500; }
+.is-in .gs-pres.is-on em u { background: #1A73E8; }
 
-/* 2 — la page d'arrivée, avec son bouton d'appel */
-.gs-art-page { padding-top: 16px; }
-.gs-l {
-  display: block; height: 6px; border-radius: 3px; background: #DADCE0;
-  margin-bottom: 7px;
+/* 2 — la page de conversion */
+.gs-art-page { padding: 16px 20px 0; }
+.gs-win {
+  display: block; background: #fff; border-radius: 6px 6px 0 0;
+  box-shadow: 0 1px 3px rgba(60,64,67,.24);
+  padding: 9px 9px 0; height: 112px; overflow: hidden;
 }
-.gs-l.w70 { width: 70%; } .gs-l.w45 { width: 45%; } .gs-l.w60 { width: 60%; }
-.gs-cta {
-  display: inline-block; font-style: normal;
-  font-size: 11px; font-weight: 500; color: #fff;
-  background: #137333; border-radius: 4px; padding: 5px 12px; margin-bottom: 7px;
+.gs-photo {
+  display: block; height: 34px; border-radius: 4px;
+  background: linear-gradient(115deg, #DDE3E8 0%, #EEF1F3 52%, #DDE3E8 100%);
+  margin-bottom: 8px;
 }
-.is-in .gs-art-page .gs-cta { animation: gsPulse 2.4s ease-in-out 1.2s 2; }
+.gs-t1, .gs-t2 { display: block; height: 6px; border-radius: 3px; background: #DADCE0; }
+.gs-t1 { width: 72%; margin-bottom: 5px; }
+.gs-t2 { width: 48%; margin-bottom: 10px; }
+.gs-btn2 {
+  display: inline-block; font-size: 10.5px; font-weight: 500; color: #fff;
+  background: #137333; border-radius: 4px; padding: 6px 13px;
+}
+.is-in .gs-btn2 { animation: gsPulse 2.6s ease-in-out 1.1s 2; }
 @keyframes gsPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(19,115,51,.45); }
-  40%      { box-shadow: 0 0 0 8px rgba(19,115,51,0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(19,115,51,.5); }
+  45%      { box-shadow: 0 0 0 9px rgba(19,115,51,0); }
 }
 
-/* 3 — la zone d'intervention */
-.gs-art-zone { padding: 0; }
-.gs-pin, .gs-ring {
-  position: absolute; left: 50%; top: 52%; transform: translate(-50%,-50%);
-  border-radius: 50%;
+/* 3 — la première place, et la zone couverte */
+.gs-art-rank { padding: 18px 20px 0; }
+.gs-res {
+  display: flex; align-items: center; gap: 8px;
+  background: #fff; border: 1px solid #E8EAED; border-radius: 5px;
+  padding: 7px 9px; margin-bottom: 6px; position: relative; z-index: 2;
+  transition: border-color .4s ease, box-shadow .4s ease;
 }
-.gs-pin { width: 14px; height: 14px; background: #34A853; }
-.gs-ring { width: 44px; height: 44px; border: 1.5px solid rgba(52,168,83,.45); }
-.gs-ring.r2 { width: 78px; height: 78px; border-color: rgba(52,168,83,.22); }
-.is-in .gs-ring   { animation: gsRing 3.2s ease-out 1.4s 2; }
-.is-in .gs-ring.r2{ animation: gsRing 3.2s ease-out 1.6s 2; }
+.gs-res:not(.is-first) { opacity: .5; }
+.gs-badge {
+  display: grid; place-items: center; flex: none;
+  width: 17px; height: 17px; border-radius: 50%;
+  background: #E6F4EA; color: #137333; font-size: 10px; font-weight: 500;
+  font-style: normal;
+}
+.gs-txt { display: block; height: 5px; border-radius: 3px; background: #DADCE0; }
+.gs-txt.w72 { width: 72%; } .gs-txt.w54 { width: 54%; } .gs-txt.w44 { width: 44%; }
+.is-in .gs-res.is-first { border-color: #34A853; box-shadow: 0 1px 3px rgba(52,168,83,.3); }
+
+.gs-pin, .gs-ring {
+  position: absolute; right: 22px; bottom: -26px; border-radius: 50%; z-index: 1;
+}
+.gs-pin { width: 11px; height: 11px; background: #34A853; right: 46px; bottom: 22px; }
+.gs-ring { width: 56px; height: 56px; border: 1.5px solid rgba(52,168,83,.4); right: 24px; bottom: 0; }
+.gs-ring.r2 { width: 94px; height: 94px; border-color: rgba(52,168,83,.18); right: 5px; bottom: -19px; }
+.is-in .gs-ring   { animation: gsRing 3s ease-out 1.2s 2; }
+.is-in .gs-ring.r2{ animation: gsRing 3s ease-out 1.45s 2; }
 @keyframes gsRing {
-  0%   { transform: translate(-50%,-50%) scale(.6); opacity: 0; }
+  0%   { transform: scale(.55); opacity: 0; }
   35%  { opacity: 1; }
-  100% { transform: translate(-50%,-50%) scale(1); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 /* --- Pourquoi ça amène des appels ------------------------------------------
-   Traitement volontairement différent des deux autres grilles de la zone :
-   ici pas de carte ni de cadre, mais une pastille de couleur par raison, posée
-   sur la surface. Les quatre raisons se lisent comme une rangée, pas comme un
-   tableau de plus. --------------------------------------------------------- */
-.gwhy {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 28px 30px;
+   Les deux autres blocs de la zone sont des grilles de cartes. Celui-ci n'en
+   est pas une : c'est une chaîne. Les quatre moments s'enchaînent de gauche à
+   droite, reliés par un trait qui se dessine, parce qu'ils décrivent une
+   suite — il cherche, il voit, il est rassuré, il appelle.
+   -------------------------------------------------------------------------- */
+.gchain {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  position: relative;
 }
-.gcard { position: relative; padding-top: 4px; }
-
-.gcard-ico {
-  display: grid; place-items: center;
-  width: 42px; height: 42px; border-radius: 50%;
-  margin-bottom: 14px;
-  transform: scale(.72); opacity: 0;
-  transition: transform .45s cubic-bezier(.34,1.5,.5,1), opacity .3s ease;
+/* le trait qui relie les quatre moments, et sa portion dessinée */
+.gchain::before, .gchain::after {
+  content: ''; position: absolute; top: 23px; height: 2px;
+  left: 23px; right: calc(25% - 23px); border-radius: 2px;
 }
-.gcard-ico svg { width: 20px; height: 20px; }
-.is-in .gcard-ico { transform: scale(1); opacity: 1; }
-.is-in .g-blue   .gcard-ico { transition-delay: .05s; }
-.is-in .g-red    .gcard-ico { transition-delay: .14s; }
-.is-in .g-yellow .gcard-ico { transition-delay: .23s; }
-.is-in .g-green  .gcard-ico { transition-delay: .32s; }
-
-.g-blue   .gcard-ico { background: #E8F0FE; color: #1A73E8; }
-.g-red    .gcard-ico { background: #FCE8E6; color: #C5221F; }
-.g-yellow .gcard-ico { background: #FEF7E0; color: #8A5300; }
-.g-green  .gcard-ico { background: #E6F4EA; color: #137333; }
-
-.gcard-k {
-  display: block; font-size: 1.0625rem; font-weight: 500;
-  color: #202124; margin-bottom: 9px; letter-spacing: -.004em;
-}
-.gcard p { font-size: .9rem; line-height: 1.64; color: #5F6368; max-width: 34ch; }
-.gcard b { font-weight: 500; }
-.g-blue   b { color: #176EE1; }
-.g-red    b { color: #C5221F; }
-.g-yellow b { color: #8A5300; }
-.g-green  b { color: #137333; }
-
-/* le filet de couleur sous la pastille, qui relie la rangée */
-.gcard::before {
-  content: ''; position: absolute; left: 0; top: 0;
-  width: 42px; height: 2px; border-radius: 2px;
+.gchain::before { background: #E3E6E8; }
+.gchain::after {
+  background: linear-gradient(to right, #4285F4, #EA4335 34%, #FBBC04 67%, #34A853);
   transform: scaleX(0); transform-origin: left;
-  transition: transform .5s cubic-bezier(.2,.8,.3,1);
+  transition: transform 1.3s cubic-bezier(.3,.8,.3,1) .25s;
 }
-.g-blue::before   { background: #4285F4; }
-.g-red::before    { background: #EA4335; }
-.g-yellow::before { background: #FBBC04; }
-.g-green::before  { background: #34A853; }
-.is-in .gcard::before { transform: scaleX(1); }
-.is-in .g-red::before    { transition-delay: .09s; }
-.is-in .g-yellow::before { transition-delay: .18s; }
-.is-in .g-green::before  { transition-delay: .27s; }
+.is-in.gchain::after { transform: scaleX(1); }
+
+.gchain li { padding: 0 22px 0 0; position: relative; }
+.gchain li:last-child { padding-right: 0; }
+
+.gl-ico {
+  position: relative; z-index: 2;
+  display: grid; place-items: center;
+  width: 46px; height: 46px; border-radius: 50%;
+  background: #fff; margin-bottom: 15px;
+  box-shadow: 0 0 0 2px #E3E6E8 inset;
+  transform: scale(.6); opacity: 0;
+  transition: transform .5s cubic-bezier(.34,1.5,.5,1), opacity .3s ease,
+              box-shadow .4s ease;
+}
+.gl-ico svg { width: 21px; height: 21px; }
+.is-in .gl-ico { transform: scale(1); opacity: 1; }
+.is-in .gl-blue   .gl-ico { transition-delay: .1s;  box-shadow: 0 0 0 2px #4285F4 inset; color: #1A73E8; }
+.is-in .gl-red    .gl-ico { transition-delay: .42s; box-shadow: 0 0 0 2px #EA4335 inset; color: #C5221F; }
+.is-in .gl-yellow .gl-ico { transition-delay: .74s; box-shadow: 0 0 0 2px #FBBC04 inset; color: #8A5300; }
+.is-in .gl-green  .gl-ico { transition-delay: 1.06s; box-shadow: 0 0 0 2px #34A853 inset; color: #137333; }
+
+.gl-t {
+  display: block; font-size: 1.0625rem; font-weight: 500;
+  color: #202124; margin-bottom: 8px; letter-spacing: -.004em;
+}
+.gchain p { font-size: .9rem; line-height: 1.6; color: #5F6368; max-width: 30ch; }
+.gchain b { font-weight: 500; }
+.gl-blue   b { color: #176EE1; }
+.gl-red    b { color: #C5221F; }
+.gl-yellow b { color: #8A5300; }
+.gl-green  b { color: #137333; }
+
+@media (max-width: 860px) {
+  .gchain { grid-template-columns: 1fr; gap: 22px; }
+  .gchain::before, .gchain::after {
+    top: 23px; bottom: 23px; left: 22px; right: auto; width: 2px; height: auto;
+  }
+  .gchain::after {
+    background: linear-gradient(to bottom, #4285F4, #EA4335 34%, #FBBC04 67%, #34A853);
+    transform: scaleY(0); transform-origin: top;
+  }
+  .is-in.gchain::after { transform: scaleY(1); }
+  .gchain li { padding: 0 0 0 66px; }
+  .gl-ico { position: absolute; left: 0; top: 0; margin: 0; }
+  .gchain p { max-width: none; }
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .gcard-ico { transform: none; opacity: 1; }
-  .gcard::before { transform: scaleX(1); }
+  .gl-ico { transform: none; opacity: 1; }
+  .gchain::after { transform: scaleX(1); }
 }
 
 /* --- Les quatre faits, illustrés par des maquettes d'interface --- */
@@ -988,4 +1051,49 @@ section { position: relative; }
   }
   .serp-res { opacity: 1 !important; }
   .serp-caret { display: none; }
+}
+
+/* --- Les Local Services Ads, présentés comme un supplément ------------------
+   Volontairement compact et posé à part : ce n'est pas l'offre, c'est ce qui
+   vient avec. -------------------------------------------------------------- */
+.glsa {
+  display: grid; grid-template-columns: 48px minmax(0, 1fr);
+  gap: 20px; align-items: start;
+  margin-top: clamp(36px, 4vw, 52px);
+  padding: 24px 26px 26px;
+  background: #fff;
+  border: 1px solid #DADCE0; border-radius: 8px;
+}
+.glsa-mark { display: grid; place-items: center; padding-top: 2px; }
+.glsa-plus {
+  display: grid; place-items: center;
+  width: 38px; height: 38px; border-radius: 50%;
+  background: #E6F4EA; color: #137333;
+  font-size: 22px; font-weight: 400; line-height: 1;
+}
+.glsa-k {
+  display: block; font-size: .8125rem; font-weight: 500;
+  color: #137333; margin-bottom: 5px;
+}
+.glsa h4 {
+  font-family: 'Roboto', system-ui, sans-serif;
+  font-size: 1.25rem; font-weight: 500; color: #202124; margin: 0 0 10px;
+}
+.glsa-lede { font-size: .95rem; line-height: 1.6; color: #3C4043; max-width: 78ch; }
+.glsa b { font-weight: 500; color: #202124; }
+
+.glsa-cols {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
+  gap: 20px 32px; margin: 18px 0 0;
+}
+.glsa-cols dt {
+  font-size: .9rem; font-weight: 500; color: #202124; margin-bottom: 6px;
+  padding-top: 12px; border-top: 1px solid #E8EAED;
+}
+.glsa-cols dd { margin: 0; font-size: .875rem; line-height: 1.62; color: #5F6368; }
+.glsa-note { margin-top: 16px; font-size: .8125rem; line-height: 1.55; color: #5F6368; }
+
+@media (max-width: 860px) {
+  .glsa { grid-template-columns: 1fr; gap: 14px; padding: 20px; }
+  .glsa-mark { justify-items: start; }
 }

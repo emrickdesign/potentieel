@@ -136,11 +136,18 @@
       </ul>
 
       <div class="serp" id="serp">
-        <div class="serp-bar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="2" aria-hidden="true">
-            <circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21" stroke-linecap="round"/>
-          </svg>
-          <span class="serp-q" id="serp-q" aria-live="off"></span>
+        <div class="serp-head">
+          <svg class="serp-logo" viewBox="0 0 272 92" role="img" aria-label="Google" focusable="false"><path fill="#EA4335" d="M115.75 47.18c0 12.77-9.99 22.18-22.25 22.18s-22.25-9.41-22.25-22.18C71.25 34.32 81.24 25 93.5 25s22.25 9.32 22.25 22.18zm-9.74 0c0-7.98-5.79-13.44-12.51-13.44S80.99 39.2 80.99 47.18c0 7.9 5.79 13.44 12.51 13.44s12.51-5.55 12.51-13.44z"/><path fill="#FBBC05" d="M163.75 47.18c0 12.77-9.99 22.18-22.25 22.18s-22.25-9.41-22.25-22.18c0-12.85 9.99-22.18 22.25-22.18s22.25 9.32 22.25 22.18zm-9.74 0c0-7.98-5.79-13.44-12.51-13.44s-12.51 5.46-12.51 13.44c0 7.9 5.79 13.44 12.51 13.44s12.51-5.55 12.51-13.44z"/><path fill="#4285F4" d="M209.75 26.34v39.82c0 16.38-9.66 23.07-21.08 23.07-10.75 0-17.22-7.19-19.66-13.07l8.48-3.53c1.51 3.61 5.21 7.87 11.17 7.87 7.31 0 11.84-4.51 11.84-13v-3.19h-.34c-2.18 2.69-6.38 5.04-11.68 5.04-11.09 0-21.25-9.66-21.25-22.09 0-12.52 10.16-22.26 21.25-22.26 5.29 0 9.49 2.35 11.68 4.96h.34v-3.61h9.25zm-8.56 20.92c0-7.81-5.21-13.52-11.84-13.52-6.72 0-12.35 5.71-12.35 13.52 0 7.73 5.63 13.36 12.35 13.36 6.63 0 11.84-5.63 11.84-13.36z"/><path fill="#34A853" d="M225 3v65h-9.5V3h9.5z"/><path fill="#EA4335" d="M262.02 54.48l7.56 5.04c-2.44 3.61-8.32 9.83-18.48 9.83-12.6 0-22.01-9.74-22.01-22.18 0-13.19 9.49-22.18 20.92-22.18 11.51 0 17.14 9.16 18.98 14.11l1.01 2.52-29.65 12.28c2.27 4.45 5.8 6.72 10.75 6.72 4.96 0 8.4-2.44 10.92-6.14zm-23.27-7.98l19.82-8.23c-1.09-2.77-4.37-4.7-8.23-4.7-4.95 0-11.84 4.37-11.59 12.93z"/><path fill="#4285F4" d="M35.29 41.41V32H67c.31 1.64.47 3.58.47 5.68 0 7.06-1.93 15.79-8.15 22.01-6.05 6.3-13.78 9.66-24.02 9.66C16.32 69.35.36 53.89.36 34.91.36 15.93 16.32.47 35.3.47c10.5 0 17.98 4.12 23.6 9.49l-6.64 6.64c-4.03-3.78-9.49-6.72-16.97-6.72-13.86 0-24.7 11.17-24.7 25.03 0 13.86 10.84 25.03 24.7 25.03 8.99 0 14.11-3.61 17.39-6.89 2.66-2.66 4.41-6.46 5.1-11.65l-22.49.01z"/></svg>
+          <div class="serp-bar">
+            <svg class="serp-mag" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" stroke-width="2" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21" stroke-linecap="round"/>
+            </svg>
+            <span class="serp-q" id="serp-q" aria-live="off"></span>
+            <svg class="serp-vox" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#4285F4" d="M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z"/>
+              <path fill="#34A853" d="M18.5 11.5a.9.9 0 0 1 1.8 0 8.3 8.3 0 0 1-7.4 8.2v2.2a.9.9 0 0 1-1.8 0v-2.2a8.3 8.3 0 0 1-7.4-8.2.9.9 0 0 1 1.8 0 6.5 6.5 0 0 0 13 0z"/>
+            </svg>
+          </div>
         </div>
         <div class="serp-slot"><div class="serp-res">
           <div class="serp-tag">Sponsorisé</div>
@@ -264,9 +271,9 @@
     <ol class="gsteps">
       <li class="gs-blue">
         <span class="gs-art" aria-hidden="true">
-          <i class="gs-chip is-on">Réfection de toiture</i>
-          <i class="gs-chip">Zinguerie</i>
-          <i class="gs-chip">Démoussage</i>
+          <i class="gs-pres is-on"><b>Réfection de toiture</b><em><u style="width:88%"></u></em></i>
+          <i class="gs-pres"><b>Zinguerie</b><em><u style="width:52%"></u></em></i>
+          <i class="gs-pres"><b>Démoussage</b><em><u style="width:34%"></u></em></i>
         </span>
         <strong>Vos 3 prestations les plus rentables</strong>
         <p>
@@ -277,9 +284,11 @@
       </li>
       <li class="gs-yellow">
         <span class="gs-art gs-art-page" aria-hidden="true">
-          <i class="gs-l w70"></i><i class="gs-l w45"></i>
-          <i class="gs-cta">Appeler</i>
-          <i class="gs-l w60"></i>
+          <i class="gs-win">
+            <u class="gs-photo"></u>
+            <u class="gs-t1"></u><u class="gs-t2"></u>
+            <u class="gs-btn2">Appeler</u>
+          </i>
         </span>
         <strong>Une page de conversion par prestation</strong>
         <p>
@@ -289,7 +298,10 @@
         </p>
       </li>
       <li class="gs-green">
-        <span class="gs-art gs-art-zone" aria-hidden="true">
+        <span class="gs-art gs-art-rank" aria-hidden="true">
+          <i class="gs-res is-first"><u class="gs-badge">1</u><u class="gs-txt w72"></u></i>
+          <i class="gs-res"><u class="gs-txt w54"></u></i>
+          <i class="gs-res"><u class="gs-txt w44"></u></i>
           <i class="gs-ring r2"></i><i class="gs-ring"></i><i class="gs-pin"></i>
         </span>
         <strong>En haut des recherches</strong>
@@ -302,56 +314,36 @@
     </ol>
 
     <h3 class="gzone-h">Pourquoi ça amène des appels</h3>
-    <div class="gwhy">
-      <article class="gcard g-blue">
-        <span class="gcard-ico" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.2"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/></svg>
+    <ol class="gchain">
+      <li class="gl-blue">
+        <span class="gl-ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="16.4" y1="16.4" x2="21" y2="21"/></svg>
         </span>
-        <span class="gcard-k">L'intention</span>
-        <p>
-          Personne ne tape « ravalement de façade » par hasard. <b>La personne a
-          déjà le projet en tête.</b> Vous n'avez pas à la convaincre qu'elle en
-          a besoin, seulement qu'elle doit vous appeler vous.
-        </p>
-      </article>
-
-      <article class="gcard g-red">
-        <span class="gcard-ico" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="15" rx="2.5"/><circle cx="8.5" cy="10" r="1.8"/><path d="m4 17 5-4.5 4 3.5 3-2.5 4 3.5"/></svg>
+        <span class="gl-t">Il cherche</span>
+        <p>Personne ne tape « ravalement de façade » par hasard. <b>Le projet est déjà dans sa tête.</b></p>
+      </li>
+      <li class="gl-red">
+        <span class="gl-ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="15" rx="2.5"/><circle cx="8.5" cy="10" r="1.7"/><path d="m4 17 5-4.5 4 3.5 3-2.5 4 3.5"/></svg>
         </span>
-        <span class="gcard-k">La preuve</span>
-        <p>
-          <b>Vos chantiers en photo</b>, chez des gens du coin. C'est ce qu'une
-          plateforme de mise en relation ne peut pas montrer, parce qu'elle n'a
-          rien fait de ses mains.
-        </p>
-      </article>
-
-      <article class="gcard g-yellow">
-        <span class="gcard-ico" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 4.5 5.8v5.6c0 4.6 3.1 8.5 7.5 10.1 4.4-1.6 7.5-5.5 7.5-10.1V5.8z"/><path d="m8.8 11.8 2.3 2.3 4.1-4.6"/></svg>
+        <span class="gl-t">Il voit la preuve</span>
+        <p><b>Vos chantiers en photo</b>, chez des gens du coin. Une plateforme n'a rien de tout ça à montrer.</p>
+      </li>
+      <li class="gl-yellow">
+        <span class="gl-ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 4.5 5.8v5.6c0 4.6 3.1 8.5 7.5 10.1 4.4-1.6 7.5-5.5 7.5-10.1V5.8z"/><path d="m8.8 11.8 2.3 2.3 4.1-4.6"/></svg>
         </span>
-        <span class="gcard-k">La réassurance</span>
-        <p>
-          Votre zone, vos avis, vos garanties, votre nom. La personne voit
-          qu'elle a affaire à <b>une entreprise installée près de chez elle</b>,
-          pas à un intermédiaire qui va revendre sa demande.
-        </p>
-      </article>
-
-      <article class="gcard g-green">
-        <span class="gcard-ico" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 3h3l1.5 4.2-2.1 1.6a12.5 12.5 0 0 0 5.8 5.8l1.6-2.1L20.5 14v3a2.2 2.2 0 0 1-2.4 2.2A17 17 0 0 1 3.8 5.4 2.2 2.2 0 0 1 6 3z"/></svg>
+        <span class="gl-t">Il est rassuré</span>
+        <p>Votre zone, vos avis, votre nom. <b>Une entreprise installée près de chez lui</b>, pas un intermédiaire.</p>
+      </li>
+      <li class="gl-green">
+        <span class="gl-ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 3h3l1.5 4.2-2.1 1.6a12.5 12.5 0 0 0 5.8 5.8l1.6-2.1L20.5 14v3a2.2 2.2 0 0 1-2.4 2.2A17 17 0 0 1 3.8 5.4 2.2 2.2 0 0 1 6 3z"/></svg>
         </span>
-        <span class="gcard-k">Le contact direct</span>
-        <p>
-          Votre numéro en grand, un bouton pour appeler, un formulaire court.
-          <b>L'appel arrive chez vous</b>, tout de suite, et il n'est revendu à
-          personne d'autre.
-        </p>
-      </article>
-    </div>
-
+        <span class="gl-t">Il appelle</span>
+        <p><b>Vous</b>, directement, sur votre numéro. Et la demande n'est revendue à personne d'autre.</p>
+      </li>
+    </ol>
 
     <h3 class="gzone-h">Ce qu'il faut savoir sur Google Ads</h3>
     <div class="gfacts">
@@ -418,6 +410,46 @@
 
     </div>
 
+
+    <aside class="glsa">
+      <div class="glsa-mark" aria-hidden="true">
+        <span class="glsa-plus">+</span>
+      </div>
+      <div class="glsa-body">
+        <span class="glsa-k">En plus, et offert</span>
+        <h4>Les Local Services Ads</h4>
+        <p class="glsa-lede">
+          Un second emplacement Google, <b>encore au-dessus des annonces
+          classiques</b> : votre entreprise y apparaît avec sa note, ses avis, sa
+          zone et le badge « Validé par Google ». On n'y paie pas au clic, mais
+          <b>au contact reçu</b>.
+        </p>
+        <dl class="glsa-cols">
+          <div>
+            <dt>Ce qu'on fait</dt>
+            <dd>
+              Comme vous travaillez déjà avec nous sur Google Ads, la demande et
+              la mise en place ne vous coûtent rien. On tient ensuite la
+              campagne et surtout <b>votre fiche Google</b> : réponse à tous les
+              avis — y compris les mauvais —, paramétrage et photos régulières.
+            </dd>
+          </div>
+          <div>
+            <dt>Ce que ça coûte</dt>
+            <dd>
+              Google vous facture directement les contacts reçus. À la fin du
+              mois, nous prenons <b>30 % de ce montant</b> : s'il vous a facturé
+              100 €, vous nous versez 30 €. Aucun contact dans le mois, aucune
+              facture de notre part.
+            </dd>
+          </div>
+        </dl>
+        <p class="glsa-note">
+          Le format n'est ouvert qu'à certains métiers et à certaines zones. On
+          vérifie votre éligibilité avant d'en parler.
+        </p>
+      </div>
+    </aside>
   </div>
 </section>
 
@@ -719,7 +751,7 @@
    l'écran. Comme pour le logo, rien n'est masqué au départ : l'animation
    s'ajoute, elle ne conditionne pas l'affichage. */
 (function () {
-  var groupes = document.querySelectorAll('.gsteps, .gwhy, .gfacts');
+  var groupes = document.querySelectorAll('.gsteps, .gchain, .gfacts');
   if (!groupes.length) return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
       !('IntersectionObserver' in window)) {
