@@ -19,18 +19,21 @@ html, body { background: var(--bg-card); }
    maintenant que les sections ne changent plus de fond. */
 
 /* ---------- le header ----------------------------------------------------
-   Il tenait dans une colonne de 860 px au milieu d'une page de 1180 : des
-   trous de chaque côté. Il s'aligne maintenant sur la barre de navigation,
-   bord à bord. Le titre prend toute la largeur, puis un filet, puis la
-   phrase à gauche et les deux actions à droite — un bandeau de une, pas une
-   colonne centrée.
+   Deux colonnes bord à bord, alignées sur la barre de navigation. À gauche
+   ce qu'on promet, à droite ce que l'artisan reçoit : son téléphone qui
+   sonne, et les demandes déjà arrivées. Pas de capture de tableau de bord —
+   ça montrerait notre travail, pas son résultat à lui.
    -------------------------------------------------------------------------- */
 
-.ga-hero { padding: clamp(84px, 8vw, 104px) 0 0; }
+.ga-hero { padding: clamp(84px, 8vw, 104px) 0 clamp(40px, 5vw, 64px); }
 .ga-wrap {
   /* 26 px : le retrait du logo dans la barre de navigation, pour que le
      titre commence exactement sous lui. */
   max-width: 1180px; margin: 0 auto; padding: 0 26px;
+}
+.ga-grille {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 400px);
+  gap: clamp(32px, 4.4vw, 72px); align-items: center;
 }
 
 /* le logo, en pastille : un objet posé, pas une ligne de texte */
@@ -49,40 +52,19 @@ html, body { background: var(--bg-card); }
 }
 
 .ga-titre {
-  font-size: clamp(29px, 3.6vw, 46px);
+  font-size: clamp(29px, 3.5vw, 46px);
   font-weight: 700; line-height: 1.09; letter-spacing: -0.025em;
-  margin: 0 0 clamp(24px, 2.6vw, 32px);
-  max-width: 24ch;
-}
-.ga-br { display: none; }
-
-/* Le filet d'appui : une amorce de laiton puis la ligne, plutôt qu'une
-   bordure nue d'un bord à l'autre. */
-.ga-bas {
-  display: grid; grid-template-columns: minmax(0, 1fr) 1px auto;
-  gap: clamp(24px, 3vw, 46px); align-items: center;
-  padding-top: clamp(20px, 2.2vw, 26px);
-  position: relative;
-}
-.ga-bas::before {
-  content: ''; position: absolute; left: 0; right: 0; top: 0; height: 1px;
-  background: linear-gradient(90deg,
-    var(--orange) 0, var(--orange) 56px,
-    var(--border-card) 56px, var(--border-card) 100%);
+  margin: 0 0 clamp(18px, 2vw, 24px);
+  max-width: 17ch;
 }
 .ga-lede {
-  font-size: clamp(15.5px, 1.4vw, 17.5px);
-  color: var(--gray-light); line-height: 1.74;
-  max-width: 58ch; margin: 0;
+  font-size: clamp(15.5px, 1.4vw, 17px);
+  color: var(--gray-light); line-height: 1.72;
+  max-width: 52ch; margin: 0 0 clamp(24px, 2.6vw, 32px);
 }
-/* le filet vertical qui sépare le propos des actions */
-.ga-sep { background: var(--border-card); align-self: stretch; }
-
-.ga-actions { display: grid; justify-items: start; gap: 14px; }
+.ga-actions { display: grid; justify-items: start; gap: 13px; }
 .ga-boutons { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-.ga-offre {
-  font-size: 13px; color: var(--gray); line-height: 1.5; margin: 0;
-}
+.ga-offre { font-size: 13px; color: var(--gray); line-height: 1.5; margin: 0; }
 .ga-offre b { color: var(--gray-light); font-weight: 600; }
 
 /* le numéro : une vraie action, pas un lien discret */
@@ -103,17 +85,128 @@ html, body { background: var(--bg-card); }
   stroke-linecap: round; stroke-linejoin: round;
 }
 
-@media (max-width: 1040px) {
-  .ga-bas { grid-template-columns: 1fr; align-items: start; gap: 24px; }
-  .ga-sep { display: none; }
+/* ---------- la scène : le téléphone et les demandes ---------------------- */
+
+/* Empilées, pas superposées : posées sur le téléphone, les fiches en
+   cachaient le numéro et les boutons. */
+.ga-scene {
+  position: relative; justify-self: end; width: 100%; max-width: 400px;
+  display: grid; gap: 14px; justify-items: center;
+}
+.ga-tel-ecran { position: relative; width: 248px; }
+
+/* L'onde du téléphone qui sonne : la seule chose qui bouge en continu dans
+   ce header, et elle a une raison d'être. */
+.ga-onde {
+  position: absolute; left: 50%; top: 50%;
+  width: 248px; height: 248px; margin: -124px 0 0 -124px;
+  border-radius: 50%; border: 1px solid rgba(138, 180, 248, .5);
+  opacity: 0; pointer-events: none;
+}
+.ga-scene.is-in .ga-onde { animation: gaOnde 3.4s cubic-bezier(.2,.7,.3,1) 1.1s infinite; }
+@keyframes gaOnde {
+  0%   { transform: scale(.52); opacity: 0; }
+  18%  { opacity: .5; }
+  70%  { transform: scale(1.5); opacity: 0; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+.ga-ecran {
+  position: relative; z-index: 1;
+  background: linear-gradient(170deg, #1B3242 0%, #102029 100%);
+  border: 1px solid rgba(233, 239, 242, .22);
+  border-radius: 26px; padding: 26px 22px 22px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 28px 60px -22px rgba(0,0,0,.85);
+  text-align: center;
+}
+.ga-ecran-haut {
+  font-size: 12.5px; color: var(--gray-light);
+  letter-spacing: .02em; margin: 0 0 8px;
+}
+.ga-ecran-num {
+  font-size: 23px; font-weight: 600; color: var(--white);
+  letter-spacing: -.01em; margin: 0 0 10px;
+}
+.ga-ecran-src {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; color: #8AB4F8; margin: 0 0 24px;
+}
+.ga-ecran-src svg {
+  width: 12px; height: 12px; fill: none; stroke: currentColor;
+  stroke-width: 2; stroke-linecap: round;
+}
+.ga-ecran-bas { display: flex; justify-content: center; gap: 44px; }
+.ga-rond {
+  width: 50px; height: 50px; border-radius: 50%;
+  display: grid; place-items: center;
+}
+.ga-rond svg { width: 22px; height: 22px; fill: currentColor; }
+.ga-rond-r { background: #D93025; color: #fff; transform: rotate(134deg); }
+.ga-rond-v { background: #1E8E3E; color: #fff; }
+
+/* les demandes déjà arrivées, posées autour du téléphone */
+.ga-fiche {
+  position: relative; z-index: 2;
+  display: flex; align-items: center; gap: 11px;
+  padding: 11px 14px; border-radius: 13px;
+  background: rgba(21, 42, 54, .95);
+  border: 1px solid rgba(233, 239, 242, .16);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  box-shadow: 0 16px 36px -16px rgba(0, 0, 0, .8);
+  white-space: nowrap;
+}
+.ga-fiche-1 { justify-self: start; }
+.ga-fiche-2 { justify-self: end; }
+.ga-fiche b { display: block; font-size: 13px; font-weight: 600; color: var(--white); }
+.ga-fiche i { display: block; font-style: normal; font-size: 11.5px; color: var(--gray-light); margin-top: 2px; }
+.ga-fiche u { text-decoration: none; font-size: 11px; color: var(--gray); margin-left: 4px; }
+.ga-pastille {
+  flex: none; width: 30px; height: 30px; border-radius: 50%;
+  display: grid; place-items: center;
+}
+.ga-pastille svg { width: 15px; height: 15px; }
+.ga-pastille-b { background: rgba(138, 180, 248, .18); color: #8AB4F8; }
+.ga-pastille-b svg { fill: currentColor; }
+.ga-pastille-v { background: rgba(52, 168, 83, .2); color: #6DD58C; }
+.ga-pastille-v svg {
+  fill: none; stroke: currentColor; stroke-width: 2.4;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* la scène s'assemble une fois, à l'arrivée */
+.ga-scene.anim .ga-ecran { opacity: 0; transform: translateY(18px); }
+.ga-scene.anim .ga-fiche { opacity: 0; transform: translateY(10px); }
+.ga-scene.anim.is-in .ga-ecran {
+  opacity: 1; transform: none;
+  transition: opacity .6s ease, transform .7s cubic-bezier(.2,.8,.2,1);
+}
+.ga-scene.anim.is-in .ga-fiche-1 {
+  opacity: 1; transform: none;
+  transition: opacity .5s ease .45s, transform .6s cubic-bezier(.2,.8,.2,1) .45s;
+}
+.ga-scene.anim.is-in .ga-fiche-2 {
+  opacity: 1; transform: none;
+  transition: opacity .5s ease .7s, transform .6s cubic-bezier(.2,.8,.2,1) .7s;
+}
+
+@media (max-width: 1000px) {
+  .ga-grille { grid-template-columns: 1fr; gap: 46px; }
+  .ga-scene { justify-self: center; }
   .ga-titre { max-width: 22ch; }
+  .ga-lede { max-width: 62ch; }
 }
 @media (max-width: 560px) {
   .ga-wrap { padding: 0 20px; }
-  .ga-actions { width: 100%; }
   .ga-actions { justify-items: stretch; }
   .ga-boutons { width: 100%; }
   .ga-boutons .btn-primary, .ga-tel { flex: 1 1 auto; justify-content: center; text-align: center; }
+  .ga-fiche { padding: 9px 12px; white-space: normal; }
+  .ga-fiche-1, .ga-fiche-2 { justify-self: stretch; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ga-scene .ga-onde { animation: none !important; opacity: 0 !important; }
+  .ga-scene .ga-ecran, .ga-scene .ga-fiche { opacity: 1 !important; transform: none !important; }
 }
 
 /* ---------- le tableau de bord Google Ads --------------------------------
