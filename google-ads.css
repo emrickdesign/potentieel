@@ -33,41 +33,57 @@ html, body { background: var(--bg-card); }
   max-width: 1180px; margin: 0 auto; padding: 0 26px;
 }
 
-/* le logo, en identification du sujet */
+/* le logo, en pastille : un objet posé, pas une ligne de texte */
 .ga-marque {
-  display: inline-flex; align-items: center; gap: 11px;
-  margin: 0 0 clamp(22px, 2.6vw, 32px);
+  display: inline-flex; align-items: center; gap: 10px;
+  margin: 0 0 clamp(22px, 2.4vw, 30px);
+  padding: 7px 16px 7px 11px; border-radius: 999px;
+  background: rgba(233, 239, 242, .05);
+  border: 1px solid rgba(233, 239, 242, .16);
 }
-.ga-marque svg { width: 26px; height: 26px; display: block; }
+.ga-marque svg { width: 20px; height: 20px; display: block; }
 .ga-marque span {
   font-family: 'Roboto', system-ui, sans-serif;
-  font-size: 17px; font-weight: 500; color: var(--white);
+  font-size: 14.5px; font-weight: 500; color: var(--white);
   letter-spacing: .005em;
 }
 
 .ga-titre {
-  font-size: clamp(38px, 6vw, 76px);
-  font-weight: 700; line-height: 1.03; letter-spacing: -0.03em;
-  margin: 0 0 clamp(34px, 4vw, 52px);
-  max-width: 17ch;
+  font-size: clamp(31px, 4.1vw, 52px);
+  font-weight: 700; line-height: 1.08; letter-spacing: -0.025em;
+  margin: 0 0 clamp(30px, 3.4vw, 44px);
+  max-width: 24ch;
 }
 .ga-br { display: none; }
 
-/* la phrase à gauche, les actions à droite, séparées du titre par un filet */
+/* Le filet d'appui : une amorce de laiton puis la ligne, plutôt qu'une
+   bordure nue d'un bord à l'autre. */
 .ga-bas {
-  display: grid; grid-template-columns: minmax(0, 1fr) auto;
-  gap: clamp(28px, 4vw, 64px); align-items: end;
+  display: grid; grid-template-columns: minmax(0, 1fr) 1px auto;
+  gap: clamp(26px, 3.4vw, 52px); align-items: center;
   padding-top: clamp(26px, 3vw, 36px);
-  border-top: 1px solid var(--border-card);
+  position: relative;
+}
+.ga-bas::before {
+  content: ''; position: absolute; left: 0; right: 0; top: 0; height: 1px;
+  background: linear-gradient(90deg,
+    var(--orange) 0, var(--orange) 56px,
+    var(--border-card) 56px, var(--border-card) 100%);
 }
 .ga-lede {
-  font-size: clamp(16px, 1.5vw, 18.5px);
-  color: var(--gray-light); line-height: 1.72;
-  max-width: 62ch; margin: 0;
+  font-size: clamp(15.5px, 1.4vw, 17.5px);
+  color: var(--gray-light); line-height: 1.74;
+  max-width: 58ch; margin: 0;
 }
-.ga-actions {
-  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+/* le filet vertical qui sépare le propos des actions */
+.ga-sep { background: var(--border-card); align-self: stretch; }
+
+.ga-actions { display: grid; justify-items: start; gap: 14px; }
+.ga-boutons { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.ga-offre {
+  font-size: 13px; color: var(--gray); line-height: 1.5; margin: 0;
 }
+.ga-offre b { color: var(--gray-light); font-weight: 600; }
 
 /* le numéro : une vraie action, pas un lien discret */
 .ga-tel {
@@ -88,13 +104,16 @@ html, body { background: var(--bg-card); }
 }
 
 @media (max-width: 1040px) {
-  .ga-bas { grid-template-columns: 1fr; align-items: start; }
-  .ga-titre { max-width: 20ch; }
+  .ga-bas { grid-template-columns: 1fr; align-items: start; gap: 24px; }
+  .ga-sep { display: none; }
+  .ga-titre { max-width: 22ch; }
 }
 @media (max-width: 560px) {
   .ga-wrap { padding: 0 20px; }
   .ga-actions { width: 100%; }
-  .ga-actions .btn-primary, .ga-tel { flex: 1 1 auto; justify-content: center; text-align: center; }
+  .ga-actions { justify-items: stretch; }
+  .ga-boutons { width: 100%; }
+  .ga-boutons .btn-primary, .ga-tel { flex: 1 1 auto; justify-content: center; text-align: center; }
 }
 
 /* ---------- le tableau de bord Google Ads --------------------------------
