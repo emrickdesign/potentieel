@@ -1012,35 +1012,112 @@ section { position: relative; }
   transition: transform .34s cubic-bezier(.22,.7,.3,1) calc(var(--i) * 85ms);
 }
 
-/* ---------- L'équipe ----------------------------------------------------- */
-
-.team { position: relative; overflow: hidden; padding: clamp(58px, 6.4vw, 92px) 0 0; }
-/* Le recit tient la colonne de gauche : la photo lui cede de la largeur. */
-.team-grid {
-  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
-  gap: clamp(28px, 4vw, 52px); align-items: end;
+/* ---------- L'équipe -----------------------------------------------------
+   Un portrait, pas un article : le récit est coupé en trois bulles et la
+   section entière est composée dans la serif, une seule police. Rien ne
+   change de taille d'une bulle à l'autre — ce sont la teinte et la matière
+   qui portent la hiérarchie. La photo tient toute la hauteur à droite, les
+   deux noms se posent dessus.
+   ------------------------------------------------------------------------ */
+.team {
+  position: relative; overflow: hidden;
+  padding: clamp(52px, 5.6vw, 76px) 0 0;
+  font-family: var(--serif);
 }
-.team-text { padding-bottom: clamp(44px, 5.4vw, 72px); }
-.team-text p { color: var(--dim); line-height: 1.74; max-width: 60ch; margin-top: 16px; }
-.team-text .lede { margin-top: 18px; }
-.team-photo { width: 100%; height: auto; opacity: .95; }
+/* Le titre et la phrase de cloture passent en bandeau : la colonne de gauche
+   raccourcit d'autant, et le haut a droite cesse d'etre vide. */
+.team-head {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.02fr);
+  gap: clamp(28px, 4vw, 56px); align-items: center;
+  margin-bottom: clamp(26px, 3vw, 38px);
+}
+.team-grid {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.02fr);
+  gap: clamp(28px, 4vw, 56px); align-items: stretch;
+}
+
+.team-text {
+  display: flex; flex-direction: column;
+  padding-bottom: clamp(32px, 3.6vw, 48px);
+}
+
+/* les trois bulles du récit */
+.team-story { display: grid; gap: 14px; margin-bottom: auto; }
+.tb {
+  font-family: var(--serif);
+  font-size: var(--fs-base); line-height: 1.66; color: var(--dim);
+  background: var(--slate);
+  border: 1px solid var(--rule-soft);
+  border-radius: 16px;
+  padding: 18px 22px 19px;
+}
+/* le tournant : même corps, autre matière */
+.tb-key {
+  color: var(--chalk);
+  background:
+    linear-gradient(90deg, rgba(210,165,76,.13), rgba(210,165,76,0) 58%),
+    var(--slate);
+  border-color: rgba(210, 165, 76, .34);
+}
+
+.team-note {
+  font-family: var(--serif);
+  font-size: var(--fs-base); line-height: 1.62; color: var(--dim);
+  max-width: 42ch; padding-left: 24px;
+  border-left: 1px solid rgba(210, 165, 76, .4);
+}
+
+/* la scène de droite : la photo tient la hauteur, les noms se posent dessus */
+.team-stage { position: relative; display: flex; align-items: flex-end; }
+.team-stage::before {
+  content: ''; position: absolute; z-index: 0;
+  right: -14%; top: -6%; width: 86%; aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(159,179,190,.14), rgba(159,179,190,0) 66%);
+  pointer-events: none;
+}
+.team-photo {
+  position: relative; z-index: 1;
+  width: 112%; max-width: none; height: auto;
+  margin-left: auto; margin-right: -9%;
+  display: block; opacity: .96;
+}
 
 .team-who {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 1px; background: var(--rule-soft); border: 1px solid var(--rule-soft);
-  margin-top: 32px;
+  position: absolute; z-index: 2;
+  left: clamp(-56px, -3.6vw, -20px); bottom: clamp(26px, 4vw, 52px);
+  display: grid; gap: 10px;
 }
-.team-who > div { background: var(--ink); padding: 18px 22px 20px; }
-.team-who b { display: block; font-size: var(--fs-base); font-weight: 600; }
-.team-who span { display: block; font-size: var(--fs-sm); color: var(--brass); margin-top: 3px; }
-.team-who em {
-  display: block; font-style: normal; font-size: var(--fs-sm);
-  color: var(--dim-2); line-height: 1.5; margin-top: 8px;
+.team-who > div {
+  background: rgba(13, 27, 36, .82);
+  backdrop-filter: blur(14px) saturate(130%);
+  border: 1px solid var(--rule-soft);
+  border-radius: 999px;
+  padding: 12px 22px 13px;
+}
+.team-who b {
+  display: block; font-family: var(--serif);
+  font-size: var(--fs-base); font-weight: 600; color: var(--chalk);
+  line-height: 1.25;
+}
+.team-who span {
+  display: block; font-family: var(--serif);
+  font-size: var(--fs-base); color: var(--brass); line-height: 1.35;
 }
 
-@media (max-width: 860px) {
-  .team-grid { grid-template-columns: 1fr; align-items: start; }
-  .team-text { padding-bottom: 32px; }
+@media (max-width: 900px) {
+  .team-head { grid-template-columns: 1fr; gap: 18px; margin-bottom: 24px; align-items: start; }
+  .team-grid { grid-template-columns: 1fr; gap: 10px; }
+  .team-text { padding-bottom: 0; }
+  .tb { max-width: none; }
+  /* la scene repasse en bloc : sans ca les pastilles se rangent a cote de la
+     photo au lieu de se poser dessous. */
+  .team-stage { display: block; margin-top: 24px; }
+  .team-photo { width: 100%; margin-right: 0; margin-left: 0; }
+  .team-who {
+    position: static; grid-template-columns: 1fr; gap: 10px; margin-top: 16px;
+  }
+  .team-who > div { border-radius: 14px; }
 }
 
 /* ---------- FAQ ---------------------------------------------------------- */
