@@ -1164,44 +1164,17 @@ section { position: relative; }
 .glsa-cols dd { margin: 0; font-size: .875rem; line-height: 1.62; color: #3C5A85; }
 .glsa-note { margin-top: 16px; font-size: .8125rem; line-height: 1.55; color: #4E6A92; }
 
-/* la maquette de l'emplacement */
+/* la capture de l'emplacement, prise sur une vraie page de résultats */
 .glsa-shot { margin: 0; }
+.glsa-shot img {
+  width: 100%; height: auto; display: block;
+  border-radius: 10px; border: 1px solid rgba(23,78,166,.18);
+  box-shadow: 0 1px 2px rgba(60,64,67,.2), 0 8px 22px -8px rgba(60,64,67,.35);
+  background: #fff;
+}
 .glsa-shot figcaption {
-  font-size: .75rem; color: #4E6A92; margin-bottom: 9px;
+  font-size: .75rem; line-height: 1.5; color: #4E6A92; margin-top: 10px;
 }
-.lsa-card {
-  display: grid; gap: 9px;
-  background: #fff; border-radius: 10px; padding: 14px;
-  box-shadow: 0 1px 2px rgba(60,64,67,.22), 0 6px 18px -6px rgba(60,64,67,.28);
-}
-.lsa-top { display: flex; align-items: center; gap: 10px; }
-.lsa-av {
-  display: grid; place-items: center; flex: none;
-  width: 32px; height: 32px; border-radius: 50%;
-  background: #174EA6; color: #fff; font-size: 11px; font-weight: 500;
-}
-.lsa-id b { display: block; font-size: 12.5px; font-weight: 500; color: #202124; }
-.lsa-id i { display: block; font-style: normal; font-size: 11px; color: #5F6368; margin-top: 1px; }
-.lsa-id em { font-style: normal; color: #F9AB00; letter-spacing: .4px; }
-.lsa-badge {
-  justify-self: start;
-  display: inline-flex; align-items: center; gap: 6px;
-  font-size: 11px; font-weight: 500; color: #137333;
-  background: #E6F4EA; border-radius: 999px; padding: 5px 11px;
-}
-.lsa-badge svg { width: 12px; height: 12px; }
-.lsa-meta { font-size: 11px; color: #5F6368; }
-.lsa-cta {
-  justify-self: start;
-  font-size: 11.5px; font-weight: 500; color: #fff;
-  background: #137333; border-radius: 4px; padding: 7px 15px;
-}
-.lsa-under { display: block; font-size: .75rem; color: #4E6A92; margin: 14px 0 8px; }
-.lsa-ghost {
-  display: block; height: 7px; border-radius: 4px;
-  background: rgba(23,78,166,.16); margin-bottom: 6px;
-}
-.lsa-ghost.w70 { width: 70%; }
 
 @media (max-width: 860px) {
   .glsa { grid-template-columns: 1fr; gap: 24px; }
