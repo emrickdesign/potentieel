@@ -59,8 +59,12 @@
       },
       {
         "rule": "bounce-easing",
-        "value": "cubic-bezier(.34, 1.36, .5, 1) realisations.css",
-        "createdAt": "2026-10-14T13:35:33.615Z"
+        "value": "cubic-bezier(.34, 1.36, .5, 1)",
+        "files": [
+          "realisations.css"
+        ],
+        "createdAt": "2026-10-14T13:44:40.154418Z",
+        "reason": "Client: a choisi l'animation glass folder de 21st.dev pour les dossiers de realisations. Ce ressort donne la bascule du panneau sur sa charniere et le rebond des fiches qui sortent de la poche ; l'aplatir en ease-out enleve l'effet demande. Borne a realisations.css."
       }
     ]
   }
