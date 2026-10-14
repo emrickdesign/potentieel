@@ -1132,6 +1132,8 @@ section { position: relative; }
 }
 .glsa > * { position: relative; z-index: 1; }
 
+.glsa-head { text-align: center; }
+
 .glsa-offert {
   display: inline-flex; align-items: center; gap: 8px;
   background: #137333; color: #fff;
@@ -1148,11 +1150,13 @@ section { position: relative; }
   color: #174EA6; margin: 0 0 12px;
 }
 .glsa-lede {
-  font-size: 1rem; line-height: 1.62; color: #1F3A66; max-width: 64ch;
+  font-size: 1rem; line-height: 1.62; color: #1F3A66;
+  max-width: 64ch; margin-inline: auto;
 }
 .glsa b { font-weight: 500; color: #174EA6; }
 
 .glsa-body {
+  text-align: left;
   display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 470px);
   gap: clamp(28px, 3.6vw, 48px); align-items: start;
   margin-top: clamp(24px, 2.8vw, 32px);
@@ -1195,6 +1199,9 @@ section { position: relative; }
 }
 
 @media (max-width: 860px) {
+  /* une phrase de cinq lignes centree sur un ecran etroit se lit mal :
+     le badge et le titre restent centres, le texte revient a gauche. */
+  .glsa-lede { text-align: left; }
   .glsa-body { grid-template-columns: 1fr; gap: 24px; }
   .glsa-pts li { grid-template-columns: 34px minmax(0, 1fr); gap: 13px; }
   .glsa-ic { width: 34px; height: 34px; }
