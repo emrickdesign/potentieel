@@ -159,6 +159,12 @@ section { position: relative; }
   background:
     linear-gradient(to bottom, var(--ink) 0%, var(--slate) 9%, var(--slate) 91%, var(--ink) 100%);
 }
+/* Plusieurs sections qui se suivent ne doivent pas rentrer et ressortir de la
+   teinte a chaque fois : la premiere fond a l'entree, les suivantes restent
+   pleines, la derniere fond a la sortie. Un seul fond, aucune coupure. */
+.band-top { background: linear-gradient(to bottom, var(--ink) 0%, var(--slate) 12%, var(--slate) 100%); }
+.band-mid { background: var(--slate); }
+.band-bot { background: linear-gradient(to bottom, var(--slate) 0%, var(--slate) 88%, var(--ink) 100%); }
 
 .sec-head { margin-bottom: clamp(36px, 4.5vw, 64px); }
 .sec-head p { margin-top: 18px; }
@@ -1144,17 +1150,44 @@ section { position: relative; }
 
 /* ---------- Et aussi : les sites ----------------------------------------- */
 
-.also-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: clamp(28px,4vw,56px); align-items: start; }
-.also-prices { display: grid; gap: 1px; background: var(--rule-soft); border: 1px solid var(--rule-soft); }
-.also-prices > div { background: var(--slate); padding: 22px 24px; }
+/* L'autre metier de l'agence tient dans un cadre pose sur le meme fond que
+   ses voisines : c'est le cadre qui le detache, pas un changement de teinte. */
+.also {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: clamp(28px, 4vw, 56px); align-items: center;
+  background: var(--ink);
+  border: 1px solid var(--rule-soft); border-radius: 18px;
+  padding: clamp(28px, 3.4vw, 42px);
+}
+.also-kicker {
+  font-size: var(--fs-sm); color: var(--brass); margin-bottom: 10px;
+}
+.also h2 { font-size: var(--fs-xl); }
+.also-lede {
+  font-size: var(--fs-base); color: var(--dim); line-height: 1.68;
+  max-width: 42ch; margin-top: 14px;
+}
+.also .btn-row { margin-top: 26px; }
+
+.also-prices { display: grid; gap: 14px; }
+.also-prices > div {
+  background: var(--slate);
+  border: 1px solid var(--rule-soft); border-radius: 12px;
+  padding: 20px 22px 22px;
+}
 .also-prices .sum { font-size: var(--fs-lg); margin-bottom: 6px; }
-.also-prices b { display: block; font-size: var(--fs-sm); font-weight: 600; margin-bottom: 5px; }
+.also-prices .sum-quiet { color: var(--chalk); }
+.also-prices b { display: block; font-size: var(--fs-base); font-weight: 600; margin-bottom: 6px; }
 .also-prices p { font-size: var(--fs-sm); color: var(--dim); line-height: 1.62; }
+
+@media (max-width: 860px) {
+  .also { grid-template-columns: 1fr; gap: 26px; align-items: start; }
+}
 
 /* ---------- CTA ---------------------------------------------------------- */
 
 .cta { text-align: left; }
-.cta h2 { max-width: 18ch; }
+.cta h2 { max-width: 22ch; }
 .cta p { margin: 18px 0 32px; }
 
 /* ---------- Pied --------------------------------------------------------- */
@@ -1199,7 +1232,7 @@ section { position: relative; }
   .flow-row { grid-template-columns: 1fr; }
   .fare { grid-template-columns: 1fr; }
   .fare-budget { grid-template-columns: 1fr; gap: 10px; }
-  .gband-grid, .also-grid, .team-grid { grid-template-columns: 1fr; }
+  .gband-grid, .team-grid { grid-template-columns: 1fr; }
   .team-grid { align-items: start; }
   .foot-grid { grid-template-columns: 1fr; gap: 30px; }
 
