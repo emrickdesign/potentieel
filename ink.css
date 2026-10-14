@@ -1049,13 +1049,15 @@ section { position: relative; }
 /* la citation */
 .team-quote {
   position: relative; margin: 0 0 auto;
-  padding-left: clamp(42px, 4.4vw, 58px);
+  padding-left: clamp(30px, 3.2vw, 40px);
 }
+/* Les deux guillemets sont de la meme taille : l'ouvrant est pose dans la
+   marge, le fermant suit le dernier mot. Meme corps, meme teinte. */
 .team-quote::before {
   content: '«';
-  position: absolute; left: 0; top: -0.3em;
-  font-family: var(--serif); font-size: 3.4rem; line-height: 1;
-  color: var(--brass); opacity: .72;
+  position: absolute; left: 0; top: 0;
+  font-family: var(--serif); font-size: 1.6em; line-height: 1.55;
+  color: var(--brass); opacity: .78;
 }
 .team-quote p {
   font-family: var(--serif);
@@ -1065,7 +1067,7 @@ section { position: relative; }
 .team-quote p + p { margin-top: 16px; }
 /* le guillemet fermant suit le dernier mot, il ne se pose pas en dessous */
 .q-close {
-  font-size: 1.5em; line-height: 0; vertical-align: -0.12em;
+  font-size: 1.6em; line-height: 0; vertical-align: -0.14em;
   color: var(--brass); opacity: .78; margin-left: 5px;
 }
 /* les mots qui comptent : meme corps, autre teinte */
