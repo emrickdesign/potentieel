@@ -344,49 +344,51 @@ html, body { background: var(--bg-card); }
   .gads-zone .gads-tuile b { opacity: 1 !important; }
 }
 
-/* ---------- ce qui vous fait perdre les chantiers -----------------------
-   Trois cartes d'alerte, du rouge au jaune : l'ordre des couleurs suit
-   l'ordre de gravité. Chaque teinte est mesurée au-dessus de 6:1 sur le
-   fond, donc le texte d'accent reste lisible et n'est pas qu'un effet.
+/* ---------- les trois cas de figure --------------------------------------
+   Des lignes, pas des cartes : l'artisan doit reconnaître la sienne d'un
+   coup d'œil, pas comparer trois blocs. Chaque ligne porte son numéro et un
+   rail de couleur, du jaune au rouge — l'ordre suit celui de la gravité.
+   Teintes mesurées entre 6 et 8,6:1 sur le fond.
    -------------------------------------------------------------------------- */
 
-.alerte { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 18px; }
-/* C'est la bordure entière qui prend la teinte, pas un bandeau posé sur une
-   arête : le filet coloré en haut de carte est le tic le plus reconnaissable
-   des interfaces fabriquées à la chaîne. */
-.alerte-c {
-  position: relative; overflow: hidden;
-  padding: 24px 24px 26px; border-radius: 14px;
-  border: 1px solid var(--bord);
-  background: var(--bg);
+.cas { display: grid; gap: 0; }
+.cas-l {
+  display: grid; grid-template-columns: 46px minmax(0, 1fr);
+  gap: clamp(16px, 2vw, 26px); align-items: start;
+  padding: clamp(22px, 2.6vw, 30px) 0;
+  border-top: 1px solid var(--border-card);
+  position: relative;
 }
-.alerte-c::after {
-  content: ''; position: absolute; right: -60px; top: -70px;
-  width: 190px; height: 190px; border-radius: 50%;
-  background: radial-gradient(circle, var(--voile), transparent 68%);
-  pointer-events: none;
+.cas-l:last-child { border-bottom: 1px solid var(--border-card); }
+/* le rail : il marque la ligne sans l'enfermer dans une boîte */
+.cas-l::before {
+  content: ''; position: absolute; left: 0; top: -1px; bottom: -1px;
+  width: 2px; background: var(--ton);
 }
-.alerte-r { --ton: #F28B82; --voile: rgba(242, 139, 130, .13); --bord: rgba(242, 139, 130, .34); }
-.alerte-o { --ton: #F6A463; --voile: rgba(246, 164, 99, .13); --bord: rgba(246, 164, 99, .34); }
-.alerte-j { --ton: #F2C14E; --voile: rgba(242, 193, 78, .12); --bord: rgba(242, 193, 78, .32); }
+.cas-l { padding-left: clamp(18px, 2.2vw, 26px); }
+.cas-j { --ton: #F2C14E; --voile: rgba(242, 193, 78, .14); }
+.cas-o { --ton: #F6A463; --voile: rgba(246, 164, 99, .14); }
+.cas-r { --ton: #F28B82; --voile: rgba(242, 139, 130, .14); }
 
-.alerte-ic {
-  position: relative; z-index: 1;
-  width: 38px; height: 38px; border-radius: 11px;
-  display: grid; place-items: center; margin-bottom: 15px;
-  background: var(--voile); color: var(--ton);
+.cas-n {
+  width: 46px; height: 46px; border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 17px; font-weight: 800; color: var(--ton);
+  background: var(--voile);
 }
-.alerte-ic svg {
-  width: 20px; height: 20px; fill: none; stroke: currentColor;
-  stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round;
+.cas-t h3 {
+  font-size: clamp(17px, 1.7vw, 19px); font-weight: 700;
+  color: var(--white); margin: 9px 0 9px;
 }
-.alerte-c h3 {
-  position: relative; z-index: 1;
-  font-size: 17px; font-weight: 700; margin: 0 0 9px; color: var(--ton);
+.cas-t p {
+  font-size: 15px; color: var(--gray-light); line-height: 1.72;
+  margin: 0; max-width: 78ch;
 }
-.alerte-c p {
-  position: relative; z-index: 1;
-  font-size: 15px; color: var(--gray-light); line-height: 1.7; margin: 0;
+
+@media (max-width: 560px) {
+  .cas-l { grid-template-columns: 38px minmax(0, 1fr); gap: 14px; }
+  .cas-n { width: 38px; height: 38px; font-size: 15px; }
+  .cas-t h3 { margin-top: 5px; }
 }
 
 /* ---------- les quatre étapes, qui se posent une à une ------------------- */
