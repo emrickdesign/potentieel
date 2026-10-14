@@ -1050,6 +1050,7 @@ section { position: relative; }
 .team-quote {
   position: relative; margin: 0 0 auto;
   padding-left: clamp(42px, 4.4vw, 58px);
+  padding-bottom: 46px;
 }
 .team-quote::before {
   content: '«';
@@ -1063,6 +1064,12 @@ section { position: relative; }
   max-width: 50ch;
 }
 .team-quote p + p { margin-top: 16px; }
+.team-quote::after {
+  content: '»';
+  position: absolute; right: 6px; bottom: -4px;
+  font-family: var(--serif); font-size: 3.4rem; line-height: 1;
+  color: var(--brass); opacity: .72;
+}
 /* les mots qui comptent : meme corps, autre teinte */
 .q-up  { font-weight: 600; color: var(--chalk); }
 .q-key { font-weight: 600; color: var(--brass); }
@@ -1076,13 +1083,6 @@ section { position: relative; }
 
 /* la photo, seule sur sa colonne */
 .team-stage { position: relative; display: flex; align-items: flex-end; }
-.team-stage::before {
-  content: ''; position: absolute; z-index: 0;
-  right: -14%; top: -6%; width: 86%; aspect-ratio: 1;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(159,179,190,.14), rgba(159,179,190,0) 66%);
-  pointer-events: none;
-}
 .team-photo {
   position: relative; z-index: 1;
   width: 112%; max-width: none; height: auto;
@@ -1091,10 +1091,7 @@ section { position: relative; }
 }
 
 /* les deux noms, rangés sous la citation */
-.team-who {
-  display: grid; justify-items: start;
-  gap: 10px; margin-top: clamp(24px, 2.8vw, 34px);
-}
+.team-who { display: grid; justify-items: start; gap: 10px; }
 /* a leur largeur de contenu : cote a cote, le role d'Eloise passait sur deux
    lignes et desequilibrait la paire. */
 .team-who > div {
