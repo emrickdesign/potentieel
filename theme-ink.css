@@ -35,10 +35,22 @@
 
 html, body { background: var(--bg); color: var(--white); }
 
-/* Barre de navigation et barre d'onglets mobile : fonds codés en blanc */
+/* Barre de navigation : fond codé en blanc, et elle devient flottante —
+   détachée des bords, en pilule, comme sur l'accueil. */
 .navbar {
-  background: rgba(13, 27, 36, 0.86);
-  border-bottom: 1px solid rgba(159, 179, 190, 0.16);
+  left: 50%; right: auto; top: 14px;
+  transform: translateX(-50%);
+  width: calc(100% - 40px); max-width: 1180px;
+  padding: 0 14px 0 26px; height: 60px;
+  border-radius: 999px;
+  background: rgba(13, 27, 36, 0.82);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid rgba(159, 179, 190, 0.16);
+  box-shadow: 0 12px 34px -14px rgba(0, 0, 0, .75);
+}
+@media (max-width: 900px) {
+  .navbar { width: calc(100% - 28px); top: 10px; height: 54px; padding: 0 10px 0 18px; }
 }
 .mobile-tabbar {
   background: rgba(9, 19, 25, 0.95) !important;
