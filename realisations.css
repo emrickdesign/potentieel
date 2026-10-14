@@ -1,0 +1,327 @@
+/* =========================================================================
+   POTENTIEEL — Les réalisations, rangées dans des dossiers en verre
+
+   Trois couches, de l'arrière vers l'avant : un panneau de fond qui porte
+   une teinte, les fiches que le dossier contient, et un panneau avant en
+   verre dépoli qui floute ce qui passe derrière. Rien n'est le dessin d'un
+   dossier : les fiches sont de vrais éléments entre deux vrais panneaux,
+   et le verre les floute pendant qu'elles bougent.
+
+   - au repos      : fermé, à plat ; seul le haut des fiches dépasse.
+   - au survol     : le panneau avant bascule sur sa charnière basse et les
+                     fiches sortent un peu de la poche.
+   - ouvert (clic) : le panneau tombe plus bas, les fiches montent et
+                     s'éventent ; chacune devient un bouton.
+
+   L'aperçu s'ouvre ensuite par-dessus la page, dans un cadre d'écran. Le
+   site y est affiché tel quel mais sans interaction : on le regarde, on ne
+   s'en sert pas.
+
+   Repris de l'idée « glass folder » de 21st.dev, porté en JS natif — la
+   page n'embarque pas React pour trois dossiers.
+   ========================================================================= */
+
+.rea {
+  --ease:   cubic-bezier(.2, .8, .2, 1);
+  --spring: cubic-bezier(.34, 1.36, .5, 1);
+  padding: clamp(72px, 8vw, 110px) 0 clamp(80px, 9vw, 120px);
+}
+
+.rea-head { text-align: center; margin-bottom: clamp(44px, 5vw, 68px); }
+.rea-head h2 {
+  font-size: clamp(34px, 4.5vw, 52px); font-weight: 800;
+  letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 16px;
+}
+.rea-head p {
+  max-width: 62ch; margin: 0 auto;
+  color: var(--gray-light); line-height: 1.7;
+}
+
+.rea-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: clamp(28px, 3.4vw, 52px);
+  justify-items: center; align-items: start;
+}
+
+/* ---------- le dossier --------------------------------------------------- */
+
+.fold {
+  --hinge: 0deg;
+  --lift: 42px;
+  --spread: 0px;
+  --fan: 0deg;
+  --stack: 15px;
+  position: relative; width: 340px; max-width: 100%;
+  height: 382px;              /* 272 de dossier + le ciel ou montent les fiches */
+  isolation: isolate;
+}
+.fold:hover, .fold:focus-within {
+  --hinge: -11deg; --lift: -34px; --spread: 8px; --fan: 1.4deg; --stack: 10px;
+}
+/* Ouvert, les fiches montent en escalier : chacune expose sa bande de titre,
+   donc chacune est lisible et cliquable. L'eventail horizontal d'origine les
+   empilait les unes sur les autres — seule la derniere etait atteignable. */
+.fold.is-open {
+  --hinge: -24deg; --lift: -86px; --spread: 6px; --fan: .8deg; --stack: 52px;
+  z-index: 3;
+}
+
+.fold-stage { position: absolute; left: 0; top: 110px; width: 340px; height: 272px; }
+
+.fold-shadow {
+  position: absolute; left: 18px; right: 18px; bottom: -6px; height: 60px;
+  border-radius: 40px; background: rgba(0, 0, 0, .55); filter: blur(22px);
+}
+
+/* le panneau de fond, découpé en forme de dossier */
+.fold-back {
+  position: absolute; inset: 0; overflow: hidden;
+  background: linear-gradient(170deg, var(--bg-card-3) 0%, var(--bg-card) 62%, #11232E 100%);
+  clip-path: path('M0 56A22 22 0 0 1 22 34L146 34C170 34 172 0 198 0L318 0A22 22 0 0 1 340 22L340 250A22 22 0 0 1 318 272L22 272A22 22 0 0 1 0 250Z');
+}
+.fold-back::after {
+  content: ''; position: absolute; inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.07) 0%, rgba(255,255,255,0) 24%),
+    radial-gradient(120% 80% at 78% 0%, rgba(210,165,76,.14), rgba(210,165,76,0) 62%);
+}
+
+/* les fiches */
+.fold-files {
+  position: absolute; inset: 0; z-index: 5; pointer-events: none;
+  clip-path: inset(-400px -400px 10px -400px);   /* rien ne dépasse par le bas */
+}
+.fold-file {
+  all: unset; box-sizing: border-box;
+  position: absolute; left: 34px; top: 96px; width: 272px; height: 184px;
+  border-radius: 16px; overflow: hidden; cursor: pointer; pointer-events: auto;
+  background: #11212B;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .14),
+    0 0 0 .5px rgba(255, 255, 255, .1),
+    0 12px 28px -8px rgba(0, 0, 0, .75);
+  transform-origin: 50% 100%;
+  transform:
+    translate(calc(var(--jx) + var(--slot) * var(--spread)),
+              calc(var(--lift) + var(--depth) * var(--stack) * -1))
+    rotate(calc(var(--jr) + var(--slot) * var(--fan)));
+  transition:
+    transform .75s var(--spring) calc(var(--depth) * 40ms),
+    box-shadow .4s var(--ease);
+}
+.fold.is-open .fold-file:hover,
+.fold.is-open .fold-file:focus-visible {
+  transform:
+    translate(calc(var(--jx) + var(--slot) * var(--spread)),
+              calc(var(--lift) + var(--depth) * var(--stack) * -1 - 18px))
+    rotate(calc(var(--slot) * var(--fan) * .6));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .2),
+    0 0 0 1px rgba(210, 165, 76, .5),
+    0 24px 44px -12px rgba(0, 0, 0, .85);
+  transition-delay: 0s;
+}
+.fold-file:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+.fold-file img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: top center; display: block;
+}
+.fold-file::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit;
+  background: linear-gradient(180deg, rgba(7,16,22,.92) 0%, rgba(7,16,22,.72) 52px, rgba(7,16,22,.12) 58%, rgba(7,16,22,.5) 100%);
+  pointer-events: none;
+}
+.fold-file b, .fold-file i {
+  position: absolute; left: 14px; right: 14px; z-index: 1;
+  font-style: normal; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.fold-file b, .fold-file i { right: 46px; }
+.fold-file b {
+  top: 12px; font-size: 13.5px; font-weight: 600; color: #fff;
+  letter-spacing: -.005em;
+}
+.fold-file i {
+  top: 31px; font-size: 11.5px; color: rgba(233, 239, 242, .78);
+}
+/* la mention « voir le site » ne se révèle qu'une fois le dossier ouvert */
+.fold-file u {
+  position: absolute; right: 12px; top: 14px; z-index: 2;
+  display: grid; place-items: center;
+  width: 26px; height: 26px; border-radius: 50%;
+  text-decoration: none; color: #0D1B24; background: var(--orange);
+  opacity: 0; transform: scale(.6);
+  transition: opacity .3s var(--ease), transform .4s var(--spring);
+}
+.fold-file u span {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap;
+}
+.fold.is-open .fold-file u { opacity: 1; transform: none; transition-delay: .2s; }
+.fold-file u svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+/* le panneau avant, en verre, charnière sur son bord bas */
+.fold-front {
+  position: absolute; left: 0; top: 74px; width: 340px; height: 198px; z-index: 10;
+  -webkit-backdrop-filter: blur(22px) saturate(1.4);
+  backdrop-filter: blur(22px) saturate(1.4);
+  transform-origin: 50% 100%;
+  transform: perspective(760px) rotateX(var(--hinge));
+  transition: transform .8s var(--spring);
+  clip-path: path('M0 22A22 22 0 0 1 22 0L118 0C144 0 146 32 172 32L318 32A22 22 0 0 1 340 54L340 176A22 22 0 0 1 318 198L22 198A22 22 0 0 1 0 176Z');
+}
+.fold-front::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(22,44,57,.3) 0%, rgba(13,27,36,.72) 46%, rgba(9,20,27,.95) 100%);
+}
+.fold-front::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(260px 200px at 50% 26%, rgba(255,255,255,.1), rgba(255,255,255,0) 72%);
+  pointer-events: none;
+}
+
+.fold-hit { all: unset; position: absolute; inset: 0; z-index: 2; cursor: pointer; }
+.fold-hit:focus-visible { outline: 2px solid var(--orange); outline-offset: -4px; border-radius: 22px; }
+
+.fold-label {
+  position: absolute; left: 28px; bottom: 30px; z-index: 1;
+  display: flex; flex-direction: column; gap: 5px;
+  max-width: 230px; pointer-events: none;
+}
+.fold-label b {
+  font-size: 18px; font-weight: 600; line-height: 1.2;
+  letter-spacing: -.012em; color: var(--white);
+}
+.fold-label span { font-size: 12.5px; color: var(--gray-light); }
+
+/* la poignée : elle tourne quand le dossier s'ouvre */
+.fold-key {
+  position: absolute; right: 22px; bottom: 22px; z-index: 12;
+  width: 50px; height: 50px; border-radius: 16px;
+  display: grid; place-items: center; pointer-events: none;
+  background: linear-gradient(180deg, rgba(233,239,242,.12) 0%, rgba(233,239,242,.04) 100%);
+  border: 1px solid rgba(233, 239, 242, .16);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  transition: transform .5s var(--spring), background .4s var(--ease);
+}
+.fold.is-open .fold-key { transform: rotate(45deg); background: rgba(210,165,76,.22); }
+.fold-key svg {
+  width: 22px; height: 22px; fill: none; stroke: var(--white);
+  stroke-width: 1.6; stroke-linecap: round;
+}
+
+/* l'assemblage à l'arrivée à l'écran */
+.fold:not(.is-in) .fold-back  { transform: translateY(22px); opacity: 0; }
+.fold:not(.is-in) .fold-file  { opacity: 0; }
+.fold:not(.is-in) .fold-front { transform: translateY(46px); opacity: 0; }
+.fold:not(.is-in) .fold-key   { opacity: 0; transform: scale(.6); }
+.fold:not(.is-in) .fold-shadow { opacity: 0; }
+.fold-back, .fold-shadow { transition: transform 1s var(--ease), opacity .9s var(--ease); }
+.fold.is-in .fold-file { transition-delay: calc(var(--depth) * 40ms); }
+.fold.is-in .fold-front { transition: transform .8s var(--spring) .3s, opacity .8s var(--ease) .3s; }
+
+/* ---------- l'aperçu ----------------------------------------------------- */
+
+.peek {
+  position: fixed; inset: 0; z-index: 2000;
+  display: grid; place-items: center;
+  padding: clamp(14px, 3vw, 40px);
+  background: rgba(5, 12, 17, .82);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  opacity: 0; visibility: hidden;
+  transition: opacity .3s var(--ease), visibility 0s .3s;
+}
+.peek.is-on { opacity: 1; visibility: visible; transition-delay: 0s; }
+
+.peek-box {
+  position: relative; width: min(1180px, 100%); height: min(760px, 100%);
+  display: flex; flex-direction: column;
+  background: #0A141B; border: 1px solid rgba(233, 239, 242, .14);
+  border-radius: 16px; overflow: hidden;
+  box-shadow: 0 40px 90px -30px rgba(0, 0, 0, .9);
+  transform: translateY(18px) scale(.98);
+  transition: transform .45s var(--spring);
+}
+.peek.is-on .peek-box { transform: none; }
+
+/* le bandeau tient lieu de légende : pas d'adresse, le nom du client */
+.peek-bar {
+  flex: none; display: flex; align-items: center; gap: 14px;
+  padding: 13px 16px 13px 20px;
+  border-bottom: 1px solid rgba(233, 239, 242, .12);
+  background: linear-gradient(180deg, #16262F 0%, #101E27 100%);
+}
+.peek-bar .peek-who { min-width: 0; display: grid; gap: 2px; }
+.peek-bar b {
+  font-size: 15px; font-weight: 600; color: var(--white);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.peek-bar span {
+  font-size: 12.5px; color: var(--gray-light);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.peek-note {
+  margin-left: auto; flex: none; display: inline-flex; align-items: center; gap: 7px;
+  font-size: 12px; color: var(--gray);
+}
+.peek-note svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+.peek-close {
+  flex: none; width: 36px; height: 36px; border-radius: 10px;
+  display: grid; place-items: center; cursor: pointer;
+  background: rgba(233, 239, 242, .08); border: 1px solid rgba(233, 239, 242, .14);
+  color: var(--white);
+}
+.peek-close:hover { background: rgba(233, 239, 242, .16); }
+.peek-close:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+.peek-close svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+
+/* le site lui-même : rendu en 1440 de large puis réduit, et sans interaction */
+.peek-vue {
+  flex: 1; min-height: 0; position: relative; overflow: hidden auto;
+  background: #0A141B;
+  overscroll-behavior: contain;
+}
+.peek-vue iframe {
+  position: absolute; left: 0; top: 0;
+  border: 0; display: block;
+  transform-origin: 0 0;
+  pointer-events: none;            /* on regarde, on n'agit pas */
+}
+.peek-piste { position: relative; width: 100%; }
+
+.peek-wait {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  color: var(--gray); font-size: 14px;
+  background: #0A141B; transition: opacity .4s var(--ease);
+}
+.peek-wait[hidden] { display: none; }
+/* si le site refuse le cadre ou met trop longtemps, la capture prend le relais */
+.peek-repli { position: absolute; inset: 0; display: none; overflow: auto; }
+.peek-repli img { width: 100%; height: auto; display: block; }
+.peek-box.is-repli .peek-repli { display: block; }
+.peek-box.is-repli .peek-vue iframe { display: none; }
+
+@media (max-width: 860px) {
+  /* ecran etroit : l'escalier se resserre pour rester dans le cadre du dossier */
+  .fold.is-open { --lift: -62px; --stack: 48px; }
+}
+
+@media (max-width: 760px) {
+  .peek { padding: 0; }
+  .peek-box { width: 100%; height: 100%; border-radius: 0; border: 0; }
+  .peek-note { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fold *, .peek *, .fold, .peek {
+    transition-duration: .001ms !important;
+    transition-delay: 0s !important;
+    animation: none !important;
+  }
+}
+
+/* le libellé d'ouverture n'existe que pour les lecteurs d'écran */
+.rea .sr-only {
+  position: absolute; width: 1px; height: 1px;
+  margin: -1px; padding: 0; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}

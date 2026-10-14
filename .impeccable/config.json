@@ -56,6 +56,11 @@
         ],
         "createdAt": "2026-10-13T15:01:25.048Z",
         "reason": "Client: a demande que la zone Google reprenne la DA de Google Ads, couleurs comprises. Roboto y est une citation de l'identite de Google, bornee a la section .gzone - le reste de la page est en Spectral et Libre Franklin."
+      },
+      {
+        "rule": "bounce-easing",
+        "value": "cubic-bezier(.34, 1.36, .5, 1) realisations.css",
+        "createdAt": "2026-10-14T13:35:33.615Z"
       }
     ]
   }
