@@ -112,8 +112,10 @@ h2 {
 
 h3 {
   font-weight: 600;
-  font-size: var(--fs-md);
-  line-height: 1.3;
+  /* 22px contre 17px de corps : un palier franc, la ou trois tailles de h3
+     entre 20 et 23px rendaient la hierarchie molle. */
+  font-size: 1.375rem;
+  line-height: 1.32;
   letter-spacing: -0.008em;
 }
 
@@ -556,7 +558,7 @@ section { position: relative; }
 
 .gzone-h {
   font-family: 'Roboto', system-ui, sans-serif;
-  font-weight: 500; font-size: 1.25rem; color: #202124;
+  font-weight: 500; font-size: 1.375rem; color: #202124;
   letter-spacing: 0; line-height: 1.4;
   margin: clamp(44px, 5vw, 64px) 0 20px;
   padding-top: 18px; border-top: 1px solid #DADCE0;
@@ -946,25 +948,35 @@ section { position: relative; }
 
 .fare-budget {
   border: 1px solid var(--rule-soft); border-top: 0;
-  padding: 24px 26px 26px;
-  display: grid; grid-template-columns: 170px minmax(0,1fr); gap: 24px; align-items: start;
+  padding: clamp(26px, 3vw, 34px) clamp(22px, 2.6vw, 32px);
+  display: grid; grid-template-columns: 210px minmax(0,1fr);
+  gap: clamp(22px, 3vw, 38px); align-items: start;
 }
-.fare-budget b { font-size: var(--fs-sm); font-weight: 600; }
+/* L'etiquette de gauche est un titre, pas une legende : elle se lit comme tel. */
+.fare-budget b {
+  font-size: var(--fs-base); font-weight: 600; color: var(--chalk);
+  line-height: 1.35;
+}
 .incl {
   margin: 0; padding: 0; list-style: none;
-  columns: 2; column-gap: 34px; max-width: 70ch;
+  columns: 2; column-gap: 40px; max-width: 74ch;
 }
 .incl li {
-  font-size: var(--fs-sm); line-height: 1.55; color: var(--dim);
-  padding: 5px 0 5px 17px; position: relative;
+  font-size: var(--fs-base); line-height: 1.62; color: var(--dim);
+  padding: 7px 0 7px 21px; position: relative;
   break-inside: avoid;
 }
 .incl li::before {
-  content: ''; position: absolute; left: 0; top: 13px;
-  width: 8px; height: 1.5px; background: var(--brass);
+  content: ''; position: absolute; left: 0; top: 16px;
+  width: 10px; height: 1.5px; background: var(--brass);
 }
-@media (max-width: 860px) { .incl { columns: 1; } }
-.fare-budget p { font-size: var(--fs-sm); color: var(--dim); line-height: 1.68; max-width: 70ch; }
+@media (max-width: 1000px) { .incl { columns: 1; } }
+.fare-budget p { font-size: var(--fs-base); color: var(--dim); line-height: 1.72; max-width: 68ch; }
+.fare-budget p strong { color: var(--chalk); font-weight: 600; }
+
+@media (max-width: 760px) {
+  .fare-budget { grid-template-columns: 1fr; gap: 14px; }
+}
 
 /* ---------- Pour qui / pas pour qui -------------------------------------- */
 
@@ -985,15 +997,51 @@ section { position: relative; }
 }
 .fit-yes li::before { background: var(--brass); }
 
+/* Les points se posent un a un quand la colonne arrive a l'ecran : le tiret
+   se trace, le texte suit. La classe .anim n'est posee par le script que
+   s'il sait pouvoir jouer l'animation — sans JS, sans IntersectionObserver
+   ou en mouvement reduit, la liste s'affiche normalement. */
+.fit.anim li { opacity: 0; }
+.fit.anim li::before { transform: scaleX(0); transform-origin: left; }
+.fit.anim.is-in li {
+  opacity: 1;
+  transition: opacity .42s cubic-bezier(.22,.7,.3,1) calc(var(--i) * 85ms + 90ms);
+}
+.fit.anim.is-in li::before {
+  transform: scaleX(1);
+  transition: transform .34s cubic-bezier(.22,.7,.3,1) calc(var(--i) * 85ms);
+}
+
 /* ---------- L'équipe ----------------------------------------------------- */
 
 .team { position: relative; overflow: hidden; padding: clamp(58px, 6.4vw, 92px) 0 0; }
-.team-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: clamp(32px, 5vw, 64px); align-items: end; }
+/* Le recit tient la colonne de gauche : la photo lui cede de la largeur. */
+.team-grid {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
+  gap: clamp(28px, 4vw, 52px); align-items: end;
+}
+.team-text { padding-bottom: clamp(44px, 5.4vw, 72px); }
+.team-text p { color: var(--dim); line-height: 1.74; max-width: 60ch; margin-top: 16px; }
+.team-text .lede { margin-top: 18px; }
 .team-photo { width: 100%; height: auto; opacity: .95; }
-.team-who { display: grid; gap: 1px; background: var(--rule-soft); border: 1px solid var(--rule-soft); margin-top: 28px; }
-.team-who > div { background: var(--ink); padding: 18px 22px; }
+
+.team-who {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1px; background: var(--rule-soft); border: 1px solid var(--rule-soft);
+  margin-top: 32px;
+}
+.team-who > div { background: var(--ink); padding: 18px 22px 20px; }
 .team-who b { display: block; font-size: var(--fs-base); font-weight: 600; }
-.team-who span { font-size: var(--fs-sm); color: var(--dim); }
+.team-who span { display: block; font-size: var(--fs-sm); color: var(--brass); margin-top: 3px; }
+.team-who em {
+  display: block; font-style: normal; font-size: var(--fs-sm);
+  color: var(--dim-2); line-height: 1.5; margin-top: 8px;
+}
+
+@media (max-width: 860px) {
+  .team-grid { grid-template-columns: 1fr; align-items: start; }
+  .team-text { padding-bottom: 32px; }
+}
 
 /* ---------- FAQ ---------------------------------------------------------- */
 

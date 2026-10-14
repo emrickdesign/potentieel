@@ -537,8 +537,7 @@
         <div class="fare-when">À partir du mois 3</div>
         <span class="sum">130&nbsp;€ + 20&nbsp;%<span class="sum-unit">par mois, les 20&nbsp;% portant sur le budget publicitaire</span></span>
         <p>
-          Nos honoraires mensuels, tant que vous continuez. Pour un budget de 800&nbsp;€,
-          cela fait 290&nbsp;€ par mois ; pour 1&nbsp;500&nbsp;€, 430&nbsp;€ par mois.
+          Nos honoraires mensuels, tant que vous continuez.
         </p>
       </div>
     </div>
@@ -590,32 +589,32 @@
     <div class="sec-head">
       <h2>Pour qui ça marche, et pour qui ça ne marche pas</h2>
       <p class="lede">
-        Nous intervenons sur tous les corps d'état du bâtiment, à l'exception de la
-        plomberie. Et nous le disons avant de commencer, pas après : si votre zone ne
-        s'y prête pas, nous ne lançons pas de campagne.
+        Tous les corps d'état du bâtiment, sauf la plomberie. Et on vous le dit
+        avant de signer, pas après : quand une zone ne s'y prête pas, on préfère
+        ne rien lancer plutôt que vous faire dépenser pour rien.
       </p>
     </div>
     <div class="fit">
       <div>
-        <h3>Ça marche bien pour</h3>
+        <h3>Là, ça remplit un planning</h3>
         <ul class="fit-yes">
-          <li>Maçonnerie et gros œuvre</li>
-          <li>Couverture, charpente, zinguerie</li>
-          <li>Ravalement, peinture et finitions</li>
-          <li>Isolation et rénovation énergétique</li>
-          <li>Entreprises tous corps d'état</li>
-          <li>Celles qui peuvent absorber de nouveaux chantiers dès maintenant</li>
+          <li>Les maçons et le gros œuvre</li>
+          <li>Les couvreurs, charpentiers et zingueurs</li>
+          <li>Le ravalement, la peinture et les finitions</li>
+          <li>L'isolation et la rénovation énergétique</li>
+          <li>Les entreprises tous corps d'état</li>
+          <li>Et tous ceux qui ont de la place dans leur planning dès maintenant</li>
         </ul>
       </div>
       <div>
-        <h3>Ça marche mal pour</h3>
+        <h3>Là, on vous le déconseille</h3>
         <ul>
-          <li>Les zones où personne ne cherche votre métier</li>
-          <li>Les entreprises qui ne rappellent pas sous 24&nbsp;h</li>
-          <li>Les chantiers à marge trop faible pour supporter un coût d'acquisition</li>
-          <li>Ceux qui veulent un résultat sans budget publicitaire</li>
-          <li>Les agendas déjà pleins pour un an</li>
-          <li>La plomberie, que nous ne couvrons pas</li>
+          <li>Personne ne cherche votre métier là où vous travaillez</li>
+          <li>Le téléphone n'est pas rappelé dans la journée</li>
+          <li>Vos marges ne supportent pas de payer pour obtenir un contact</li>
+          <li>Vous attendez des appels sans mettre un euro de publicité</li>
+          <li>Votre agenda est déjà rempli jusqu'à l'an prochain</li>
+          <li>Vous êtes plombier : ce métier-là, nous ne le prenons pas</li>
         </ul>
       </div>
     </div>
@@ -626,16 +625,38 @@
 <section class="team">
   <div class="wrap">
     <div class="team-grid">
-      <div style="padding-bottom:clamp(48px,6vw,80px);">
+      <div class="team-text">
         <h2>Qui s'en occupe</h2>
-        <p class="lede" style="margin-top:18px;">
-          Potentieel, c'est nous deux. Vous avez la même personne au téléphone du
-          premier échange au réglage des campagnes — pas un commercial puis un
-          gestionnaire que vous ne verrez jamais.
+        <p class="lede">
+          Potentieel, c'est nous deux. Nos pères sont dans le bâtiment : pendant
+          des années nous les avons vus courir après les chantiers sans savoir
+          comment les aider.
+        </p>
+        <p>
+          Le déclic est venu en cherchant nous-mêmes un artisan pour nos travaux.
+          Nous avons fait ce que tout le monde fait : taper le métier et le nom de
+          notre ville sur Google, puis appeler ce qui remontait en premier. Le
+          levier était là depuis le début.
+        </p>
+        <p>
+          Nous nous sommes formés auprès de professionnels, nous avons monté les
+          premières campagnes sur les entreprises de nos pères, et ça a marché.
+          Alors nous avons élargi : aujourd'hui des artisans nous confient leurs
+          campagnes mois après mois. Et c'est la même personne que vous avez au
+          téléphone du premier échange au réglage des annonces — pas un commercial,
+          puis un gestionnaire que vous ne verrez jamais.
         </p>
         <div class="team-who">
-          <div><b>Emrick Perilliat</b><span>Gestion des campagnes</span></div>
-          <div><b>Éloïse</b><span>Gestion des clients</span></div>
+          <div>
+            <b>Emrick Perilliat</b>
+            <span>Gestionnaire de campagnes</span>
+            <em>Création, réglage et suivi des annonces Google&nbsp;Ads</em>
+          </div>
+          <div>
+            <b>Éloïse</b>
+            <span>Relation client et campagnes</span>
+            <em>Rendez-vous, suivi des demandes, et gestion des annonces</em>
+          </div>
         </div>
       </div>
       <img class="team-photo" src="assets/team-ink-wide.png" alt="Emrick Perilliat et Éloïse, fondateurs de Potentieel" width="936" height="768" decoding="async">
@@ -818,6 +839,33 @@
   setTimeout(function () {
     [].forEach.call(groupes, function (g) { g.classList.add('is-in'); });
   }, 8000);
+})();
+
+/* Les deux listes « pour qui / pas pour qui » se posent point par point.
+   Le départ est l'état normal : on n'arme l'animation que si on sait pouvoir
+   la jouer, et un garde-fou pose l'état final si l'observateur ne vient pas. */
+(function () {
+  var cols = document.querySelectorAll('.fit > div');
+  if (!cols.length) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+      !('IntersectionObserver' in window)) return;
+
+  [].forEach.call(cols, function (col) {
+    var items = col.querySelectorAll('li');
+    [].forEach.call(items, function (li, i) { li.style.setProperty('--i', i); });
+  });
+  var fit = document.querySelector('.fit');
+  fit.classList.add('anim');
+
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      fit.classList.add('is-in');
+      io.disconnect();
+    });
+  }, { threshold: 0.18 });
+  io.observe(fit);
+  setTimeout(function () { fit.classList.add('is-in'); }, 6000);
 })();
 
 /* Le logo Google Ads s'assemble une fois, quand la zone entre à l'écran.
