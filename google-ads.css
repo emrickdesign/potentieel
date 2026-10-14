@@ -1,0 +1,112 @@
+/* =========================================================================
+   POTENTIEEL — la page Google Ads
+
+   Un seul fond du haut en bas, et une courbe de performance en guise de
+   démarcation sous le header : celle que tout annonceur reconnaît, le
+   nombre de clics qui monte dans l'interface Google Ads. La séparation ne
+   vient plus d'un changement de teinte, elle vient du dessin.
+
+   À charger APRÈS theme-ink.css.
+   ========================================================================= */
+
+/* ---------- un seul fond ------------------------------------------------- */
+
+html, body { background: var(--bg-card); }
+/* le pied reprend le même fond : plus aucune variation sur la page */
+.footer { background: var(--bg-card); }
+
+/* Les cartes gardent le ton sombre : c'est elles qui portent la structure
+   maintenant que les sections ne changent plus de fond. */
+
+/* ---------- la courbe sous le header ------------------------------------- */
+
+.courbe {
+  position: relative;
+  margin-top: clamp(30px, 4vw, 54px);
+  padding-bottom: clamp(34px, 4.6vw, 64px);
+  overflow: hidden;
+}
+/* Le graphique porte sa propre hauteur ; le point du dernier relevé se place
+   en pourcentage de CETTE boîte, pas de la section. */
+.courbe-graphe {
+  position: relative; height: clamp(120px, 13vw, 190px);
+}
+.courbe-graphe > svg {
+  display: block; width: 100%; height: 100%;
+}
+
+/* la grille du graphique, à peine visible */
+.courbe-grille line {
+  stroke: rgba(138, 180, 248, .14);
+  stroke-width: 1;
+  stroke-dasharray: 3 7;
+}
+.courbe-socle {
+  stroke: rgba(138, 180, 248, .26);
+  stroke-width: 1;
+}
+
+/* l'aire sous la courbe */
+.courbe-aire { opacity: 0; transition: opacity 1s var(--ease, cubic-bezier(.2,.8,.2,1)) .35s; }
+.courbe.is-in .courbe-aire { opacity: 1; }
+
+/* le tracé : il se dessine de gauche à droite, une fois */
+.courbe-trait {
+  fill: none; stroke: #8AB4F8; stroke-width: 2.6;
+  stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 1600; stroke-dashoffset: 1600;
+}
+.courbe.is-in .courbe-trait {
+  transition: stroke-dashoffset 1.55s cubic-bezier(.3, .7, .2, 1);
+  stroke-dashoffset: 0;
+}
+/* sans JS, sans IntersectionObserver ou en mouvement réduit, le tracé est
+   simplement là : l'animation s'ajoute, elle ne conditionne pas l'affichage. */
+.courbe:not(.anim) .courbe-trait { stroke-dasharray: none; stroke-dashoffset: 0; }
+.courbe:not(.anim) .courbe-aire { opacity: 1; }
+
+/* le point du dernier relevé, posé au bout du tracé */
+.courbe-point {
+  position: absolute; right: 7px;
+  top: calc(14.44% - 20px);      /* y = 26 sur une hauteur de 180 */
+  width: 40px; height: 40px; opacity: 0;
+}
+.courbe-point svg { display: block; width: 40px; height: 40px; }
+.courbe.is-in .courbe-point {
+  opacity: 1;
+  transition: opacity .4s var(--ease, cubic-bezier(.2,.8,.2,1)) 1.5s;
+}
+.courbe:not(.anim) .courbe-point { opacity: 1; }
+.courbe-halo { fill: rgba(138, 180, 248, .22); }
+.courbe-bille { fill: #8AB4F8; stroke: var(--bg-card); stroke-width: 3; }
+
+/* la légende, posée sur le graphique comme une infobulle Google Ads */
+.courbe-bulle {
+  position: absolute; right: clamp(16px, 5vw, 84px); top: 4px;
+  display: grid; gap: 3px;
+  padding: 12px 16px 13px;
+  background: rgba(13, 27, 36, .86);
+  border: 1px solid rgba(138, 180, 248, .28);
+  border-radius: 10px;
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  opacity: 0; transform: translateY(6px);
+}
+.courbe.is-in .courbe-bulle {
+  opacity: 1; transform: none;
+  transition: opacity .5s ease 1.55s, transform .6s cubic-bezier(.2,.8,.2,1) 1.55s;
+}
+.courbe:not(.anim) .courbe-bulle { opacity: 1; transform: none; }
+.courbe-bulle b {
+  font-size: 13px; font-weight: 600; color: #8AB4F8; letter-spacing: .01em;
+}
+.courbe-bulle span { font-size: 12px; color: var(--gray-light); }
+
+@media (max-width: 720px) {
+  .courbe-bulle { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .courbe * { transition: none !important; }
+  .courbe-trait { stroke-dasharray: none !important; stroke-dashoffset: 0 !important; }
+  .courbe-aire, .courbe-point, .courbe-bulle { opacity: 1 !important; transform: none !important; }
+}

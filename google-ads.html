@@ -23,6 +23,7 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,300..800;1,400&family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
   <link rel="stylesheet" href="theme-ink.css">
+  <link rel="stylesheet" href="google-ads.css">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -110,14 +111,47 @@
         Chaque jour, des particuliers tapent votre métier et votre ville sur Google. Aujourd'hui, ils tombent sur des plateformes de mise en relation qui revendent leur demande à quatre entreprises. Nous créons et gérons les campagnes qui vous mettent devant eux — et vous recevez leurs appels directement.
       </p>
       <div style="display:flex;gap:28px;flex-wrap:wrap;">
-        <a href="contact.html" class="btn-primary">Parler de votre secteur</a>
+        <a href="contact.html" class="btn-primary">Je suis intéressé</a>
         <a href="offre.html" class="btn-secondary">Voir aussi les sites internet</a>
       </div>
     </div>
   </section>
 
+  <!-- La démarcation sous le header : la courbe que tout annonceur reconnaît,
+       le nombre de clics qui monte dans l'interface Google Ads. -->
+  <div class="courbe" aria-hidden="true">
+    <div class="courbe-graphe">
+    <svg viewBox="0 0 1440 180" preserveAspectRatio="none" focusable="false">
+      <defs>
+        <linearGradient id="courbe-aire" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#8AB4F8" stop-opacity=".30"/>
+          <stop offset="1" stop-color="#8AB4F8" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <g class="courbe-grille">
+        <line x1="0" y1="45" x2="1440" y2="45"/>
+        <line x1="0" y1="90" x2="1440" y2="90"/>
+        <line x1="0" y1="135" x2="1440" y2="135"/>
+      </g>
+      <path class="courbe-aire" d="M0 154C18.3 153.0 71.7 148.3 110 148C148.3 147.7 190.0 154.8 230 152C270.0 149.2 310.0 133.5 350 131C390.0 128.5 430.0 140.5 470 137C510.0 133.5 550.0 113.3 590 110C630.0 106.7 670.0 120.3 710 117C750.0 113.7 790.0 93.7 830 90C870.0 86.3 910.0 99.0 950 95C990.0 91.0 1030.0 69.8 1070 66C1110.0 62.2 1150.0 75.8 1190 72C1230.0 68.2 1268.3 50.7 1310 43C1351.7 35.3 1418.3 28.8 1440 26L1440 180L0 180Z" fill="url(#courbe-aire)"/>
+      <path class="courbe-trait" d="M0 154C18.3 153.0 71.7 148.3 110 148C148.3 147.7 190.0 154.8 230 152C270.0 149.2 310.0 133.5 350 131C390.0 128.5 430.0 140.5 470 137C510.0 133.5 550.0 113.3 590 110C630.0 106.7 670.0 120.3 710 117C750.0 113.7 790.0 93.7 830 90C870.0 86.3 910.0 99.0 950 95C990.0 91.0 1030.0 69.8 1070 66C1110.0 62.2 1150.0 75.8 1190 72C1230.0 68.2 1268.3 50.7 1310 43C1351.7 35.3 1418.3 28.8 1440 26"/>
+      <line class="courbe-socle" x1="0" y1="179" x2="1440" y2="179"/>
+    </svg>
+    <span class="courbe-point">
+      <svg viewBox="0 0 40 40" focusable="false">
+        <circle class="courbe-halo" cx="20" cy="20" r="13"/>
+        <circle class="courbe-bille" cx="20" cy="20" r="6.5"/>
+      </svg>
+    </span>
+    </div>
+    <div class="courbe-bulle">
+      <b>Clics sur vos annonces</b>
+      <span>Les trente derniers jours</span>
+    </div>
+  </div>
+
   <!-- CONSTAT -->
-  <section style="padding:64px 0;background:var(--bg-card);">
+  <section style="padding:64px 0;">
     <div class="container" style="max-width:1000px;">
       <h2 style="font-size:clamp(28px,3.5vw,40px);font-weight:800;letter-spacing:-0.02em;margin:0 0 14px;">Pourquoi la demande vous échappe</h2>
       <p style="color:var(--gray-light);max-width:620px;margin:0 0 40px;line-height:1.7;">Le problème n'est presque jamais le manque de demande. C'est que la demande existe, et qu'elle est captée par quelqu'un d'autre avant d'arriver jusqu'à vous.</p>
@@ -180,7 +214,7 @@
   </section>
 
   <!-- TARIFS -->
-  <section style="padding:72px 0;background:var(--bg-card);">
+  <section style="padding:72px 0;">
     <div class="container" style="max-width:1000px;">
       <h2 style="font-size:clamp(28px,3.5vw,40px);font-weight:800;letter-spacing:-0.02em;margin:0 0 14px;">Ce que ça coûte, et quand</h2>
       <p style="color:var(--gray-light);max-width:620px;margin:0 0 36px;line-height:1.7;">Deux lignes seulement : ce que vous nous payez, et ce que vous payez à Google. Elles ne se mélangent jamais.</p>
@@ -290,7 +324,7 @@
   </section>
 
   <!-- FAQ -->
-  <section style="padding:64px 0;background:var(--bg-card);">
+  <section style="padding:64px 0;">
     <div class="container" style="max-width:780px;">
       <h2 style="font-size:clamp(26px,3.2vw,36px);font-weight:800;letter-spacing:-0.02em;margin:0 0 28px;">Questions fréquentes</h2>
       <div class="faq-list">
@@ -321,10 +355,10 @@
   <!-- CTA -->
   <section class="cta-section" style="padding:72px 0;">
     <div class="container" style="max-width:720px;text-align:center;">
-      <h2 style="font-size:clamp(28px,3.5vw,42px);font-weight:800;letter-spacing:-0.02em;margin:0 0 16px;">On regarde votre secteur ensemble</h2>
-      <p style="color:var(--gray-light);font-size:16px;line-height:1.7;margin:0 auto 28px;max-width:560px;">On vous montre combien de personnes cherchent votre métier sur votre zone, et ce que ça coûterait d'être devant elles. Si les chiffres ne tiennent pas, on vous le dit.</p>
+      <h2 style="font-size:clamp(28px,3.5vw,42px);font-weight:800;letter-spacing:-0.02em;margin:0 0 16px;">Dites-nous ce que vous faites</h2>
+      <p style="color:var(--gray-light);font-size:16px;line-height:1.7;margin:0 auto 28px;max-width:560px;">Vous nous laissez votre métier et ce que vous cherchez. On vous rappelle pour convenir d'un appel de présentation : on vous explique tout en détail, et on vous pose les questions qu'il faut pour savoir si ça peut marcher chez vous.</p>
       <div style="display:flex;gap:28px;flex-wrap:wrap;justify-content:center;">
-        <a href="contact.html" class="btn-primary">Prendre rendez-vous</a>
+        <a href="contact.html" class="btn-primary">Je suis intéressé</a>
         <a href="tel:+33769387613" class="btn-secondary">07 69 38 76 13</a>
       </div>
     </div>
@@ -362,6 +396,27 @@
   </div>
 </footer>
 
+<script>
+/* La courbe se dessine une fois, quand elle arrive à l'écran. Le tracé est
+   visible par défaut : on n'arme l'animation que si on sait pouvoir la jouer,
+   et un garde-fou pose l'état final si l'observateur ne vient jamais. */
+(function () {
+  var c = document.querySelector('.courbe');
+  if (!c) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+      !('IntersectionObserver' in window)) return;
+  c.classList.add('anim');
+  var io = new IntersectionObserver(function (entrees) {
+    entrees.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      c.classList.add('is-in');
+      io.disconnect();
+    });
+  }, { threshold: 0.25 });
+  io.observe(c);
+  setTimeout(function () { c.classList.add('is-in'); }, 5000);
+})();
+</script>
 <script src="scripts.js"></script>
 </body>
 </html>
