@@ -1,10 +1,10 @@
 /* =========================================================================
    POTENTIEEL — la page Google Ads
 
-   Un seul fond du haut en bas, et une courbe de performance en guise de
-   démarcation sous le header : celle que tout annonceur reconnaît, le
-   nombre de clics qui monte dans l'interface Google Ads. La séparation ne
-   vient plus d'un changement de teinte, elle vient du dessin.
+   Un seul fond du haut en bas, et le tableau de bord Google Ads en guise de
+   démarcation sous le header : l'interface que le client reçoit, reprise
+   fidèlement. La séparation ne vient plus d'un changement de teinte, elle
+   vient de l'objet.
 
    À charger APRÈS theme-ink.css.
    ========================================================================= */
@@ -97,95 +97,120 @@ html, body { background: var(--bg-card); }
   .ga-actions .btn-primary, .ga-tel { flex: 1 1 auto; justify-content: center; text-align: center; }
 }
 
-/* ---------- la courbe sous le header ------------------------------------- */
+/* ---------- le tableau de bord Google Ads --------------------------------
+   La démarcation sous le header, et la promesse de la page en un objet :
+   l'interface que le client reçoit. Reprise fidèle — tuiles de métriques
+   dont deux sélectionnées en bleu et rouge, deux courbes jour par jour,
+   axes à gauche et à droite. Les chiffres des tuiles sont les totaux réels
+   des séries tracées, pas des nombres posés à côté.
+   -------------------------------------------------------------------------- */
 
-.courbe {
-  position: relative;
-  margin-top: clamp(30px, 4vw, 54px);
-  padding-bottom: clamp(34px, 4.6vw, 64px);
+.gads-zone {
+  max-width: 1180px; margin: clamp(46px, 5.4vw, 76px) auto 0;
+  padding: 0 26px clamp(56px, 6.4vw, 92px);
+}
+
+.gads {
+  background: #fff; border-radius: 10px;
+  padding: 0 0 6px;
+  box-shadow: 0 1px 2px rgba(60, 64, 67, .3), 0 24px 60px -24px rgba(0, 0, 0, .7);
+  font-family: 'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif;
   overflow: hidden;
 }
-/* Le graphique porte sa propre hauteur ; le point du dernier relevé se place
-   en pourcentage de CETTE boîte, pas de la section. */
-.courbe-graphe {
-  position: relative; height: clamp(120px, 13vw, 190px);
+
+/* ---- les tuiles de métriques ---- */
+.gads-tuiles {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) 44px;
+  align-items: stretch;
+  border-bottom: 1px solid #E8EAED;
 }
-.courbe-graphe > svg {
-  display: block; width: 100%; height: 100%;
+.gads-tuile {
+  padding: 13px 18px 15px; min-width: 0;
+  border-right: 1px solid #E8EAED;
+}
+.gads-tuile:nth-child(4) { border-right: 0; }
+.gads-nom {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 12.5px; color: #5F6368; margin-bottom: 7px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.gads-nom svg {
+  width: 9px; height: 6px; flex: none;
+  fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round;
+}
+.gads-tuile b {
+  display: block; font-size: clamp(20px, 2.1vw, 26px);
+  font-weight: 400; color: #202124; letter-spacing: -.005em; line-height: 1.1;
+}
+/* les deux métriques sélectionnées, comme dans l'interface */
+.gads-bleu  { background: #1A73E8; border-right-color: #1A73E8; }
+.gads-rouge { background: #D93025; border-right-color: #D93025; }
+.gads-bleu .gads-nom, .gads-rouge .gads-nom { color: rgba(255,255,255,.92); }
+.gads-bleu b, .gads-rouge b { color: #fff; }
+
+.gads-points {
+  display: grid; place-content: center; gap: 3px; justify-items: center;
+}
+.gads-points i { width: 3px; height: 3px; border-radius: 50%; background: #5F6368; }
+
+/* ---- le graphique ---- */
+.gads-graphe {
+  display: grid; grid-template-columns: 38px minmax(0, 1fr) 40px;
+  align-items: stretch; gap: 10px;
+  padding: 16px 14px 0;
+}
+.gads-plot { position: relative; height: clamp(104px, 11vw, 150px); }
+.gads-plot svg { display: block; width: 100%; height: 100%; }
+.gads-axe {
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: 2px 0 10px;
+}
+.gads-axe i {
+  font-style: normal; font-size: 11px; color: #5F6368; line-height: 1;
+}
+.gads-axe-g { text-align: right; }
+
+.gads-grille line { stroke: #E8EAED; stroke-width: 1; }
+.gads-trait { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.gads-trait-b { stroke: #4285F4; }
+.gads-trait-r { stroke: #EA4335; }
+
+.gads-dates {
+  display: flex; justify-content: space-between;
+  padding: 2px 54px 10px 48px;
+  font-size: 11px; color: #5F6368;
 }
 
-/* la grille du graphique, à peine visible */
-.courbe-grille line {
-  stroke: rgba(138, 180, 248, .14);
-  stroke-width: 1;
-  stroke-dasharray: 3 7;
-}
-.courbe-socle {
-  stroke: rgba(138, 180, 248, .26);
-  stroke-width: 1;
+.gads-note {
+  margin: 16px 0 0; font-size: 13px; line-height: 1.6;
+  color: var(--gray); max-width: 72ch;
 }
 
-/* l'aire sous la courbe */
-.courbe-aire { opacity: 0; transition: opacity 1s var(--ease, cubic-bezier(.2,.8,.2,1)) .35s; }
-.courbe.is-in .courbe-aire { opacity: 1; }
+/* ---- le tracé se dessine une fois, à l'arrivée à l'écran ---- */
+.gads-zone.anim .gads-trait { stroke-dasharray: 2400; stroke-dashoffset: 2400; }
+.gads-zone.anim.is-in .gads-trait-r {
+  transition: stroke-dashoffset 1.5s cubic-bezier(.3,.7,.2,1) .1s; stroke-dashoffset: 0;
+}
+.gads-zone.anim.is-in .gads-trait-b {
+  transition: stroke-dashoffset 1.5s cubic-bezier(.3,.7,.2,1) .3s; stroke-dashoffset: 0;
+}
+.gads-zone.anim .gads-tuile b { opacity: 0; }
+.gads-zone.anim.is-in .gads-tuile b {
+  opacity: 1; transition: opacity .5s ease calc(.2s + var(--i, 0) * .09s);
+}
 
-/* le tracé : il se dessine de gauche à droite, une fois */
-.courbe-trait {
-  fill: none; stroke: #8AB4F8; stroke-width: 2.6;
-  stroke-linecap: round; stroke-linejoin: round;
-  stroke-dasharray: 1600; stroke-dashoffset: 1600;
-}
-.courbe.is-in .courbe-trait {
-  transition: stroke-dashoffset 1.55s cubic-bezier(.3, .7, .2, 1);
-  stroke-dashoffset: 0;
-}
-/* sans JS, sans IntersectionObserver ou en mouvement réduit, le tracé est
-   simplement là : l'animation s'ajoute, elle ne conditionne pas l'affichage. */
-.courbe:not(.anim) .courbe-trait { stroke-dasharray: none; stroke-dashoffset: 0; }
-.courbe:not(.anim) .courbe-aire { opacity: 1; }
-
-/* le point du dernier relevé, posé au bout du tracé */
-.courbe-point {
-  position: absolute; right: 7px;
-  top: calc(14.44% - 20px);      /* y = 26 sur une hauteur de 180 */
-  width: 40px; height: 40px; opacity: 0;
-}
-.courbe-point svg { display: block; width: 40px; height: 40px; }
-.courbe.is-in .courbe-point {
-  opacity: 1;
-  transition: opacity .4s var(--ease, cubic-bezier(.2,.8,.2,1)) 1.5s;
-}
-.courbe:not(.anim) .courbe-point { opacity: 1; }
-.courbe-halo { fill: rgba(138, 180, 248, .22); }
-.courbe-bille { fill: #8AB4F8; stroke: var(--bg-card); stroke-width: 3; }
-
-/* la légende, posée sur le graphique comme une infobulle Google Ads */
-.courbe-bulle {
-  position: absolute; right: clamp(16px, 5vw, 84px); top: 4px;
-  display: grid; gap: 3px;
-  padding: 12px 16px 13px;
-  background: rgba(13, 27, 36, .86);
-  border: 1px solid rgba(138, 180, 248, .28);
-  border-radius: 10px;
-  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
-  opacity: 0; transform: translateY(6px);
-}
-.courbe.is-in .courbe-bulle {
-  opacity: 1; transform: none;
-  transition: opacity .5s ease 1.55s, transform .6s cubic-bezier(.2,.8,.2,1) 1.55s;
-}
-.courbe:not(.anim) .courbe-bulle { opacity: 1; transform: none; }
-.courbe-bulle b {
-  font-size: 13px; font-weight: 600; color: #8AB4F8; letter-spacing: .01em;
-}
-.courbe-bulle span { font-size: 12px; color: var(--gray-light); }
-
-@media (max-width: 720px) {
-  .courbe-bulle { display: none; }
+@media (max-width: 860px) {
+  .gads-zone { padding-left: 20px; padding-right: 20px; }
+  .gads-tuiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .gads-points { display: none; }
+  .gads-tuile:nth-child(2) { border-right: 0; }
+  .gads-tuile:nth-child(1), .gads-tuile:nth-child(2) { border-bottom: 1px solid #E8EAED; }
+  .gads-graphe { grid-template-columns: 30px minmax(0, 1fr) 34px; gap: 7px; padding: 14px 10px 0; }
+  .gads-dates { padding: 2px 42px 10px 38px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .courbe * { transition: none !important; }
-  .courbe-trait { stroke-dasharray: none !important; stroke-dashoffset: 0 !important; }
-  .courbe-aire, .courbe-point, .courbe-bulle { opacity: 1 !important; transform: none !important; }
+  .gads-zone .gads-trait { stroke-dasharray: none !important; stroke-dashoffset: 0 !important; }
+  .gads-zone .gads-tuile b { opacity: 1 !important; }
 }
+

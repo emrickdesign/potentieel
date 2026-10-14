@@ -139,37 +139,55 @@
     </div>
   </section>
 
-  <!-- La démarcation sous le header : la courbe que tout annonceur reconnaît,
-       le nombre de clics qui monte dans l'interface Google Ads. -->
-  <div class="courbe" aria-hidden="true">
-    <div class="courbe-graphe">
-    <svg viewBox="0 0 1440 180" preserveAspectRatio="none" focusable="false">
-      <defs>
-        <linearGradient id="courbe-aire" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#8AB4F8" stop-opacity=".30"/>
-          <stop offset="1" stop-color="#8AB4F8" stop-opacity="0"/>
-        </linearGradient>
-      </defs>
-      <g class="courbe-grille">
-        <line x1="0" y1="45" x2="1440" y2="45"/>
-        <line x1="0" y1="90" x2="1440" y2="90"/>
-        <line x1="0" y1="135" x2="1440" y2="135"/>
-      </g>
-      <path class="courbe-aire" d="M0 154C18.3 153.0 71.7 148.3 110 148C148.3 147.7 190.0 154.8 230 152C270.0 149.2 310.0 133.5 350 131C390.0 128.5 430.0 140.5 470 137C510.0 133.5 550.0 113.3 590 110C630.0 106.7 670.0 120.3 710 117C750.0 113.7 790.0 93.7 830 90C870.0 86.3 910.0 99.0 950 95C990.0 91.0 1030.0 69.8 1070 66C1110.0 62.2 1150.0 75.8 1190 72C1230.0 68.2 1268.3 50.7 1310 43C1351.7 35.3 1418.3 28.8 1440 26L1440 180L0 180Z" fill="url(#courbe-aire)"/>
-      <path class="courbe-trait" d="M0 154C18.3 153.0 71.7 148.3 110 148C148.3 147.7 190.0 154.8 230 152C270.0 149.2 310.0 133.5 350 131C390.0 128.5 430.0 140.5 470 137C510.0 133.5 550.0 113.3 590 110C630.0 106.7 670.0 120.3 710 117C750.0 113.7 790.0 93.7 830 90C870.0 86.3 910.0 99.0 950 95C990.0 91.0 1030.0 69.8 1070 66C1110.0 62.2 1150.0 75.8 1190 72C1230.0 68.2 1268.3 50.7 1310 43C1351.7 35.3 1418.3 28.8 1440 26"/>
-      <line class="courbe-socle" x1="0" y1="179" x2="1440" y2="179"/>
-    </svg>
-    <span class="courbe-point">
-      <svg viewBox="0 0 40 40" focusable="false">
-        <circle class="courbe-halo" cx="20" cy="20" r="13"/>
-        <circle class="courbe-bille" cx="20" cy="20" r="6.5"/>
-      </svg>
-    </span>
+  <!-- La démarcation sous le header : le tableau de bord Google Ads, celui que
+       le client reçoit. Chiffres d'illustration, cohérents entre eux : les
+       totaux des tuiles sont ceux que tracent les deux courbes. -->
+  <div class="gads-zone">
+    <div class="gads" aria-hidden="true">
+
+      <div class="gads-tuiles">
+        <div class="gads-tuile gads-bleu">
+          <span class="gads-nom">Clics <svg viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></span>
+          <b>934</b>
+        </div>
+        <div class="gads-tuile gads-rouge">
+          <span class="gads-nom">Impressions <svg viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></span>
+          <b>65,7 k</b>
+        </div>
+        <div class="gads-tuile">
+          <span class="gads-nom">CPC moy.</span>
+          <b>0,81 €</b>
+        </div>
+        <div class="gads-tuile">
+          <span class="gads-nom">Coût</span>
+          <b>757 €</b>
+        </div>
+        <span class="gads-points"><i></i><i></i><i></i></span>
+      </div>
+
+      <div class="gads-graphe">
+        <span class="gads-axe gads-axe-g"><i>40</i><i>20</i><i>0</i></span>
+        <div class="gads-plot">
+          <svg viewBox="0 0 1040 150" preserveAspectRatio="none" focusable="false">
+            <g class="gads-grille">
+              <line x1="0" y1="6" x2="1040" y2="6"/>
+              <line x1="0" y1="72" x2="1040" y2="72"/>
+              <line x1="0" y1="138" x2="1040" y2="138"/>
+            </g>
+            <path class="gads-trait gads-trait-r" d="M0.0 30.6L35.9 63.2L71.7 10.6L107.6 50.1L143.4 24.7L179.3 78.6L215.2 53.2L251.0 18.8L286.9 83.6L322.8 35.1L358.6 13.3L394.5 69.6L430.3 41.5L466.2 21.5L502.1 89.5L537.9 27.9L573.8 56.9L609.7 17.0L645.5 75.9L681.4 37.8L717.2 11.5L753.1 73.2L789.0 44.2L824.8 24.2L860.7 85.9L896.6 30.6L932.4 14.3L968.3 65.9L1004.1 40.5L1040.0 20.6" vector-effect="non-scaling-stroke"/>
+            <path class="gads-trait gads-trait-b" d="M0.0 61.4L35.9 55.4L71.7 49.3L107.6 52.3L143.4 46.3L179.3 43.3L215.2 70.5L251.0 76.5L286.9 52.3L322.8 46.3L358.6 43.3L394.5 40.2L430.3 43.3L466.2 64.4L502.1 73.5L537.9 46.3L573.8 40.2L609.7 37.2L645.5 40.2L681.4 34.2L717.2 61.4L753.1 67.4L789.0 40.2L824.8 34.2L860.7 37.2L896.6 31.2L932.4 34.2L968.3 55.4L1004.1 61.4L1040.0 28.2" vector-effect="non-scaling-stroke"/>
+          </svg>
+        </div>
+        <span class="gads-axe gads-axe-d"><i>3 k</i><i>1,5 k</i><i>0</i></span>
+      </div>
+
+      <div class="gads-dates"><span>il y a 30 jours</span><span>aujourd'hui</span></div>
     </div>
-    <div class="courbe-bulle">
-      <b>Clics sur vos annonces</b>
-      <span>Les trente derniers jours</span>
-    </div>
+
+    <p class="gads-note">
+      L'interface Google Ads de votre compte, celle que nous tenons pour vous.
+      Chiffres d'illustration pour un budget de 800&nbsp;€ sur le mois.
+    </p>
   </div>
 
   <!-- CONSTAT -->
@@ -419,12 +437,16 @@
 </footer>
 
 <script>
-/* La courbe se dessine une fois, quand elle arrive à l'écran. Le tracé est
+/* Le tableau de bord se dessine une fois, quand il arrive à l'écran. Tout est
    visible par défaut : on n'arme l'animation que si on sait pouvoir la jouer,
    et un garde-fou pose l'état final si l'observateur ne vient jamais. */
 (function () {
-  var c = document.querySelector('.courbe');
+  var c = document.querySelector('.gads-zone');
   if (!c) return;
+  var i = 0;
+  [].forEach.call(c.querySelectorAll('.gads-tuile'), function (t) {
+    t.style.setProperty('--i', i++);
+  });
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
       !('IntersectionObserver' in window)) return;
   c.classList.add('anim');
