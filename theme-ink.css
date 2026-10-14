@@ -237,3 +237,15 @@ h1, h2, h3, h4, h5, h6, .serif, .pricing-price, .stat-item .num, .hero-stat .val
 @media (max-width: 860px) {
   .hero-ctas, .cta-section .container > div { gap: 12px; }
 }
+
+/* Le vrai logo, en masque recolorable. La flèche garde la couleur de la
+   marque ; l'accent du site reste le laiton. */
+.brand-mark {
+  display: block; flex: none;
+  width: 19px; height: 20px;
+  background: #E08A66;
+  -webkit-mask: url("assets/logo-arrow.png") center / contain no-repeat;
+          mask: url("assets/logo-arrow.png") center / contain no-repeat;
+}
+.footer .brand-mark { width: 21px; height: 22px; }
+.arrow-icon { display: inline-flex; align-items: center; }
