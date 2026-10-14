@@ -1,0 +1,28 @@
+/* =========================================================================
+   POTENTIEEL — le nom en trame de points, au pied des pages
+
+   La toile occupe tout le pied de page, derrière le contenu. Le nom y est
+   composé en très grand et coupé par le bord bas : il faut donc réserver de
+   la hauteur sous les colonnes de liens, sinon la trame passe dessous.
+   ========================================================================= */
+
+footer.a-trame {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  /* la place que prend le nom sous le contenu */
+  padding-bottom: clamp(120px, 16vw, 210px);
+}
+
+.pied-trame {
+  position: absolute; inset: 0; z-index: 0;
+  width: 100%; height: 100%; display: block; max-width: none;
+  pointer-events: none;      /* les liens du pied restent cliquables */
+}
+
+/* le contenu repasse devant la trame */
+footer.a-trame > *:not(.pied-trame) { position: relative; z-index: 1; }
+
+@media (max-width: 720px) {
+  footer.a-trame { padding-bottom: clamp(70px, 22vw, 120px); }
+}
