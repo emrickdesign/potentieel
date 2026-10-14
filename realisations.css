@@ -274,19 +274,19 @@
 .peek-close:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
 .peek-close svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
 
-/* le site lui-même : rendu en 1440 de large puis réduit, et sans interaction */
+/* Le site occupe le cadre à sa taille réelle et défile avec ses propres
+   barres : on s'y promène comme sur un vrai site. Ce ne sont pas les clics
+   qui sont bloqués mais les actions — le bac à sable du cadre interdit les
+   formulaires, les fenêtres surgissantes et toute sortie vers le haut. */
 .peek-vue {
-  flex: 1; min-height: 0; position: relative; overflow: hidden auto;
+  flex: 1; min-height: 0; position: relative; overflow: hidden;
   background: #0A141B;
-  overscroll-behavior: contain;
 }
 .peek-vue iframe {
-  position: absolute; left: 0; top: 0;
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
   border: 0; display: block;
-  transform-origin: 0 0;
-  pointer-events: none;            /* on regarde, on n'agit pas */
 }
-.peek-piste { position: relative; width: 100%; }
 
 .peek-wait {
   position: absolute; inset: 0; display: grid; place-items: center;
@@ -295,7 +295,7 @@
 }
 .peek-wait[hidden] { display: none; }
 /* si le site refuse le cadre ou met trop longtemps, la capture prend le relais */
-.peek-repli { position: absolute; inset: 0; display: none; overflow: auto; }
+.peek-repli { position: absolute; inset: 0; z-index: 2; display: none; overflow: auto; }
 .peek-repli img { width: 100%; height: auto; display: block; }
 .peek-box.is-repli .peek-repli { display: block; }
 .peek-box.is-repli .peek-vue iframe { display: none; }

@@ -6,10 +6,11 @@
    l'écran, elle ne sert qu'à charger l'aperçu.
 
    L'aperçu charge le site dans un cadre, à la demande seulement : rien
-   n'est chargé tant qu'un visiteur n'a pas cliqué. Le cadre est rendu en
-   1440 px de large puis réduit à l'échelle du conteneur, de sorte que le
-   site apparaisse toujours en version ordinateur, même sur un téléphone.
-   `pointer-events: none` l'empêche d'être utilisé : on le regarde.
+   n'est chargé tant qu'un visiteur n'a pas cliqué. Le site occupe le cadre
+   à sa taille réelle et se parcourt normalement — on passe d'une page à
+   l'autre, on défile, rien n'est déformé. Ce sont les actions qui sont
+   empêchées, pas les clics : le bac à sable du cadre interdit l'envoi de
+   formulaire, les fenêtres surgissantes et toute sortie vers le haut.
    ========================================================================= */
 (function () {
   'use strict';
@@ -171,14 +172,15 @@
         '<div class="peek-who"><b></b><span></span></div>' +
         '<span class="peek-note">' +
           '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>' +
-          'Aperçu : le site se parcourt, il ne se clique pas' +
+          'Aperçu : vous naviguez librement, rien n’est envoyé' +
         '</span>' +
         '<button type="button" class="peek-close" aria-label="Fermer l’aperçu">' +
           '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>' +
         '</button>' +
       '</div>' +
       '<div class="peek-vue">' +
-        '<div class="peek-piste"><iframe title="" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin"></iframe></div>' +
+        '<iframe title="" referrerpolicy="no-referrer" '+
+          'sandbox="allow-scripts allow-same-origin allow-pointer-lock"></iframe>' +
         '<div class="peek-repli"></div>' +
         '<div class="peek-wait">Chargement du site…</div>' +
       '</div>' +
@@ -187,7 +189,6 @@
 
   var boite  = peek.querySelector('.peek-box');
   var cadre  = peek.querySelector('iframe');
-  var piste  = peek.querySelector('.peek-piste');
   var vue    = peek.querySelector('.peek-vue');
   var attend = peek.querySelector('.peek-wait');
   var repli  = peek.querySelector('.peek-repli');
@@ -195,22 +196,6 @@
   var metEl  = peek.querySelector('.peek-bar span');
   var rendu  = null;      // l'élément à qui rendre le focus
   var minuteur = 0;
-
-  var HAUTEUR = 2600;     // hauteur de rendu ; ajustée si le site est plus haut
-
-  /* Sur un grand écran, le site est rendu en 1440 px puis réduit : on voit la
-     version ordinateur, celle qu'on veut montrer. Sur un téléphone, le réduire
-     le rendrait illisible (27 % de sa taille) — on le rend alors à la largeur
-     réelle, et c'est sa version mobile qui s'affiche, lisible. */
-  function echelle() {
-    var dispo = vue.clientWidth;
-    var largeur = dispo < 760 ? dispo : 1440;
-    var k = dispo / largeur;
-    cadre.style.width = largeur + 'px';
-    cadre.style.transform = k === 1 ? 'none' : 'scale(' + k + ')';
-    cadre.style.height = HAUTEUR + 'px';
-    piste.style.height = (HAUTEUR * k) + 'px';
-  }
 
   function ouvrir(f) {
     rendu = f;
@@ -220,10 +205,7 @@
     repli.innerHTML = '';
     boite.classList.remove('is-repli');
     attend.hidden = false;
-    HAUTEUR = 2600;
-    vue.scrollTop = 0;
     cadre.src = f.dataset.url;
-    echelle();
 
     peek.classList.add('is-on');
     document.documentElement.style.overflow = 'hidden';
@@ -254,12 +236,6 @@
     if (cadre.src === 'about:blank' || !cadre.src) return;
     attend.hidden = true;
     clearTimeout(minuteur);
-    // la hauteur réelle n'est lisible que si le site est de même origine ;
-    // sinon on garde la hauteur de rendu par défaut, qui couvre une page longue
-    try {
-      var h = cadre.contentDocument && cadre.contentDocument.body.scrollHeight;
-      if (h && h > 400) { HAUTEUR = Math.min(h + 40, 12000); echelle(); }
-    } catch (e) { /* origine différente : attendu */ }
   });
 
   hote.addEventListener('click', function (e) {
@@ -277,8 +253,5 @@
     if (e.key !== 'Tab') return;
     e.preventDefault();
     peek.querySelector('.peek-close').focus();
-  });
-  window.addEventListener('resize', function () {
-    if (peek.classList.contains('is-on')) echelle();
   });
 })();
