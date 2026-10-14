@@ -5,12 +5,17 @@
    métier et son adresse de déploiement ; l'adresse ne s'affiche jamais à
    l'écran, elle ne sert qu'à charger l'aperçu.
 
-   L'aperçu charge le site dans un cadre, à la demande seulement : rien
-   n'est chargé tant qu'un visiteur n'a pas cliqué. Le site occupe le cadre
-   à sa taille réelle et se parcourt normalement — on passe d'une page à
-   l'autre, on défile, rien n'est déformé. Ce sont les actions qui sont
-   empêchées, pas les clics : le bac à sable du cadre interdit l'envoi de
-   formulaire, les fenêtres surgissantes et toute sortie vers le haut.
+   L'aperçu montre la page entière du site, en capture, à sa taille de rendu
+   réelle : 1240 px sur un grand écran, 390 px sur un téléphone. On la
+   parcourt du haut jusqu'au pied du site, sans zoom et sans rien pouvoir
+   déclencher chez le client — ni formulaire, ni appel.
+
+   Un cadre vivant ne peut pas faire cela : la hauteur d'un cadre EST sa
+   hauteur de fenêtre, donc lui donner la hauteur d'une page entière étire
+   toutes les sections en 100vh du site (mesuré sur Jamier Toiture : un
+   document de 10 511 px passe à 25 364 px dans un cadre de cette hauteur).
+   La capture est le seul moyen d'avoir à la fois la page entière, la taille
+   réelle et la lecture seule. Elle n'est chargée qu'au clic.
    ========================================================================= */
 (function () {
   'use strict';
@@ -19,34 +24,43 @@
     {
       titre: 'Bâtiment et rénovation',
       sites: [
-        { nom: 'Euros Carrelage', metier: 'Carreleur · Villefranche-sur-Saône', url: 'https://euros-carrelage.vercel.app', vue: 'assets/apercus/euros-carrelage.jpg' },
-        { nom: 'Jamier Toiture',  metier: 'Couvreur-zingueur · Pays de Vitré',  url: 'https://jamier-toiture.vercel.app',  vue: 'assets/apercus/jamier-toiture.jpg' },
-        { nom: 'SJM Rénovation',  metier: 'Rénovation complète · Paris',        url: 'https://sjm-renovation.vercel.app',  vue: 'assets/apercus/sjm-renovation.jpg' },
-        { nom: "Tonio Rénov'",    metier: 'Toiture et façade · Boucau',         url: 'https://client-tonio-renov.vercel.app', vue: 'assets/apercus/tonio-renov.jpg' }
+        { nom: 'Euros Carrelage', metier: 'Carreleur · Villefranche-sur-Saône', url: 'https://euros-carrelage.vercel.app', vue: 'assets/apercus/euros-carrelage.jpg', plein: { 1240: [1240, 13703], 390: [390, 15266] } },
+        { nom: 'Jamier Toiture',  metier: 'Couvreur-zingueur · Pays de Vitré',  url: 'https://jamier-toiture.vercel.app',  vue: 'assets/apercus/jamier-toiture.jpg', plein: { 1240: [1240, 10511], 390: [390, 8879] } },
+        { nom: 'SJM Rénovation',  metier: 'Rénovation complète · Paris',        url: 'https://sjm-renovation.vercel.app',  vue: 'assets/apercus/sjm-renovation.jpg', plein: { 1240: [1240, 5672], 390: [398, 9170] } },
+        { nom: "Tonio Rénov'",    metier: 'Toiture et façade · Boucau',         url: 'https://client-tonio-renov.vercel.app', vue: 'assets/apercus/tonio-renov.jpg', plein: { 1240: [1240, 8005], 390: [390, 11538] } }
       ]
     },
     {
       titre: 'Commerce et artisanat',
       sites: [
-        { nom: 'ND Fleurs',       metier: 'Fleuriste · Paris 11e, Bastille',    url: 'https://nabil-fleurs.vercel.app',    vue: 'assets/apercus/nabil-fleurs.jpg' },
-        { nom: 'Tendance Raphia', metier: 'Artisanat malgache · boutique',      url: 'https://tendance-raphia.vercel.app', vue: 'assets/apercus/tendance-raphia.jpg' },
-        { nom: 'SiscoBe',         metier: 'Salon de coiffure · réservation',    url: 'https://siscobe.vercel.app',         vue: 'assets/apercus/siscobe.jpg' },
-        { nom: "Lux'Auto Spa",    metier: 'Detailing auto · Pontchâteau',       url: 'https://luxauto-spa.vercel.app',     vue: 'assets/apercus/luxauto-spa.jpg' }
+        { nom: 'ND Fleurs',       metier: 'Fleuriste · Paris 11e, Bastille',    url: 'https://nabil-fleurs.vercel.app',    vue: 'assets/apercus/nabil-fleurs.jpg', plein: { 1240: [1240, 7602], 390: [390, 13609] } },
+        { nom: 'Tendance Raphia', metier: 'Artisanat malgache · boutique',      url: 'https://tendance-raphia.vercel.app', vue: 'assets/apercus/tendance-raphia.jpg', plein: { 1240: [1240, 4017], 390: [390, 5538] } },
+        { nom: 'SiscoBe',         metier: 'Salon de coiffure · réservation',    url: 'https://siscobe.vercel.app',         vue: 'assets/apercus/siscobe.jpg', plein: { 1240: [1240, 6970], 390: [390, 8137] } },
+        { nom: "Lux'Auto Spa",    metier: 'Detailing auto · Pontchâteau',       url: 'https://luxauto-spa.vercel.app',     vue: 'assets/apercus/luxauto-spa.jpg', plein: { 1240: [1240, 6700], 390: [390, 9077] } }
       ]
     },
     {
       titre: 'Services et soin',
       sites: [
-        { nom: 'TKN Naturopathie',   metier: 'Naturopathe · prise de rendez-vous', url: 'https://tkn-naturopathie.vercel.app', vue: 'assets/apercus/tkn-naturopathie.jpg' },
-        { nom: 'NKG Service',        metier: 'Entreprise de nettoyage · Yvelines', url: 'https://nkg-sparkle-site.vercel.app', vue: 'assets/apercus/nkg-service.jpg' },
-        { nom: "Cœur de l'Asie",     metier: 'Élevage de chats · Val-d’Oise',  url: 'https://coeur-de-lasie.vercel.app',   vue: 'assets/apercus/coeur-de-lasie.jpg' },
-        { nom: 'ORIAL',              metier: 'Artiste peintre · vente en ligne',    url: 'https://orial.vercel.app',            vue: 'assets/apercus/orial.jpg' }
+        { nom: 'TKN Naturopathie',   metier: 'Naturopathe · prise de rendez-vous', url: 'https://tkn-naturopathie.vercel.app', vue: 'assets/apercus/tkn-naturopathie.jpg', plein: { 1240: [1240, 7645], 390: [390, 11042] } },
+        { nom: 'NKG Service',        metier: 'Entreprise de nettoyage · Yvelines', url: 'https://nkg-sparkle-site.vercel.app', vue: 'assets/apercus/nkg-service.jpg', plein: { 1240: [1240, 4304], 390: [390, 8131] } },
+        { nom: "Cœur de l'Asie",     metier: 'Élevage de chats · Val-d’Oise',  url: 'https://coeur-de-lasie.vercel.app',   vue: 'assets/apercus/coeur-de-lasie.jpg', plein: { 1240: [1240, 7938], 390: [390, 11424] } },
+        { nom: 'ORIAL',              metier: 'Artiste peintre · vente en ligne',    url: 'https://orial.vercel.app',            vue: 'assets/apercus/orial.jpg', plein: { 1240: [1240, 8105], 390: [390, 12103] } }
       ]
     }
   ];
 
   var hote = document.querySelector('.rea-grid');
   if (!hote) return;
+
+  var CATALOGUE = {};
+  DOSSIERS.forEach(function (d) {
+    d.sites.forEach(function (s) {
+      // la clé des captures est le nom de fichier de la vignette
+      s.cle = s.vue.split('/').pop().replace(/\.jpg$/, '');
+      CATALOGUE[s.url] = s;
+    });
+  });
 
   /* ---- petit générateur reproductible : chaque fiche garde son décalage --- */
   function alea(graine) {
@@ -172,55 +186,92 @@
         '<div class="peek-who"><b></b><span></span></div>' +
         '<span class="peek-note">' +
           '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>' +
-          'Aperçu : vous naviguez librement, rien n’est envoyé' +
+          'Aperçu : la page entière, en lecture seule' +
         '</span>' +
         '<button type="button" class="peek-close" aria-label="Fermer l’aperçu">' +
           '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>' +
         '</button>' +
       '</div>' +
-      '<div class="peek-vue">' +
-        '<iframe title="" referrerpolicy="no-referrer" '+
-          'sandbox="allow-scripts allow-same-origin allow-pointer-lock"></iframe>' +
-        '<div class="peek-repli"></div>' +
-        '<div class="peek-wait">Chargement du site…</div>' +
+      /* data-lenis-prevent : la page utilise Lenis, qui capte la molette pour
+         tout le document. Sans cet attribut, l'aperçu ne défile pas. */
+      /* data-lenis-prevent : la page utilise Lenis, qui capte la molette pour
+         tout le document. Sans cet attribut, l'aperçu ne défile pas. */
+      '<div class="peek-vue" data-lenis-prevent>' +
+        '<div class="peek-wait">Chargement de la page…</div>' +
       '</div>' +
     '</div>';
   document.body.appendChild(peek);
 
   var boite  = peek.querySelector('.peek-box');
-  var cadre  = peek.querySelector('iframe');
   var vue    = peek.querySelector('.peek-vue');
   var attend = peek.querySelector('.peek-wait');
-  var repli  = peek.querySelector('.peek-repli');
   var nomEl  = peek.querySelector('.peek-bar b');
   var metEl  = peek.querySelector('.peek-bar span');
   var rendu  = null;      // l'élément à qui rendre le focus
   var minuteur = 0;
 
+  /* Les largeurs auxquelles les pages ont été capturées. On prend
+     deux largeurs de rendu : celle d'un ordinateur et celle d'un téléphone.
+     On prend la première qui tient dans la zone, jamais de mise à l'échelle. */
+  var LARGEURS = [1240, 390];
+
+  function largeurDeRendu() {
+    var dispo = vue.clientWidth;
+    // 6 px de tolérance : selon le système la barre de défilement prend une
+    // largeur différente, et on ne veut pas basculer d'un cran pour 2 px.
+    return LARGEURS[0] <= dispo + 6 ? LARGEURS[0] : LARGEURS[1];
+  }
+
+  var imageEnCours = null;
+
+  function poser(site) {
+    var w = largeurDeRendu();
+    var d = site.plein && site.plein[w];
+    var img = document.createElement('img');
+    img.className = 'peek-page';
+    img.decoding = 'async';
+    // dimensions réelles de la capture : la place est réservée avant le
+    // chargement, et l'image s'affiche au pixel près, sans redimensionnement.
+    if (d) { img.width = d[0]; img.height = d[1]; }
+    img.alt = 'La page d’accueil du site de ' + site.nom + ', en entier.';
+    img.src = 'assets/apercus/plein/' + site.cle + '-' + w + '.webp';
+
+    img.addEventListener('load', function () {
+      if (img !== imageEnCours) return;
+      attend.hidden = true;
+      clearTimeout(minuteur);
+    });
+    img.addEventListener('error', function () {
+      if (img !== imageEnCours) return;
+      attend.textContent = 'Cet aperçu n’est pas disponible pour le moment.';
+    });
+
+    var ancienne = vue.querySelector('.peek-page');
+    if (ancienne) ancienne.remove();
+    vue.insertBefore(img, attend);
+    img.setAttribute('data-w', w);
+    imageEnCours = img;
+    return w;
+  }
+
   function ouvrir(f) {
     rendu = f;
-    nomEl.textContent = f.dataset.nom;
-    metEl.textContent = f.dataset.metier;
-    cadre.title = 'Aperçu du site de ' + f.dataset.nom;
-    repli.innerHTML = '';
-    boite.classList.remove('is-repli');
+    var site = CATALOGUE[f.dataset.url];
+    if (!site) return;
+    nomEl.textContent = site.nom;
+    metEl.textContent = site.metier;
+    attend.textContent = 'Chargement de la page…';
     attend.hidden = false;
-    cadre.src = f.dataset.url;
+    vue.scrollTop = 0;
+    poser(site);
 
     peek.classList.add('is-on');
     document.documentElement.style.overflow = 'hidden';
     peek.querySelector('.peek-close').focus();
 
-    // si rien n'est arrivé au bout de 9 s, on montre la capture
     clearTimeout(minuteur);
     minuteur = setTimeout(function () {
-      if (attend.hidden) return;
-      attend.hidden = true;
-      var img = document.createElement('img');
-      img.src = f.dataset.vue;
-      img.alt = 'Capture du site de ' + f.dataset.nom;
-      repli.appendChild(img);
-      boite.classList.add('is-repli');
+      if (!attend.hidden) attend.textContent = 'La page met du temps à venir…';
     }, 9000);
   }
 
@@ -228,19 +279,22 @@
     clearTimeout(minuteur);
     peek.classList.remove('is-on');
     document.documentElement.style.overflow = '';
-    cadre.src = 'about:blank';          // on arrête le site qui tournait
+    var img = vue.querySelector('.peek-page');
+    if (img) { img.remove(); imageEnCours = null; }
     if (rendu) { rendu.focus(); rendu = null; }
   }
-
-  cadre.addEventListener('load', function () {
-    if (cadre.src === 'about:blank' || !cadre.src) return;
-    attend.hidden = true;
-    clearTimeout(minuteur);
-  });
 
   hote.addEventListener('click', function (e) {
     var f = e.target.closest('.fold-file');
     if (f) ouvrir(f);
+  });
+
+  window.addEventListener('resize', function () {
+    if (!peek.classList.contains('is-on') || !rendu) return;
+    var site = CATALOGUE[rendu.dataset.url];
+    var img = vue.querySelector('.peek-page');
+    // on ne recharge que si on change de largeur de rendu
+    if (site && img && img.getAttribute('data-w') !== String(largeurDeRendu())) { attend.hidden = false; poser(site); }
   });
 
   peek.querySelector('.peek-close').addEventListener('click', fermer);
