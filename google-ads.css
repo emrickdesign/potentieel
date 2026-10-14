@@ -26,7 +26,7 @@ html, body { background: var(--bg-card); }
    colonne centrée.
    -------------------------------------------------------------------------- */
 
-.ga-hero { padding: clamp(104px, 11vw, 150px) 0 0; }
+.ga-hero { padding: clamp(84px, 8vw, 104px) 0 0; }
 .ga-wrap {
   /* 26 px : le retrait du logo dans la barre de navigation, pour que le
      titre commence exactement sous lui. */
@@ -36,8 +36,8 @@ html, body { background: var(--bg-card); }
 /* le logo, en pastille : un objet posé, pas une ligne de texte */
 .ga-marque {
   display: inline-flex; align-items: center; gap: 10px;
-  margin: 0 0 clamp(22px, 2.4vw, 30px);
-  padding: 7px 16px 7px 11px; border-radius: 999px;
+  margin: 0 0 clamp(18px, 1.8vw, 22px);
+  padding: 6px 15px 6px 10px; border-radius: 999px;
   background: rgba(233, 239, 242, .05);
   border: 1px solid rgba(233, 239, 242, .16);
 }
@@ -49,9 +49,9 @@ html, body { background: var(--bg-card); }
 }
 
 .ga-titre {
-  font-size: clamp(31px, 4.1vw, 52px);
-  font-weight: 700; line-height: 1.08; letter-spacing: -0.025em;
-  margin: 0 0 clamp(30px, 3.4vw, 44px);
+  font-size: clamp(29px, 3.6vw, 46px);
+  font-weight: 700; line-height: 1.09; letter-spacing: -0.025em;
+  margin: 0 0 clamp(24px, 2.6vw, 32px);
   max-width: 24ch;
 }
 .ga-br { display: none; }
@@ -60,8 +60,8 @@ html, body { background: var(--bg-card); }
    bordure nue d'un bord à l'autre. */
 .ga-bas {
   display: grid; grid-template-columns: minmax(0, 1fr) 1px auto;
-  gap: clamp(26px, 3.4vw, 52px); align-items: center;
-  padding-top: clamp(26px, 3vw, 36px);
+  gap: clamp(24px, 3vw, 46px); align-items: center;
+  padding-top: clamp(20px, 2.2vw, 26px);
   position: relative;
 }
 .ga-bas::before {
@@ -124,14 +124,16 @@ html, body { background: var(--bg-card); }
    des séries tracées, pas des nombres posés à côté.
    -------------------------------------------------------------------------- */
 
+/* Le panneau doit tenir dans l'écran d'arrivée, courbes comprises : sans
+   quoi l'animation se joue sous le pli et on ne voit rien. */
 .gads-zone {
-  max-width: 1180px; margin: clamp(46px, 5.4vw, 76px) auto 0;
+  max-width: 1180px; margin: clamp(26px, 2.8vw, 36px) auto 0;
   padding: 0 26px clamp(56px, 6.4vw, 92px);
 }
 
 .gads {
   background: #fff; border-radius: 10px;
-  padding: 0 0 6px;
+  padding: 0 0 2px;
   box-shadow: 0 1px 2px rgba(60, 64, 67, .3), 0 24px 60px -24px rgba(0, 0, 0, .7);
   font-family: 'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif;
   overflow: hidden;
@@ -144,7 +146,7 @@ html, body { background: var(--bg-card); }
   border-bottom: 1px solid #E8EAED;
 }
 .gads-tuile {
-  padding: 13px 18px 15px; min-width: 0;
+  padding: 11px 18px 13px; min-width: 0;
   border-right: 1px solid #E8EAED;
 }
 .gads-tuile:nth-child(4) { border-right: 0; }
@@ -176,9 +178,9 @@ html, body { background: var(--bg-card); }
 .gads-graphe {
   display: grid; grid-template-columns: 38px minmax(0, 1fr) 40px;
   align-items: stretch; gap: 10px;
-  padding: 16px 14px 0;
+  padding: 13px 14px 0;
 }
-.gads-plot { position: relative; height: clamp(104px, 11vw, 150px); }
+.gads-plot { position: relative; height: clamp(98px, 9vw, 126px); }
 .gads-plot svg { display: block; width: 100%; height: 100%; }
 .gads-axe {
   display: flex; flex-direction: column; justify-content: space-between;
@@ -196,7 +198,7 @@ html, body { background: var(--bg-card); }
 
 .gads-dates {
   display: flex; justify-content: space-between;
-  padding: 2px 54px 10px 48px;
+  padding: 2px 54px 8px 48px;
   font-size: 11px; color: #5F6368;
 }
 
