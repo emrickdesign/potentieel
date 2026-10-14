@@ -446,36 +446,59 @@
 
 
     <aside class="glsa">
-      <div class="glsa-text">
+      <header class="glsa-head">
         <span class="glsa-offert">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
           Offert
         </span>
-        <h4>Les Local Services Ads</h4>
-        <dl class="glsa-pts">
-          <div>
-            <dt>Où vous êtes placé</dt>
-            <dd>Tout en haut de Google, <b>au-dessus des annonces classiques</b>, avec son badge de vérification.</dd>
-          </div>
-          <div>
-            <dt>Ce que ça coûte</dt>
-            <dd>Rien au clic : vous payez <b>l'appel reçu</b>. Google vous le facture, nous prenons 30 % de ce montant.</dd>
-          </div>
-          <div>
-            <dt>Qui s'en occupe</dt>
-            <dd>Nous. <b>La vérification, le dossier et la campagne sont offerts</b>, et on tient votre fiche ensuite.</dd>
-          </div>
-        </dl>
-      </div>
+        <h3>Les Local Services Ads</h3>
+        <p class="glsa-lede">
+          C'est un autre format de Google, à part des annonces classiques : il ne
+          s'ouvre qu'aux entreprises qu'il a <b>vérifiées</b> — assurance, documents,
+          autorisations — et il les affiche avant tout le reste.
+        </p>
+      </header>
 
-      <figure class="glsa-shot">
-        <picture>
-          <source media="(max-width: 860px)" srcset="assets/lsa-serp-mobile.png" width="564" height="215">
-          <img src="assets/lsa-serp.png" width="1321" height="679" loading="lazy"
-               alt="Page de résultats Google pour « couvreur nantes » : au-dessus de tout le reste, un bloc « Couvreurs sponsorisé(e)s | Nantes » liste deux entreprises avec leur note, leur nombre d'avis, leur zone desservie et des boutons pour les contacter.">
-        </picture>
-        <figcaption>Noms et numéro fictifs. Format ouvert à certains métiers et zones seulement.</figcaption>
-      </figure>
+      <div class="glsa-body">
+        <ul class="glsa-pts">
+          <li>
+            <span class="glsa-ic glsa-ic-b" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16"/><path d="M12 21V9"/><path d="m7 14 5-5 5 5"/></svg>
+            </span>
+            <div>
+              <strong>Où vous êtes placé</strong>
+              <p>Tout en haut de la page, <b>au-dessus des annonces classiques</b>, avec le badge de vérification à côté de votre nom.</p>
+            </div>
+          </li>
+          <li>
+            <span class="glsa-ic glsa-ic-y" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 3h3l1.5 4.2-2.1 1.6a12.5 12.5 0 0 0 5.8 5.8l1.6-2.1L20.5 14v3a2.2 2.2 0 0 1-2.4 2.2A17 17 0 0 1 3.8 5.4 2.2 2.2 0 0 1 6 3z"/></svg>
+            </span>
+            <div>
+              <strong>Ce que ça coûte</strong>
+              <p>Rien au clic : vous payez <b>l'appel reçu</b>. Google vous le facture directement, et nous prenons 30 % de ce montant. Pas d'appel, pas de facture.</p>
+            </div>
+          </li>
+          <li>
+            <span class="glsa-ic glsa-ic-g" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z"/></svg>
+            </span>
+            <div>
+              <strong>Qui s'en occupe</strong>
+              <p>Nous. <b>La vérification, le dossier et la campagne sont offerts</b>, et on tient votre fiche Google ensuite : réponses aux avis, photos, paramétrage.</p>
+            </div>
+          </li>
+        </ul>
+
+        <figure class="glsa-shot">
+          <picture>
+            <source media="(max-width: 860px)" srcset="assets/lsa-serp-mobile.png" width="564" height="215">
+            <img src="assets/lsa-serp.png" width="1321" height="679" loading="lazy"
+                 alt="Page de résultats Google pour « couvreur nantes » : au-dessus de tout le reste, un bloc « Couvreurs sponsorisé(e)s | Nantes » liste deux entreprises avec leur note, leur nombre d'avis, leur zone desservie et des boutons pour les contacter.">
+          </picture>
+          <figcaption>Noms et numéro fictifs. Format ouvert à certains métiers et à certaines zones seulement : on vérifie avant d'en parler.</figcaption>
+        </figure>
+      </div>
     </aside>
   </div>
 </section>
