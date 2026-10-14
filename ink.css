@@ -1113,20 +1113,17 @@ section { position: relative; }
 }
 
 /* --- Les Local Services Ads, présentés comme un supplément ------------------
-   Sur fond bleu Google, pour se détacher nettement des cartes blanches de la
-   zone : ce n'est pas l'offre, c'est ce qui vient avec. Une maquette de
-   l'emplacement montre ce que le prospect voit.
+   Sur fond bleu Google, pour se détacher des cartes blanches de la zone. Le
+   propos est écrit pour quelqu'un qui n'en a jamais entendu parler : ce que
+   c'est, ce qu'il faut faire pour y entrer, ce que ça coûte ensuite.
    -------------------------------------------------------------------------- */
 .glsa {
-  display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
-  gap: clamp(28px, 4vw, 52px); align-items: start;
   margin-top: clamp(36px, 4vw, 52px);
   padding: clamp(26px, 3vw, 34px);
   background: #E8F0FE;
   border-radius: 12px;
   position: relative; overflow: hidden;
 }
-/* un halo très léger, pour que l'aplat ne soit pas tout à fait plat */
 .glsa::before {
   content: ''; position: absolute; right: -90px; top: -110px;
   width: 300px; height: 300px; border-radius: 50%;
@@ -1135,47 +1132,75 @@ section { position: relative; }
 }
 .glsa > * { position: relative; z-index: 1; }
 
-.glsa-k {
+.glsa-head {
+  display: grid; grid-template-columns: auto minmax(0, 1fr);
+  gap: clamp(18px, 2.2vw, 28px); align-items: start;
+}
+/* Le badge : c'est l'argument, il a droit à sa taille. */
+.glsa-offert {
   display: inline-flex; align-items: center; gap: 8px;
-  font-size: .8125rem; font-weight: 500; color: #137333;
-  background: #fff; border-radius: 999px;
-  padding: 5px 12px 5px 6px; margin-bottom: 12px;
+  background: #137333; color: #fff;
+  font-size: 1.0625rem; font-weight: 500; letter-spacing: .005em;
+  border-radius: 999px; padding: 10px 20px 10px 15px;
+  box-shadow: 0 2px 8px -3px rgba(60,64,67,.45);
+  white-space: nowrap;
 }
-.glsa-k i {
-  display: grid; place-items: center; font-style: normal;
-  width: 19px; height: 19px; border-radius: 50%;
-  background: #E6F4EA; color: #137333; font-size: 14px; line-height: 1;
-}
+.glsa-offert svg { width: 17px; height: 17px; }
+
 .glsa h4 {
   font-family: 'Roboto', system-ui, sans-serif;
   font-size: 1.375rem; font-weight: 500; color: #174EA6; margin: 0 0 10px;
 }
-.glsa-lede { font-size: .95rem; line-height: 1.6; color: #1F3A66; max-width: 60ch; }
+.glsa-lede { font-size: .95rem; line-height: 1.62; color: #1F3A66; max-width: 72ch; }
 .glsa b { font-weight: 500; color: #174EA6; }
 
-.glsa-cols {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 18px 28px; margin: 20px 0 0;
-}
-.glsa-cols dt {
-  font-size: .9rem; font-weight: 500; color: #174EA6; margin-bottom: 6px;
-  padding-top: 12px; border-top: 1px solid rgba(23,78,166,.22);
-}
-.glsa-cols dd { margin: 0; font-size: .875rem; line-height: 1.62; color: #3C5A85; }
-.glsa-note { margin-top: 16px; font-size: .8125rem; line-height: 1.55; color: #4E6A92; }
-
 /* la capture de l'emplacement, prise sur une vraie page de résultats */
-.glsa-shot { margin: 0; }
+.glsa-shot { margin: clamp(22px, 2.6vw, 30px) 0 0; max-width: 560px; }
 .glsa-shot img {
   width: 100%; height: auto; display: block;
   border-radius: 10px; border: 1px solid rgba(23,78,166,.18);
   box-shadow: 0 1px 2px rgba(60,64,67,.2), 0 8px 22px -8px rgba(60,64,67,.35);
   background: #fff;
 }
-.glsa-shot figcaption {
-  font-size: .75rem; line-height: 1.5; color: #4E6A92; margin-top: 10px;
+.glsa-shot figcaption { font-size: .75rem; line-height: 1.5; color: #4E6A92; margin-top: 10px; }
+
+/* les trois temps */
+.glsa-steps {
+  list-style: none; margin: clamp(24px, 3vw, 32px) 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+}
+.glsa-steps li {
+  background: rgba(255,255,255,.62);
+  border: 1px solid rgba(23,78,166,.14);
+  border-radius: 10px; padding: 16px 18px 18px;
+}
+.glsa-steps li.gst-free {
+  background: #fff; border-color: #A8DAB5;
+  box-shadow: 0 1px 2px rgba(60,64,67,.14);
+}
+.gst-n {
+  display: grid; place-items: center;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: #D6E4FB; color: #174EA6; font-size: 12px; font-weight: 500;
+  margin-bottom: 11px;
+}
+.gst-free .gst-n { background: #CEEAD6; color: #137333; }
+.glsa-steps strong {
+  display: block; font-size: .975rem; font-weight: 500; color: #174EA6;
+  margin-bottom: 7px;
+}
+.gst-free strong { color: #137333; }
+.glsa-steps p { font-size: .875rem; line-height: 1.62; color: #3C5A85; }
+.gst-free b { color: #137333; }
+
+.glsa-note {
+  margin-top: 20px; padding-top: 16px;
+  border-top: 1px solid rgba(23,78,166,.18);
+  font-size: .8125rem; line-height: 1.6; color: #4E6A92; max-width: 92ch;
 }
 
 @media (max-width: 860px) {
-  .glsa { grid-template-columns: 1fr; gap: 24px; }
+  .glsa-head { grid-template-columns: 1fr; gap: 14px; }
+  .glsa-offert { justify-self: start; }
 }
