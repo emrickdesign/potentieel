@@ -544,3 +544,164 @@ html, body { background: var(--bg-card); }
 @media (max-width: 760px) {
   .budget { grid-template-columns: 1fr; gap: 26px; }
 }
+
+/* =========================================================================
+   LA ZONE GOOGLE — de « pourquoi vous n'avez pas plus de chantiers »
+   jusqu'à « pour qui c'est fait »
+
+   On reprend la direction de la zone Google de l'accueil : fond clair,
+   surfaces blanches, palette Google, Roboto. Notre laiton revient par
+   touches — mais en #8A6A1F, parce que le #D2A54C de l'encre tombe sous
+   les seuils de lisibilité sur ce fond (mesuré) ; même teinte, 4,79:1.
+
+   La zone occupe toute la largeur utile, et chaque bloc va d'un bord à
+   l'autre au lieu de tenir dans une colonne centrale étroite.
+   ========================================================================= */
+
+.gz {
+  position: relative;
+  background: #F8F9FA;
+  color: #202124;
+  font-family: 'Roboto', system-ui, Arial, sans-serif;
+  --or: #8A6A1F;          /* notre laiton, version fond clair */
+  --trait: #DADCE0;
+  --trait-clair: #E8EAED;
+  --second: #5F6368;
+}
+/* Le passage de l'encre au clair se fait franchement : entre deux valeurs
+   aussi éloignées, un dégradé ne se lit pas comme une transition mais comme
+   une bande grise sale. Même choix que sur l'accueil. */
+
+.gz .container { max-width: 1180px; }
+/* titres en Roboto comme la zone de l'accueil : c'est la police de Google,
+   et c'est elle qui fait que la section se lit comme une page Google. */
+.gz h1, .gz h2, .gz h3 { font-family: 'Roboto', system-ui, Arial, sans-serif; }
+.gz h2 { color: #202124; letter-spacing: -0.015em; font-weight: 500; }
+.gz h3 { color: #202124; font-weight: 500; }
+.gz p  { color: var(--second); }
+.gz strong, .gz b { color: #202124; }
+.gz a { color: #1568D6; }
+
+/* l'intertitre de section */
+.gz .gz-sur {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 13px; font-weight: 500; color: var(--or);
+  margin: 0 0 14px;
+}
+.gz .gz-sur::before {
+  content: ''; width: 26px; height: 2px; background: var(--or); flex: none;
+}
+
+/* ---------- les trois cas de figure ------------------------------------- */
+
+.gz .cas-l {
+  border-top: 1px solid var(--trait);
+  padding-left: clamp(18px, 2.2vw, 26px);
+  transition: background .25s ease;
+}
+.gz .cas-l:last-child { border-bottom: 1px solid var(--trait); }
+.gz .cas-l:hover { background: #fff; }
+.gz .cas-l::before { width: 3px; }
+/* Deux teintes par cas : la vive pour le rail, qui n'est que du dessin, et
+   une foncée pour le chiffre, qui doit se lire sur sa pastille. Le jaune de
+   Google sur son fond pâle tombe à 1,8:1 ; sa version foncée tient 5,9:1. */
+.gz .cas-j { --ton: #F9AB00; --voile: #FEF7E0; --chiffre: #8A5300; }
+.gz .cas-o { --ton: #E8710A; --voile: #FEEFE3; --chiffre: #A8500A; }
+.gz .cas-r { --ton: #D93025; --voile: #FCE8E6; --chiffre: #C5221F; }
+.gz .cas-n { background: var(--voile); color: var(--chiffre); }
+.gz .cas-t h3 { color: #202124; font-size: clamp(17px, 1.7vw, 20px); }
+.gz .cas-t p { color: var(--second); max-width: 92ch; }
+
+/* ---------- les quatre étapes ------------------------------------------- */
+
+/* En ligne sur toute la largeur plutôt qu'en colonne au milieu : chaque
+   étape prend sa part, et le regard suit la largeur de la page. */
+.gz .etapes {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(248px, 1fr));
+  gap: 16px;
+}
+.gz .etape {
+  display: block; position: relative; overflow: hidden;
+  background: #fff; border: 1px solid var(--trait); border-radius: 8px;
+  padding: 22px 22px 24px;
+  transition: box-shadow .25s ease, transform .25s ease;
+}
+.gz .etape:hover {
+  box-shadow: 0 1px 2px rgba(60,64,67,.3), 0 2px 6px 2px rgba(60,64,67,.12);
+  transform: translateY(-2px);
+}
+.gz .etape-n {
+  width: 30px; height: 30px; border: 0; border-radius: 50%;
+  font-size: 14px; margin-bottom: 14px;
+}
+.gz .etape:nth-child(1) .etape-n { background: #E8F0FE; color: #174EA6; }
+.gz .etape:nth-child(2) .etape-n { background: #FCE8E6; color: #C5221F; }
+.gz .etape:nth-child(3) .etape-n { background: #FEF7E0; color: #8A5300; }
+.gz .etape:nth-child(4) .etape-n { background: #E6F4EA; color: #137333; }
+.gz .etape h3 { font-size: 16.5px; margin: 0 0 8px; }
+.gz .etape p { font-size: 14.5px; color: var(--second); }
+.gz .etapes.anim.is-in .etape-n { animation: none; }
+
+/* ---------- les trois temps du tarif ------------------------------------ */
+
+.gz .prix { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 16px; }
+.gz .prix > div {
+  position: relative; overflow: hidden;
+  background: #fff; border: 1px solid var(--trait); border-radius: 8px;
+  padding: 22px 24px 26px;
+  transition: box-shadow .25s ease;
+}
+.gz .prix > div:hover { box-shadow: 0 1px 2px rgba(60,64,67,.3), 0 2px 6px 2px rgba(60,64,67,.12); }
+.gz .prix-quand {
+  font-size: 12.5px; font-weight: 500; color: var(--second);
+  margin-bottom: 12px;
+}
+.gz .prix-somme {
+  font-size: clamp(27px, 3vw, 34px); font-weight: 400;
+  color: #202124; line-height: 1.1; letter-spacing: -.01em;
+}
+.gz .prix-libre { font-size: 13px; color: var(--second); margin: 6px 0 14px; }
+.gz .prix p { font-size: 14.5px; margin: 0; }
+.gz .prix-gratuit .prix-somme { color: #137333; }
+
+/* ---------- ce que comprend la mise en place ---------------------------- */
+
+.gz .inclus-c {
+  background: #fff; border: 1px solid var(--trait); border-radius: 8px;
+  transition: box-shadow .25s ease;
+}
+.gz .inclus-c:hover { box-shadow: 0 1px 2px rgba(60,64,67,.3), 0 2px 6px 2px rgba(60,64,67,.12); }
+.gz .inclus-c h3 { color: #1568D6; }
+.gz .inclus-c li { color: var(--second); border-top-color: var(--trait-clair); }
+.gz .inclus-c li::before { background: #137333; }
+.gz .inclus-note { color: var(--second); max-width: 92ch; }
+
+/* ---------- le budget --------------------------------------------------- */
+
+.gz .budget { background: #fff; border: 1px solid var(--trait); border-radius: 10px; }
+.gz .budget-chiffre span { color: var(--second); }
+.gz .budget-chiffre b { color: var(--or); }
+.gz .budget-chiffre i { color: var(--second); }
+.gz .budget-p span { background: #FEF7E0; color: #8A5300; }
+.gz .budget-p b { color: #202124; }
+.gz .budget-p p { color: var(--second); }
+
+/* ---------- pour qui ---------------------------------------------------- */
+
+.gz .pourqui-c {
+  background: #fff; border: 1px solid var(--trait); border-radius: 8px;
+  transition: box-shadow .25s ease;
+}
+.gz .pourqui-c:hover { box-shadow: 0 1px 2px rgba(60,64,67,.3), 0 2px 6px 2px rgba(60,64,67,.12); }
+.gz .pourqui-c::after { display: none; }
+.gz .pourqui-oui { --ton: #137333; --voile: #E6F4EA; }
+.gz .pourqui-non { --ton: #C5221F; --voile: #FCE8E6; }
+.gz .pourqui-c h3 span { background: var(--voile); }
+.gz .pourqui-c li { color: var(--second); border-top-color: var(--trait-clair); }
+.gz .pourqui-note { color: var(--second); max-width: 92ch; }
+
+/* ---------- le tableau de bord, déjà clair ------------------------------ */
+
+.gz .gads-zone { padding-left: 0; padding-right: 0; max-width: none; }
+.gz .gads { box-shadow: 0 1px 2px rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15); }
+.gz .gads-note { color: var(--second); }
