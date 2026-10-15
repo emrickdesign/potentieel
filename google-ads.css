@@ -614,32 +614,34 @@ html, body { background: var(--bg-card); }
 
 /* ---------- les quatre étapes ------------------------------------------- */
 
-/* En ligne sur toute la largeur plutôt qu'en colonne au milieu : chaque
-   étape prend sa part, et le regard suit la largeur de la page. */
+/* Un parcours, pas quatre cartes : les étapes sont posées sur un fil qui
+   traverse la page, et les pastilles numérotées s'y accrochent. L'accueil
+   présente ses étapes en cartes bordées — ici on fait autre chose. */
 .gz .etapes {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(248px, 1fr));
-  gap: 16px;
+  position: relative;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: clamp(20px, 2.6vw, 36px);
+  padding-top: 4px;
+}
+.gz .etapes::before {
+  content: ''; position: absolute; left: 15px; right: 15px; top: 19px;
+  height: 2px; background: var(--trait);
 }
 .gz .etape {
-  display: block; position: relative; overflow: hidden;
-  background: #fff; border: 1px solid var(--trait); border-radius: 8px;
-  padding: 22px 22px 24px;
-  transition: box-shadow .25s ease, transform .25s ease;
-}
-.gz .etape:hover {
-  box-shadow: 0 1px 2px rgba(60,64,67,.3), 0 2px 6px 2px rgba(60,64,67,.12);
-  transform: translateY(-2px);
+  display: block; position: relative; z-index: 1;
+  background: none; border: 0; padding: 0;
 }
 .gz .etape-n {
-  width: 30px; height: 30px; border: 0; border-radius: 50%;
-  font-size: 14px; margin-bottom: 14px;
+  position: relative; width: 32px; height: 32px; border: 0; border-radius: 50%;
+  font-size: 14px; margin-bottom: 16px;
+  box-shadow: 0 0 0 6px #F8F9FA;   /* le fil s'interrompt sous la pastille */
 }
 .gz .etape:nth-child(1) .etape-n { background: #E8F0FE; color: #174EA6; }
 .gz .etape:nth-child(2) .etape-n { background: #FCE8E6; color: #C5221F; }
 .gz .etape:nth-child(3) .etape-n { background: #FEF7E0; color: #8A5300; }
 .gz .etape:nth-child(4) .etape-n { background: #E6F4EA; color: #137333; }
-.gz .etape h3 { font-size: 16.5px; margin: 0 0 8px; }
-.gz .etape p { font-size: 14.5px; color: var(--second); }
+.gz .etape h3 { font-size: 16.5px; margin: 0 0 8px; max-width: 24ch; }
+.gz .etape p { font-size: 14.5px; color: var(--second); margin: 0; }
 .gz .etapes.anim.is-in .etape-n { animation: none; }
 
 /* ---------- les trois temps du tarif ------------------------------------ */
@@ -705,3 +707,46 @@ html, body { background: var(--bg-card); }
 .gz .gads-zone { padding-left: 0; padding-right: 0; max-width: none; }
 .gz .gads { box-shadow: 0 1px 2px rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15); }
 .gz .gads-note { color: var(--second); }
+
+
+/* ---------- les bulles ---------------------------------------------------
+   Le dispositif propre à cette page : les faits sont posés en pastilles
+   plutôt que noyés dans un paragraphe. Trois mots se lisent, quatre lignes
+   se sautent.
+   -------------------------------------------------------------------------- */
+
+.gz .bulles {
+  display: flex; flex-wrap: wrap; gap: 7px;
+  margin: 13px 0 0; padding: 0;
+}
+.gz .bulles b {
+  display: inline-block;
+  font-size: 12.5px; font-weight: 500; line-height: 1.35;
+  color: #3C4043; background: #fff;
+  border: 1px solid var(--trait); border-radius: 999px;
+  padding: 6px 13px;
+  transition: border-color .2s ease, background .2s ease;
+}
+.gz .bulles b:hover { border-color: #BDC1C6; }
+
+/* chaque cas teinte ses bulles dans sa couleur */
+.gz .bulles-j b { background: #FEF7E0; border-color: #FDE293; color: #8A5300; }
+.gz .bulles-o b { background: #FEEFE3; border-color: #FBC89E; color: #A8500A; }
+.gz .bulles-r b { background: #FCE8E6; border-color: #F6AEA9; color: #C5221F; }
+
+/* les bulles du budget portent plus de poids : c'est l'argument de la section */
+.gz .bulles-grand { gap: 9px; }
+.gz .bulles-grand b {
+  font-size: 13.5px; padding: 9px 16px;
+  background: #E8F0FE; border-color: #D2E3FC; color: #174EA6;
+}
+
+.gz .budget-note {
+  font-size: 13.5px; color: var(--second); line-height: 1.6;
+  margin: 16px 0 0; max-width: 72ch;
+}
+
+@media (max-width: 760px) {
+  /* le fil n'a plus de sens quand les étapes s'empilent */
+  .gz .etapes::before { display: none; }
+}
