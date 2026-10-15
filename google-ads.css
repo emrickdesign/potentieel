@@ -583,25 +583,87 @@ html, body { background: var(--bg-card); }
 .gz .cas-t h3 { color: #202124; font-size: clamp(17px, 1.7vw, 20px); }
 .gz .cas-t p { color: var(--second); max-width: 92ch; }
 
-/* ---------- ce que nous faisons : la pièce maîtresse ---------------------
+/* ---------- ce qu'on fait : la pièce maîtresse --------------------------
 
    C'est la section qui explique le métier, donc elle prend la place qui va
-   avec : quatre rangées pleine largeur, le propos d'un côté, ce qu'on produit
-   de l'autre. Chaque rangée porte sa raison d'être — « pourquoi ça marche » —
-   et l'alternance gauche/droite remplace la rupture de rythme qu'apportaient
-   les cartes. La quatrième rangée passe sur toute la largeur : son visuel est
-   le compte Google Ads lui-même, qui ne tient pas dans une demi-page.
+   avec. Un préambule dit d'où vient la méthode — le particulier tape une
+   prestation et sa ville —, puis quatre rangées pleine largeur la déroulent :
+   le propos d'un côté, ce que l'étape produit de l'autre, en alternance.
+   Pas de pastilles ici : ce qu'on vend se dit en phrases.
    -------------------------------------------------------------------------- */
 
 .gz-faire { padding: clamp(64px, 7vw, 92px) 0 clamp(56px, 6vw, 84px); }
 .gz-faire h2 {
   font-size: clamp(28px, 3.5vw, 40px); font-weight: 800;
-  letter-spacing: -.02em; margin: 0 0 14px;
+  letter-spacing: -.02em; margin: 0 0 clamp(28px, 3.2vw, 42px);
 }
-.gz .gz-intro {
-  font-size: clamp(15px, 1.4vw, 16.5px); line-height: 1.7;
-  max-width: 64ch; margin: 0 0 clamp(36px, 4vw, 52px);
+
+/* ---- le préambule : pourquoi cette méthode ----------------------------- */
+
+.gz .pourquoi {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 64px); align-items: center;
+  padding-bottom: clamp(40px, 4.5vw, 60px);
 }
+.gz .pourquoi-dit p {
+  font-size: clamp(15.5px, 1.5vw, 17.5px); line-height: 1.7;
+  margin: 0 0 16px; max-width: 48ch;
+}
+.gz .pourquoi-dit p:last-child { margin-bottom: 0; }
+.gz .pourquoi-dit b { color: #202124; font-weight: 500; }
+
+/* la barre de recherche et ce que Google propose en dessous */
+.gz .vu-barre {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 18px; border-radius: 999px;
+  border: 1px solid var(--trait); background: #fff;
+}
+.gz .vu-barre svg {
+  width: 17px; height: 17px; flex: none;
+  fill: none; stroke: #5F6368; stroke-width: 2; stroke-linecap: round;
+}
+.gz .vu-barre > span { font-size: 15px; color: #202124; }
+.gz .vu-suggest {
+  background: #fff; border: 1px solid var(--trait); border-radius: 24px;
+  padding: 0 0 10px; overflow: hidden;
+  box-shadow: 0 1px 6px rgba(32,33,36,.18);
+}
+.gz .vu-suggest .vu-barre {
+  border: 0; border-radius: 0; box-shadow: none;
+  border-bottom: 1px solid var(--trait-clair);
+  padding: 14px 20px; gap: 14px;
+}
+.gz .vu-suggest .vu-barre em {
+  width: 1px; height: 19px; background: #1A73E8;
+  animation: vuCurseur 1.1s step-end infinite;
+}
+@keyframes vuCurseur { 50% { opacity: 0; } }
+.gz .vu-suggest ul { list-style: none; margin: 8px 0 0; padding: 0; }
+.gz .vu-suggest li {
+  display: flex; align-items: center; gap: 14px;
+  padding: 9px 20px; font-size: 14.5px; color: #202124;
+}
+.gz .vu-suggest li:hover { background: #F8F9FA; }
+.gz .vu-suggest li svg {
+  width: 15px; height: 15px; flex: none;
+  fill: none; stroke: #9AA0A6; stroke-width: 2; stroke-linecap: round;
+}
+.gz .vu-suggest li b { font-weight: 400; color: #5F6368; }
+
+@media (prefers-reduced-motion: reduce) {
+  .gz .vu-suggest .vu-barre em { animation: none; }
+}
+
+/* ---- l'intertitre des étapes ------------------------------------------- */
+
+.gz .faire-sur {
+  font-size: 13px; font-weight: 500; color: var(--second);
+  padding-top: clamp(22px, 2.4vw, 32px);
+  margin: 0 0 clamp(26px, 3vw, 38px);
+  border-top: 1px solid var(--trait);
+}
+
+/* ---- les quatre étapes -------------------------------------------------- */
 
 .gz .faire { list-style: none; margin: 0; padding: 0; display: grid; }
 .gz .faire-t {
@@ -615,12 +677,12 @@ html, body { background: var(--bg-card); }
 .gz .faire-t:first-child { border-top: 0; padding-top: 0; }
 /* la section porte déjà son propre bas de page */
 .gz .faire-t:last-child { padding-bottom: 0; }
-/* une rangée sur deux inverse le propos et l'image — sauf la rangée pleine
-   largeur, où l'image se place forcément sous le propos */
-.gz .faire-t:nth-child(even):not(.faire-large) .faire-dit { order: 2; }
-.gz .faire-large { grid-template-columns: minmax(0, 1fr); gap: clamp(26px, 3vw, 38px); }
+/* une rangée sur deux inverse le propos et l'image — sauf la dernière, où le
+   compte reste à droite et le journal des réglages occupe la gauche */
+.gz .faire-t:nth-child(even):not(.faire-bilan) .faire-dit { order: 2; }
+/* le tableau de bord a besoin de place : la colonne de droite s'élargit */
+.gz .faire-bilan { grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr); }
 
-/* le propos */
 .gz .faire-n {
   display: inline-flex; align-items: center; justify-content: center;
   width: 38px; height: 38px; border-radius: 50%;
@@ -630,19 +692,19 @@ html, body { background: var(--bg-card); }
 .gz .faire-n2 { background: #FCE8E6; color: #C5221F; }
 .gz .faire-n3 { background: #FEF7E0; color: #8A5300; }
 .gz .faire-n4 { background: #E6F4EA; color: #137333; }
-.gz .faire-t:nth-child(1) { --ton: #1568D6; --voile: #E8F0FE; }
-.gz .faire-t:nth-child(2) { --ton: #C5221F; --voile: #FCE8E6; }
-.gz .faire-t:nth-child(3) { --ton: #8A5300; --voile: #FEF7E0; }
-.gz .faire-t:nth-child(4) { --ton: #137333; --voile: #E6F4EA; }
+.gz .faire-t:nth-child(1) { --ton: #1568D6; }
+.gz .faire-t:nth-child(2) { --ton: #C5221F; }
+.gz .faire-t:nth-child(3) { --ton: #8A5300; }
+.gz .faire-t:nth-child(4) { --ton: #137333; }
 
 .gz .faire-dit h3 {
   font-size: clamp(20px, 2.1vw, 25px); font-weight: 500;
   line-height: 1.25; letter-spacing: -.012em;
-  margin: 0 0 12px; max-width: 22ch;
+  margin: 0 0 12px; max-width: 24ch;
 }
 .gz .faire-dit > p {
   font-size: clamp(14.5px, 1.35vw, 16px); line-height: 1.68;
-  margin: 0; max-width: 46ch;
+  margin: 0; max-width: 48ch;
 }
 
 /* la raison d'être, adossée au trait de la rangée */
@@ -666,48 +728,36 @@ html, body { background: var(--bg-card); }
   margin: 12px 0 0;
 }
 
-.gz .vu-recherche, .gz .vu-appels {
+.gz .vu-mots, .gz .vu-appels {
   background: #fff; border: 1px solid var(--trait); border-radius: 12px;
-  padding: clamp(18px, 2vw, 26px);
+  padding: clamp(16px, 1.8vw, 24px) clamp(18px, 2vw, 26px);
   box-shadow: 0 1px 2px rgba(60,64,67,.12), 0 1px 3px 1px rgba(60,64,67,.06);
 }
 
-/* 1. la demande mesurée */
-.gz .vu-barre {
-  display: flex; align-items: center; gap: 12px;
-  padding: 11px 18px; border-radius: 999px;
-  border: 1px solid var(--trait); background: #fff;
-  box-shadow: 0 1px 4px rgba(60,64,67,.12);
+/* 1. le relevé de la demande */
+.gz .vu-mots-t, .gz .vu-mot {
+  display: grid; grid-template-columns: minmax(0, 1fr) 72px 86px;
+  align-items: center; gap: 10px;
 }
-.gz .vu-barre svg {
-  width: 17px; height: 17px; flex: none;
-  fill: none; stroke: #5F6368; stroke-width: 2; stroke-linecap: round;
+.gz .vu-mots-t {
+  font-size: 11.5px; font-weight: 500; color: var(--second);
+  letter-spacing: .02em; padding-bottom: 10px;
+  border-bottom: 1px solid var(--trait);
 }
-.gz .vu-barre span { font-size: 14.5px; color: #202124; }
-.gz .vu-volume {
-  display: flex; align-items: flex-end; justify-content: space-between;
-  gap: 24px; margin-top: 24px;
+.gz .vu-mots-t span:not(:first-child),
+.gz .vu-mot .vu-nb { text-align: right; }
+.gz .vu-mot {
+  position: relative; padding: 15px 0 14px;
+  font-size: 14px; color: #202124;
+  border-bottom: 1px solid var(--trait-clair);
 }
-.gz .vu-volume > div:first-child b {
-  display: block; font-size: clamp(34px, 4vw, 46px); font-weight: 400;
-  line-height: 1; letter-spacing: -.02em; color: #202124;
+.gz .vu-mot:last-child { border-bottom: 0; padding-bottom: 2px; }
+.gz .vu-mot .vu-nb {
+  font-variant-numeric: tabular-nums; color: var(--second);
 }
-.gz .vu-volume > div:first-child span {
-  display: block; margin-top: 8px;
-  font-size: 12.5px; line-height: 1.5; color: var(--second);
-}
-.gz .vu-barres {
-  display: flex; align-items: flex-end; gap: 6px;
-  height: 76px; flex: 1; max-width: 220px;
-}
-.gz .vu-barres i {
-  flex: 1; height: var(--h); border-radius: 3px 3px 0 0;
-  background: #D2E3FC;
-}
-.gz .vu-barres i:last-child { background: #1A73E8; }
+.gz .vu-mot .vu-nb:first-of-type { color: #202124; font-weight: 500; }
 
-/* 2. l'annonce et sa page */
-.gz .vu-serp { position: relative; padding-left: clamp(0px, 2vw, 26px); }
+/* 2. l'annonce et sa page de conversion */
 .gz .vu-annonce {
   background: #fff; border: 1px solid var(--trait); border-radius: 10px;
   padding: 16px 18px;
@@ -723,9 +773,7 @@ html, body { background: var(--bg-card); }
 }
 .gz .vu-url { display: block; font-size: 12.5px; color: #4D5156; margin-top: 3px; }
 .gz .vu-annonce p { font-size: 13px; line-height: 1.55; margin: 8px 0 0; }
-.gz .vu-fleche {
-  display: block; width: 26px; height: 26px; margin: 14px auto;
-}
+.gz .vu-fleche { display: block; width: 26px; height: 26px; margin: 14px auto; }
 .gz .vu-fleche svg {
   width: 100%; height: 100%;
   fill: none; stroke: #BDC1C6; stroke-width: 1.8;
@@ -741,12 +789,10 @@ html, body { background: var(--bg-card); }
   padding: 9px 12px; background: #F1F3F4;
   border-bottom: 1px solid var(--trait-clair);
 }
-.gz .vu-page-barre s {
-  width: 8px; height: 8px; border-radius: 50%; background: #DADCE0;
-}
+.gz .vu-page-barre s { width: 8px; height: 8px; border-radius: 50%; background: #DADCE0; }
 .gz .vu-page img { display: block; width: 100%; height: auto; }
 
-/* 3. ce qui arrive chez l'artisan */
+/* 3. le suivi des appels */
 .gz .vu-appel {
   display: grid; grid-template-columns: 36px minmax(0, 1fr) auto;
   align-items: center; gap: 14px;
@@ -765,23 +811,61 @@ html, body { background: var(--bg-card); }
 .gz .vu-appel b { display: block; font-size: 14.5px; font-weight: 500; }
 .gz .vu-appel i {
   display: block; font-style: normal;
-  font-size: 12.5px; color: var(--second); margin-top: 2px;
+  font-size: 12.5px; color: var(--second); margin-top: 3px;
 }
 .gz .vu-appel u {
   text-decoration: none; font-size: 11.5px; color: var(--second);
-  white-space: nowrap;
+  white-space: nowrap; font-variant-numeric: tabular-nums;
 }
-.gz .vu-appels .vu-leg { border-top: 1px solid var(--trait-clair); padding-top: 12px; }
 
-/* 4. le compte, en pleine largeur */
-.gz .faire-large .gads { margin: 0; }
+/* 4. le journal des réglages, à gauche du compte */
+.gz .vu-journal {
+  margin-top: 24px; padding: 18px 20px 16px;
+  background: #fff; border: 1px solid var(--trait); border-radius: 10px;
+}
+.gz .vu-journal-t {
+  font-size: 11.5px; font-weight: 500; color: var(--second);
+  letter-spacing: .04em; margin: 0 0 12px;
+}
+.gz .vu-journal ul { list-style: none; margin: 0; padding: 0; }
+.gz .vu-journal li {
+  display: grid; grid-template-columns: 76px minmax(0, 1fr);
+  align-items: start; gap: 12px;
+  font-size: 13.5px; line-height: 1.5; color: var(--second);
+  padding: 10px 0; border-top: 1px solid var(--trait-clair);
+}
+.gz .vu-journal li:first-child { padding-top: 0; border-top: 0; }
+.gz .vu-journal li span {
+  justify-self: start; margin-top: 1px;
+  font-size: 11.5px; font-weight: 500;
+  padding: 2px 9px; border-radius: 999px;
+}
+.gz .j-moins span { background: #FCE8E6; color: #C5221F; }
+.gz .j-plus  span { background: #E6F4EA; color: #137333; }
+.gz .j-zone  span { background: #E8F0FE; color: #174EA6; }
 
+/* le compte tient dans sa demi-colonne : les cellules se resserrent plutôt
+   que de pousser un ascenseur horizontal sous le tableau */
+.gz .faire-bilan .gads-tableau th,
+.gz .faire-bilan .gads-tableau td { padding: 10px 10px; font-size: 12.5px; }
+.gz .faire-bilan .gads-tableau-t { padding-left: 10px; }
+.gz .faire-bilan .gads-pt { margin-right: 7px; }
+
+@media (max-width: 1000px) {
+  .gz .pourquoi { grid-template-columns: minmax(0, 1fr); gap: 30px; }
+  .gz .pourquoi-dit p { max-width: 58ch; }
+}
 @media (max-width: 900px) {
-  .gz .faire-t { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .gz .faire-t, .gz .faire-bilan { grid-template-columns: minmax(0, 1fr); gap: 28px; }
   /* l'alternance n'a plus de sens en colonne : le propos passe toujours devant */
-  .gz .faire-t:nth-child(even):not(.faire-large) .faire-dit { order: 0; }
-  .gz .faire-dit h3, .gz .faire-dit > p { max-width: 36ch; }
-  .gz .vu-serp { padding-left: 0; }
+  .gz .faire-t:nth-child(even):not(.faire-bilan) .faire-dit { order: 0; }
+  .gz .faire-dit h3, .gz .faire-dit > p { max-width: 40ch; }
+}
+@media (max-width: 560px) {
+  .gz .vu-mots-t, .gz .vu-mot { grid-template-columns: minmax(0, 1fr) 54px 66px; }
+  .gz .vu-mot { font-size: 13px; }
+  .gz .vu-suggest li { font-size: 13.5px; padding-left: 16px; padding-right: 16px; }
+  .gz .vu-suggest .vu-barre { padding-left: 16px; padding-right: 16px; }
 }
 
 /* ---------- les trois temps du tarif ------------------------------------ */
