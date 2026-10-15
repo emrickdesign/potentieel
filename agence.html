@@ -23,6 +23,7 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,300..800;1,400&family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
   <link rel="stylesheet" href="theme-ink.css">
+  <link rel="stylesheet" href="visio.css">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -233,15 +234,16 @@
   </div>
 </section>
 
-<!-- CTA VISIO -->
-<section style="padding:80px 0 100px;">
+<!-- CTA VISIO — nos visios passent derrière, sur un arc, floutées -->
+<section class="visio">
+  <div class="visio-fond" data-visio data-visio-nb="14" data-visio-src="assets/visio/" aria-hidden="true"></div>
   <div class="container">
-    <div class="scroll-anim" style="background:var(--bg-card);border:1px solid var(--border-card);border-radius:var(--radius);padding:52px;max-width:700px;margin:0 auto;text-align:center;">
+    <div class="visio-dit scroll-anim">
       <div class="eyebrow" style="justify-content:center;">On parle de votre projet ?</div>
-      <h2 style="font-size:clamp(26px,3.5vw,40px);font-weight:800;margin-bottom:16px;letter-spacing:-0.02em;">
+      <h2>
         Une heure en visio pour comprendre vos besoins et voir si on est <span class="serif accent-orange">faits pour bosser ensemble.</span>
       </h2>
-      <p style="color:var(--gray-light);font-size:16px;margin-bottom:32px;">Gratuit, sans engagement. On vous explique tout et on répond à toutes vos questions.</p>
+      <p>Gratuit, sans engagement. On vous explique tout et on répond à toutes vos questions.</p>
       <a href="contact.html" class="btn-primary">Je suis intéressé</a>
     </div>
   </div>
@@ -279,5 +281,6 @@
 <script src="https://cdn.jsdelivr.net/npm/lenis@1/dist/lenis.min.js"></script>
 <script src="premium.js?v=3"></script>
 <script src="pied.js" defer></script>
+<script src="visio.js" defer></script>
 </body>
 </html>
