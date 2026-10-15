@@ -1147,11 +1147,14 @@ html, body { background: var(--bg-card); }
   transform: rotate(45deg);
 }
 
+
 /* ---------- les Local Services Ads -------------------------------------- */
 
+/* Deux chiffres et quatre postes : ce qui se lit d'un coup d'œil, plutôt
+   qu'un paragraphe qu'il faut traverser pour trouver le prix. */
 .gz .lsa-bloc {
-  display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
-  gap: clamp(24px, 3vw, 48px);
+  display: grid; grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr);
+  gap: clamp(24px, 3vw, 46px);
   margin-top: clamp(30px, 3.4vw, 44px);
   padding: clamp(26px, 3vw, 38px) clamp(24px, 3vw, 40px);
   background: linear-gradient(180deg, #E9F0FD 0%, #DFEAFB 100%);
@@ -1160,38 +1163,92 @@ html, body { background: var(--bg-card); }
 .gz .lsa-tag {
   display: inline-block; margin-bottom: 12px;
   font-size: 11.5px; font-weight: 500; letter-spacing: .03em;
-  color: #0D652D; background: #E6F4EA; border: 1px solid #B7E1C2;
+  color: #174EA6; background: #fff; border: 1px solid #C6D9F7;
   border-radius: 999px; padding: 4px 12px;
 }
+.gz .lsa-t { display: flex; flex-direction: column; }
 .gz .lsa-t h3 {
-  font-size: clamp(19px, 2vw, 23px); font-weight: 500;
-  line-height: 1.3; margin: 0 0 12px;
+  font-size: clamp(21px, 2.3vw, 27px); font-weight: 500;
+  line-height: 1.22; letter-spacing: -.012em; margin: 0 0 10px;
 }
-.gz .lsa-t p { font-size: 14.5px; line-height: 1.7; margin: 0; }
+.gz .lsa-t > p { font-size: 15px; line-height: 1.65; margin: 0; max-width: 34ch; }
 
-.gz .lsa-c {
+/* les deux chiffres */
+.gz .lsa-prix {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px; margin-top: auto; padding-top: clamp(20px, 2.4vw, 28px);
+}
+.gz .lsa-prix > div {
   background: #fff; border: 1px solid #CDDFF8; border-radius: 10px;
+  padding: 16px 18px 15px;
+}
+.gz .lsa-prix b {
+  display: block; font-size: clamp(27px, 3vw, 34px); font-weight: 400;
+  line-height: 1; letter-spacing: -.015em;
+}
+.gz .lsa-p-offert b  { color: #137333; }
+.gz .lsa-p-gestion b { color: var(--or); }
+.gz .lsa-prix span {
+  display: block; margin: 9px 0 5px;
+  font-size: 12.5px; font-weight: 500; color: #202124;
+}
+.gz .lsa-prix i {
+  display: block; font-style: normal;
+  font-size: 12px; line-height: 1.45; color: var(--second);
+}
+
+/* les quatre postes de la gestion */
+.gz .lsa-c {
+  background: #fff; border: 1px solid #CDDFF8; border-radius: 12px;
   padding: clamp(18px, 2vw, 24px) clamp(18px, 2.2vw, 26px);
 }
 .gz .lsa-c-t {
-  font-size: 12px; font-weight: 500; color: var(--second);
-  letter-spacing: .03em; margin: 0 0 14px;
+  font-size: 11.5px; font-weight: 500; color: var(--second);
+  letter-spacing: .04em; margin: 0 0 4px;
 }
-.gz .lsa-c ul { list-style: none; margin: 0; padding: 0; }
-.gz .lsa-c li {
-  font-size: 14px; line-height: 1.6; color: var(--second);
-  padding: 11px 0; border-top: 1px solid var(--trait-clair);
+.gz .lsa-c ul {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px 22px;
 }
-.gz .lsa-c li:first-child { padding-top: 0; border-top: 0; }
-.gz .lsa-c li b { color: #202124; font-weight: 500; }
+.gz .lsa-c li { padding: 16px 0 0; }
+.gz .lsa-c li > span {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; border-radius: 9px;
+  background: #E8F0FE; margin-bottom: 10px;
+}
+.gz .lsa-c li svg {
+  width: 17px; height: 17px;
+  fill: none; stroke: #1568D6; stroke-width: 1.7;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.gz .lsa-c li b {
+  display: block; font-size: 14px; font-weight: 500; line-height: 1.35;
+  margin-bottom: 4px;
+}
+.gz .lsa-c li i {
+  display: block; font-style: normal;
+  font-size: 12.5px; line-height: 1.5; color: var(--second);
+}
+
 .gz .lsa-n {
-  font-size: 13px !important; line-height: 1.6;
-  margin: 14px 0 0 !important; padding-top: 13px;
-  border-top: 1px solid var(--trait-clair);
+  grid-column: 1 / -1;
+  font-size: 13px; line-height: 1.6; margin: 0;
+  padding-top: clamp(18px, 2vw, 24px);
+  border-top: 1px solid #C6D9F7;
 }
 
 @media (max-width: 900px) {
-  .gz .prix-option, .gz .livr, .gz .lsa-bloc { grid-template-columns: minmax(0, 1fr); }
+  .gz .lsa-bloc { grid-template-columns: minmax(0, 1fr); }
+  .gz .lsa-t > p { max-width: 46ch; }
+}
+@media (max-width: 520px) {
+  .gz .lsa-prix, .gz .lsa-c ul { grid-template-columns: minmax(0, 1fr); }
+  .gz .lsa-c li { padding-top: 14px; }
+}
+
+@media (max-width: 900px) {
+  .gz .prix-option, .gz .livr { grid-template-columns: minmax(0, 1fr); }
   .gz .livr-t h3, .gz .livr-t p { max-width: 42ch; }
 }
 @media (max-width: 680px) {
