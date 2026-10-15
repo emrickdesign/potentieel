@@ -430,7 +430,7 @@ section { position: relative; }
 
 @media (max-width: 860px) {
   /* En colonne, le rail devient vertical et la progression descend. */
-  .jrail { grid-template-columns: 1fr; }
+  .jrail { grid-template-columns: minmax(0, 1fr); }
   .jrail::before, .jrail::after {
     top: 7px; bottom: auto; left: 7px; right: auto;
     width: 2px; height: auto;
@@ -797,7 +797,7 @@ section { position: relative; }
 .gl-green  b { color: #137333; }
 
 @media (max-width: 860px) {
-  .gchain { grid-template-columns: 1fr; gap: 22px; }
+  .gchain { grid-template-columns: minmax(0, 1fr); gap: 22px; }
   .gchain::before, .gchain::after {
     top: 23px; bottom: 23px; left: 22px; right: auto; width: 2px; height: auto;
   }
@@ -898,7 +898,7 @@ section { position: relative; }
 
 /* Ce que coûte un clic */
 .shot-cpc { display: grid; align-content: center; gap: 13px; padding: 14px 16px; }
-.s-row { display: grid; grid-template-columns: 1fr; gap: 5px; }
+.s-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 5px; }
 .s-lab { color: #5F6368; font-size: 10.5px; }
 .s-bar { display: block; height: 8px; border-radius: 4px; background: #E3E6E8; overflow: hidden; }
 .s-bar i {
@@ -981,7 +981,7 @@ section { position: relative; }
 .fare-budget p strong { color: var(--chalk); font-weight: 600; }
 
 @media (max-width: 760px) {
-  .fare-budget { grid-template-columns: 1fr; gap: 14px; }
+  .fare-budget { grid-template-columns: minmax(0, 1fr); gap: 14px; }
 }
 
 /* ---------- Pour qui / pas pour qui -------------------------------------- */
@@ -1115,8 +1115,8 @@ section { position: relative; }
 }
 
 @media (max-width: 900px) {
-  .team-head { grid-template-columns: 1fr; gap: 18px; margin-bottom: 24px; align-items: start; }
-  .team-grid { grid-template-columns: 1fr; gap: 10px; }
+  .team-head { grid-template-columns: minmax(0, 1fr); gap: 18px; margin-bottom: 24px; align-items: start; }
+  .team-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
   .team-text { padding-bottom: 0; }
   .team-quote p { max-width: none; }
   .team-stage { display: block; margin-top: 24px; }
@@ -1179,7 +1179,7 @@ section { position: relative; }
 .also-prices p { font-size: var(--fs-sm); color: var(--dim); line-height: 1.62; }
 
 @media (max-width: 860px) {
-  .also { grid-template-columns: 1fr; gap: 26px; align-items: start; }
+  .also { grid-template-columns: minmax(0, 1fr); gap: 26px; align-items: start; }
 }
 
 /* ---------- CTA ---------------------------------------------------------- */
@@ -1227,12 +1227,12 @@ section { position: relative; }
 
   .serp { max-width: 100%; }
 
-  .flow-row { grid-template-columns: 1fr; }
-  .fare { grid-template-columns: 1fr; }
-  .fare-budget { grid-template-columns: 1fr; gap: 10px; }
-  .gband-grid, .team-grid { grid-template-columns: 1fr; }
+  .flow-row { grid-template-columns: minmax(0, 1fr); }
+  .fare { grid-template-columns: minmax(0, 1fr); }
+  .fare-budget { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .gband-grid, .team-grid { grid-template-columns: minmax(0, 1fr); }
   .team-grid { align-items: start; }
-  .foot-grid { grid-template-columns: 1fr; gap: 30px; }
+  .foot-grid { grid-template-columns: minmax(0, 1fr); gap: 30px; }
 
   body { padding-bottom: 64px; }
   .tabbar {
@@ -1360,9 +1360,18 @@ section { position: relative; }
   /* une phrase de cinq lignes centree sur un ecran etroit se lit mal :
      le badge et le titre restent centres, le texte revient a gauche. */
   .glsa-lede { text-align: left; }
-  .glsa-body { grid-template-columns: 1fr; gap: 24px; }
+  .glsa-body { grid-template-columns: minmax(0, 1fr); gap: 24px; }
   .glsa-pts li { grid-template-columns: 34px minmax(0, 1fr); gap: 13px; }
   .glsa-ic { width: 34px; height: 34px; }
   .glsa-ic svg { width: 17px; height: 17px; }
   .glsa-pts strong { padding-top: 5px; }
+}
+
+
+/* ---- lisibilité sur téléphone ------------------------------------------ */
+@media (max-width: 860px) {
+  .tabbar a { font-size: 12px; padding: 9px 4px 11px; }
+  /* cibles tactiles : 44 px, la taille d'un pouce */
+  .nav-logo { min-height: 44px; display: inline-flex; align-items: center; }
+  .foot-grid .nav-logo { min-height: 44px; }
 }

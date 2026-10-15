@@ -242,6 +242,16 @@ h1, h2, h3, h4, h5, h6, .serif, .pricing-price, .stat-item .num, .hero-stat .val
    traquées, et ce sont des libellés fonctionnels, pas des mentions légales. */
 .pricing-eyebrow, .pricing-option-eyebrow, .hero-stat .lbl,
 .mock-stat-label, .mock-back-title { font-size: 11px !important; }
+/* Et sur téléphone, 11 px ne suffit plus : l'écran est tenu plus loin et
+   l'écran est plus petit. */
+@media (max-width: 600px) {
+  .pricing-eyebrow, .pricing-option-eyebrow, .hero-stat .lbl,
+  .mock-stat-label, .mock-back-title { font-size: 12.5px !important; letter-spacing: 0.08em; }
+  .mobile-tab span { font-size: 12px !important; }
+  /* le lien du pied de page se vise au pouce */
+  .footer-contact a { display: inline-flex; align-items: center; min-height: 44px; }
+  .nav-logo, .navbar-logo { min-height: 44px; }
+}
 
 /* Les rangées de boutons des pages héritées étaient à 14 px quand l'accueil
    est passé à 28 px : même écart partout, sur ordinateur. */
@@ -261,3 +271,11 @@ h1, h2, h3, h4, h5, h6, .serif, .pricing-price, .stat-item .num, .hero-stat .val
 }
 .footer .brand-mark { width: 21px; height: 22px; }
 .arrow-icon { display: inline-flex; align-items: center; }
+
+
+/* ---- lisibilité sur téléphone ------------------------------------------
+   Les intitulés de colonne du pied de page tenaient en 11 px capitales
+   espacées : illisibles sur un écran de téléphone. */
+@media (max-width: 600px) {
+  .footer-col h3 { font-size: 12.5px; letter-spacing: 0.1em; margin-bottom: 16px; }
+}

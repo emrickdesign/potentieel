@@ -190,7 +190,7 @@ html, body { background: var(--bg-card); }
 }
 
 @media (max-width: 1000px) {
-  .ga-grille { grid-template-columns: 1fr; gap: 46px; }
+  .ga-grille { grid-template-columns: minmax(0, 1fr); gap: 46px; }
   .ga-scene { justify-self: center; }
   .ga-titre { max-width: 22ch; }
   .ga-lede { max-width: 62ch; }
@@ -513,7 +513,7 @@ html, body { background: var(--bg-card); }
 }
 
 @media (max-width: 760px) {
-  .budget { grid-template-columns: 1fr; gap: 26px; }
+  .budget { grid-template-columns: minmax(0, 1fr); gap: 26px; }
 }
 
 /* =========================================================================
@@ -1309,7 +1309,9 @@ html, body { background: var(--bg-card); }
   margin: 13px 0 0; padding: 0;
 }
 .gz .bulles b {
-  display: inline-block;
+  /* sans plafond, une pastille un peu longue refuse de se couper et pousse
+     la colonne hors de l'écran sur un petit téléphone */
+  display: inline-block; max-width: 100%;
   font-size: 12.5px; font-weight: 500; line-height: 1.35;
   color: #3C4043; background: #fff;
   border: 1px solid var(--trait); border-radius: 999px;
@@ -1344,4 +1346,31 @@ html, body { background: var(--bg-card); }
 .gz .budget-note {
   font-size: 13.5px; color: var(--second); line-height: 1.6;
   margin: 16px 0 0; max-width: 72ch;
+}
+
+
+/* ---- lisibilité sur téléphone ------------------------------------------
+   Les étiquettes de la zone claire passent le plancher des 12 px. Les
+   libellés qui vivent à l'intérieur d'une maquette d'interface (fil
+   d'adresse, pastille d'état, favicon) gardent leur taille : les grossir
+   casserait la ressemblance avec ce qu'on montre. */
+@media (max-width: 600px) {
+  .gz .lsa-tag, .gz .prix-option-tag,
+  .gz .livr-si, .gz .lsa-c-t,
+  .gz .faire-pq b, .gz .sys-chaine i { font-size: 12.5px; }
+  .gz .vu-leg, .gz .gads-note,
+  .gz .lsa-prix i, .gz .lsa-c li i,
+  .gz .budget-note, .gz .prix-option-n, .gz .lsa-n { font-size: 13px; }
+  .gz .bulles b { font-size: 13px; }
+  .gz .vu-mots-t { font-size: 12.5px; }
+}
+
+/* ---- les très petits écrans (320 px) ----------------------------------- */
+@media (max-width: 345px) {
+  /* l'onde fait 248 px de diamètre depuis le centre de la scène : sur un
+     écran de 320 px elle sortait de la page */
+  .ga-onde { width: 196px; height: 196px; margin: -98px 0 0 -98px; }
+  /* le tableau du compte se parcourt latéralement, dans sa boîte */
+  .gz .faire-bilan .gads-tableau, .gads-tableau { overflow-x: auto; }
+  .gz .faire-bilan .gads-tableau table, .gads-tableau table { min-width: 560px; }
 }

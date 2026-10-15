@@ -1333,12 +1333,12 @@ section { padding: 100px 0; }
 }
 
 @media (max-width: 700px) {
-  .type-tabs { grid-template-columns: 1fr; }
+  .type-tabs { grid-template-columns: minmax(0, 1fr); }
 }
 
 @media (max-width: 900px) {
-  .pricing-grid-3 { grid-template-columns: 1fr; }
-  .pricing-grid-2 { grid-template-columns: 1fr; }
+  .pricing-grid-3 { grid-template-columns: minmax(0, 1fr); }
+  .pricing-grid-2 { grid-template-columns: minmax(0, 1fr); }
   .profile-tabs { gap: 8px; }
   .profile-tab { padding: 11px 16px; font-size: 13px; }
 }
@@ -2253,36 +2253,36 @@ button { touch-action: manipulation; }
     mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.30) 22%, #000 48%, #000 100%);
     -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.30) 22%, #000 48%, #000 100%);
   }
-  .circuit-grid { grid-template-columns: 1fr; }
+  .circuit-grid { grid-template-columns: minmax(0, 1fr); }
   .circuit-divider { padding: 16px 0; transform: rotate(90deg); }
-  .testimonials-grid { grid-template-columns: 1fr; }
+  .testimonials-grid { grid-template-columns: minmax(0, 1fr); }
   .stats-bar-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
   .stat-item { border-right: none; border-bottom: 1px solid var(--border); padding-bottom: 24px; }
   .stat-item:last-child { border-bottom: none; }
-  .pricing-grid { grid-template-columns: 1fr; }
-  .footer-grid { grid-template-columns: 1fr; gap: 36px; }
+  .pricing-grid { grid-template-columns: minmax(0, 1fr); }
+  .footer-grid { grid-template-columns: minmax(0, 1fr); gap: 36px; }
   .steps-grid { grid-template-columns: repeat(2, 1fr); }
-  .advantages-grid { grid-template-columns: 1fr; }
-  .values-grid { grid-template-columns: 1fr; }
-  .who-grid { grid-template-columns: 1fr; }
+  .advantages-grid { grid-template-columns: minmax(0, 1fr); }
+  .values-grid { grid-template-columns: minmax(0, 1fr); }
+  .who-grid { grid-template-columns: minmax(0, 1fr); }
   .who-image-wrap { height: 300px; }
-  .contact-grid { grid-template-columns: 1fr; }
-  .problem-grid { grid-template-columns: 1fr; }
-  .process-grid { grid-template-columns: 1fr; }
+  .contact-grid { grid-template-columns: minmax(0, 1fr); }
+  .problem-grid { grid-template-columns: minmax(0, 1fr); }
+  .process-grid { grid-template-columns: minmax(0, 1fr); }
   .process-timeline { grid-template-columns: 1fr 1fr; }
   .process-timeline::before { display: none; }
   .process-wave-svg { display: none; }
-  .pricing-option-grid { grid-template-columns: 1fr; }
+  .pricing-option-grid { grid-template-columns: minmax(0, 1fr); }
   .avis-masonry { columns: 1; }
   .wa-card { min-width: 300px; }
   .social-proof-grid { grid-template-columns: repeat(2, 1fr); gap: 28px; }
   .sp-item { border-right: none; padding: 0; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
   .sp-item:nth-child(3), .sp-item:nth-child(4) { border-bottom: none; }
-  .team-grid { grid-template-columns: 1fr; }
-  .method-grid { grid-template-columns: 1fr; }
-  .guarantee-grid { grid-template-columns: 1fr; }
-  .compare-grid { grid-template-columns: 1fr; }
-  .garantie-split { grid-template-columns: 1fr; gap: 32px; }
+  .team-grid { grid-template-columns: minmax(0, 1fr); }
+  .method-grid { grid-template-columns: minmax(0, 1fr); }
+  .guarantee-grid { grid-template-columns: minmax(0, 1fr); }
+  .compare-grid { grid-template-columns: minmax(0, 1fr); }
+  .garantie-split { grid-template-columns: minmax(0, 1fr); gap: 32px; }
   .hide-mobile { display: none !important; }
 
   .mobile-tabbar {
@@ -2502,7 +2502,7 @@ button { touch-action: manipulation; }
   z-index: 1;
 }
 @media (max-width: 760px) {
-  .histoire-grid { grid-template-columns: 1fr; }
+  .histoire-grid { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* =============================================
@@ -2743,7 +2743,7 @@ button { touch-action: manipulation; }
 
 @media (max-width: 900px) {
   .hero-modern { padding-top: 100px; }
-  .hero-modern-grid { grid-template-columns: 1fr; gap: 16px; padding-bottom: 28px; }
+  .hero-modern-grid { grid-template-columns: minmax(0, 1fr); gap: 16px; padding-bottom: 28px; }
   .hero-modern-text .hero-sub, .hero-modern-text p { text-align: center; }
   .hero-modern-text .hero-ctas { justify-content: center; }
   .hero-mini-trust { justify-content: center; }
@@ -2879,7 +2879,7 @@ button { touch-action: manipulation; }
 .tools-more-line strong { color: var(--gray-light); font-weight: 700; }
 
 @media (max-width: 900px) {
-  .tools-cat-wrap { grid-template-columns: 1fr; }
+  .tools-cat-wrap { grid-template-columns: minmax(0, 1fr); }
 }
 
 .tools-flow-down {
@@ -3081,7 +3081,7 @@ button { touch-action: manipulation; }
 @media (max-width: 900px) {
   .tools-flip-grid { grid-template-columns: repeat(2, 1fr); }
   .cta-banner { flex-direction: column; text-align: center; padding: 36px 24px; }
-  .bp-showcase { grid-template-columns: 1fr; gap: 32px; }
+  .bp-showcase { grid-template-columns: minmax(0, 1fr); gap: 32px; }
   .bp-badge { right: 0; }
 }
 
@@ -3162,7 +3162,7 @@ button { touch-action: manipulation; }
 }
 
 @media (max-width: 900px) {
-  .tools-flow { grid-template-columns: 1fr; gap: 20px; }
+  .tools-flow { grid-template-columns: minmax(0, 1fr); gap: 20px; }
   .tools-flow-arrow { flex-direction: row; justify-content: center; transform: rotate(90deg); padding: 4px 0; }
   .tools-grid { grid-template-columns: repeat(2, 1fr); }
 }
@@ -3170,7 +3170,7 @@ button { touch-action: manipulation; }
 /* ══ OFFRE UNIQUE — création de site ══
    Carte pleine largeur : "toujours inclus" / "options qui font évoluer le budget".
    Une seule colonne sous 900px (même point de rupture que le reste du site). */
-.offer-single { grid-template-columns: 1fr; }
+.offer-single { grid-template-columns: minmax(0, 1fr); }
 .offer-split {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -3187,5 +3187,73 @@ button { touch-action: manipulation; }
   line-height: 1.6;
 }
 @media (max-width: 900px) {
-  .offer-split { grid-template-columns: 1fr; gap: 24px; }
+  .offer-split { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   LISIBILITÉ SUR TÉLÉPHONE
+
+   Les étiquettes du site descendaient à 9,5–11 px. C'est lisible sur un
+   écran de bureau à quarante centimètres, pas sur un téléphone tenu à bout
+   de bras — et nos lecteurs sont des artisans, souvent sur un chantier.
+   Plancher à 12,5 px, l'interlettrage se resserre d'autant pour que la
+   ligne tienne toujours. Les cibles qu'on vise avec le pouce passent à
+   44 px de haut.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 600px) {
+  .eyebrow { font-size: 12.5px; letter-spacing: 0.1em; gap: 9px; }
+  .eyebrow::before { width: 20px; }
+  .pricing-eyebrow, .pricing-option-eyebrow,
+  .histoire-label, .lbl { font-size: 12.5px; letter-spacing: 0.08em; }
+  .process-badge { font-size: 12.5px; }
+
+  .mobile-tab span { font-size: 12px; }
+  .mobile-tab { padding: 9px 2px; }
+
+  /* le mur d'outils : deux colonnes serrées écrasaient le texte des cartes */
+  .tool-flip-front strong { font-size: 14px; }
+  .tool-flip-front small { font-size: 12px; }
+  .tool-flip-back strong { font-size: 12px; letter-spacing: 0.05em; }
+  .tool-flip-back small { font-size: 12.5px; }
+  .hero-float-badge { font-size: 12px; }
+  .mock-url, .mock-stat-label, .mock-back-title { font-size: 12.5px; }
+  .profile-pointer, .app-badge-reco { font-size: 12.5px; }
+
+  /* cibles tactiles */
+  .legal-back {
+    min-height: 44px; font-size: 15px;
+    margin-bottom: 28px;
+  }
+  .navbar-logo, .nav-logo { min-height: 44px; }
+  .footer-contact a { display: inline-flex; align-items: center; min-height: 44px; }
+
+  /* les règles plus spécifiques qui gagnaient sur le plancher */
+  .tools-flip-grid--sub .tool-flip-front strong { font-size: 13px; }
+  .tools-flip-grid--sub .tool-flip-front small { font-size: 12px; line-height: 1.3; }
+  .tools-flip-grid--sub .tool-flip-back strong { font-size: 12px; }
+  .tools-flip-grid--sub .tool-flip-back small { font-size: 12px; line-height: 1.35; }
+  .process-flip .process-badge { font-size: 12.5px; }
+}
+
+/* ---- les très petits écrans (320 px) -----------------------------------
+   En dessous de 345 px, quatre onglets à 12 px ne tiennent plus côte à côte,
+   et les statistiques du hero poussaient la page vers la droite. */
+@media (max-width: 345px) {
+  .mobile-tab { padding: 9px 0; }
+  .mobile-tab span { font-size: 11px !important; letter-spacing: 0; }
+  /* la barre du haut : le nom et le bouton ne tiennent plus ensemble à
+     pleine taille, c'est elle qui élargissait la page */
+  .navbar { padding-left: 10px; padding-right: 10px; }
+  .navbar-logo { font-size: 13.5px; letter-spacing: 0.08em; gap: 6px; }
+  .navbar-logo .arrow-icon { width: 22px; height: 22px; }
+  .navbar-logo .arrow-icon img, .navbar-logo .arrow-icon svg { width: 22px; height: 22px; }
+  .btn-crm { font-size: 13px; padding: 9px 13px; gap: 6px; }
+  .btn-crm svg { display: none; }
+  .hero-stats { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .hero-stat { padding-right: 0; margin-right: 0; border-right: 0; white-space: normal; }
+  /* le soulignement animé force sa ligne à ne pas se couper : sur 320 px la
+     phrase soulignée dépassait. Elle peut se couper, le trait suit. */
+  .ul-draw { white-space: normal; }
 }

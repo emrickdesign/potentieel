@@ -107,7 +107,9 @@
 }
 
 @media (max-width: 1000px) {
-  .si-grille { grid-template-columns: 1fr; gap: 48px; }
+  /* `1fr` garde un plancher de contenu : les deux boutons côte à côte,
+     en nowrap, élargissaient la colonne au-delà de l'écran. */
+  .si-grille { grid-template-columns: minmax(0, 1fr); gap: 48px; }
   .si-scene { justify-self: start; max-width: 520px; }
   .si-titre { max-width: 20ch; }
   .si-lede { max-width: 62ch; }
@@ -115,8 +117,15 @@
 @media (max-width: 560px) {
   .si-wrap { padding: 0 20px; }
   .si-actions { justify-items: stretch; }
-  .si-boutons { width: 100%; }
-  .si-boutons .btn-primary, .si-tarifs { flex: 1 1 auto; justify-content: center; text-align: center; }
+  /* l'un sous l'autre : à deux, ils ne tiennent pas dans la largeur */
+  .si-boutons { width: 100%; flex-direction: column; align-items: stretch; }
+  .si-boutons .btn-primary, .si-tarifs { justify-content: center; text-align: center; }
   .si-tel { left: auto; right: -8px; bottom: -26px; width: 92px; height: 184px; }
   .si-nom { font-size: 10.5px; }
+}
+
+
+/* ---- lisibilité sur téléphone ------------------------------------------ */
+@media (max-width: 600px) {
+  .si-nom { font-size: 12px; }
 }

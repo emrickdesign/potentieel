@@ -38,7 +38,9 @@
 }
 
 .rea-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  /* `min(300px, 100%)` : sous 320 px la colonne de 300 px plus les marges
+     dépassait l'écran et poussait toute la page. */
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
   gap: clamp(28px, 3.4vw, 52px);
   justify-items: center; align-items: start;
 }
@@ -66,7 +68,7 @@
   z-index: 3;
 }
 
-.fold-stage { position: absolute; left: 0; top: 110px; width: 340px; height: 272px; }
+.fold-stage { position: absolute; left: 0; top: 110px; width: 100%; max-width: 340px; height: 272px; }
 
 .fold-shadow {
   position: absolute; left: 14px; right: 14px; bottom: -10px; height: 70px;
@@ -337,6 +339,13 @@
 @media (max-width: 860px) {
   /* ecran etroit : l'escalier se resserre pour rester dans le cadre du dossier */
   .fold.is-open { --lift: -62px; --stack: 48px; }
+}
+
+@media (max-width: 380px) {
+  /* Le dossier est dessiné en coordonnées fixes — 340 × 272, découpes
+     comprises : on ne peut pas l'étirer sans casser la forme. Sur un petit
+     écran on le réduit en bloc, et on rattrape la hauteur perdue. */
+  .fold { transform: scale(.86); transform-origin: top left; margin-bottom: -54px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
