@@ -613,6 +613,8 @@ html, body { background: var(--bg-card); }
   border-top: 1px solid var(--trait);
 }
 .gz .faire-t:first-child { border-top: 0; padding-top: 0; }
+/* la section porte déjà son propre bas de page */
+.gz .faire-t:last-child { padding-bottom: 0; }
 /* une rangée sur deux inverse le propos et l'image — sauf la rangée pleine
    largeur, où l'image se place forcément sous le propos */
 .gz .faire-t:nth-child(even):not(.faire-large) .faire-dit { order: 2; }
