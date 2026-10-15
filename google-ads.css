@@ -708,7 +708,7 @@ html, body { background: var(--bg-card); }
   fill: none; stroke: #1568D6; stroke-width: 1.7;
   stroke-linecap: round; stroke-linejoin: round;
 }
-.gz .sys-chaine li:nth-child(3) .sys-ic svg { fill: #1568D6; stroke: none; }
+.gz .sys-chaine li:nth-child(3) .sys-ic svg { fill: #1568D6; stroke: none; stroke-width: 0; }
 .gz .sys-chaine b {
   display: flex; align-items: baseline; gap: 9px;
   font-size: 15.5px; font-weight: 500; color: #202124;
