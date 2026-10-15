@@ -27,7 +27,7 @@
   scenes.forEach(function (scene) {
     var n = parseInt(scene.getAttribute('data-visio-nb'), 10) || 14;
     var base = scene.getAttribute('data-visio-src') || 'assets/visio/';
-    var vitesse = parseFloat(scene.getAttribute('data-visio-vitesse')) || 17;
+    var vitesse = parseFloat(scene.getAttribute('data-visio-vitesse')) || 46;
 
     /* ---- les cartes --------------------------------------------------- */
     var cartes = [];

@@ -2,9 +2,8 @@
    « ON PARLE DE VOTRE PROJET ? »
 
    Plus de carte encadrée : le bloc s'ouvre sur la page, et nos visios
-   passent derrière, sur un arc, floutées. Le flou n'est pas qu'un effet —
-   c'est ce qui garde le texte lisible par-dessus, et ce qui fait que
-   personne ne reconnaît un client dans le décor.
+   passent derrière, sur un arc. Ce qui garde le texte lisible par-dessus,
+   c'est le voile — mesuré, pas estimé.
 
    À charger APRÈS theme-ink.css.
    ========================================================================= */
@@ -29,9 +28,9 @@
 
 .visio-piste {
   position: absolute; inset: 0;
-  /* les captures sont sombres — le fond de Meet est noir : on les relève
-     un peu, sinon l'arc ne se devine pas sur la page encre */
-  filter: blur(7px) saturate(.9) brightness(1.3);
+  /* les captures restent nettes ; on les relève seulement, parce que le
+     fond de Meet est noir et qu'elles disparaîtraient sur la page encre */
+  filter: saturate(.95) brightness(1.22);
   will-change: transform;
 }
 .visio-carte {
@@ -76,7 +75,7 @@
 }
 
 @media (max-width: 700px) {
-  .visio-piste { filter: blur(5px) saturate(.9) brightness(1.3); }
+  .visio-piste { filter: saturate(.95) brightness(1.22); }
   .visio-fond.visio-prete { opacity: .5; }
   /* le voile se desserre : sur un écran étroit les cartes passent toutes
      par le centre, et à la densité du grand écran on ne voyait plus rien */
