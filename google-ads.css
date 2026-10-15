@@ -763,11 +763,16 @@ html, body { background: var(--bg-card); }
 .gz .faire-t:first-child { border-top: 0; padding-top: 0; }
 /* la section porte déjà son propre bas de page */
 .gz .faire-t:last-child { padding-bottom: 0; }
-/* une rangée sur deux inverse le propos et l'image — sauf la dernière, où le
-   compte reste à droite et le journal des réglages occupe la gauche */
-.gz .faire-t:nth-child(even):not(.faire-bilan) .faire-dit { order: 2; }
-/* le tableau de bord a besoin de place : la colonne de droite s'élargit */
-.gz .faire-bilan { grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr); }
+/* une rangée sur deux inverse le propos et l'image ; la dernière suit la
+   même alternance, le compte à gauche et le texte à droite */
+.gz .faire-t:nth-child(even) .faire-dit { order: 2; }
+/* Deux rangées ont un visuel large : l'annonce avec sa page d'arrivée, et le
+   compte Google Ads. Leur colonne s'élargit pour que la rangée tienne dans un
+   écran — personne ne doit scroller pour voir une étape en entier.
+   Les deux sont inversées, donc le visuel occupe la PREMIÈRE colonne de la
+   grille : c'est elle qui porte la largeur. */
+.gz .faire-t:nth-child(2) { grid-template-columns: minmax(0, 1.36fr) minmax(0, 0.64fr); }
+.gz .faire-bilan { grid-template-columns: minmax(0, 1.28fr) minmax(0, 0.72fr); }
 
 .gz .faire-n {
   display: inline-flex; align-items: center; justify-content: center;
@@ -843,7 +848,13 @@ html, body { background: var(--bg-card); }
 }
 .gz .vu-mot .vu-nb:first-of-type { color: #202124; font-weight: 500; }
 
-/* 2. l'annonce au format réel, et la page de conversion en schéma */
+/* 2. l'annonce au format réel, et la page de conversion en schéma.
+      Côte à côte : empilées, la rangée dépassait la hauteur d'un écran. */
+.gz .vu-serp {
+  display: grid; align-items: center;
+  grid-template-columns: minmax(0, 1fr) 30px minmax(0, 1fr);
+  gap: clamp(6px, .8vw, 12px);
+}
 .gz .vu-annonce {
   background: #fff; border: 1px solid var(--trait); border-radius: 12px;
   padding: 16px 20px 8px;
@@ -893,7 +904,7 @@ html, body { background: var(--bg-card); }
 .gz .vu-liens { list-style: none; margin: 12px 0 0; padding: 0; }
 .gz .vu-liens li {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  padding: 11px 0; font-size: 14px; color: #202124;
+  padding: 10px 0; font-size: 14px; color: #202124;
   border-top: 1px solid var(--trait-clair);
 }
 .gz .vu-liens svg {
@@ -902,7 +913,8 @@ html, body { background: var(--bg-card); }
   stroke-linecap: round; stroke-linejoin: round;
 }
 
-.gz .vu-fleche { display: block; width: 26px; height: 26px; margin: 16px auto; }
+.gz .vu-fleche { display: block; width: 26px; height: 26px; margin: 0 auto; }
+.gz .vu-fleche svg { transform: rotate(-90deg); }
 .gz .vu-fleche svg {
   width: 100%; height: 100%;
   fill: none; stroke: #BDC1C6; stroke-width: 1.8;
@@ -929,14 +941,14 @@ html, body { background: var(--bg-card); }
 
 /* le schéma de la page : les éléments qui comptent sont lisibles, le reste
    est posé en blocs — c'est une maquette, pas une capture déguisée */
-.gz .vu-maq { padding: 0 0 18px; }
+.gz .vu-maq { padding: 0 0 16px; }
 .gz .m-bandeau {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 18px; border-bottom: 1px solid var(--trait-clair);
+  padding: 10px 16px; border-bottom: 1px solid var(--trait-clair);
 }
 .gz .m-logo { width: 62px; height: 11px; border-radius: 3px; background: #DADCE0; }
 .gz .m-tel { font-size: 13.5px; font-weight: 500; color: #1568D6; }
-.gz .m-hero { padding: 22px 18px 20px; background: #F8F9FA; }
+.gz .m-hero { padding: 18px 16px 16px; background: #F8F9FA; }
 .gz .m-h1 {
   font-size: clamp(16px, 1.7vw, 19px); font-weight: 500; line-height: 1.3;
   color: #202124; margin: 0 0 12px; max-width: 20ch;
@@ -954,8 +966,8 @@ html, body { background: var(--bg-card); }
 .gz .m-btns b { background: #1A73E8; color: #fff; }
 .gz .m-btns s { background: #fff; border: 1px solid var(--trait); color: #1568D6; }
 .gz .m-points {
-  display: flex; flex-wrap: wrap; gap: 8px;
-  padding: 15px 18px; border-bottom: 1px solid var(--trait-clair);
+  display: flex; flex-wrap: wrap; gap: 7px 12px;
+  padding: 12px 16px; border-bottom: 1px solid var(--trait-clair);
 }
 .gz .m-points span {
   display: inline-flex; align-items: center; gap: 8px;
@@ -966,13 +978,13 @@ html, body { background: var(--bg-card); }
   border: solid #137333; border-width: 0 1.8px 1.8px 0;
   transform: translateY(-1px) rotate(45deg);
 }
-.gz .m-form { padding: 16px 18px 0; }
+.gz .m-form { padding: 14px 16px 0; }
 .gz .m-form-t { font-size: 12.5px; font-weight: 500; color: #202124; margin: 0 0 11px; }
 .gz .m-champ {
   display: block; height: 30px; border-radius: 6px;
   background: #fff; border: 1px solid var(--trait); margin-bottom: 8px;
 }
-.gz .m-champ-h { height: 52px; }
+.gz .m-champ-h { height: 44px; }
 .gz .m-env {
   display: inline-block; margin-top: 4px;
   font-size: 12.5px; font-weight: 500; color: #fff;
@@ -1005,32 +1017,6 @@ html, body { background: var(--bg-card); }
   white-space: nowrap; font-variant-numeric: tabular-nums;
 }
 
-/* 4. le journal des réglages, à gauche du compte */
-.gz .vu-journal {
-  margin-top: 24px; padding: 18px 20px 16px;
-  background: #fff; border: 1px solid var(--trait); border-radius: 10px;
-}
-.gz .vu-journal-t {
-  font-size: 11.5px; font-weight: 500; color: var(--second);
-  letter-spacing: .04em; margin: 0 0 12px;
-}
-.gz .vu-journal ul { list-style: none; margin: 0; padding: 0; }
-.gz .vu-journal li {
-  display: grid; grid-template-columns: 76px minmax(0, 1fr);
-  align-items: start; gap: 12px;
-  font-size: 13.5px; line-height: 1.5; color: var(--second);
-  padding: 10px 0; border-top: 1px solid var(--trait-clair);
-}
-.gz .vu-journal li:first-child { padding-top: 0; border-top: 0; }
-.gz .vu-journal li span {
-  justify-self: start; margin-top: 1px;
-  font-size: 11.5px; font-weight: 500;
-  padding: 2px 9px; border-radius: 999px;
-}
-.gz .j-moins span { background: #FCE8E6; color: #C5221F; }
-.gz .j-plus  span { background: #E6F4EA; color: #137333; }
-.gz .j-zone  span { background: #E8F0FE; color: #174EA6; }
-
 /* le compte tient dans sa demi-colonne : les cellules se resserrent plutôt
    que de pousser un ascenseur horizontal sous le tableau */
 .gz .faire-bilan .gads-tableau th,
@@ -1043,9 +1029,13 @@ html, body { background: var(--bg-card); }
   .gz .pourquoi-dit p { max-width: 58ch; }
 }
 @media (max-width: 900px) {
-  .gz .faire-t, .gz .faire-bilan { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .gz .faire-t, .gz .faire-t:nth-child(2), .gz .faire-bilan { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  /* en colonne, l'annonce repasse au-dessus de la page */
+  .gz .vu-serp { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .gz .vu-fleche { margin: 14px auto; }
+  .gz .vu-fleche svg { transform: none; }
   /* l'alternance n'a plus de sens en colonne : le propos passe toujours devant */
-  .gz .faire-t:nth-child(even):not(.faire-bilan) .faire-dit { order: 0; }
+  .gz .faire-t:nth-child(even) .faire-dit { order: 0; }
   .gz .faire-dit h3, .gz .faire-dit > p { max-width: 40ch; }
 }
 @media (max-width: 560px) {
