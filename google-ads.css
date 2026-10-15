@@ -655,90 +655,104 @@ html, body { background: var(--bg-card); }
 }
 
 
-/* ---- le pont : le système, la publicité, les appels ------------------- */
 
-/* Un fond légèrement bleuté sépare ce passage du reste de la zone claire,
-   sans ajouter une carte de plus : c'est la charnière de la page. */
+/* ---- le pont : Google Ads, ce que c'est -------------------------------
+   On nomme la chose et on l'explique avant de la dérouler. La marque est
+   le sujet du bloc : elle passe en tête, et ses trois formes montent en
+   place quand le bloc arrive à l'écran. C'est le seul mouvement d'ici.
+   ------------------------------------------------------------------------ */
+
 .gz .systeme {
   background: linear-gradient(180deg, #E9F0FD 0%, #DFEAFB 100%);
   border: 1px solid #BBD2F5; border-radius: 14px;
+  padding: clamp(26px, 3.4vw, 42px) clamp(22px, 3vw, 44px) clamp(24px, 3vw, 36px);
   box-shadow: 0 1px 2px rgba(26, 115, 232, .06);
-  padding: clamp(26px, 3.4vw, 42px) clamp(22px, 3vw, 44px) clamp(24px, 3vw, 38px);
 }
-.gz .sys-dit {
-  font-size: clamp(15.5px, 1.5vw, 17.5px); line-height: 1.7;
-  max-width: 78ch; margin: 0 0 clamp(26px, 3vw, 36px);
+
+.gz .sys-haut {
+  display: grid; grid-template-columns: 56px minmax(0, 1fr);
+  gap: clamp(16px, 2vw, 24px); align-items: start;
+  padding-bottom: clamp(24px, 2.8vw, 34px);
+}
+.gz .sys-logo {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 56px; height: 56px; border-radius: 14px;
+  background: #fff; border: 1px solid #CDDFF8;
+}
+.gz .sys-ads-mark { width: 30px; height: 30px; }
+.gz .sys-haut h3 {
+  font-size: clamp(21px, 2.3vw, 27px); font-weight: 500;
+  line-height: 1.22; letter-spacing: -.012em; margin: 0 0 10px;
+}
+.gz .sys-dit p {
+  font-size: clamp(15px, 1.45vw, 16.5px); line-height: 1.68;
+  margin: 0; max-width: 72ch;
 }
 .gz .sys-dit b { color: #202124; font-weight: 500; }
 
+/* les trois temps, sur un fil */
 .gz .sys-chaine {
-  list-style: none; margin: 0; padding: 0;
-  display: grid; align-items: start;
-  grid-template-columns: minmax(0, 1fr) 30px minmax(0, 1fr) 30px minmax(0, 1fr);
-  gap: clamp(14px, 1.8vw, 26px);
+  list-style: none; margin: 0; padding: clamp(24px, 2.8vw, 32px) 0 0;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(18px, 2.4vw, 34px);
+  border-top: 1px solid #C6D9F7;
 }
 .gz .sys-chaine li { min-width: 0; }
-.gz .sys-chaine b {
-  display: block; font-size: 15px; font-weight: 500; color: #202124;
-  line-height: 1.35; margin: 14px 0 6px;
-}
-.gz .sys-chaine i {
-  display: block; font-style: normal;
-  font-size: 13.5px; line-height: 1.55; color: var(--second);
-}
-
 .gz .sys-ic {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 54px; height: 54px; border-radius: 13px;
-  background: #fff; border: 1px solid #CDDFF8;
+  width: 38px; height: 38px; border-radius: 10px;
+  background: #fff; border: 1px solid #CDDFF8; margin-bottom: 13px;
 }
 .gz .sys-ic svg {
-  width: 22px; height: 22px;
-  fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round;
-}
-.gz .sys-ic-b svg { stroke: #1568D6; }
-.gz .sys-ic-v svg { stroke: none; fill: #137333; }
-/* le pivot : la marque Google Ads, sans contour, mais dans la même boîte
-   que les deux autres pour que les trois intitulés restent sur une ligne */
-.gz .sys-ic-logo { border: 0; background: none; justify-content: flex-start; }
-.gz .sys-ads-mark { width: 42px; height: 42px; }
-
-.gz .sys-fl {
-  display: flex; align-items: center; justify-content: center;
-  height: 54px; align-self: start;
-}
-.gz .sys-fl svg {
-  width: 20px; height: 20px;
-  fill: none; stroke: #9AA8C4; stroke-width: 1.8;
+  width: 19px; height: 19px;
+  fill: none; stroke: #1568D6; stroke-width: 1.7;
   stroke-linecap: round; stroke-linejoin: round;
 }
+.gz .sys-chaine li:nth-child(3) .sys-ic svg { fill: #1568D6; stroke: none; }
+.gz .sys-chaine b {
+  display: flex; align-items: baseline; gap: 9px;
+  font-size: 15.5px; font-weight: 500; color: #202124;
+  line-height: 1.3; margin-bottom: 6px;
+}
+.gz .sys-chaine b i {
+  flex: none; font-style: normal; font-size: 12.5px; color: #1568D6;
+}
+.gz .sys-chaine p { font-size: 13.5px; line-height: 1.55; margin: 0; }
 
-/* Le seul mouvement de la section : les trois formes de la marque montent
-   en place quand le bloc arrive à l'écran. Tout est visible par défaut ;
-   le script n'arme l'animation que s'il peut la jouer. */
-.gz .sys-chaine.anim .sys-ads-mark path { opacity: 0; }
-.gz .sys-chaine.anim.is-in .sys-ads-mark path {
+.gz .sys-bas {
+  font-size: 14px; line-height: 1.65; margin: 0;
+  padding-top: clamp(20px, 2.4vw, 28px);
+  border-top: 1px solid #C6D9F7;
+  margin-top: clamp(22px, 2.6vw, 30px);
+  max-width: 82ch;
+}
+
+/* le seul mouvement : les trois formes de la marque montent en place. Tout
+   est visible par défaut, le script n'arme l'animation que s'il peut la
+   jouer, et un garde-fou pose l'état final si l'observateur ne vient pas. */
+.gz .systeme.anim .sys-ads-mark path { opacity: 0; }
+.gz .systeme.anim.is-in .sys-ads-mark path {
   transform-box: fill-box; transform-origin: 50% 100%;
   animation: adsMonte .6s cubic-bezier(.2, .8, .2, 1) both;
 }
-.gz .sys-chaine.anim.is-in .sys-ads-mark path:nth-child(2),
-.gz .sys-chaine.anim.is-in .sys-ads-mark path:nth-child(4) { animation-delay: .1s; }
-.gz .sys-chaine.anim.is-in .sys-ads-mark path:nth-child(3),
-.gz .sys-chaine.anim.is-in .sys-ads-mark path:nth-child(5) { animation-delay: .2s; }
+.gz .systeme.anim.is-in .sys-ads-mark path:nth-child(2),
+.gz .systeme.anim.is-in .sys-ads-mark path:nth-child(4) { animation-delay: .1s; }
+.gz .systeme.anim.is-in .sys-ads-mark path:nth-child(3),
+.gz .systeme.anim.is-in .sys-ads-mark path:nth-child(5) { animation-delay: .2s; }
 @keyframes adsMonte {
   from { opacity: 0; transform: translateY(26%) scale(.88); }
   to   { opacity: 1; transform: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .gz .sys-chaine .sys-ads-mark path { opacity: 1 !important; animation: none !important; }
+  .gz .systeme .sys-ads-mark path { opacity: 1 !important; animation: none !important; }
 }
 
-@media (max-width: 860px) {
-  /* en colonne, la flèche se couche */
-  .gz .sys-chaine { grid-template-columns: minmax(0, 1fr); gap: 4px; }
-  .gz .sys-chaine li { padding-bottom: 4px; }
-  .gz .sys-fl { height: 26px; justify-content: flex-start; padding-left: 14px; }
-  .gz .sys-fl svg { transform: rotate(90deg); }
+@media (max-width: 820px) {
+  .gz .sys-chaine { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  .gz .sys-ic { width: 34px; height: 34px; margin-bottom: 10px; }
+}
+@media (max-width: 520px) {
+  .gz .sys-haut { grid-template-columns: minmax(0, 1fr); gap: 16px; }
 }
 
 /* ---- l'intertitre des étapes ------------------------------------------- */
