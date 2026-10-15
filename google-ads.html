@@ -215,126 +215,188 @@
     </div>
   </section>
 
-  <!-- CE QU'ON FAIT -->
-  <section style="padding:72px 0;">
-    <div class="container" style="">
-      <h2 style="font-size:clamp(28px,3.5vw,40px);font-weight:800;letter-spacing:-0.02em;margin:0 0 40px;">Ce que nous faisons, concrètement</h2>
+  <!-- CE QU'ON FAIT — la pièce maîtresse de la page : quatre temps, chacun
+       avec ce qu'on produit en image et la raison pour laquelle ça marche. -->
+  <section class="gz-faire">
+    <div class="container">
+      <p class="gz-sur">Ce que nous faisons</p>
+      <h2>Quatre temps, et ce que ça donne</h2>
+      <p class="gz-intro">C'est tout le travail. Chaque étape produit quelque chose de visible, et chacune a une raison d'exister.</p>
 
-      <div class="etapes">
-        <div class="etape" style="--i:0">
-          <span class="etape-n">1</span>
-          <div>
+      <ol class="faire">
+
+        <li class="faire-t">
+          <div class="faire-dit">
+            <span class="faire-n faire-n1">1</span>
             <h3>On mesure la demande réelle sur votre zone</h3>
-            <p>On compte les recherches sur votre métier autour de vous, et ce que coûte un clic.</p>
-            <p class="bulles"><b>Volume insuffisant ? on vous le dit</b></p>
+            <p>Combien de personnes tapent votre métier et votre ville chaque mois, et ce que coûte un clic dessus.</p>
+            <p class="faire-pq"><b>Pourquoi ça compte</b> Aucune campagne n'invente de la demande. S'il n'y a pas le volume, on vous le dit avant que vous engagiez un euro.</p>
+            <p class="bulles"><b>Chiffres relevés chez Google</b><b>Avant toute signature</b></p>
           </div>
-        </div>
-        <div class="etape" style="--i:1">
-          <span class="etape-n">2</span>
-          <div>
-            <h3>On construit les campagnes</h3>
-            <p>Une prestation, une page, une campagne, un budget.</p>
+          <div class="faire-vu">
+            <div class="vu-recherche">
+              <div class="vu-barre">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4.5 4.5"/></svg>
+                <span>couvreur vitré</span>
+              </div>
+              <div class="vu-volume">
+                <div>
+                  <b>480</b>
+                  <span>recherches par mois<br>sur votre zone</span>
+                </div>
+                <div class="vu-barres" aria-hidden="true">
+                  <i style="--h:42%"></i><i style="--h:58%"></i><i style="--h:51%"></i>
+                  <i style="--h:70%"></i><i style="--h:64%"></i><i style="--h:86%"></i>
+                  <i style="--h:78%"></i><i style="--h:100%"></i>
+                </div>
+              </div>
+              <p class="vu-leg">Volume d'illustration. Le vôtre est relevé sur votre ville avant de commencer.</p>
+            </div>
+          </div>
+        </li>
+
+        <li class="faire-t">
+          <div class="faire-dit">
+            <span class="faire-n faire-n2">2</span>
+            <h3>On construit une campagne par prestation</h3>
+            <p>Une prestation, une annonce, une page d'arrivée, un budget. Jamais tout mélangé dans une seule campagne.</p>
+            <p class="faire-pq"><b>Pourquoi ça marche</b> Le particulier tombe sur une page qui ne parle que de ce qu'il cherchait, avec votre numéro en haut. Il appelle au lieu de repartir.</p>
             <p class="bulles"><b>Le compte est à votre nom</b><b>Vous en restez propriétaire</b></p>
           </div>
-        </div>
-        <div class="etape" style="--i:2">
-          <span class="etape-n">3</span>
-          <div>
-            <h3>On suit ce que ça rapporte, pas ce que ça affiche</h3>
-            <p>Ce qu'on compte, ce sont les appels et les devis réellement arrivés chez vous.</p>
-            <p class="bulles"><b>Visible dans votre espace client</b></p>
+          <div class="faire-vu">
+            <div class="vu-serp">
+              <div class="vu-annonce">
+                <span class="vu-spons">Sponsorisé</span>
+                <b>Couvreur à Vitré — devis gratuit sous 48 h</b>
+                <span class="vu-url">Jamier Toiture · Étrelles (35)</span>
+                <p>Réfection, fuite, zinguerie. Intervention dans le Pays de Vitré. Appelez le 06 70 02 09 09.</p>
+              </div>
+              <span class="vu-fleche" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M12 4v15M6 13.5l6 6 6-6"/></svg>
+              </span>
+              <div class="vu-page">
+                <div class="vu-page-barre"><s></s><s></s><s></s></div>
+                <img src="assets/apercus/jamier-toiture.jpg" alt="" width="720" height="450" loading="lazy" decoding="async">
+              </div>
+            </div>
           </div>
-        </div>
-        <div class="etape" style="--i:3">
-          <span class="etape-n">4</span>
-          <div>
-            <h3>On ajuste tous les mois</h3>
-            <p>On coupe ce qui consomme sans rien rapporter, on renforce ce qui amène des demandes.</p>
-            <p class="bulles"><b>Une campagne qu'on ne touche plus se dégrade</b></p>
-          </div>
-        </div>
-      </div>
+        </li>
 
-<!-- Le compte Google Ads tel qu'il se présente : les quatre métriques, les
-         quatre courbes du mois, et le détail par campagne — une prestation par
-         ligne, comme on les monte. Chiffres d'illustration qui s'additionnent :
-         les trois lignes font les totaux affichés au-dessus. -->
-    <div class="gads" aria-hidden="true">
+        <li class="faire-t">
+          <div class="faire-dit">
+            <span class="faire-n faire-n3">3</span>
+            <h3>On suit ce que ça rapporte, pas ce que ça affiche</h3>
+            <p>Un numéro de suivi par campagne. Chaque appel est rattaché à celle qui l'a amené.</p>
+            <p class="faire-pq"><b>Pourquoi ça compte</b> Des clics et des impressions ne paient pas un chantier. Savoir quelle campagne fait sonner le téléphone, c'est ce qui permet de décider où mettre le budget.</p>
+            <p class="bulles"><b>Dans votre espace client</b><b>Appels et devis</b></p>
+          </div>
+          <div class="faire-vu">
+            <div class="vu-appels">
+              <div class="vu-appel">
+                <span class="vu-pic vu-pic-b"><svg viewBox="0 0 24 24"><path d="M6.5 3h3l1.5 4.2-2.1 1.6a12.5 12.5 0 0 0 5.8 5.8l1.6-2.1L20.5 14v3a2.2 2.2 0 0 1-2.4 2.2A17 17 0 0 1 3.8 5.4 2.2 2.2 0 0 1 6 3z"/></svg></span>
+                <div><b>Appel · 4 min</b><i>Réfection de toiture · Vitré</i></div>
+                <u>ce matin</u>
+              </div>
+              <div class="vu-appel">
+                <span class="vu-pic vu-pic-v"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+                <div><b>Devis demandé</b><i>Démoussage · Pays de Vitré</i></div>
+                <u>hier</u>
+              </div>
+              <div class="vu-appel">
+                <span class="vu-pic vu-pic-b"><svg viewBox="0 0 24 24"><path d="M6.5 3h3l1.5 4.2-2.1 1.6a12.5 12.5 0 0 0 5.8 5.8l1.6-2.1L20.5 14v3a2.2 2.2 0 0 1-2.4 2.2A17 17 0 0 1 3.8 5.4 2.2 2.2 0 0 1 6 3z"/></svg></span>
+                <div><b>Appel · 2 min</b><i>Zinguerie · Argentré</i></div>
+                <u>hier</u>
+              </div>
+              <p class="vu-leg">Noms et horaires d'illustration.</p>
+            </div>
+          </div>
+        </li>
+
+        <li class="faire-t faire-large">
+          <div class="faire-dit">
+            <span class="faire-n faire-n4">4</span>
+            <h3>On ajuste tous les mois</h3>
+            <p>On coupe les recherches qui dépensent sans rien rapporter, on renforce celles qui amènent des demandes, on ajuste les zones et les enchères.</p>
+            <p class="faire-pq"><b>Pourquoi ça marche</b> C'est ce travail-là qui fait baisser le coût d'un appel mois après mois. Une campagne qu'on ne touche plus se dégrade toute seule.</p>
+            <p class="bulles"><b>Le détail par prestation</b><b>Ce que chacune rapporte</b></p>
+          </div>
+          <div class="faire-vu gads-zone">
+      <div class="gads" aria-hidden="true">
 
       <div class="gads-tuiles">
-        <div class="gads-tuile gads-b">
-          <span class="gads-nom">Clics <svg viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></span>
-          <b>555</b>
-        </div>
-        <div class="gads-tuile gads-r">
-          <span class="gads-nom">Impressions <svg viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></span>
-          <b>14,3 k</b>
-        </div>
-        <div class="gads-tuile gads-j">
-          <span class="gads-nom">CPC moy. <svg viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></span>
-          <b>2,38 €</b>
-        </div>
-        <div class="gads-tuile gads-v">
-          <span class="gads-nom">Conversions <svg viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></span>
-          <b>47</b>
-        </div>
-        <span class="gads-points"><i></i><i></i><i></i></span>
+      <div class="gads-tuile gads-b">
+      <span class="gads-nom">Clics <svg viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></span>
+      <b>555</b>
+      </div>
+      <div class="gads-tuile gads-r">
+      <span class="gads-nom">Impressions <svg viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></span>
+      <b>14,3 k</b>
+      </div>
+      <div class="gads-tuile gads-j">
+      <span class="gads-nom">CPC moy. <svg viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></span>
+      <b>2,38 €</b>
+      </div>
+      <div class="gads-tuile gads-v">
+      <span class="gads-nom">Conversions <svg viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></span>
+      <b>47</b>
+      </div>
+      <span class="gads-points"><i></i><i></i><i></i></span>
       </div>
 
       <div class="gads-graphe">
-        <div class="gads-plot">
-          <svg viewBox="0 0 1040 150" preserveAspectRatio="none" focusable="false">
-            <g class="gads-grille">
-              <line x1="0" y1="8" x2="1040" y2="8"/>
-              <line x1="0" y1="77" x2="1040" y2="77"/>
-              <line x1="0" y1="146" x2="1040" y2="146"/>
-            </g>
-            <path class="gads-trait gads-t-r" d="M0.0 64.9L35.9 60.7L71.7 48.8L107.6 61.8L143.4 59.5L179.3 96.5L215.2 103.0L251.0 56.5L286.9 51.8L322.8 45.5L358.6 67.5L394.5 59.8L430.3 102.1L466.2 88.2L502.1 43.8L537.9 65.4L573.8 31.7L609.7 31.2L645.5 41.1L681.4 88.5L717.2 97.2L753.1 61.8L789.0 41.8L824.8 58.4L860.7 52.7L896.6 49.9L932.4 97.2L968.3 87.5L1004.1 39.6L1040.0 22.8" vector-effect="non-scaling-stroke"/>
-            <path class="gads-trait gads-t-b" d="M0.0 89.6L35.9 82.6L71.7 86.1L107.6 79.0L143.4 75.5L179.3 114.3L215.2 114.3L251.0 68.5L286.9 82.6L322.8 82.6L358.6 61.4L394.5 75.5L430.3 100.2L466.2 107.2L502.1 68.5L537.9 82.6L573.8 68.5L609.7 61.4L645.5 68.5L681.4 100.2L717.2 100.2L753.1 79.0L789.0 57.9L824.8 64.9L860.7 72.0L896.6 79.0L932.4 96.7L968.3 100.2L1004.1 54.4L1040.0 50.8" vector-effect="non-scaling-stroke"/>
-            <path class="gads-trait gads-t-j" d="M0.0 86.0L35.9 86.0L71.7 99.9L107.6 95.3L143.4 86.6L179.3 100.3L215.2 97.3L251.0 86.9L286.9 90.1L322.8 86.6L358.6 94.9L394.5 87.5L430.3 90.5L466.2 88.8L502.1 97.0L537.9 92.9L573.8 95.3L609.7 96.2L645.5 90.8L681.4 97.3L717.2 96.6L753.1 89.2L789.0 86.4L824.8 95.1L860.7 98.3L896.6 87.5L932.4 95.1L968.3 100.1L1004.1 100.5L1040.0 101.2" vector-effect="non-scaling-stroke"/>
-            <path class="gads-trait gads-t-v" d="M0.0 97.6L35.9 97.6L71.7 97.6L107.6 97.6L143.4 97.6L179.3 146.0L215.2 146.0L251.0 97.6L286.9 97.6L322.8 97.6L358.6 97.6L394.5 97.6L430.3 146.0L466.2 146.0L502.1 97.6L537.9 97.6L573.8 97.6L609.7 97.6L645.5 97.6L681.4 121.8L717.2 146.0L753.1 97.6L789.0 73.4L824.8 97.6L860.7 97.6L896.6 97.6L932.4 146.0L968.3 121.8L1004.1 97.6L1040.0 97.6" vector-effect="non-scaling-stroke"/>
-          </svg>
-        </div>
+      <div class="gads-plot">
+      <svg viewBox="0 0 1040 150" preserveAspectRatio="none" focusable="false">
+      <g class="gads-grille">
+      <line x1="0" y1="8" x2="1040" y2="8"/>
+      <line x1="0" y1="77" x2="1040" y2="77"/>
+      <line x1="0" y1="146" x2="1040" y2="146"/>
+      </g>
+      <path class="gads-trait gads-t-r" d="M0.0 64.9L35.9 60.7L71.7 48.8L107.6 61.8L143.4 59.5L179.3 96.5L215.2 103.0L251.0 56.5L286.9 51.8L322.8 45.5L358.6 67.5L394.5 59.8L430.3 102.1L466.2 88.2L502.1 43.8L537.9 65.4L573.8 31.7L609.7 31.2L645.5 41.1L681.4 88.5L717.2 97.2L753.1 61.8L789.0 41.8L824.8 58.4L860.7 52.7L896.6 49.9L932.4 97.2L968.3 87.5L1004.1 39.6L1040.0 22.8" vector-effect="non-scaling-stroke"/>
+      <path class="gads-trait gads-t-b" d="M0.0 89.6L35.9 82.6L71.7 86.1L107.6 79.0L143.4 75.5L179.3 114.3L215.2 114.3L251.0 68.5L286.9 82.6L322.8 82.6L358.6 61.4L394.5 75.5L430.3 100.2L466.2 107.2L502.1 68.5L537.9 82.6L573.8 68.5L609.7 61.4L645.5 68.5L681.4 100.2L717.2 100.2L753.1 79.0L789.0 57.9L824.8 64.9L860.7 72.0L896.6 79.0L932.4 96.7L968.3 100.2L1004.1 54.4L1040.0 50.8" vector-effect="non-scaling-stroke"/>
+      <path class="gads-trait gads-t-j" d="M0.0 86.0L35.9 86.0L71.7 99.9L107.6 95.3L143.4 86.6L179.3 100.3L215.2 97.3L251.0 86.9L286.9 90.1L322.8 86.6L358.6 94.9L394.5 87.5L430.3 90.5L466.2 88.8L502.1 97.0L537.9 92.9L573.8 95.3L609.7 96.2L645.5 90.8L681.4 97.3L717.2 96.6L753.1 89.2L789.0 86.4L824.8 95.1L860.7 98.3L896.6 87.5L932.4 95.1L968.3 100.1L1004.1 100.5L1040.0 101.2" vector-effect="non-scaling-stroke"/>
+      <path class="gads-trait gads-t-v" d="M0.0 97.6L35.9 97.6L71.7 97.6L107.6 97.6L143.4 97.6L179.3 146.0L215.2 146.0L251.0 97.6L286.9 97.6L322.8 97.6L358.6 97.6L394.5 97.6L430.3 146.0L466.2 146.0L502.1 97.6L537.9 97.6L573.8 97.6L609.7 97.6L645.5 97.6L681.4 121.8L717.2 146.0L753.1 97.6L789.0 73.4L824.8 97.6L860.7 97.6L896.6 97.6L932.4 146.0L968.3 121.8L1004.1 97.6L1040.0 97.6" vector-effect="non-scaling-stroke"/>
+      </svg>
+      </div>
       </div>
       <div class="gads-dates"><span>1er du mois</span><span>fin du mois</span></div>
 
       <div class="gads-tableau">
-        <p class="gads-tableau-t">Campagnes</p>
-        <table>
-          <thead>
-            <tr><th>Campagne</th><th>Statut</th>
-                <th class="gads-n">Clics</th><th class="gads-n">Impressions</th>
-                <th class="gads-n">CPC moy.</th><th class="gads-n">Conv.</th><th class="gads-n">Coût</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><span class="gads-pt"></span>Réfection de toiture · Vitré</td>
-              <td><span class="gads-etat">Activée</span></td>
-              <td class="gads-n">238</td><td class="gads-n">5 820</td>
-              <td class="gads-n">2,18 €</td><td class="gads-n">21</td><td class="gads-n">518,84 €</td>
-            </tr>
-            <tr>
-              <td><span class="gads-pt"></span>Réparation de fuite · Vitré</td>
-              <td><span class="gads-etat">Activée</span></td>
-              <td class="gads-n">196</td><td class="gads-n">4 710</td>
-              <td class="gads-n">2,63 €</td><td class="gads-n">15</td><td class="gads-n">515,48 €</td>
-            </tr>
-            <tr>
-              <td><span class="gads-pt"></span>Zinguerie · Pays de Vitré</td>
-              <td><span class="gads-etat">Activée</span></td>
-              <td class="gads-n">121</td><td class="gads-n">3 790</td>
-              <td class="gads-n">2,37 €</td><td class="gads-n">11</td><td class="gads-n">286,77 €</td>
-            </tr>
-          </tbody>
-        </table>
+      <p class="gads-tableau-t">Campagnes</p>
+      <table>
+      <thead>
+      <tr><th>Campagne</th><th>Statut</th>
+      <th class="gads-n">Clics</th><th class="gads-n">Impressions</th>
+      <th class="gads-n">CPC moy.</th><th class="gads-n">Conv.</th><th class="gads-n">Coût</th></tr>
+      </thead>
+      <tbody>
+      <tr>
+      <td><span class="gads-pt"></span>Réfection de toiture · Vitré</td>
+      <td><span class="gads-etat">Activée</span></td>
+      <td class="gads-n">238</td><td class="gads-n">5 820</td>
+      <td class="gads-n">2,18 €</td><td class="gads-n">21</td><td class="gads-n">518,84 €</td>
+      </tr>
+      <tr>
+      <td><span class="gads-pt"></span>Réparation de fuite · Vitré</td>
+      <td><span class="gads-etat">Activée</span></td>
+      <td class="gads-n">196</td><td class="gads-n">4 710</td>
+      <td class="gads-n">2,63 €</td><td class="gads-n">15</td><td class="gads-n">515,48 €</td>
+      </tr>
+      <tr>
+      <td><span class="gads-pt"></span>Zinguerie · Pays de Vitré</td>
+      <td><span class="gads-etat">Activée</span></td>
+      <td class="gads-n">121</td><td class="gads-n">3 790</td>
+      <td class="gads-n">2,37 €</td><td class="gads-n">11</td><td class="gads-n">286,77 €</td>
+      </tr>
+      </tbody>
+      </table>
       </div>
+      </div>
+            <p class="vu-leg">Votre compte Google Ads, celui que nous tenons pour vous. Chiffres d'illustration pour un budget de 1 300 € sur le mois.</p>
+          </div>
+        </li>
+
+      </ol>
     </div>
-    <p class="gads-note">
-      Votre compte Google Ads, celui que nous tenons pour vous : une campagne
-      par prestation, et le détail de ce que chacune rapporte. Chiffres
-      d'illustration pour un budget de 1&nbsp;300&nbsp;€ sur le mois.
-    </p>
-  </div>
   </section>
 
   <!-- TARIFS -->
@@ -533,7 +595,7 @@
    visible par défaut : on n'arme l'animation que si on sait pouvoir la jouer,
    et un garde-fou pose l'état final si l'observateur ne vient jamais. */
 (function () {
-  var blocs = document.querySelectorAll('.gads-zone, .ga-scene, .etapes');
+  var blocs = document.querySelectorAll('.gads-zone, .ga-scene');
   if (!blocs.length) return;
   var i = 0;
   [].forEach.call(document.querySelectorAll('.gads-tuile'), function (t) {

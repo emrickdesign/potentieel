@@ -391,35 +391,6 @@ html, body { background: var(--bg-card); }
   .cas-t h3 { margin-top: 5px; }
 }
 
-/* ---------- les quatre étapes, qui se posent une à une ------------------- */
-
-.etapes { display: flex; flex-direction: column; gap: 26px; }
-.etape { display: flex; gap: 20px; align-items: flex-start; }
-.etape-n {
-  flex: none; width: 34px; height: 34px; border-radius: 999px;
-  display: grid; place-items: center;
-  font-weight: 800; font-size: 15px; color: var(--orange);
-  border: 1.5px solid var(--orange);
-}
-.etape h3 { font-size: 18px; font-weight: 700; margin: 4px 0 8px; }
-.etape p { font-size: 15px; color: var(--gray-light); line-height: 1.7; margin: 0; }
-
-.etapes.anim .etape { opacity: 0; transform: translateY(14px); }
-.etapes.anim.is-in .etape {
-  opacity: 1; transform: none;
-  transition: opacity .55s ease calc(var(--i) * .13s),
-              transform .65s cubic-bezier(.2,.8,.2,1) calc(var(--i) * .13s);
-}
-/* le rond du numéro se remplit au passage */
-.etapes.anim.is-in .etape-n {
-  animation: etapeN .7s cubic-bezier(.2,.8,.2,1) calc(var(--i) * .13s + .2s) both;
-}
-@keyframes etapeN {
-  0%   { background: transparent; color: var(--orange); }
-  45%  { background: var(--orange); color: var(--bg); }
-  100% { background: transparent; color: var(--orange); }
-}
-
 /* ---------- ce que comprend la mise en place ---------------------------- */
 
 .inclus { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
@@ -612,37 +583,204 @@ html, body { background: var(--bg-card); }
 .gz .cas-t h3 { color: #202124; font-size: clamp(17px, 1.7vw, 20px); }
 .gz .cas-t p { color: var(--second); max-width: 92ch; }
 
-/* ---------- les quatre étapes ------------------------------------------- */
+/* ---------- ce que nous faisons : la pièce maîtresse ---------------------
 
-/* Un parcours, pas quatre cartes : les étapes sont posées sur un fil qui
-   traverse la page, et les pastilles numérotées s'y accrochent. L'accueil
-   présente ses étapes en cartes bordées — ici on fait autre chose. */
-.gz .etapes {
-  position: relative;
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: clamp(20px, 2.6vw, 36px);
-  padding-top: 4px;
+   C'est la section qui explique le métier, donc elle prend la place qui va
+   avec : quatre rangées pleine largeur, le propos d'un côté, ce qu'on produit
+   de l'autre. Chaque rangée porte sa raison d'être — « pourquoi ça marche » —
+   et l'alternance gauche/droite remplace la rupture de rythme qu'apportaient
+   les cartes. La quatrième rangée passe sur toute la largeur : son visuel est
+   le compte Google Ads lui-même, qui ne tient pas dans une demi-page.
+   -------------------------------------------------------------------------- */
+
+.gz-faire { padding: clamp(64px, 7vw, 92px) 0 clamp(56px, 6vw, 84px); }
+.gz-faire h2 {
+  font-size: clamp(28px, 3.5vw, 40px); font-weight: 800;
+  letter-spacing: -.02em; margin: 0 0 14px;
 }
-.gz .etapes::before {
-  content: ''; position: absolute; left: 15px; right: 15px; top: 19px;
-  height: 2px; background: var(--trait);
+.gz .gz-intro {
+  font-size: clamp(15px, 1.4vw, 16.5px); line-height: 1.7;
+  max-width: 64ch; margin: 0 0 clamp(36px, 4vw, 52px);
 }
-.gz .etape {
-  display: block; position: relative; z-index: 1;
-  background: none; border: 0; padding: 0;
+
+.gz .faire { list-style: none; margin: 0; padding: 0; display: grid; }
+.gz .faire-t {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  gap: clamp(28px, 4vw, 64px);
+  align-items: center;
+  padding: clamp(34px, 4vw, 52px) 0;
+  border-top: 1px solid var(--trait);
 }
-.gz .etape-n {
-  position: relative; width: 32px; height: 32px; border: 0; border-radius: 50%;
-  font-size: 14px; margin-bottom: 16px;
-  box-shadow: 0 0 0 6px #F8F9FA;   /* le fil s'interrompt sous la pastille */
+.gz .faire-t:first-child { border-top: 0; padding-top: 0; }
+/* une rangée sur deux inverse le propos et l'image — sauf la rangée pleine
+   largeur, où l'image se place forcément sous le propos */
+.gz .faire-t:nth-child(even):not(.faire-large) .faire-dit { order: 2; }
+.gz .faire-large { grid-template-columns: minmax(0, 1fr); gap: clamp(26px, 3vw, 38px); }
+
+/* le propos */
+.gz .faire-n {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px; border-radius: 50%;
+  font-size: 15px; font-weight: 500; margin: 0 0 16px;
 }
-.gz .etape:nth-child(1) .etape-n { background: #E8F0FE; color: #174EA6; }
-.gz .etape:nth-child(2) .etape-n { background: #FCE8E6; color: #C5221F; }
-.gz .etape:nth-child(3) .etape-n { background: #FEF7E0; color: #8A5300; }
-.gz .etape:nth-child(4) .etape-n { background: #E6F4EA; color: #137333; }
-.gz .etape h3 { font-size: 16.5px; margin: 0 0 8px; max-width: 24ch; }
-.gz .etape p { font-size: 14.5px; color: var(--second); margin: 0; }
-.gz .etapes.anim.is-in .etape-n { animation: none; }
+.gz .faire-n1 { background: #E8F0FE; color: #174EA6; }
+.gz .faire-n2 { background: #FCE8E6; color: #C5221F; }
+.gz .faire-n3 { background: #FEF7E0; color: #8A5300; }
+.gz .faire-n4 { background: #E6F4EA; color: #137333; }
+.gz .faire-t:nth-child(1) { --ton: #1568D6; --voile: #E8F0FE; }
+.gz .faire-t:nth-child(2) { --ton: #C5221F; --voile: #FCE8E6; }
+.gz .faire-t:nth-child(3) { --ton: #8A5300; --voile: #FEF7E0; }
+.gz .faire-t:nth-child(4) { --ton: #137333; --voile: #E6F4EA; }
+
+.gz .faire-dit h3 {
+  font-size: clamp(20px, 2.1vw, 25px); font-weight: 500;
+  line-height: 1.25; letter-spacing: -.012em;
+  margin: 0 0 12px; max-width: 22ch;
+}
+.gz .faire-dit > p {
+  font-size: clamp(14.5px, 1.35vw, 16px); line-height: 1.68;
+  margin: 0; max-width: 46ch;
+}
+
+/* la raison d'être, adossée au trait de la rangée */
+.gz .faire-pq {
+  margin: 18px 0 0 !important;
+  padding: 2px 0 2px 16px;
+  border-left: 2px solid var(--ton);
+  font-size: 14px !important; line-height: 1.6;
+}
+.gz .faire-pq b {
+  display: block; color: var(--ton);
+  font-size: 11.5px; font-weight: 500; letter-spacing: .04em;
+  margin-bottom: 4px;
+}
+
+/* ---- le visuel : ce que l'étape produit -------------------------------- */
+
+.gz .faire-vu { min-width: 0; }
+.gz .vu-leg {
+  font-size: 12px; line-height: 1.55; color: var(--second);
+  margin: 12px 0 0;
+}
+
+.gz .vu-recherche, .gz .vu-appels {
+  background: #fff; border: 1px solid var(--trait); border-radius: 12px;
+  padding: clamp(18px, 2vw, 26px);
+  box-shadow: 0 1px 2px rgba(60,64,67,.12), 0 1px 3px 1px rgba(60,64,67,.06);
+}
+
+/* 1. la demande mesurée */
+.gz .vu-barre {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 18px; border-radius: 999px;
+  border: 1px solid var(--trait); background: #fff;
+  box-shadow: 0 1px 4px rgba(60,64,67,.12);
+}
+.gz .vu-barre svg {
+  width: 17px; height: 17px; flex: none;
+  fill: none; stroke: #5F6368; stroke-width: 2; stroke-linecap: round;
+}
+.gz .vu-barre span { font-size: 14.5px; color: #202124; }
+.gz .vu-volume {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 24px; margin-top: 24px;
+}
+.gz .vu-volume > div:first-child b {
+  display: block; font-size: clamp(34px, 4vw, 46px); font-weight: 400;
+  line-height: 1; letter-spacing: -.02em; color: #202124;
+}
+.gz .vu-volume > div:first-child span {
+  display: block; margin-top: 8px;
+  font-size: 12.5px; line-height: 1.5; color: var(--second);
+}
+.gz .vu-barres {
+  display: flex; align-items: flex-end; gap: 6px;
+  height: 76px; flex: 1; max-width: 220px;
+}
+.gz .vu-barres i {
+  flex: 1; height: var(--h); border-radius: 3px 3px 0 0;
+  background: #D2E3FC;
+}
+.gz .vu-barres i:last-child { background: #1A73E8; }
+
+/* 2. l'annonce et sa page */
+.gz .vu-serp { position: relative; padding-left: clamp(0px, 2vw, 26px); }
+.gz .vu-annonce {
+  background: #fff; border: 1px solid var(--trait); border-radius: 10px;
+  padding: 16px 18px;
+  box-shadow: 0 1px 2px rgba(60,64,67,.12), 0 1px 3px 1px rgba(60,64,67,.06);
+}
+.gz .vu-spons {
+  display: inline-block; font-size: 11.5px; font-weight: 500;
+  color: #202124; margin-bottom: 6px;
+}
+.gz .vu-annonce b {
+  display: block; font-size: 16px; font-weight: 400; line-height: 1.3;
+  color: #1A0DAB;
+}
+.gz .vu-url { display: block; font-size: 12.5px; color: #4D5156; margin-top: 3px; }
+.gz .vu-annonce p { font-size: 13px; line-height: 1.55; margin: 8px 0 0; }
+.gz .vu-fleche {
+  display: block; width: 26px; height: 26px; margin: 14px auto;
+}
+.gz .vu-fleche svg {
+  width: 100%; height: 100%;
+  fill: none; stroke: #BDC1C6; stroke-width: 1.8;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.gz .vu-page {
+  border-radius: 10px; overflow: hidden; background: #fff;
+  border: 1px solid var(--trait);
+  box-shadow: 0 2px 6px rgba(60,64,67,.16), 0 8px 24px -10px rgba(60,64,67,.3);
+}
+.gz .vu-page-barre {
+  display: flex; align-items: center; gap: 6px;
+  padding: 9px 12px; background: #F1F3F4;
+  border-bottom: 1px solid var(--trait-clair);
+}
+.gz .vu-page-barre s {
+  width: 8px; height: 8px; border-radius: 50%; background: #DADCE0;
+}
+.gz .vu-page img { display: block; width: 100%; height: auto; }
+
+/* 3. ce qui arrive chez l'artisan */
+.gz .vu-appel {
+  display: grid; grid-template-columns: 36px minmax(0, 1fr) auto;
+  align-items: center; gap: 14px;
+  padding: 14px 0; border-top: 1px solid var(--trait-clair);
+}
+.gz .vu-appel:first-child { padding-top: 0; border-top: 0; }
+.gz .vu-pic {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 50%;
+}
+.gz .vu-pic svg { width: 17px; height: 17px; }
+.gz .vu-pic-b { background: #E8F0FE; color: #1568D6; }
+.gz .vu-pic-b svg { fill: currentColor; }
+.gz .vu-pic-v { background: #E6F4EA; color: #137333; }
+.gz .vu-pic-v svg { fill: none; stroke: currentColor; }
+.gz .vu-appel b { display: block; font-size: 14.5px; font-weight: 500; }
+.gz .vu-appel i {
+  display: block; font-style: normal;
+  font-size: 12.5px; color: var(--second); margin-top: 2px;
+}
+.gz .vu-appel u {
+  text-decoration: none; font-size: 11.5px; color: var(--second);
+  white-space: nowrap;
+}
+.gz .vu-appels .vu-leg { border-top: 1px solid var(--trait-clair); padding-top: 12px; }
+
+/* 4. le compte, en pleine largeur */
+.gz .faire-large .gads { margin: 0; }
+
+@media (max-width: 900px) {
+  .gz .faire-t { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  /* l'alternance n'a plus de sens en colonne : le propos passe toujours devant */
+  .gz .faire-t:nth-child(even):not(.faire-large) .faire-dit { order: 0; }
+  .gz .faire-dit h3, .gz .faire-dit > p { max-width: 36ch; }
+  .gz .vu-serp { padding-left: 0; }
+}
 
 /* ---------- les trois temps du tarif ------------------------------------ */
 
@@ -704,7 +842,7 @@ html, body { background: var(--bg-card); }
 
 /* ---------- le tableau de bord, déjà clair ------------------------------ */
 
-.gz .gads-zone { padding-left: 0; padding-right: 0; max-width: none; }
+.gz .gads-zone { margin: 0; padding-left: 0; padding-right: 0; max-width: none; }
 .gz .gads { box-shadow: 0 1px 2px rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15); }
 .gz .gads-note { color: var(--second); }
 
@@ -734,19 +872,25 @@ html, body { background: var(--bg-card); }
 .gz .bulles-o b { background: #FEEFE3; border-color: #FBC89E; color: #A8500A; }
 .gz .bulles-r b { background: #FCE8E6; border-color: #F6AEA9; color: #C5221F; }
 
-/* les bulles du budget portent plus de poids : c'est l'argument de la section */
-.gz .bulles-grand { gap: 9px; }
+/* Les points du budget sont de longueur très inégale : en guirlande ils
+   retombaient n'importe où. Posés en grille, ils s'alignent et se comparent. */
+.gz .bulles-grand {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 10px;
+}
 .gz .bulles-grand b {
-  font-size: 13.5px; padding: 9px 16px;
+  display: flex; align-items: center; gap: 11px;
+  font-size: 13.5px; line-height: 1.4; padding: 13px 18px;
+  border-radius: 8px;
   background: #E8F0FE; border-color: #D2E3FC; color: #174EA6;
+}
+.gz .bulles-grand b::before {
+  content: ''; flex: none; width: 7px; height: 12px;
+  border: solid #1568D6; border-width: 0 2px 2px 0;
+  transform: translateY(-2px) rotate(45deg);
 }
 
 .gz .budget-note {
   font-size: 13.5px; color: var(--second); line-height: 1.6;
   margin: 16px 0 0; max-width: 72ch;
-}
-
-@media (max-width: 760px) {
-  /* le fil n'a plus de sens quand les étapes s'empilent */
-  .gz .etapes::before { display: none; }
 }
