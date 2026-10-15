@@ -1068,6 +1068,131 @@ html, body { background: var(--bg-card); }
 .gz .prix p { font-size: 14.5px; margin: 0; }
 .gz .prix-gratuit .prix-somme { color: #137333; }
 
+
+/* ---------- l'option LSA dans les tarifs -------------------------------- */
+
+.gz .prix-option {
+  display: grid; grid-template-columns: minmax(0, .42fr) minmax(0, 1fr);
+  gap: clamp(20px, 2.6vw, 42px); align-items: start;
+  margin-top: 16px; padding: clamp(22px, 2.6vw, 30px) clamp(22px, 2.8vw, 32px);
+  background: #fff; border: 1px solid var(--trait); border-radius: 8px;
+}
+.gz .prix-option-tag {
+  display: inline-block; margin-bottom: 10px;
+  font-size: 11.5px; font-weight: 500; letter-spacing: .03em;
+  color: #174EA6; background: #E8F0FE; border-radius: 999px; padding: 4px 11px;
+}
+.gz .prix-option h3 { font-size: 18px; font-weight: 500; margin: 0; }
+.gz .prix-option p { font-size: 14.5px; line-height: 1.68; margin: 0; }
+.gz .prix-option-n {
+  margin-top: 12px !important; padding-top: 12px;
+  border-top: 1px solid var(--trait-clair); font-size: 13.5px !important;
+}
+
+/* le budget rejoint les tarifs : il n'a plus de titre à lui, juste un filet */
+.gz .budget { margin-top: clamp(28px, 3.2vw, 40px); }
+
+/* ---------- l'inventaire de la mise en place ---------------------------- */
+
+.gz .livr-intro {
+  font-size: clamp(14.5px, 1.4vw, 16px); line-height: 1.7;
+  max-width: 68ch; margin: 0 0 clamp(28px, 3.2vw, 40px);
+}
+
+/* Un inventaire, pas trois cartes : chaque poste prend une rangée, son
+   intitulé à gauche et le détail à droite sur deux colonnes. */
+.gz .livraison { display: grid; }
+.gz .livr {
+  display: grid; grid-template-columns: minmax(0, .42fr) minmax(0, 1fr);
+  gap: clamp(20px, 2.6vw, 48px);
+  padding: clamp(24px, 2.8vw, 34px) 0;
+  border-top: 1px solid var(--trait);
+}
+.gz .livr:first-child { border-top: 0; padding-top: 0; }
+.gz .livr-t { position: relative; }
+.gz .livr-ic {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; border-radius: 10px;
+  background: #E8F0FE; margin-bottom: 14px;
+}
+.gz .livr-ic svg {
+  width: 20px; height: 20px;
+  fill: none; stroke: #1568D6; stroke-width: 1.7;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.gz .livr-t h3 {
+  font-size: clamp(17px, 1.7vw, 20px); font-weight: 500;
+  line-height: 1.3; margin: 0 0 7px; max-width: 20ch;
+}
+.gz .livr-t p { font-size: 13.5px; line-height: 1.6; margin: 0; max-width: 34ch; }
+
+.gz .livr-l {
+  list-style: none; margin: 0; padding: 0;
+  columns: 2; column-gap: clamp(22px, 2.6vw, 40px);
+}
+.gz .livr-l li {
+  break-inside: avoid; -webkit-column-break-inside: avoid;
+  position: relative; padding: 0 0 11px 24px;
+  font-size: 14.5px; line-height: 1.6; color: var(--second);
+}
+.gz .livr-l li::before {
+  content: ''; position: absolute; left: 2px; top: 6px;
+  width: 6px; height: 11px;
+  border: solid #137333; border-width: 0 1.9px 1.9px 0;
+  transform: rotate(45deg);
+}
+
+/* ---------- les Local Services Ads -------------------------------------- */
+
+.gz .lsa-bloc {
+  display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  gap: clamp(24px, 3vw, 48px);
+  margin-top: clamp(30px, 3.4vw, 44px);
+  padding: clamp(26px, 3vw, 38px) clamp(24px, 3vw, 40px);
+  background: linear-gradient(180deg, #E9F0FD 0%, #DFEAFB 100%);
+  border: 1px solid #BBD2F5; border-radius: 14px;
+}
+.gz .lsa-tag {
+  display: inline-block; margin-bottom: 12px;
+  font-size: 11.5px; font-weight: 500; letter-spacing: .03em;
+  color: #0D652D; background: #E6F4EA; border: 1px solid #B7E1C2;
+  border-radius: 999px; padding: 4px 12px;
+}
+.gz .lsa-t h3 {
+  font-size: clamp(19px, 2vw, 23px); font-weight: 500;
+  line-height: 1.3; margin: 0 0 12px;
+}
+.gz .lsa-t p { font-size: 14.5px; line-height: 1.7; margin: 0; }
+
+.gz .lsa-c {
+  background: #fff; border: 1px solid #CDDFF8; border-radius: 10px;
+  padding: clamp(18px, 2vw, 24px) clamp(18px, 2.2vw, 26px);
+}
+.gz .lsa-c-t {
+  font-size: 12px; font-weight: 500; color: var(--second);
+  letter-spacing: .03em; margin: 0 0 14px;
+}
+.gz .lsa-c ul { list-style: none; margin: 0; padding: 0; }
+.gz .lsa-c li {
+  font-size: 14px; line-height: 1.6; color: var(--second);
+  padding: 11px 0; border-top: 1px solid var(--trait-clair);
+}
+.gz .lsa-c li:first-child { padding-top: 0; border-top: 0; }
+.gz .lsa-c li b { color: #202124; font-weight: 500; }
+.gz .lsa-n {
+  font-size: 13px !important; line-height: 1.6;
+  margin: 14px 0 0 !important; padding-top: 13px;
+  border-top: 1px solid var(--trait-clair);
+}
+
+@media (max-width: 900px) {
+  .gz .prix-option, .gz .livr, .gz .lsa-bloc { grid-template-columns: minmax(0, 1fr); }
+  .gz .livr-t h3, .gz .livr-t p { max-width: 42ch; }
+}
+@media (max-width: 680px) {
+  .gz .livr-l { columns: 1; }
+}
+
 /* ---------- ce que comprend la mise en place ---------------------------- */
 
 .gz .inclus-c {
