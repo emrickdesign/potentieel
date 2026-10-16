@@ -332,3 +332,10 @@
   .hero-ring{--ring-card:262px;height:186px;margin-top:34px}
 }
 @media (prefers-reduced-motion:reduce){.hero-ul::after{animation:none}}
+/* Visios espacées et plus grandes. Le centre d'une carte est à r = col/2 − carte/2
+   de l'axe ; l'écart entre deux pas vaut 2r·sin(π/14) ≈ 0,445r.
+   Desktop : carte 430, r = 1034 → pas 460 → ~30 px d'écart. Perspective ≈ r/0,83 comme avant. */
+.hero-ring{--ring-col:3000px;--ring-persp:1495px;--ring-card:516px;height:340px}
+@media (max-width:767px){
+  .hero-ring{--ring-col:1956px;--ring-persp:975px;--ring-card:336px;height:240px}
+}
