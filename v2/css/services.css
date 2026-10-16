@@ -396,3 +396,31 @@
 .svc-rev-ex{font:600 10px/1 var(--font-body);color:#b45309;background:#fff1dd;border:1px dashed #f0a04b;padding:3px 7px;border-radius:999px}
 .svc-rev-q{font:500 13px/1.45 var(--font-body);color:#202124}
 .svc-rev-who{font:400 11px/1 var(--font-body);color:#70757a}
+
+/* --- Cartes simplifiées (16/10) : 1 phrase, prix en gros, détails repliés --- */
+.svc-body{gap:18px;justify-content:center}
+.svc-lead{font:500 17px/1.5 var(--font-body);color:rgba(255,255,255,.88);max-width:34ch}
+.svc-price{padding:16px 18px;gap:4px}
+.svc-price-big{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.svc-price-num{font:700 40px/1 var(--font-display);letter-spacing:-.03em;color:var(--orange)}
+.svc-price-unit{font:500 15px/1.2 var(--font-body);color:#fff}
+.svc-price-sub{font:600 15px/1.4 var(--font-body);color:#fff}
+.svc-price-note{font:400 12.5px/1.4 var(--font-body);color:rgba(255,255,255,.55)}
+.svc-more{display:flex;flex-direction:column;gap:12px;animation:svc-open .45s var(--ease)}
+.svc-more[hidden]{display:none}
+@keyframes svc-open{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.svc-actions{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.svc-more-btn{
+  display:inline-flex;align-items:center;gap:8px;padding:6px 2px;
+  background:none;border:0;cursor:pointer;color:#fff;
+  font:600 14px/1 var(--font-body);
+  border-bottom:1px solid rgba(255,255,255,.3);transition:border-color .3s,color .3s;
+}
+.svc-more-btn:hover{color:var(--orange);border-color:var(--orange)}
+.svc-more-btn i{width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);transition:transform .35s var(--ease)}
+.svc-more-btn[aria-expanded="true"] i{transform:rotate(225deg) translate(-2px,-1px)}
+@media (max-width:700px){
+  .svc-price-num{font-size:34px}
+  .svc-actions{flex-direction:column;align-items:stretch;gap:12px}
+  .svc-more-btn{align-self:center}
+}

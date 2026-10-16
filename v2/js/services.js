@@ -94,3 +94,14 @@
   window.addEventListener('resize', fit);
   window.addEventListener('load', fit);
 })();
+
+/* « En savoir plus » : déplie la description et les points de la carte */
+document.querySelectorAll('#services .svc-more-btn').forEach(function(b){
+  b.addEventListener('click',function(){
+    var box=document.getElementById(b.getAttribute('aria-controls'));
+    var open=b.getAttribute('aria-expanded')!=='true';
+    b.setAttribute('aria-expanded',open); box.hidden=!open;
+    b.querySelector('span').textContent=open?'Moins de détails':'En savoir plus';
+    window.dispatchEvent(new Event('resize'));
+  });
+});
