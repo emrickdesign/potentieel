@@ -1,0 +1,103 @@
+/* Base partagée — propriété de l'agent DA (hero). Reset, typo, .container, .btn, .todo.
+   Les autres sections utilisent ces classes telles quelles. */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  font-size:16px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow-x:clip;
+}
+img,svg,video,canvas,picture{display:block;max-width:100%}
+img{height:auto}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+h1,h2,h3,h4,h5,h6{margin:0;font-family:var(--font-display);font-weight:500;line-height:1.05;letter-spacing:-.04em;color:var(--text)}
+p{margin:0}
+ul,ol{margin:0;padding:0;list-style:none}
+::selection{background:var(--orange);color:#0a0a0a}
+:focus-visible{outline:2px solid var(--orange);outline-offset:3px;border-radius:6px}
+
+.container{width:100%;max-width:var(--container);margin-inline:auto;padding-inline:var(--gutter)}
+
+/* ---------- Boutons partagés (reproduits d'agencee) ----------
+   Markup recommandé :
+   <a class="btn btn-primary" href="/contact">
+     <span class="btn-label">Réserver mon appel</span>
+     <span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M96 48l96 80-96 80z"/></svg></span>
+   </a>
+   .btn-arrow est facultatif. Tailles : .btn-sm / (défaut) / .btn-lg. Halo permanent pulsé : .btn-glow */
+.btn{
+  --btn-h:50px;
+  position:relative;isolation:isolate;
+  display:inline-flex;align-items:stretch;justify-content:center;
+  min-height:var(--btn-h);
+  border-radius:var(--radius-pill);
+  font-family:var(--font-display);font-weight:400;font-size:12px;line-height:1;
+  letter-spacing:-.1px;text-transform:uppercase;
+  white-space:nowrap;cursor:pointer;
+  border:1px solid transparent;
+  transition:transform .35s var(--ease),background-color .3s var(--ease),color .3s var(--ease),box-shadow .35s var(--ease),border-color .3s var(--ease);
+}
+.btn-label{display:inline-flex;align-items:center;padding:0 30px}
+.btn:active{transform:scale(.98)}
+.btn-primary{
+  background:var(--orange);color:#0a0a0a;border-color:var(--orange);
+  box-shadow:0 10px 30px -12px rgba(var(--orange-rgb),.6);
+}
+/* halo lumineux : couche floue derrière le bouton */
+.btn-primary::before{
+  content:"";position:absolute;inset:-3px;z-index:-1;border-radius:inherit;
+  background:radial-gradient(70% 140% at 50% 50%,rgba(var(--orange-rgb),.9),rgba(var(--orange-rgb),0) 72%);
+  filter:blur(16px);opacity:0;transform:scale(.92);
+  transition:opacity .45s var(--ease),transform .45s var(--ease);
+  pointer-events:none;
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 0 4px rgba(var(--orange-rgb),.14),0 18px 44px -12px rgba(var(--orange-rgb),.8)}
+.btn-primary:hover::before{opacity:1;transform:scale(1.1);animation:btn-halo 1.6s ease-in-out infinite}
+.btn-glow::before{opacity:.75;transform:scale(1.04);animation:btn-halo 2.8s ease-in-out infinite}
+@keyframes btn-halo{0%,100%{opacity:.6;transform:scale(1.02)}50%{opacity:1;transform:scale(1.2)}}
+
+/* zone flèche à droite (triangle ▶ d'agencee) ; au survol une barre sombre la sépare du libellé */
+.btn-arrow{
+  display:inline-flex;align-items:center;justify-content:center;flex:none;
+  width:50px;margin-left:-10px;
+  border-left:0 solid #0a0a0a;
+  transition:border-left-width .3s var(--ease);
+}
+.btn-arrow svg{width:16px;height:16px;fill:currentColor}
+.btn-primary .btn-arrow{color:#0d0d0d}
+.btn:hover .btn-arrow{border-left-width:5px}
+.btn:hover .btn-arrow svg{animation:btn-nudge .9s var(--ease) infinite alternate}
+@keyframes btn-nudge{to{transform:translateX(3px)}}
+
+.btn-ghost{background:rgba(255,255,255,.04);color:var(--text);border-color:rgba(255,255,255,.15)}
+.btn-ghost:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.3);transform:translateY(-2px)}
+.btn-ghost .btn-arrow{border-left-color:rgba(255,255,255,.15)}
+.btn-sm{--btn-h:40px}
+.btn-sm .btn-label{padding:0 20px}
+.btn-sm .btn-arrow{width:42px}
+.btn-lg{--btn-h:58px;font-size:13px}
+.btn-lg .btn-label{padding:0 34px}
+.btn-lg .btn-arrow{width:58px}
+
+/* ---------- Emplacements à remplir par Emrick ---------- */
+.todo{
+  color:inherit;
+  background:rgba(var(--orange-rgb),.14);
+  border-bottom:1.5px dashed var(--orange);
+  border-radius:3px;
+  padding:0 .25em;
+  box-decoration-break:clone;-webkit-box-decoration-break:clone;
+}
+
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+}

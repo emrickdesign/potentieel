@@ -1,0 +1,138 @@
+<!-- ===================== HERO (agent hero) =====================
+     Header + navbar : reproduction du header d'agencee.framer.website
+     Bande d'appels visio : transposition de l'anneau 3D (Ring3D.tsx) du hero 2RP Rénov -->
+<header class="hero-nav" id="hero-nav">
+  <div class="hero-nav-inner">
+    <a class="hero-logo" href="/v2/" aria-label="Potentieel, accueil">
+      <span class="hero-logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32"><path d="M9 23.5V8.5h8.2c3.6 0 5.8 2 5.8 5.1 0 3.2-2.3 5.2-5.8 5.2H13" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="23.5" r="2.2" fill="currentColor"/></svg>
+      </span>
+      <span class="hero-logo-word">Potentieel</span>
+    </a>
+
+    <nav class="hero-links" aria-label="Navigation principale">
+      <a class="hero-link" href="#services" data-spy="services">Services</a>
+      <a class="hero-link" href="#results" data-spy="results">Résultats</a>
+      <a class="hero-link" href="#pricing" data-spy="pricing">Tarifs</a>
+      <a class="hero-link" href="#reviews" data-spy="reviews">Avis</a>
+    </nav>
+
+    <a class="btn btn-primary btn-sm hero-nav-cta" href="/contact">
+      <span class="btn-label">Réserver mon appel</span>
+      <span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M88 40l112 88-112 88z"/></svg></span>
+    </a>
+
+    <button class="hero-burger" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="hero-menu">
+      <span></span><span></span>
+    </button>
+  </div>
+
+  <div class="hero-menu" id="hero-menu" hidden>
+    <a href="#services">Services</a>
+    <a href="#results">Résultats</a>
+    <a href="#pricing">Tarifs</a>
+    <a href="#reviews">Avis</a>
+    <a class="btn btn-primary btn-lg" href="/contact">
+      <span class="btn-label">Réserver mon appel</span>
+      <span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M88 40l112 88-112 88z"/></svg></span>
+    </a>
+  </div>
+</header>
+
+<section id="hero" class="hero">
+  <!-- Fond : motif d'arches (tuile SVG d'agencee) + vignette radiale + lueurs + dégradé orange du bas -->
+  <div class="hero-bg" aria-hidden="true">
+    <div class="hero-bg-pattern"></div>
+    <div class="hero-bg-vignette"></div>
+    <div class="hero-glow hero-glow--a"></div>
+    <div class="hero-glow hero-glow--b"></div>
+    <div class="hero-glow hero-glow--c"></div>
+    <div class="hero-bg-gradient"></div>
+  </div>
+
+  <div class="hero-content container">
+    <div class="hero-texts">
+      <p class="hero-badge"><span class="hero-badge-num">N°1</span><span>Par un ancien artisan du bâtiment</span></p>
+
+      <h1 class="hero-title">
+        <span class="hero-line">Deviens <span class="hero-hl"><span class="hero-hl-txt">l'artisan n°1</span></span> sur Google.</span>
+        <span class="hero-line">Plus d'appels <span class="hero-ic" aria-hidden="true"><span class="hero-ic-inner">
+            <svg viewBox="0 0 24 24"><path class="hero-ic-phone" d="M15.05 17.9c-1.6.85-4.7-.5-7.3-3.1S3.8 9.1 4.6 7.5l1.1-1.1a1.7 1.7 0 0 1 2.4 0l1.4 1.4c.66.66.66 1.73 0 2.4l-.5.5c.5 1.2 1.6 2.5 3.1 3.6l.5-.5a1.7 1.7 0 0 1 2.4 0l1.4 1.4c.66.66.66 1.73 0 2.4z"/><path class="hero-ic-wave hero-ic-wave--1" d="M14.6 6.6a4.2 4.2 0 0 1 2.8 2.8"/><path class="hero-ic-wave hero-ic-wave--2" d="M15.2 3.3a7.4 7.4 0 0 1 5.5 5.5"/></svg>
+          </span></span> =&nbsp;plus de chantiers.<span class="hero-ca" aria-hidden="true">
+            <span class="hero-ca-arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+            <span class="hero-ca-txt"><span class="hero-ca-label">Ton CA</span><span class="hero-ca-val" data-hero-counter>+0&nbsp;€</span></span>
+            <svg class="hero-ca-spark" viewBox="0 0 100 44" preserveAspectRatio="none">
+              <defs><linearGradient id="hero-ca-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff991c" stop-opacity=".45"/><stop offset="1" stop-color="#ff991c" stop-opacity="0"/></linearGradient></defs>
+              <path class="hero-ca-area" d="M2 38 L16 33 L28 35 L42 26 L55 29 L69 18 L82 21 L98 9 L98 44 L2 44Z"/>
+              <path class="hero-ca-line" pathLength="100" d="M2 38 L16 33 L28 35 L42 26 L55 29 L69 18 L82 21 L98 9"/>
+              <circle class="hero-ca-dot" cx="98" cy="9" r="3.2"/>
+            </svg>
+          </span></span>
+        <span class="hero-line">Ads, LSA et fiche Google en 7&nbsp;jours.</span>
+      </h1>
+
+      <p class="hero-sub">Montée par un ancien artisan du bâtiment. Fiche Google et inscription LSA offertes.</p>
+    </div>
+
+    <div class="hero-actions">
+      <a class="btn btn-primary btn-lg btn-glow hero-cta" href="/contact">
+        <span class="btn-label">Réserver mon appel</span>
+        <span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M88 40l112 88-112 88z"/></svg></span>
+      </a>
+
+      <div class="hero-proof">
+        <div class="hero-avatars">
+          <img src="/v2/assets/hero/avatars/temoin2.jpg" alt="" width="40" height="40" loading="eager">
+          <img src="/v2/assets/hero/avatars/temoin4.jpg" alt="" width="40" height="40" loading="eager">
+          <img src="/v2/assets/hero/avatars/temoin5.jpg" alt="" width="40" height="40" loading="eager">
+          <img src="/v2/assets/hero/avatars/temoin6.jpg" alt="" width="40" height="40" loading="eager">
+          <img src="/v2/assets/hero/avatars/temoin7.jpg" alt="" width="40" height="40" loading="eager">
+        </div>
+        <div class="hero-proof-txt">
+          <div class="hero-stars" role="img" aria-label="5 étoiles">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <p class="hero-proof-label"><span class="todo" data-todo="Note Google réelle de Potentieel et nombre réel d'artisans accompagnés">[à remplir : note Google · nb d'artisans]</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ BANDE D'APPELS VISIO (anneau 3D, transposé de Ring3D.tsx de 2RP) ============
+       À REMPLACER : mettre les vraies captures d'appels visio (format 16:9) dans /v2/assets/hero/visio/
+       puis changer le src de chaque <img> ci-dessous (et le libellé .hero-call-name).
+       6 colonnes × 2 vignettes = 12 vignettes ; la vignette n et la vignette n+6 sont diamétralement
+       opposées, on peut donc y mettre la même capture (jamais visibles en même temps). -->
+  <div class="hero-ring" aria-label="Appels visio avec des artisans accompagnés" role="img">
+    <div class="hero-ring-stage">
+      <div class="hero-ring-drag">
+        <div class="hero-ring-spin">
+          <div class="hero-ring-col" style="--i:0">
+            <div class="hero-call"><div class="hero-call-bar"><i></i><i></i><i></i><b></b></div><img src="/v2/assets/hero/visio/placeholder-temoin2.jpg" alt="" loading="eager" draggable="false"><span class="hero-call-name"><span class="todo" data-todo="Prénom + métier de l'artisan sur la capture">[Prénom · métier]</span></span></div>
+            <div class="hero-call"><div class="hero-call-bar"><i></i><i></i><i></i><b></b></div><img src="/v2/assets/hero/visio/placeholder-temoin2.jpg" alt="" loading="lazy" draggable="false"><span class="hero-call-name"><span class="todo" data-todo="Prénom + métier de l'artisan sur la capture">[Prénom · métier]</span></span></div>
+          </div>
+          <div class="hero-ring-col" style="--i:1">
+            <div class="hero-call"><div class="hero-call-bar"><i></i><i></i><i></i><b></b></div><img src="/v2/assets/hero/visio/placeholder-temoin4.jpg" alt="" loading="eager" draggable="false"><span class="hero-call-name"><span class="todo" data-todo="Prénom + métier de l'artisan sur la capture">[Prénom · métier]</span></span></div>
+            <div class="hero-call"><div class="hero-call-bar"><i></i><i></i><i></i><b></b></div><img src="/v2/assets/hero/visio/placeholder-temoin4.jpg" alt="" loading="lazy" draggable="false"><span class="hero-call-name"><span class="todo" data-todo="Prénom + métier de l'artisan sur la capture">[Prénom · métier]</span></span></div>
+          </div>
+          <div class="hero-ring-col" style="--i:2">
+            <div class="hero-call"><div class="hero-call-bar"><i></i><i></i><i></i><b></b></div><img src="/v2/assets/hero/visio/placeholder-temoin5.jpg" alt="" loading="eager" draggable="false"><span class="hero-call-name"><span class="todo" data-todo="Prénom + métier de l'artisan sur la capture">[Prénom · métier]</span></span></div>
+            <div class="hero-call"><div class="hero-call-bar"><i></i><i></i><i></i><b></b></div><img src="/v2/assets/hero/visio/placeholder-temoin5.jpg" alt="" loading="lazy" draggable="false"><span class="hero-call-name"><span class="todo" data-todo="Prénom + métier de l'artisan sur la capture">[Prénom · métier]</span></span></div>
+          </div>
+          <div class="hero-ring-col" style="--i:3">
+            <div class="hero-call"><div class="hero-call-bar"><i></i><i></i><i></i><b></b></div><img src="/v2/assets/hero/visio/placeholder-temoin6.jpg" alt="" loading="eager" draggable="false"><span class="hero-call-name"><span class="todo" data-todo="Prénom + métier de l'artisan sur la capture">[Prénom · métier]</span></span></div>
+            <div class="hero-call"><div class="hero-call-bar"><i></i><i></i><i></i><b></b></div><img src="/v2/assets/hero/visio/placeholder-temoin6.jpg" alt="" loading="lazy" draggable="false"><span class="hero-call-name"><span class="todo" data-todo="Prénom + métier de l'artisan sur la capture">[Prénom · métier]</span></span></div>
+          </div>
+          <div class="hero-ring-col" style="--i:4">
+            <div class="hero-call"><div class="hero-call-bar"><i></i><i></i><i></i><b></b></div><img src="/v2/assets/hero/visio/placeholder-temoin7.jpg" alt="" loading="eager" draggable="false"><span class="hero-call-name"><span class="todo" data-todo="Prénom + métier de l'artisan sur la capture">[Prénom · métier]</span></span></div>
+            <div class="hero-call"><div class="hero-call-bar"><i></i><i></i><i></i><b></b></div><img src="/v2/assets/hero/visio/placeholder-temoin7.jpg" alt="" loading="lazy" draggable="false"><span class="hero-call-name"><span class="todo" data-todo="Prénom + métier de l'artisan sur la capture">[Prénom · métier]</span></span></div>
+          </div>
+          <div class="hero-ring-col" style="--i:5">
+            <div class="hero-call"><div class="hero-call-bar"><i></i><i></i><i></i><b></b></div><img src="/v2/assets/hero/visio/placeholder-temoin8.jpg" alt="" loading="eager" draggable="false"><span class="hero-call-name"><span class="todo" data-todo="Prénom + métier de l'artisan sur la capture">[Prénom · métier]</span></span></div>
+            <div class="hero-call"><div class="hero-call-bar"><i></i><i></i><i></i><b></b></div><img src="/v2/assets/hero/visio/placeholder-temoin8.jpg" alt="" loading="lazy" draggable="false"><span class="hero-call-name"><span class="todo" data-todo="Prénom + métier de l'artisan sur la capture">[Prénom · métier]</span></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

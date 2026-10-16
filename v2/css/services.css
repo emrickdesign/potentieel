@@ -1,0 +1,343 @@
+/* =========================================================
+   SERVICES — reprise du gabarit « Services » de bloomix
+   (pastille + titre centré, pile de cartes sticky 2 colonnes,
+   numéro dégradé qui déborde en haut à gauche, tags pilule)
+   Préfixe : .svc-
+   ========================================================= */
+
+.svc{
+  position:relative;
+  padding:100px 0;                 /* bloomix : padding 100px 0 */
+  overflow-x:clip;                 /* clip (pas hidden) pour garder le sticky */
+  isolation:isolate;
+}
+
+/* ---------- Lueurs d'arrière-plan ---------- */
+.svc-glow{
+  position:absolute;z-index:-1;pointer-events:none;border-radius:50%;
+  filter:blur(90px);opacity:.55;
+}
+.svc-glow--a{
+  width:520px;height:520px;top:40px;left:50%;transform:translateX(-50%);
+  background:radial-gradient(circle,rgba(255,134,13,.30),rgba(255,134,13,0) 65%);
+}
+.svc-glow--b{
+  width:640px;height:640px;bottom:10%;right:-220px;
+  background:radial-gradient(circle,rgba(217,76,0,.28),rgba(217,76,0,0) 65%);
+  animation:svc-drift 14s ease-in-out infinite alternate;
+}
+@keyframes svc-drift{to{transform:translate(-120px,-160px) scale(1.1)}}
+
+.svc-container{
+  width:100%;max-width:var(--container);margin-inline:auto;
+  padding:0 24px;                  /* bloomix : padding 0 24px */
+  display:flex;flex-direction:column;align-items:center;
+  gap:68px;                        /* bloomix : gap 68px entre en-tête et cartes */
+}
+
+/* ---------- En-tête ---------- */
+.svc-head{
+  width:100%;max-width:760px;      /* 550px chez bloomix, élargi pour Unbounded (police large) */
+  display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center;
+}
+.svc-pill{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 14px;border-radius:var(--radius-pill);
+  background:var(--surface-2,#1c1c1c);border:1px solid var(--line-strong,rgba(255,255,255,.16));
+  font:500 16px/1.4 var(--font-body);color:var(--text);
+}
+.svc-pill::before{
+  content:"";width:6px;height:6px;border-radius:50%;background:var(--orange);
+  box-shadow:0 0 10px 2px rgba(255,134,13,.7);
+}
+.svc-head-txt{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%}
+.svc-title{
+  font-family:var(--font-display);font-weight:700;
+  font-size:clamp(28px,3.6vw,46px);line-height:1.12;letter-spacing:-.025em;
+  text-wrap:balance;
+}
+.svc-hl{
+  color:var(--orange);
+  text-shadow:0 0 28px rgba(255,134,13,.45);
+}
+.svc-sub{
+  width:80%;max-width:540px;
+  font:400 16px/1.55 var(--font-body);color:rgba(255,255,255,.72);
+  text-wrap:balance;
+}
+
+/* ---------- Pile de cartes ---------- */
+.svc-stack{
+  width:100%;max-width:900px;
+  display:flex;flex-direction:column;align-items:center;
+  gap:100px;                       /* bloomix : gap 100px */
+}
+.svc-item{position:sticky;z-index:1;width:100%}
+.svc-item--1{top:110px}            /* bloomix : 110 / 150 / 170 */
+.svc-item--2{top:150px}
+.svc-item--3{top:170px}
+
+.svc-card{
+  position:relative;
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;padding:10px;           /* bloomix : grille 2 col, gap 10, padding 10 */
+  border-radius:var(--radius);     /* 20px */
+  background:linear-gradient(160deg,#1f1f1f 0%,#171717 55%,#15120f 100%);
+  border:1px solid rgba(255,255,255,.09);
+  box-shadow:0 -10px 40px -20px rgba(0,0,0,.9),0 40px 80px -40px rgba(0,0,0,.9);
+  transition:border-color .5s var(--ease),box-shadow .5s var(--ease);
+}
+/* halo orange interne, renforcé au survol */
+.svc-card::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(120% 80% at 0% 0%,rgba(255,134,13,.10),rgba(255,134,13,0) 55%);
+  opacity:.7;transition:opacity .5s var(--ease);
+}
+.svc-card:hover{
+  border-color:rgba(255,134,13,.35);
+  box-shadow:0 -10px 40px -20px rgba(0,0,0,.9),0 40px 80px -40px rgba(0,0,0,.9),0 0 60px -10px rgba(255,134,13,.28);
+}
+.svc-card:hover::before{opacity:1}
+
+/* numéro dégradé (44px, rayon 8, déborde de -22px) */
+.svc-num{
+  position:absolute;top:-22px;left:-22px;z-index:2;
+  width:44px;height:44px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(225deg,var(--orange-deep) 0%,var(--orange) 100%);
+  font:500 18px/1 var(--font-body);color:#fff;
+  box-shadow:0 8px 24px -6px rgba(255,134,13,.6);
+  transition:transform .5s var(--ease),box-shadow .5s var(--ease);
+}
+.svc-card:hover .svc-num{transform:rotate(-6deg) scale(1.06);box-shadow:0 10px 34px -4px rgba(255,134,13,.85)}
+
+/* colonne texte : padding 20, contenu en haut / tags en bas */
+.svc-body{
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;
+  gap:28px;padding:20px;
+}
+.svc-top{display:flex;flex-direction:column;gap:24px;width:100%}
+.svc-titles{display:flex;flex-direction:column;gap:10px}
+.svc-card-title{
+  font-family:var(--font-display);font-weight:600;
+  font-size:clamp(22px,2.2vw,26px);line-height:1.2;letter-spacing:-.02em;
+  display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;
+}
+.svc-desc{font:400 16px/1.55 var(--font-body);color:rgba(255,255,255,.75)}
+
+.svc-badge{
+  display:inline-flex;align-items:center;
+  padding:5px 11px;border-radius:var(--radius-pill);
+  background:var(--orange);color:#0a0a0a;
+  font:600 12px/1 var(--font-body);letter-spacing:0;
+  box-shadow:0 0 0 0 rgba(255,134,13,.6);
+  animation:svc-ping 2.6s var(--ease) infinite;
+}
+@keyframes svc-ping{
+  0%{box-shadow:0 0 0 0 rgba(255,134,13,.55)}
+  70%,100%{box-shadow:0 0 0 10px rgba(255,134,13,0)}
+}
+
+/* chiffre clé */
+.svc-stat{display:flex;flex-direction:column;gap:4px}
+.svc-stat-num{
+  font-family:var(--font-display);font-weight:700;font-size:40px;line-height:1;letter-spacing:-.03em;
+  background:linear-gradient(180deg,#ffb15c 0%,var(--orange) 55%,var(--orange-deep) 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  font-variant-numeric:tabular-nums;
+}
+.svc-stat-lbl{font:400 14px/1.4 var(--font-body);color:var(--muted)}
+
+/* offre LSA */
+.svc-offer{display:flex;flex-direction:column;gap:6px}
+.svc-offer-line{font:400 15px/1.5 var(--font-body);color:rgba(255,255,255,.8)}
+.svc-offer-line strong{color:#fff;font-weight:600}
+.svc-strike{
+  color:var(--muted);text-decoration:line-through;text-decoration-color:var(--orange);
+  text-decoration-thickness:2px;
+}
+.svc-quote{
+  margin-top:8px;padding-left:12px;border-left:2px solid var(--orange);
+  font:600 15px/1.45 var(--font-display);letter-spacing:-.01em;color:#fff;
+}
+
+/* tags pilule : padding 6/13, gap 5, fond blanc 15 %, flou 10px */
+.svc-tags{display:flex;flex-wrap:wrap;gap:10px;width:100%}
+.svc-tag{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:6px 13px;border-radius:var(--radius-pill);
+  background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.06);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  font:400 14px/1.4 var(--font-body);color:#fff;white-space:nowrap;
+  transition:background-color .35s var(--ease),border-color .35s var(--ease),transform .35s var(--ease);
+}
+.svc-tag:hover{background:rgba(255,134,13,.16);border-color:rgba(255,134,13,.4);transform:translateY(-2px)}
+.svc-check{
+  flex:none;width:15px;height:15px;border-radius:50%;
+  background:var(--orange) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.5 8.3l2.2 2.2 4.8-5' fill='none' stroke='%230a0a0a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/11px no-repeat;
+}
+
+/* ---------- Visuel (à la place de la photo bloomix : 400px, rayon 16) ---------- */
+.svc-media{
+  position:relative;z-index:1;
+  min-height:400px;align-self:stretch;border-radius:16px;overflow:hidden;   /* 400px chez bloomix, étiré si le texte est plus haut */
+  display:flex;align-items:flex-start;justify-content:flex-end;
+  padding:28px 0 0 28px;
+  background:
+    radial-gradient(80% 70% at 85% 10%,rgba(255,190,110,.55),rgba(255,190,110,0) 60%),
+    linear-gradient(225deg,#ff9a2e 0%,var(--orange) 35%,var(--orange-deep) 100%);
+}
+.svc-media::after{ /* léger grain/lumière */
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,0) 40%);
+}
+
+/* fenêtre « page Google » schématique */
+.svc-serp{
+  position:relative;z-index:1;
+  width:100%;min-height:calc(100% + 40px);
+  padding:12px 14px;
+  background:#fbfaf7;border-radius:12px 0 0 0;
+  box-shadow:-20px 20px 50px -20px rgba(80,25,0,.55);
+  display:flex;flex-direction:column;gap:7px;
+  transition:transform .7s var(--ease);
+}
+.svc-card:hover .svc-serp{transform:translate(-4px,-6px)}
+
+.svc-serp-bar{
+  display:flex;align-items:center;gap:8px;
+  height:28px;padding:0 10px;border-radius:999px;
+  background:#fff;border:1px solid #e6e3dc;box-shadow:0 1px 3px rgba(0,0,0,.06);
+}
+.svc-g{font:700 13px/1 var(--font-body);color:#4285f4}
+.svc-q{font:400 11.5px/1 var(--font-body);color:#5f6368}
+
+.svc-zone{
+  position:relative;
+  display:flex;flex-direction:column;gap:5px;
+  padding:7px 8px 8px;border-radius:9px;
+  border:1px solid #ebe8e1;background:#fff;
+  opacity:.5;filter:grayscale(1);
+  transition:opacity .45s var(--ease),filter .45s var(--ease),border-color .45s var(--ease),box-shadow .45s var(--ease),transform .45s var(--ease);
+}
+.svc-zl{font:600 9.5px/1.2 var(--font-body);color:#70757a;letter-spacing:0}
+
+/* zone allumée : par défaut (sans JS) la zone de la carte, puis séquence JS */
+.svc-serp:not(.svc-seq)[data-active="lsa"] .svc-zone--lsa,
+.svc-serp:not(.svc-seq)[data-active="ads"] .svc-zone--ads,
+.svc-serp:not(.svc-seq)[data-active="map"] .svc-zone--map,
+.svc-zone.is-lit{
+  opacity:1;filter:none;
+  border-color:var(--orange);
+  box-shadow:0 0 0 3px rgba(255,134,13,.22),0 10px 28px -8px rgba(255,134,13,.55);
+  transform:scale(1.015);
+}
+
+/* pastille « Toi » sur la zone de la carte (une fois la séquence finie) */
+.svc-you{
+  position:absolute;top:-9px;right:10px;
+  padding:3px 9px;border-radius:999px;
+  background:#0a0a0a;color:var(--orange);
+  font:700 10px/1.2 var(--font-display);letter-spacing:0;
+  opacity:0;transform:translateY(4px) scale(.9);
+  transition:opacity .4s var(--ease),transform .4s var(--ease);
+}
+.svc-serp:not(.svc-seq)[data-active="lsa"] .svc-zone--lsa .svc-you,
+.svc-serp:not(.svc-seq)[data-active="ads"] .svc-zone--ads .svc-you,
+.svc-serp:not(.svc-seq)[data-active="map"] .svc-zone--map .svc-you,
+.svc-zone.is-you .svc-you{opacity:1;transform:none}
+
+/* LSA : 3 mini-fiches pro */
+.svc-lsa-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.svc-pro{
+  position:relative;height:32px;border-radius:6px;background:#f3f1ec;
+}
+.svc-pro::before{ /* avatar */
+  content:"";position:absolute;left:6px;top:7px;width:18px;height:18px;border-radius:50%;background:#d9d5cc;
+}
+.svc-pro::after{ /* nom + coche verte de validation */
+  content:"";position:absolute;left:30px;right:8px;top:10px;height:5px;border-radius:3px;background:#cfcac0;
+  box-shadow:0 8px 0 -1px #e0dcd3;
+}
+/* annonces */
+.svc-ad{display:flex;flex-direction:column;gap:4px;padding:2px 0}
+.svc-ad b{display:block;width:62%;height:7px;border-radius:4px;background:#9fb3f0}
+.svc-ad i{display:block;width:92%;height:5px;border-radius:3px;background:#e4e1da}
+.svc-ad i.svc-s{width:70%}
+/* carte + fiches */
+.svc-map{
+  position:relative;height:58px;border-radius:6px;overflow:hidden;
+  background:
+    linear-gradient(115deg,transparent 46%,#fff 46% 50%,transparent 50%),
+    linear-gradient(20deg,transparent 60%,#fff 60% 63%,transparent 63%),
+    linear-gradient(180deg,#e8efe0,#e2eadb);
+}
+.svc-pin{
+  position:absolute;width:10px;height:10px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);
+  background:#ea4335;box-shadow:0 2px 4px rgba(0,0,0,.2);
+}
+.svc-pin:nth-child(1){left:22%;top:30%}
+.svc-pin:nth-child(2){left:55%;top:52%}
+.svc-pin:nth-child(3){left:76%;top:22%}
+.svc-list{display:flex;flex-direction:column;gap:5px}
+.svc-list b{display:block;height:6px;border-radius:3px;background:#e4e1da;width:80%}
+.svc-list b + b{width:58%}
+
+/* éléments « toi » orange dans la zone allumée */
+.svc-zone.is-lit .svc-pro:first-child,
+.svc-serp:not(.svc-seq)[data-active="lsa"] .svc-zone--lsa .svc-pro:first-child{background:rgba(255,134,13,.14)}
+.svc-zone.is-lit .svc-pro:first-child::before,
+.svc-serp:not(.svc-seq)[data-active="lsa"] .svc-zone--lsa .svc-pro:first-child::before{background:var(--orange)}
+.svc-zone.is-lit .svc-ad:first-of-type b,
+.svc-serp:not(.svc-seq)[data-active="ads"] .svc-zone--ads .svc-ad:first-of-type b{background:var(--orange)}
+.svc-zone.is-lit .svc-pin:nth-child(2),
+.svc-serp:not(.svc-seq)[data-active="map"] .svc-zone--map .svc-pin:nth-child(2){background:var(--orange);animation:svc-bounce 1.6s var(--ease) infinite}
+.svc-zone.is-lit .svc-list b:first-child,
+.svc-serp:not(.svc-seq)[data-active="map"] .svc-zone--map .svc-list b:first-child{background:var(--orange)}
+@keyframes svc-bounce{0%,100%{translate:0 0}50%{translate:0 -4px}}
+
+/* ---------- Révélations au scroll (masqué seulement si le JS tourne) ---------- */
+.svc.svc-js [data-svc-reveal]{
+  opacity:0;transform:translateY(40px);
+  transition:opacity .9s var(--ease),transform .9s var(--ease);
+  transition-delay:var(--svc-d,0s);
+}
+.svc.svc-js [data-svc-reveal].is-in{opacity:1;transform:none}
+
+/* ---------- Tablette (810–1199, comme bloomix) ---------- */
+@media (max-width:1199.98px){
+  .svc-title{font-size:clamp(28px,4.4vw,40px)}
+}
+
+/* ---------- Mobile (< 810 : variante « Phone » de bloomix, 1 colonne) ---------- */
+@media (max-width:809.98px){
+  .svc{padding:80px 0}
+  .svc-container{padding:0 20px;gap:48px}
+  .svc-title{font-size:clamp(24px,6.9vw,30px)}
+  .svc-sub{width:100%;font-size:15px}
+  .svc-stack{gap:56px}
+  /* la carte mobile est plus haute que l'écran : pas de sticky, sinon le bas serait masqué */
+  .svc-item{position:relative;top:auto}
+  .svc-card{grid-template-columns:1fr}
+  .svc-num{left:-20px;top:-22px}
+  .svc-body{justify-content:flex-start;gap:24px;padding:20px 12px 10px}
+  .svc-tags{gap:8px}
+  .svc-tag{white-space:normal;font-size:13.5px;padding:5px 12px}
+  .svc-stat-num{font-size:34px}
+  .svc-media{min-height:0;padding:22px 0 0 22px}
+  .svc-serp{min-height:0}
+  .svc-glow--a{width:360px;height:360px}
+  .svc-glow--b{width:420px;height:420px;right:-200px}
+}
+
+/* écrans peu hauts : la pile sticky masquerait le bas des cartes */
+@media (min-width:810px) and (max-height:700px){
+  .svc-item{position:relative;top:auto}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .svc-glow--b,.svc-badge,.svc-pin{animation:none!important}
+  .svc.svc-js [data-svc-reveal]{opacity:1;transform:none;transition:none}
+  .svc-card,.svc-serp,.svc-zone,.svc-num,.svc-tag{transition:none}
+}

@@ -1,0 +1,28 @@
+/* Tokens partagés — propriété de l'agent DA (hero). Les autres sections LISENT ces variables, ne les redéfinissent pas. */
+:root{
+  --bg:#0a0a0a;          /* fond principal (agencee) */
+  --bg-2:#0d0d0d;
+  --surface:#151515;     /* surface légèrement relevée */
+  --surface-2:#1c1c1c;
+  --line:rgba(255,255,255,.08);
+  --line-strong:rgba(255,255,255,.16);
+  --text:#ffffff;
+  --muted:#999999;       /* gris sous-titres agencee */
+  --muted-2:#6b6b6b;
+  --orange:#ff991c;      /* accent principal agencee (valeur réelle mesurée : rgb(255,153,28)) */
+  --orange-rgb:255,153,28; /* pour rgba(var(--orange-rgb),.x) */
+  --orange-2:#f58327;
+  --orange-deep:#d94c00;
+  --orange-soft:rgba(255,153,28,.14);
+  --glow:rgba(255,153,28,.45);
+  --cream:#faf5ea;
+  --font-display:'Unbounded',system-ui,sans-serif;
+  --font-body:'Inter',system-ui,sans-serif;
+  --radius:20px;
+  --radius-sm:12px;
+  --radius-pill:999px;
+  --container:1200px;
+  --gutter:clamp(16px,4vw,32px);
+  --section-y:clamp(80px,10vw,140px);
+  --ease:cubic-bezier(.22,1,.36,1);
+}
