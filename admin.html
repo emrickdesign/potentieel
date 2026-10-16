@@ -11296,8 +11296,11 @@ function saUpdateBadge(){
   // Un appel non rattaché compte TOUJOURS : il faut l'attribuer à un client,
   // quelle que soit sa qualification. C'est justement le travail à faire.
   const aTrier  = saState.calls.filter(c=>!c.client_id).length;
+  // Un formulaire sans client_id est un lead générique du site (page Leads),
+  // pas une demande Suivi ads : il n'apparaît dans aucune liste de cet onglet,
+  // donc il ne doit pas gonfler ce badge-ci.
   const aQualif = saState.calls.filter(c=>c.client_id && c.qualification==='nouveau').length
-                + saState.forms.filter(f=>f.qualification==='nouveau').length;
+                + saState.forms.filter(f=>f.client_id && f.qualification==='nouveau').length;
   const todo = aTrier + aQualif;
   const b=document.getElementById('badge-suivi'); if(b){ b.textContent=todo; b.style.display=todo?'':'none'; }
 }
