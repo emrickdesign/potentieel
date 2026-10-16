@@ -167,3 +167,8 @@
   .res-js [data-res-reveal]{opacity:1;transform:none;transition:none}
   .res-divider.is-in::after{animation:none}
 }
+
+/* Mode clair : la section reste orange ; halo chaud doux au raccord avec le crème */
+:root[data-theme="light"] .res{
+  box-shadow:0 -26px 70px -38px rgba(230,118,8,.55),0 34px 80px -44px rgba(230,118,8,.5);
+}

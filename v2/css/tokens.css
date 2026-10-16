@@ -25,4 +25,31 @@
   --gutter:clamp(16px,4vw,32px);
   --section-y:clamp(80px,10vw,140px);
   --ease:cubic-bezier(.22,1,.36,1);
+  /* ajouts mode clair (sans effet en sombre) : orange lisible en TEXTE, encre en RGB */
+  --orange-ink:var(--orange);   /* orange pour du texte sur le fond de page */
+  --ink-rgb:255,255,255;        /* couleur du texte en RGB : rgba(var(--ink-rgb),.7) */
+  --bg-rgb:10,10,10;            /* fond de page en RGB, pour les dégradés vers le fond */
+  --shadow-soft:0 24px 60px -28px rgba(0,0,0,.8);
+}
+
+/* ---------- MODE CLAIR (html[data-theme="light"], posé par _layout.html) ----------
+   Crème chaud plutôt que blanc plat ; encre quasi noire ; orange inchangé en aplat,
+   --orange-ink (plus profond) pour l'orange en texte sur fond clair. */
+:root[data-theme="light"]{
+  color-scheme:light;
+  --bg:#faf7f2;
+  --bg-2:#f3eee6;
+  --surface:#fffdf9;      /* carte relevée : presque blanc, chaud */
+  --surface-2:#f1ebe1;
+  --line:rgba(15,15,15,.09);
+  --line-strong:rgba(15,15,15,.17);
+  --text:#0f0f0f;
+  --muted:#5e584f;
+  --muted-2:#8a8276;
+  --orange-ink:#c2560a;
+  --orange-soft:rgba(255,153,28,.16);
+  --glow:rgba(255,153,28,.32);
+  --ink-rgb:15,15,15;
+  --bg-rgb:250,247,242;
+  --shadow-soft:0 24px 50px -30px rgba(90,52,14,.35);
 }

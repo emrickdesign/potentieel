@@ -121,3 +121,56 @@
   .rev-js .rev-ticker-track,.rev-js .rev-row-track{animation:none!important}
   .rev-row{overflow-x:auto}
 }
+
+/* =====================================================================
+   MODE CLAIR — overrides uniquement (le mode sombre ci-dessus est intact)
+   Valeurs explicites : fonctionne même sans les tokens clairs de tokens.css.
+   Encre #0f0f0f · orange texte foncé #c2560a · ombres chaudes (brun/orange).
+   ===================================================================== */
+[data-theme="light"] .rev{color:#0f0f0f}
+[data-theme="light"] .rev-glow-a{background:radial-gradient(closest-side,rgba(255,153,28,.20),rgba(255,153,28,0))}
+[data-theme="light"] .rev-glow-b{background:radial-gradient(closest-side,rgba(255,170,90,.18),rgba(255,170,90,0))}
+
+[data-theme="light"] .rev-badge{color:#3a3a3a;background:#fff;border-color:rgba(15,15,15,.10);box-shadow:0 1px 2px rgba(60,35,10,.06),0 6px 16px -10px rgba(60,35,10,.25)}
+[data-theme="light"] .rev-badge::before{background:#ff991c;box-shadow:0 0 0 3px rgba(255,153,28,.18)}
+[data-theme="light"] .rev-title{color:#0f0f0f}
+[data-theme="light"] .rev-accent{color:var(--orange-ink,#c2560a)}
+[data-theme="light"] .rev-sub{color:#5c5650}
+
+/* grande carte témoignage */
+[data-theme="light"] .rev-feature{
+  background:linear-gradient(180deg,#ffffff,#fffaf3);
+  border-color:rgba(15,15,15,.09);
+  box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 2px 4px rgba(60,35,10,.04),0 30px 70px -36px rgba(120,60,10,.30),0 12px 28px -18px rgba(60,35,10,.16)}
+[data-theme="light"] .rev-feature::before{background:linear-gradient(90deg,transparent,rgba(255,153,28,.9),transparent)}
+[data-theme="light"] .rev-photo{background:#efe8dd}
+[data-theme="light"] .rev-photo-fade{background:linear-gradient(180deg,rgba(15,15,15,0),rgba(15,15,15,.62))}
+[data-theme="light"] .rev-quote-ico{fill:#ff991c;filter:drop-shadow(0 6px 14px rgba(255,153,28,.35))}
+[data-theme="light"] .rev-quote{color:#0f0f0f}
+[data-theme="light"] .rev-avatar{border-color:#fff;box-shadow:0 0 0 1px rgba(15,15,15,.08),0 8px 18px -8px rgba(60,35,10,.35)}
+[data-theme="light"] .rev-name{color:#0f0f0f}
+[data-theme="light"] .rev-role{color:#6b645c}
+
+/* flèches */
+[data-theme="light"] .rev-arrow{color:#0f0f0f;background:#fff;border-color:rgba(15,15,15,.12);box-shadow:0 1px 2px rgba(60,35,10,.08),0 6px 14px -8px rgba(60,35,10,.30)}
+[data-theme="light"] .rev-arrow:hover{background:#ff991c;border-color:#ff991c;color:#0f0f0f;box-shadow:0 10px 24px -8px rgba(255,140,20,.6)}
+
+/* pastilles sur la photo (restent sur image sombre) : verre clair lisible */
+[data-theme="light"] .rev-pill{color:#0f0f0f;background:rgba(255,255,255,.88);border-color:rgba(255,255,255,.95);box-shadow:0 4px 12px -6px rgba(0,0,0,.35)}
+[data-theme="light"] .rev-pill svg{stroke:var(--orange-ink,#c2560a)}
+
+/* petites cartes défilantes (le masque de bord fond déjà vers transparent → OK sur crème) */
+[data-theme="light"] .rev-card{
+  background:linear-gradient(170deg,#ffffff 0%,#fffaf3 100%);
+  border-color:rgba(15,15,15,.08);
+  box-shadow:0 1px 0 #fff inset,0 1px 2px rgba(60,35,10,.05),0 14px 30px -20px rgba(110,55,10,.28)}
+[data-theme="light"] .rev-stars{color:#ff991c}
+[data-theme="light"] .rev-card-quote{color:#0f0f0f}
+[data-theme="light"] .rev-card-author{color:#0f0f0f}
+[data-theme="light"] .rev-card-author img{border-color:#fff;box-shadow:0 0 0 1px rgba(15,15,15,.08)}
+[data-theme="light"] .rev-card-job{color:#6b645c}
+
+/* emplacements à remplir : lisibles sur blanc */
+[data-theme="light"] .rev .todo{background:rgba(255,153,28,.16);border-bottom-color:#d9730d}
+[data-theme="light"] .rev-pill .todo{background:rgba(255,153,28,.22)}
+[data-theme="light"] .rev-stars.todo{color:#e07d0a}

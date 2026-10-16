@@ -339,3 +339,97 @@
 @media (max-width:767px){
   .hero-ring{--ring-col:1956px;--ring-persp:975px;--ring-card:336px;height:240px}
 }
+
+/* ==========================================================================
+   BASCULE DE THÈME (soleil / lune) + MODE CLAIR du hero
+   ========================================================================== */
+.hero-theme{
+  position:relative;flex:none;display:grid;place-items:center;
+  width:44px;height:44px;margin-left:auto;margin-right:12px;border-radius:50%;
+  background:#0d0d0d;border:1px solid rgba(255,255,255,.15);color:var(--orange);
+  box-shadow:0 -9px 22px rgba(0,0,0,.32);
+  transition:transform .4s var(--ease),border-color .3s var(--ease),background-color .3s var(--ease);
+}
+.hero-theme:hover{transform:translateY(-2px);border-color:rgba(var(--orange-rgb),.6)}
+.hero-theme:active{transform:scale(.94)}
+.hero-theme-in{display:grid;place-items:center;width:100%;height:100%;transition:transform .6s var(--ease)}
+.hero-theme:hover .hero-theme-in{transform:rotate(-14deg)}
+.hero-theme-ic{width:20px;height:20px;overflow:visible}
+.hero-theme-sun,.hero-theme-moon{transform-box:view-box;transform-origin:12px 12px;transition:transform .6s var(--ease),opacity .4s var(--ease)}
+.hero-theme-sun circle{fill:currentColor}
+.hero-theme-sun path{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.hero-theme-moon{fill:currentColor}
+/* sombre : on montre le soleil (« passer en clair ») ; clair : la lune */
+.hero-theme-moon{opacity:0;transform:rotate(-90deg) scale(.4)}
+:root[data-theme="light"] .hero-theme-sun{opacity:0;transform:rotate(90deg) scale(.4)}
+:root[data-theme="light"] .hero-theme-moon{opacity:1;transform:none}
+
+/* entrée du menu mobile */
+.hero-menu-theme{display:none}
+@media (max-width:899px){
+  .hero-nav-inner > .hero-theme{display:none}
+  .hero-menu-theme{
+    display:flex;align-items:center;gap:12px;height:50px;padding:0 8px 0 6px;border-radius:12px;
+    font-family:var(--font-display);font-size:14px;text-transform:uppercase;letter-spacing:-.1px;text-align:left;
+  }
+  .hero-menu-theme:hover{background:rgba(255,255,255,.06)}
+  .hero-theme--sm{width:38px;height:38px;margin:0;box-shadow:none}
+  .hero-theme--sm .hero-theme-ic{width:18px;height:18px}
+  .hero-menu-theme-lbl--to-dark{display:none}
+  :root[data-theme="light"] .hero-menu-theme-lbl--to-light{display:none}
+  :root[data-theme="light"] .hero-menu-theme-lbl--to-dark{display:inline}
+}
+
+/* ---------------- MODE CLAIR ---------------- */
+:root[data-theme="light"] .hero-nav.is-scrolled{background:rgba(250,247,242,.8);box-shadow:0 1px 0 rgba(15,15,15,.06)}
+:root[data-theme="light"] .hero-logo-word{color:var(--text)}
+:root[data-theme="light"] .hero-logo-mark{box-shadow:0 6px 18px -6px rgba(217,96,0,.55)}
+:root[data-theme="light"] .hero-links{
+  background:rgba(255,253,249,.82);border-color:rgba(15,15,15,.1);
+  box-shadow:0 10px 30px -16px rgba(90,52,14,.28),inset 0 1px 0 #fff;
+}
+:root[data-theme="light"] .hero-link{color:var(--text)}
+:root[data-theme="light"] .hero-link:hover{color:var(--orange-ink)}
+:root[data-theme="light"] .hero-link.is-active{background:rgba(var(--orange-rgb),.16);color:var(--orange-ink)}
+:root[data-theme="light"] .hero-theme{
+  background:rgba(255,253,249,.82);border-color:rgba(15,15,15,.1);color:var(--text);
+  box-shadow:0 10px 30px -16px rgba(90,52,14,.28),inset 0 1px 0 #fff;
+}
+:root[data-theme="light"] .hero-theme:hover{border-color:rgba(var(--orange-rgb),.7);color:var(--orange-ink)}
+@media (max-width:899px){
+  :root[data-theme="light"] .hero-burger{background:#fffdf9;border-color:rgba(15,15,15,.12);box-shadow:0 8px 20px -14px rgba(90,52,14,.4)}
+  :root[data-theme="light"] .hero-burger span{background:var(--text)}
+  :root[data-theme="light"] .hero-menu{background:#fffdf9;border-color:rgba(15,15,15,.1);box-shadow:0 30px 60px -24px rgba(90,52,14,.4)}
+  :root[data-theme="light"] .hero-menu > a:not(.btn):hover,
+  :root[data-theme="light"] .hero-menu-theme:hover{background:rgba(var(--orange-rgb),.1);color:var(--orange-ink)}
+  :root[data-theme="light"] .hero-theme--sm{box-shadow:none}
+}
+
+/* fond : arches crème discrètes, vignette vers le crème, lueurs orange douces */
+:root[data-theme="light"] .hero-bg-pattern{
+  background-color:#f6f0e6;
+  background-image:url("data:image/svg+xml,%3Csvg width='24' height='40' viewBox='0 0 24 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 40c5.523 0 10-4.477 10-10V0C4.477 0 0 4.477 0 10v30zm22 0c-5.523 0-10-4.477-10-10V0c5.523 0 10 4.477 10 10v30z' fill='%23e8dcc9' fill-rule='evenodd'/%3E%3C/svg%3E");
+}
+:root[data-theme="light"] .hero-bg-vignette{background:radial-gradient(43.2% 25% at 50% 18.8%,rgba(250,247,242,0) 0%,var(--bg) 100%)}
+:root[data-theme="light"] .hero-bg-pattern::after{background:linear-gradient(180deg,rgba(250,247,242,0),var(--bg))}
+:root[data-theme="light"] .hero-bg-gradient{
+  background:linear-gradient(180deg,rgba(255,200,140,0) 0%,rgba(255,178,90,.34) 52%,rgba(255,196,128,.22) 78%,var(--bg) 100%);
+}
+:root[data-theme="light"] .hero-glow{background:radial-gradient(closest-side,rgba(255,160,50,.9),rgba(255,160,50,0))}
+:root[data-theme="light"] .hero-glow--a{opacity:.2}
+:root[data-theme="light"] .hero-glow--b{opacity:.18}
+:root[data-theme="light"] .hero-glow--c{opacity:.12}
+
+/* textes */
+:root[data-theme="light"] .hero-title{color:var(--text)}
+:root[data-theme="light"] .hero-hl{box-shadow:0 10px 26px -14px rgba(217,96,0,.6)}
+:root[data-theme="light"] .hero-ul::after{box-shadow:0 0 12px rgba(255,153,28,.45)}
+:root[data-theme="light"] .hero-sub{color:rgba(15,15,15,.68)}
+:root[data-theme="light"] .hero-proof-label{color:var(--text)}
+:root[data-theme="light"] .hero-avatars img{border-color:var(--bg);background:#e9e1d4;box-shadow:0 4px 10px -6px rgba(90,52,14,.45)}
+:root[data-theme="light"] .hero-ca{border-color:rgba(15,15,15,.1);background:rgba(255,253,249,.8)}
+:root[data-theme="light"] .hero-ca-label{color:rgba(15,15,15,.7)}
+
+/* anneau visio : liseré sombre léger + ombre chaude douce */
+:root[data-theme="light"] .hero-call{background:#e9e1d4;box-shadow:0 22px 40px -26px rgba(90,52,14,.5)}
+:root[data-theme="light"] .hero-call::after{box-shadow:inset 0 0 0 1px rgba(15,15,15,.1)}

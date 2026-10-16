@@ -424,3 +424,95 @@
   .svc-actions{flex-direction:column;align-items:stretch;gap:12px}
   .svc-more-btn{align-self:center}
 }
+
+/* =========================================================
+   MODE CLAIR (16/10) — overrides seulement, le sombre est inchangé.
+   Valeurs explicites + var(--x, repli) : fonctionne même sans les tokens clairs.
+   ========================================================= */
+[data-theme="light"] .svc{
+  --svc-ink:var(--text,#0f0f0f);
+  --svc-ink-2:#3d3830;                 /* texte courant, gris chaud foncé */
+  --svc-mute:#6b6359;                  /* secondaire, 5,6:1 sur blanc */
+  --svc-oink:#b54f08;                  /* orange en texte, ≥ 4,5:1 sur blanc et crème (#c2560a passerait sous 4,5 sur crème) */
+  --svc-line:rgba(15,15,15,.09);
+  color:var(--svc-ink);
+}
+[data-theme="light"] .svc-glow{opacity:.32}
+[data-theme="light"] .svc-glow--a{background:radial-gradient(circle,rgba(255,153,28,.28),rgba(255,153,28,0) 65%)}
+[data-theme="light"] .svc-glow--b{background:radial-gradient(circle,rgba(255,153,28,.22),rgba(255,153,28,0) 65%)}
+
+/* en-tête */
+[data-theme="light"] .svc-pill{
+  background:#fff;border-color:var(--svc-line);color:var(--svc-ink);
+  box-shadow:0 1px 2px rgba(60,35,10,.06),0 6px 18px -10px rgba(90,50,10,.25);
+}
+[data-theme="light"] .svc-pill::before{box-shadow:0 0 8px 1px rgba(255,153,28,.55)}
+[data-theme="light"] .svc-title{color:var(--svc-ink)}
+[data-theme="light"] .svc-hl{color:var(--svc-oink);text-shadow:none}
+[data-theme="light"] .svc-sub{color:var(--svc-mute)}
+
+/* cartes : blanc chaud, bord fin, ombre douce */
+[data-theme="light"] .svc-card{
+  background:linear-gradient(160deg,#ffffff 0%,#fffdf9 55%,#fdf7ee 100%);
+  border-color:var(--svc-line);
+  box-shadow:0 1px 2px rgba(60,35,10,.05),0 -8px 30px -22px rgba(90,50,10,.18),0 34px 70px -38px rgba(90,50,10,.32);
+}
+[data-theme="light"] .svc-card::before{
+  background:radial-gradient(120% 80% at 0% 0%,rgba(255,153,28,.08),rgba(255,153,28,0) 55%);
+}
+[data-theme="light"] .svc-card:hover{
+  border-color:rgba(230,120,10,.38);
+  box-shadow:0 1px 2px rgba(60,35,10,.05),0 -8px 30px -22px rgba(90,50,10,.18),0 34px 70px -38px rgba(90,50,10,.32),0 0 50px -14px rgba(255,153,28,.30);
+}
+[data-theme="light"] .svc-num{box-shadow:0 8px 20px -8px rgba(217,76,0,.5)}
+[data-theme="light"] .svc-card:hover .svc-num{box-shadow:0 10px 26px -8px rgba(217,76,0,.6)}
+
+/* textes de carte */
+[data-theme="light"] .svc-card-title{color:var(--svc-ink)}
+[data-theme="light"] .svc-slot{
+  color:var(--svc-oink);background:rgba(255,153,28,.10);border-color:rgba(194,86,10,.30);
+}
+[data-theme="light"] .svc-slot::before{box-shadow:0 0 6px rgba(255,153,28,.6)}
+[data-theme="light"] .svc-badge{box-shadow:0 0 0 0 rgba(255,153,28,.45)}
+[data-theme="light"] .svc-lead{color:var(--svc-ink-2)}
+[data-theme="light"] .svc-desc{color:var(--svc-ink-2)}
+[data-theme="light"] .svc-lbl,
+[data-theme="light"] .svc-stat-lbl{color:var(--svc-mute)}
+[data-theme="light"] .svc-stat-pre{color:var(--svc-ink-2)}
+[data-theme="light"] .svc-stat-num{
+  background:linear-gradient(180deg,#e87a0c 0%,#c95a06 55%,#a8430a 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+[data-theme="light"] .svc-offer-line{color:var(--svc-ink-2)}
+[data-theme="light"] .svc-offer-line strong{color:var(--svc-ink)}
+[data-theme="light"] .svc-strike{color:var(--svc-mute)}
+[data-theme="light"] .svc-quote{color:var(--svc-ink)}
+
+/* tags pilule */
+[data-theme="light"] .svc-tag{
+  background:#f7f2ea;border-color:rgba(15,15,15,.08);color:var(--svc-ink);
+  -webkit-backdrop-filter:none;backdrop-filter:none;
+}
+[data-theme="light"] .svc-tag:hover{background:#fff1df;border-color:rgba(230,120,10,.4)}
+
+/* encadré prix */
+[data-theme="light"] .svc-price{
+  border-color:rgba(230,120,10,.28);
+  background:linear-gradient(135deg,#fff3e2 0%,#fffaf3 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 8px 22px -16px rgba(217,76,0,.35);
+}
+[data-theme="light"] .svc-price-num{color:var(--svc-oink)}
+[data-theme="light"] .svc-price-unit,
+[data-theme="light"] .svc-price-sub{color:var(--svc-ink)}
+[data-theme="light"] .svc-price-main{color:var(--svc-ink-2)}
+[data-theme="light"] .svc-price-main strong{color:var(--svc-oink)}
+[data-theme="light"] .svc-price-note{color:var(--svc-mute)}
+
+/* « En savoir plus » */
+[data-theme="light"] .svc-more-btn{color:var(--svc-ink);border-bottom-color:rgba(15,15,15,.28)}
+[data-theme="light"] .svc-more-btn:hover{color:var(--svc-oink);border-bottom-color:var(--svc-oink)}
+
+/* visuel « page Google » : gardé tel quel, cadre ajusté */
+[data-theme="light"] .svc-media{box-shadow:0 10px 24px -18px rgba(150,60,0,.45)}
+[data-theme="light"] .svc-serp{box-shadow:-18px 18px 40px -22px rgba(80,25,0,.45)}
+[data-theme="light"] .svc-rev{border-color:#ebe5da;box-shadow:0 6px 16px -10px rgba(80,25,0,.3)}

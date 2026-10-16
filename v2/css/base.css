@@ -132,3 +132,40 @@ ul,ol{margin:0;padding:0;list-style:none}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
 }
+
+/* ==========================================================================
+   MODE CLAIR — base partagée. Le sombre n'est pas touché : tout est sous
+   :root[data-theme="light"]. Fond crème avec matière (grain + lueurs chaudes).
+   ========================================================================== */
+:root[data-theme="light"] body{
+  background-color:var(--bg);
+  /* grain très léger : évite le crème « plat » */
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35  0 0 0 0 .22  0 0 0 0 .08  0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+:root[data-theme="light"] ::selection{background:var(--orange);color:#0f0f0f}
+:root[data-theme="light"] :focus-visible{outline-color:var(--orange-ink)}
+
+/* Boutons */
+:root[data-theme="light"] .btn-primary{box-shadow:0 10px 26px -12px rgba(217,96,0,.55)}
+:root[data-theme="light"] .btn-primary:hover{box-shadow:0 0 0 4px rgba(var(--orange-rgb),.18),0 18px 40px -14px rgba(217,96,0,.6)}
+:root[data-theme="light"] .btn-primary::before{--btn-halo:rgba(var(--orange-rgb),.75)}
+:root[data-theme="light"] .btn-dark{box-shadow:0 12px 28px -14px rgba(15,15,15,.55)}
+:root[data-theme="light"] .btn-dark:hover{box-shadow:0 0 0 4px rgba(15,15,15,.08),0 20px 40px -14px rgba(15,15,15,.55)}
+:root[data-theme="light"] .btn-ghost{
+  --btn-shine:rgba(255,255,255,.85);
+  background:rgba(255,253,249,.7);color:var(--text);border-color:rgba(15,15,15,.16);
+  box-shadow:0 6px 18px -12px rgba(90,52,14,.3);
+}
+:root[data-theme="light"] .btn-ghost:hover{background:#fff;border-color:rgba(15,15,15,.3)}
+:root[data-theme="light"] .btn-ghost .btn-arrow{border-left-color:rgba(15,15,15,.18);color:var(--orange-ink)}
+
+/* Emplacements à remplir */
+:root[data-theme="light"] .todo{background:rgba(var(--orange-rgb),.18);border-bottom-color:var(--orange-ink)}
+
+/* Bascule de thème : transition douce des couleurs, seulement pendant le changement
+   (classe posée ~0,5 s par hero.js → rien n'anime au premier chargement). */
+@media (prefers-reduced-motion:no-preference){
+  html.pt-theme-anim,html.pt-theme-anim *,html.pt-theme-anim *::before,html.pt-theme-anim *::after{
+    transition:background-color .4s ease,color .4s ease,border-color .4s ease,fill .4s ease,stroke .4s ease,box-shadow .4s ease,opacity .4s ease!important;
+  }
+}
