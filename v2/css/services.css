@@ -516,3 +516,8 @@
 [data-theme="light"] .svc-media{box-shadow:0 10px 24px -18px rgba(150,60,0,.45)}
 [data-theme="light"] .svc-serp{box-shadow:-18px 18px 40px -22px rgba(80,25,0,.45)}
 [data-theme="light"] .svc-rev{border-color:#ebe5da;box-shadow:0 6px 16px -10px rgba(80,25,0,.3)}
+
+/* avis réel (message client, pas un avis Google) */
+.svc-rev-msg{display:inline-flex;align-items:center;gap:6px;font:600 11px/1 var(--font-body);color:#202124}
+.svc-rev-msg svg{width:14px;height:14px;fill:var(--orange)}
+.svc-rev-real{font:600 10px/1 var(--font-body);color:#166534;background:#e8f7ee;border:1px solid #86d3a4;padding:3px 7px;border-radius:999px}
