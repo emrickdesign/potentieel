@@ -75,3 +75,22 @@
     });
   });
 })();
+
+/* Pile sticky : une carte plus haute que l'écran ne doit être recouverte
+   qu'une fois lue en entier. On cale son « top » sticky pour que son bas
+   reste visible (top négatif autorisé), sinon on garde le décalage bloomix. */
+(function(){
+  var items = document.querySelectorAll('#services .svc-item');
+  if (!items.length) return;
+  var base = [110,150,170];
+  function fit(){
+    items.forEach(function(it,i){
+      if (getComputedStyle(it).position !== 'sticky') { it.style.top=''; return; }
+      var h = it.offsetHeight, room = window.innerHeight - 24;
+      it.style.top = (h + base[i] > room ? Math.min(base[i], room - h) : base[i]) + 'px';
+    });
+  }
+  fit();
+  window.addEventListener('resize', fit);
+  window.addEventListener('load', fit);
+})();
