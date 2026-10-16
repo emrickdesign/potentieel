@@ -1,0 +1,341 @@
+/* ==========================================================================
+   HERO — agent hero. Préfixe hero-.
+   Header : reproduction du header d'agencee.framer.website (valeurs relevées
+   dans le HTML Framer + styles calculés : titre Unbounded 400, 70px → ici en
+   clamp, letter-spacing -3px ≈ -.043em, interligne .9em, mot surligné dans une
+   boîte orange rotate(3deg) dont le texte est contre-tourné de -3deg, icône
+   ronde 73px tournée de -16deg, sous-titre Inter 18px blanc 80 %, bouton pill
+   orange 50px, avatars 40px qui se chevauchent, étoiles dans des carrés).
+   Bande : transposition fidèle de Ring3D.tsx (2RP Rénov).
+   ========================================================================== */
+
+/* ---------------- NAVBAR (agencee) ---------------- */
+.hero-nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:10px 40px;
+  -webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);
+  transition:transform .5s var(--ease),background-color .35s var(--ease);
+}
+.hero-nav.is-scrolled{background:rgba(10,10,10,.72)}
+.hero-nav.is-hidden{transform:translateY(-110%)}
+.hero-nav-inner{position:relative;display:flex;align-items:center;justify-content:space-between;height:54px}
+
+.hero-logo{display:inline-flex;align-items:center;gap:10px;flex:none}
+.hero-logo-mark{
+  display:grid;place-items:center;width:38px;height:38px;border-radius:11px;
+  background:var(--orange);color:#0a0a0a;transform:rotate(-8deg);
+  box-shadow:0 6px 20px -6px rgba(var(--orange-rgb),.7);
+  transition:transform .5s var(--ease);
+}
+.hero-logo-mark svg{width:24px;height:24px}
+.hero-logo:hover .hero-logo-mark{transform:rotate(8deg) scale(1.05)}
+.hero-logo-word{font-family:var(--font-display);font-weight:600;font-size:19px;letter-spacing:-.045em;line-height:1;color:#fff}
+
+.hero-links{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  display:flex;align-items:center;gap:0;padding:10px;
+  background:#0d0d0d;border:1px solid rgba(255,255,255,.15);border-radius:160px;
+  box-shadow:0 -9px 22px rgba(0,0,0,.32);
+  -webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);
+}
+.hero-link{
+  display:flex;align-items:center;height:40px;padding:0 20px;border-radius:30px;
+  font-family:var(--font-display);font-weight:400;font-size:12px;letter-spacing:-.1px;line-height:2;
+  text-transform:uppercase;color:#fff;
+  transition:color .25s var(--ease),background-color .25s var(--ease);
+}
+.hero-link:hover{color:var(--orange)}
+.hero-link.is-active{background:rgba(255,255,255,.1);color:var(--orange)}
+
+.hero-nav-cta{flex:none}
+.hero-burger{display:none}
+.hero-menu{display:none}
+
+/* ---------------- SECTION ---------------- */
+.hero{
+  position:relative;isolation:isolate;overflow:hidden;
+  padding:150px 0 clamp(36px,4.5vw,64px);
+  background:var(--bg);
+}
+
+/* Fond */
+.hero-bg{position:absolute;inset:0;z-index:-1;pointer-events:none}
+.hero-bg-pattern{
+  position:absolute;left:0;right:0;top:0;height:min(100vh,1000px);
+  background-color:#000;
+  /* tuile d'arches d'agencee (24×40, #171717) agrandie à 129.6×216 */
+  background-image:url("data:image/svg+xml,%3Csvg width='24' height='40' viewBox='0 0 24 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 40c5.523 0 10-4.477 10-10V0C4.477 0 0 4.477 0 10v30zm22 0c-5.523 0-10-4.477-10-10V0c5.523 0 10 4.477 10 10v30z' fill='%23171717' fill-rule='evenodd'/%3E%3C/svg%3E");
+  background-size:129.6px 216px;background-position:center top;
+}
+.hero-bg-vignette{
+  position:absolute;left:0;right:0;top:0;height:min(100vh,1000px);
+  background:radial-gradient(43.2% 25% at 50% 18.8%,rgba(84,84,84,0) 0%,var(--bg) 100%);
+}
+.hero-bg-pattern::after{ /* raccord bas du motif */
+  content:"";position:absolute;left:0;right:0;bottom:0;height:40%;
+  background:linear-gradient(180deg,rgba(10,10,10,0),var(--bg));
+}
+.hero-bg-gradient{ /* dégradé orange du bas d'agencee, refermé sur le fond pour la section suivante */
+  position:absolute;left:0;right:0;bottom:0;height:62%;
+  background:linear-gradient(180deg,rgba(191,51,19,0) 0%,rgba(var(--orange-rgb),.42) 58%,rgba(var(--orange-rgb),.22) 80%,var(--bg) 100%);
+}
+.hero-glow{
+  position:absolute;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(var(--orange-rgb),.9),rgba(var(--orange-rgb),0));
+  filter:blur(60px);will-change:transform;
+}
+.hero-glow--a{width:520px;height:520px;left:-6%;top:6%;opacity:.16;animation:hero-drift-a 22s ease-in-out infinite alternate}
+.hero-glow--b{width:440px;height:440px;right:-4%;top:18%;opacity:.14;animation:hero-drift-b 26s ease-in-out infinite alternate}
+.hero-glow--c{width:760px;height:300px;left:50%;top:22%;margin-left:-380px;opacity:.09;animation:hero-drift-c 18s ease-in-out infinite alternate}
+@keyframes hero-drift-a{to{transform:translate(90px,60px) scale(1.15)}}
+@keyframes hero-drift-b{to{transform:translate(-80px,90px) scale(.9)}}
+@keyframes hero-drift-c{to{transform:translate(0,40px) scale(1.12)}}
+
+/* Contenu */
+.hero-content{
+  position:relative;z-index:2;
+  display:flex;flex-direction:column;align-items:center;gap:42px;text-align:center;
+  max-width:1440px;
+  /* apparition d'agencee : le bloc tombe de -100px en fondu (spring ≈ 1,4 s) */
+  animation:hero-drop 1.5s cubic-bezier(.16,1,.3,1) .15s both;
+}
+@keyframes hero-drop{from{opacity:0;transform:perspective(1200px) translateY(-100px)}to{opacity:1;transform:none}}
+.hero-texts{display:flex;flex-direction:column;align-items:center;gap:14px;width:100%}
+
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--font-body);font-weight:700;font-size:12px;line-height:22px;
+  text-transform:uppercase;letter-spacing:.01em;color:#fff;
+}
+.hero-badge-num{
+  display:inline-block;padding:0 5px;border-radius:5px;line-height:22px;
+  background:var(--orange);color:#0a0a0a;font-weight:800;letter-spacing:0;
+}
+
+.hero-title{
+  display:flex;flex-direction:column;align-items:center;gap:.14em;
+  margin:0;
+  font-family:var(--font-display);font-weight:400;
+  font-size:clamp(28px,2.95vw,46px);
+  line-height:.98;letter-spacing:-.045em;color:#fff;text-align:center;
+}
+.hero-title-wrap{position:relative;max-width:100%;margin-top:4px}
+.hero-line{display:block;max-width:100%}
+
+.hero-hl{
+  display:inline-block;margin:0 .04em;padding:.03em .1em .06em .08em;
+  background:var(--orange);color:#0a0a0a;
+  transform:rotate(3deg);
+  line-height:.92;
+}
+.hero-hl-txt{display:inline-block;transform:rotate(-3deg)}
+
+/* mini-carte « Ton CA » : flottante à droite du bloc titre (desktop), discrète,
+   courbe qui monte + flèche, aucun montant. Cachée sous 1200px. */
+.hero-ca{
+  position:absolute;left:calc(100% + 28px);top:50%;
+  display:none;align-items:center;gap:10px;width:max-content;
+  padding:7px 14px 7px 7px;
+  font-family:var(--font-body);line-height:1;text-align:left;white-space:nowrap;
+  border-radius:999px;border:1px solid rgba(255,255,255,.1);
+  background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.015));
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  box-shadow:0 12px 30px -16px rgba(var(--orange-rgb),.45);
+  animation:hero-float 6s ease-in-out infinite;
+}
+@keyframes hero-float{0%,100%{transform:translateY(-50%) rotate(-3deg)}50%{transform:translateY(calc(-50% - 6px)) rotate(-1.5deg)}}
+.hero-ca-arrow{
+  display:grid;place-items:center;flex:none;width:30px;height:30px;border-radius:50%;
+  background:rgba(var(--orange-rgb),.16);border:1px solid rgba(var(--orange-rgb),.45);
+}
+.hero-ca-arrow svg{width:15px;height:15px;fill:none;stroke:var(--orange);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;animation:hero-arrow 4s var(--ease) infinite}
+@keyframes hero-arrow{0%,100%{transform:translate(0,0)}35%{transform:translate(2px,-2px)}70%{transform:translate(0,0)}}
+.hero-ca-label{font-weight:600;font-size:12px;color:rgba(255,255,255,.7)}
+.hero-ca-spark{width:64px;height:26px;max-width:none;flex:none;overflow:visible;clip-path:inset(-6px 100% -6px -6px);animation:hero-reveal 4s cubic-bezier(.45,0,.2,1) infinite}
+@keyframes hero-reveal{0%{clip-path:inset(-6px 100% -6px -6px);opacity:1}62%,90%{clip-path:inset(-6px -6px -6px -6px);opacity:1}100%{clip-path:inset(-6px -6px -6px -6px);opacity:0}}
+.hero-ca-line{fill:none;stroke:var(--orange);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.hero-ca-area{fill:url(#hero-ca-fill)}
+.hero-ca-dot{fill:#fff;stroke:var(--orange);stroke-width:2;vector-effect:non-scaling-stroke;opacity:0;animation:hero-dot 4s ease infinite;transform-box:fill-box;transform-origin:center}
+@keyframes hero-dot{0%,58%{opacity:0;transform:scale(.4)}64%{opacity:1;transform:scale(1.25)}70%,88%{opacity:1;transform:scale(1)}100%{opacity:0}}
+@media (min-width:1200px){.hero-ca{display:inline-flex}}
+
+
+.hero-sub{
+  max-width:560px;margin-top:4px;
+  font-family:var(--font-body);font-weight:400;font-size:17px;line-height:1.5;letter-spacing:-.02em;
+  color:rgba(255,255,255,.72);text-wrap:balance;
+}
+
+/* Bouton + preuve sociale */
+.hero-actions{display:flex;flex-direction:column;align-items:center;gap:20px}
+.hero-proof{display:flex;align-items:center;gap:14px}
+.hero-avatars{display:flex;align-items:center}
+.hero-avatars img{
+  width:40px;height:40px;border-radius:50%;object-fit:cover;object-position:50% 25%;
+  border:2px solid #0d0d0d;margin-left:-10px;background:#222;
+  transition:transform .35s var(--ease);
+}
+.hero-avatars img:first-child{margin-left:0}
+.hero-avatars:hover img{transform:translateY(-3px)}
+.hero-proof-txt{display:flex;flex-direction:column;align-items:flex-start;gap:3px}
+.hero-stars{display:flex;align-items:center;gap:7px;height:18px}
+.hero-g{width:17px;height:17px;flex:none}
+.hero-star-row{display:flex;gap:1px}
+.hero-star-row svg{width:16px;height:16px;fill:#FBBC04}
+.hero-proof-label{font-family:var(--font-body);font-weight:700;font-size:11px;line-height:22px;text-transform:uppercase;letter-spacing:.01em;color:#fff;text-align:left}
+
+/* ---------------- BANDE D'APPELS VISIO : anneau 3D (Ring3D.tsx) ----------------
+   Géométrie d'origine : perspective sur le PARENT (= demi-largeur de colonne),
+   colonnes tournées de i×pas, 2 vignettes en bout de colonne contre-tournées de
+   ±90°, backface-visibility:hidden, 1 tour en 40 s. Ici 7 colonnes au pas de
+   360/14 ≈ 25,714° → 14 emplacements distincts pour les 14 captures 16:9 ;
+   scène agrandie (colonnes 1900, perspective 950) pour garder les fenêtres lisibles. */
+.hero-ring-caption{
+  position:relative;z-index:2;margin-top:clamp(30px,3.4vw,46px);
+  text-align:center;padding-inline:var(--gutter);
+  font-family:var(--font-body);font-weight:500;font-size:14px;line-height:1.4;color:rgba(255,255,255,.66);
+  animation:hero-rise 1.4s cubic-bezier(.16,1,.3,1) .3s both;
+}
+.hero-ring{
+  --ring-col:1900px;
+  --ring-persp:950px;
+  --ring-card:316px;
+  --ring-step:25.7143deg;
+  position:relative;z-index:1;
+  height:230px;margin-top:8px;
+  overflow-x:clip;overflow-y:visible;
+  animation:hero-rise 1.4s cubic-bezier(.16,1,.3,1) .35s both;
+  touch-action:pan-y;
+}
+@keyframes hero-rise{from{opacity:0;transform:translateY(170px)}to{opacity:1;transform:none}}
+.hero-ring-stage{
+  position:absolute;inset:0;
+  perspective:var(--ring-persp);perspective-origin:50% 50%;
+}
+.hero-ring-drag,.hero-ring-spin{position:absolute;inset:0;transform-style:preserve-3d}
+.hero-ring-drag{cursor:grab;transform:rotateY(var(--hero-drag,0deg))}
+.hero-ring.is-dragging .hero-ring-drag{cursor:grabbing}
+.hero-ring-spin{animation:hero-spin 40s linear infinite}
+.hero-ring.is-paused .hero-ring-spin{animation-play-state:paused}
+@keyframes hero-spin{from{transform:rotateY(0)}to{transform:rotateY(360deg)}}
+.hero-ring-col{
+  position:absolute;left:50%;top:50%;
+  width:var(--ring-col);height:0;
+  display:flex;align-items:center;justify-content:space-between;
+  transform:translateX(-50%) rotateY(calc(var(--i) * var(--ring-step)));
+  transform-style:preserve-3d;
+}
+.hero-call{
+  position:relative;flex:none;
+  width:var(--ring-card);aspect-ratio:16/9;
+  border-radius:14px;overflow:hidden;
+  background:#111;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  transform-style:flat;
+  user-select:none;-webkit-user-select:none;
+}
+.hero-call:first-child{transform:rotateY(90deg)}
+.hero-call:last-child{transform:rotateY(-90deg)}
+.hero-call img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;
+  filter:saturate(.95) brightness(1.22); /* même rehaussement que le site actuel (visio.css) */
+}
+.hero-call::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);
+}
+
+/* ---------------- RESPONSIVE ---------------- */
+@media (min-width:1024px){
+  .hero-line{white-space:nowrap}
+}
+@media (max-height:820px) and (min-width:900px){
+  .hero{padding-top:120px}
+  .hero-content{gap:32px}
+}
+@media (max-width:1100px){
+  .hero-link{padding:0 15px}
+}
+@media (max-width:899px){
+  .hero-nav{padding:10px 16px}
+  .hero-links,.hero-nav-cta{display:none}
+  .hero-burger{
+    position:relative;display:grid;place-items:center;width:44px;height:44px;border-radius:12px;
+    background:#1a1a1a;border:1px solid rgba(255,255,255,.1);
+  }
+  .hero-burger span{position:absolute;left:12px;right:12px;height:2px;border-radius:2px;background:#fff;transition:transform .35s var(--ease)}
+  .hero-burger span:first-child{transform:translateY(-4px)}
+  .hero-burger span:last-child{transform:translateY(4px)}
+  .hero-nav.is-open .hero-burger span:first-child{transform:rotate(45deg)}
+  .hero-nav.is-open .hero-burger span:last-child{transform:rotate(-45deg)}
+  .hero-menu{
+    position:absolute;left:16px;right:16px;top:calc(100% + 4px);
+    display:flex;flex-direction:column;gap:4px;padding:12px;
+    background:#101010;border:1px solid rgba(255,255,255,.12);border-radius:20px;
+    box-shadow:0 30px 60px -20px rgba(0,0,0,.8);
+    opacity:0;transform:translateY(-8px);pointer-events:none;
+    transition:opacity .3s var(--ease),transform .3s var(--ease);
+  }
+  .hero-menu[hidden]{display:flex;visibility:hidden}
+  .hero-nav.is-open .hero-menu{opacity:1;transform:none;pointer-events:auto;visibility:visible}
+  .hero-menu > a:not(.btn){
+    display:flex;align-items:center;height:50px;padding:0 14px;border-radius:12px;
+    font-family:var(--font-display);font-size:14px;text-transform:uppercase;letter-spacing:-.1px;
+  }
+  .hero-menu > a:not(.btn):hover{background:rgba(255,255,255,.06);color:var(--orange)}
+  .hero-menu .btn{margin-top:8px;width:100%}
+  .hero-menu .btn .btn-label{flex:1;justify-content:center}
+
+  .hero{padding-top:104px}
+  .hero-content{gap:28px}
+  .hero-sub{font-size:17px}
+}
+@media (max-width:640px){
+  .hero-badge{font-size:11px;gap:7px}
+  .hero-title{font-size:clamp(25px,7.2vw,34px);gap:.2em;line-height:1.05}
+  .hero-sub{font-size:16px}
+  .hero-cta{width:100%}
+  .hero-actions{width:100%;max-width:360px}
+  .hero-cta .btn-label{flex:1;justify-content:center}
+  .hero-proof{flex-direction:column;gap:10px}
+  .hero-proof-txt{align-items:center}
+  .hero-proof-label{text-align:center}
+  .hero-ring{height:170px;--ring-col:1360px;--ring-persp:680px;--ring-card:226px}
+  .hero-call{border-radius:10px}
+  .hero-ring-caption{font-size:13px;margin-top:30px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .hero-content,.hero-ring,.hero-ring-caption{animation:none}
+  .hero-ring-spin{animation:none}
+  .hero-glow{animation:none}
+  .hero-ca,.hero-ca-arrow svg{animation:none}
+  .hero-ca{transform:translateY(-50%)}
+  .hero-ca-spark{animation:none;clip-path:none}
+  .hero-ca-dot{opacity:1;animation:none}
+}
+
+/* --- Retouches du 16/10 : titre, soulignement, anneau plus grand --- */
+.hero-hl{transform:rotate(1.5deg);padding:.13em .17em .09em .15em;margin:0 .08em}
+.hero-hl-txt{transform:rotate(-1.5deg)}
+.hero-hl-num{font-size:1.2em;letter-spacing:-.02em;line-height:.8}
+.hero-ul{position:relative;display:inline-block;white-space:nowrap}
+.hero-ul::after{
+  content:"";position:absolute;left:0;right:0;bottom:-.1em;height:.11em;border-radius:99px;
+  background:var(--orange);box-shadow:0 0 14px rgba(255,153,28,.6);
+  transform-origin:left;animation:hero-ul 1.1s cubic-bezier(.16,1,.3,1) 1.2s both;
+}
+@keyframes hero-ul{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.hero-ring{--ring-card:384px;height:252px;margin-top:clamp(34px,3.6vw,52px)}
+.hero-call{aspect-ratio:2/1}
+@media (max-width:767px){
+  .hero-ring{--ring-card:262px;height:186px;margin-top:34px}
+}
+@media (prefers-reduced-motion:reduce){.hero-ul::after{animation:none}}
+/* Visios espacées et plus grandes. Le centre d'une carte est à r = col/2 − carte/2
+   de l'axe ; l'écart entre deux pas vaut 2r·sin(π/14) ≈ 0,445r.
+   Desktop : carte 430, r = 1034 → pas 460 → ~30 px d'écart. Perspective ≈ r/0,83 comme avant. */
+.hero-ring{--ring-col:3000px;--ring-persp:1495px;--ring-card:516px;height:340px}
+@media (max-width:767px){
+  .hero-ring{--ring-col:1956px;--ring-persp:975px;--ring-card:336px;height:240px}
+}

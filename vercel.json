@@ -1,25 +1,6 @@
 {
   "cleanUrls": true,
   "redirects": [
-    {
-      "source": "/avis.html",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/avis",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/blog.html",
-      "destination": "/",
-      "permanent": false
-    },
-    {
-      "source": "/blog",
-      "destination": "/",
-      "permanent": false
-    }
+    { "source": "/", "has": [{ "type": "host", "value": "v2.potentieel.fr" }], "destination": "/v2", "permanent": false }
   ]
 }

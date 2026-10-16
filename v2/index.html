@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Potentieel — Deviens l'artisan n°1 sur Google</title>
+<meta name="description" content="Google Ads, LSA et fiche Google pour les entreprises du bâtiment. Montés par un ancien artisan, en ligne en 7 jours.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/v2/css/tokens.css">
+<link rel="stylesheet" href="/v2/css/base.css">
+<link rel="stylesheet" href="/v2/css/hero.css">
+<link rel="stylesheet" href="/v2/css/services.css">
+<link rel="stylesheet" href="/v2/css/results.css">
+<link rel="stylesheet" href="/v2/css/pricing.css">
+<link rel="stylesheet" href="/v2/css/reviews.css">
+<link rel="stylesheet" href="/v2/css/footer.css">
+</head>
+<body>
+<!-- ===================== HERO (agent hero) =====================
+     Header + navbar : reproduction du header d'agencee.framer.website
+     Bande d'appels visio : transposition de l'anneau 3D (Ring3D.tsx) du hero 2RP Rénov -->
+<header class="hero-nav" id="hero-nav">
+  <div class="hero-nav-inner">
+    <a class="hero-logo" href="/v2/" aria-label="Potentieel, accueil">
+      <span class="hero-logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32"><path d="M9 23.5V8.5h8.2c3.6 0 5.8 2 5.8 5.1 0 3.2-2.3 5.2-5.8 5.2H13" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="23.5" r="2.2" fill="currentColor"/></svg>
+      </span>
+      <span class="hero-logo-word">Potentieel</span>
+    </a>
+
+    <nav class="hero-links" aria-label="Navigation principale">
+      <a class="hero-link" href="#services" data-spy="services">Services</a>
+      <a class="hero-link" href="#results" data-spy="results">Résultats</a>
+      <a class="hero-link" href="#pricing" data-spy="pricing">Tarifs</a>
+      <a class="hero-link" href="#reviews" data-spy="reviews">Avis</a>
+    </nav>
+
+    <a class="btn btn-primary btn-sm hero-nav-cta" href="/contact">
+      <span class="btn-label">Réserver mon appel</span>
+      <span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M88 40l112 88-112 88z"/></svg></span>
+    </a>
+
+    <button class="hero-burger" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="hero-menu">
+      <span></span><span></span>
+    </button>
+  </div>
+
+  <div class="hero-menu" id="hero-menu" hidden>
+    <a href="#services">Services</a>
+    <a href="#results">Résultats</a>
+    <a href="#pricing">Tarifs</a>
+    <a href="#reviews">Avis</a>
+    <a class="btn btn-primary btn-lg" href="/contact">
+      <span class="btn-label">Réserver mon appel</span>
+      <span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M88 40l112 88-112 88z"/></svg></span>
+    </a>
+  </div>
+</header>
+
+<section id="hero" class="hero">
+  <!-- Fond : motif d'arches (tuile SVG d'agencee) + vignette radiale + lueurs + dégradé orange du bas -->
+  <div class="hero-bg" aria-hidden="true">
+    <div class="hero-bg-pattern"></div>
+    <div class="hero-bg-vignette"></div>
+    <div class="hero-glow hero-glow--a"></div>
+    <div class="hero-glow hero-glow--b"></div>
+    <div class="hero-glow hero-glow--c"></div>
+    <div class="hero-bg-gradient"></div>
+  </div>
+
+  <div class="hero-content container">
+    <div class="hero-texts">
+
+      <div class="hero-title-wrap">
+        <h1 class="hero-title">
+          <span class="hero-line">Deviens <span class="hero-hl"><span class="hero-hl-txt">l'artisan <span class="hero-hl-num">n°1</span></span></span> sur Google.</span>
+          <span class="hero-line">Plus d'appels =&nbsp;plus&nbsp;de&nbsp;chantiers.</span>
+          <span class="hero-line">Ads, LSA et fiche Google <span class="hero-ul">en 7&nbsp;jours</span>.</span>
+        </h1>
+      </div>
+
+      <p class="hero-sub">L'agence n°1 des artisans du bâtiment, fondée par un ancien artisan. Fiche Google et inscription LSA offertes.</p>
+    </div>
+
+    <div class="hero-actions">
+      <a class="btn btn-primary btn-lg btn-glow hero-cta" href="/contact">
+        <span class="btn-label">Réserver mon appel</span>
+        <span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M88 40l112 88-112 88z"/></svg></span>
+      </a>
+
+      <div class="hero-proof">
+        <div class="hero-avatars">
+          <img src="/v2/assets/hero/avatars/temoin2.jpg" alt="" width="40" height="40" loading="eager">
+          <img src="/v2/assets/hero/avatars/temoin4.jpg" alt="" width="40" height="40" loading="eager">
+          <img src="/v2/assets/hero/avatars/temoin5.jpg" alt="" width="40" height="40" loading="eager">
+          <img src="/v2/assets/hero/avatars/temoin6.jpg" alt="" width="40" height="40" loading="eager">
+          <img src="/v2/assets/hero/avatars/temoin7.jpg" alt="" width="40" height="40" loading="eager">
+        </div>
+        <div class="hero-proof-txt">
+          <div class="hero-stars" role="img" aria-label="5 étoiles sur Google">
+            <svg class="hero-g" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+            <span class="hero-star-row" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></span>
+          </div>
+          <p class="hero-proof-label"><span class="todo" data-todo="Note Google réelle de Potentieel et nombre réel d'avis">[à remplir : note Google · nb d'avis]</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ BANDE D'APPELS VISIO (anneau 3D, transposé de Ring3D.tsx de 2RP) ============
+       14 vraies captures Google Meet (/assets/visio/01..14.webp), 7 colonnes × 2 vignettes,
+       14 emplacements distincts répartis tous les 360/14 ≈ 25,7°. Aucune capture en double. -->
+  <div class="hero-ring" aria-label="Captures d'appels visio avec des artisans accompagnés" role="img">
+    <div class="hero-ring-stage">
+      <div class="hero-ring-drag">
+        <div class="hero-ring-spin">
+          <div class="hero-ring-col" style="--i:0">
+            <div class="hero-call"><img src="/v2/assets/hero/visio/01.webp" alt="" width="640" height="320" loading="eager" draggable="false"></div>
+            <div class="hero-call"><img src="/v2/assets/hero/visio/08.webp" alt="" width="640" height="320" loading="lazy" draggable="false"></div>
+          </div>
+          <div class="hero-ring-col" style="--i:1">
+            <div class="hero-call"><img src="/v2/assets/hero/visio/02.webp" alt="" width="640" height="320" loading="eager" draggable="false"></div>
+            <div class="hero-call"><img src="/v2/assets/hero/visio/09.webp" alt="" width="640" height="320" loading="lazy" draggable="false"></div>
+          </div>
+          <div class="hero-ring-col" style="--i:2">
+            <div class="hero-call"><img src="/v2/assets/hero/visio/03.webp" alt="" width="640" height="320" loading="eager" draggable="false"></div>
+            <div class="hero-call"><img src="/v2/assets/hero/visio/10.webp" alt="" width="640" height="320" loading="lazy" draggable="false"></div>
+          </div>
+          <div class="hero-ring-col" style="--i:3">
+            <div class="hero-call"><img src="/v2/assets/hero/visio/04.webp" alt="" width="640" height="320" loading="eager" draggable="false"></div>
+            <div class="hero-call"><img src="/v2/assets/hero/visio/11.webp" alt="" width="640" height="320" loading="lazy" draggable="false"></div>
+          </div>
+          <div class="hero-ring-col" style="--i:4">
+            <div class="hero-call"><img src="/v2/assets/hero/visio/05.webp" alt="" width="640" height="320" loading="eager" draggable="false"></div>
+            <div class="hero-call"><img src="/v2/assets/hero/visio/12.webp" alt="" width="640" height="320" loading="lazy" draggable="false"></div>
+          </div>
+          <div class="hero-ring-col" style="--i:5">
+            <div class="hero-call"><img src="/v2/assets/hero/visio/06.webp" alt="" width="640" height="320" loading="eager" draggable="false"></div>
+            <div class="hero-call"><img src="/v2/assets/hero/visio/13.webp" alt="" width="640" height="320" loading="lazy" draggable="false"></div>
+          </div>
+          <div class="hero-ring-col" style="--i:6">
+            <div class="hero-call"><img src="/v2/assets/hero/visio/07.webp" alt="" width="640" height="320" loading="eager" draggable="false"></div>
+            <div class="hero-call"><img src="/v2/assets/hero/visio/14.webp" alt="" width="640" height="320" loading="lazy" draggable="false"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<main>
+<!-- ===== SERVICES — gabarit « Services » de bloomix (pile de cartes sticky) ===== -->
+<section id="services" class="svc" aria-labelledby="svc-title">
+  <div class="svc-glow svc-glow--a" aria-hidden="true"></div>
+  <div class="svc-glow svc-glow--b" aria-hidden="true"></div>
+
+  <div class="svc-container">
+    <header class="svc-head">
+      <span class="svc-pill" data-svc-reveal>Services</span>
+      <div class="svc-head-txt">
+        <h2 id="svc-title" class="svc-title" data-svc-reveal>Sur Google,<br> il y a 3&nbsp;emplacements.<br> On te met sur <span class="svc-hl">les trois</span>.</h2>
+        <p class="svc-sub" data-svc-reveal>Sur une même recherche, ton client peut te voir trois fois&nbsp;: tout en haut avec le LSA, dans les annonces, puis sur la carte. Visible trois fois, c'est toi qu'il appelle.</p>
+      </div>
+    </header>
+
+    <div class="svc-stack" data-svc-reveal>
+
+      <!-- 01 — LSA -->
+      <div class="svc-item svc-item--1">
+        <article class="svc-card" data-zone="lsa">
+          <div class="svc-num" aria-hidden="true">01</div>
+          <div class="svc-body">
+            <div class="svc-top">
+              <div class="svc-titles">
+                <span class="svc-slot">Emplacement n°1 · tout en haut</span>
+                <h3 class="svc-card-title">Annonces LSA <span class="svc-badge">Offert avec Google Ads</span></h3>
+              </div>
+              <div class="svc-block">
+                <span class="svc-lbl">Description</span>
+                <p class="svc-desc">Les annonces « Validé par Google », la première chose que ton client voit. Seulement si ton activité est éligible. On s'occupe de tout le dossier&nbsp;: vérifications Google, assurances, zone et signalement des mauvais contacts.</p>
+              </div>
+            </div>
+            <ul class="svc-tags">
+              <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Vérifications Google</li>
+              <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Assurances</li>
+              <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Zone d'intervention</li>
+              <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Signalement des mauvais contacts</li>
+            </ul>
+            <div class="svc-price">
+              <span class="svc-lbl">Prix</span>
+              <p class="svc-price-main">LSA seul&nbsp;: <strong>200&nbsp;€</strong> + <strong>30&nbsp;%</strong> du budget, seulement sur ce qui est dépensé.</p>
+              <p class="svc-price-note">On n'est pas payés tant que tu ne gagnes rien. Avec Google Ads, l'inscription est offerte.</p>
+            </div>
+            <a href="/contact" class="btn btn-primary btn-sm svc-cta"><span class="btn-label">Réserver mon appel</span><span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M88 40l112 88-112 88z"/></svg></span></a>
+          </div>
+          <div class="svc-media" aria-hidden="true">
+            <div class="svc-serp" data-active="lsa">
+              <div class="svc-serp-bar"><span class="svc-g">G</span><span class="svc-q">artisan à ta ville</span></div>
+              <div class="svc-zone svc-zone--lsa" data-z="lsa">
+                <span class="svc-zl">1 · Validé par Google</span><span class="svc-you">Toi</span>
+                <div class="svc-lsa-row"><i class="svc-pro"></i><i class="svc-pro"></i><i class="svc-pro"></i></div>
+              </div>
+              <div class="svc-zone svc-zone--ads" data-z="ads">
+                <span class="svc-zl">2 · Sponsorisé</span><span class="svc-you">Toi</span>
+                <div class="svc-ad"><b></b><i></i><i class="svc-s"></i></div>
+                <div class="svc-ad"><b></b><i></i><i class="svc-s"></i></div>
+              </div>
+              <div class="svc-zone svc-zone--map" data-z="map">
+                <span class="svc-zl">3 · Fiches Google</span><span class="svc-you">Toi</span>
+                <div class="svc-map"><i class="svc-pin"></i><i class="svc-pin"></i><i class="svc-pin"></i></div>
+                <div class="svc-list"><b></b><b></b></div>
+              </div>
+              <div class="svc-rev">
+                <div class="svc-rev-top"><span class="svc-rev-stars"><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.5L12 17.3 6.1 20.5l1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.5L12 17.3 6.1 20.5l1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.5L12 17.3 6.1 20.5l1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.5L12 17.3 6.1 20.5l1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.5L12 17.3 6.1 20.5l1.3-6.5L2.5 9.4l6.6-.8z"/></svg></span><span class="svc-rev-ex">Exemple</span></div>
+                <p class="svc-rev-q">« Le LSA me rapporte une trentaine d'appels par mois, et je ne paie que ce qui est dépensé. »</p>
+                <span class="svc-rev-who">Couvreur · avis d'exemple</span>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- 02 — Google Ads -->
+      <div class="svc-item svc-item--2">
+        <article class="svc-card" data-zone="ads">
+          <div class="svc-num" aria-hidden="true">02</div>
+          <div class="svc-body">
+            <div class="svc-top">
+              <div class="svc-titles">
+                <span class="svc-slot">Emplacement n°2 · les annonces</span>
+                <h3 class="svc-card-title">Google Ads <span class="svc-badge">Le plus choisi</span></h3>
+              </div>
+              <div class="svc-block">
+                <span class="svc-lbl">Description</span>
+                <p class="svc-desc">Le choix des entreprises qui veulent grossir&nbsp;: le gros investissement qui rapporte gros. Sur le LSA, Google décide s'il dépense ton budget. Ici, on pilote tout&nbsp;: mots-clés, annonces, pages de conversion, suivi des appels.</p>
+              </div>
+              <div class="svc-stat">
+                <span class="svc-stat-pre">En ligne en</span>
+                <span class="svc-stat-num"><span data-svc-count="7">7</span>&nbsp;jours</span>
+              </div>
+            </div>
+            <ul class="svc-tags">
+              <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Monté par un ancien artisan</li>
+              <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Pages de conversion dédiées</li>
+              <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Mots-clés de ton métier dans ta ville</li>
+              <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Suivi des appels</li>
+            </ul>
+            <div class="svc-price">
+              <span class="svc-lbl">Prix</span>
+              <p class="svc-price-main"><strong>700&nbsp;€</strong> de mise en place, puis <strong>0&nbsp;€</strong> d'honoraires les 2 premiers mois.</p>
+              <p class="svc-price-note">Dès le mois 3&nbsp;: 130&nbsp;€/mois + 20&nbsp;% du budget pub. LSA et fiche Google offerts.</p>
+            </div>
+            <a href="/contact" class="btn btn-primary btn-sm svc-cta"><span class="btn-label">Réserver mon appel</span><span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M88 40l112 88-112 88z"/></svg></span></a>
+          </div>
+          <!-- visuel : page Google, zone « Annonces » allumée -->
+          <div class="svc-media" aria-hidden="true">
+            <div class="svc-serp" data-active="ads">
+              <div class="svc-serp-bar"><span class="svc-g">G</span><span class="svc-q">artisan à ta ville</span></div>
+              <div class="svc-zone svc-zone--lsa" data-z="lsa">
+                <span class="svc-zl">1 · Validé par Google</span><span class="svc-you">Toi</span>
+                <div class="svc-lsa-row"><i class="svc-pro"></i><i class="svc-pro"></i><i class="svc-pro"></i></div>
+              </div>
+              <div class="svc-zone svc-zone--ads" data-z="ads">
+                <span class="svc-zl">2 · Sponsorisé</span><span class="svc-you">Toi</span>
+                <div class="svc-ad"><b></b><i></i><i class="svc-s"></i></div>
+                <div class="svc-ad"><b></b><i></i><i class="svc-s"></i></div>
+              </div>
+              <div class="svc-zone svc-zone--map" data-z="map">
+                <span class="svc-zl">3 · Fiches Google</span><span class="svc-you">Toi</span>
+                <div class="svc-map"><i class="svc-pin"></i><i class="svc-pin"></i><i class="svc-pin"></i></div>
+                <div class="svc-list"><b></b><b></b></div>
+              </div>
+              <div class="svc-rev">
+                <div class="svc-rev-top"><span class="svc-rev-stars"><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.5L12 17.3 6.1 20.5l1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.5L12 17.3 6.1 20.5l1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.5L12 17.3 6.1 20.5l1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.5L12 17.3 6.1 20.5l1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.5L12 17.3 6.1 20.5l1.3-6.5L2.5 9.4l6.6-.8z"/></svg></span><span class="svc-rev-ex">Exemple</span></div>
+                <p class="svc-rev-q">« Google Ads me ramène 50 appels par mois pour 2&nbsp;000&nbsp;€ dépensés. »</p>
+                <span class="svc-rev-who">Maçon · avis d'exemple</span>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- 03 — Fiche Google -->
+      <div class="svc-item svc-item--3">
+        <article class="svc-card" data-zone="map">
+          <div class="svc-num" aria-hidden="true">03</div>
+          <div class="svc-body">
+            <div class="svc-top">
+              <div class="svc-titles">
+                <span class="svc-slot">Emplacement n°3 · la carte</span>
+                <h3 class="svc-card-title">Fiche Google <span class="svc-badge">Tout offert</span></h3>
+              </div>
+              <div class="svc-block">
+                <span class="svc-lbl">Description</span>
+                <p class="svc-desc">Ta fiche sur la carte, tenue à jour pour toi&nbsp;: on répond à tes avis, on publie les photos de chantier que tu nous envoies, on garde tes horaires et tes infos à jour.</p>
+              </div>
+              <div class="svc-stat">
+                <span class="svc-stat-num"><span data-svc-count="0">0</span>&nbsp;€</span>
+                <span class="svc-stat-lbl">la gestion est entièrement offerte</span>
+              </div>
+            </div>
+            <ul class="svc-tags">
+              <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Réponses à tes avis</li>
+              <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Photos de chantier publiées</li>
+              <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Horaires à jour</li>
+              <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Infos à jour</li>
+              <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Présent sur la carte</li>
+            </ul>
+            <div class="svc-price">
+              <span class="svc-lbl">Prix</span>
+              <p class="svc-price-main"><strong>Offert</strong> avec Google Ads.</p>
+            </div>
+            <a href="/contact" class="btn btn-primary btn-sm svc-cta"><span class="btn-label">Réserver mon appel</span><span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M88 40l112 88-112 88z"/></svg></span></a>
+          </div>
+          <div class="svc-media" aria-hidden="true">
+            <div class="svc-serp" data-active="map">
+              <div class="svc-serp-bar"><span class="svc-g">G</span><span class="svc-q">artisan à ta ville</span></div>
+              <div class="svc-zone svc-zone--lsa" data-z="lsa">
+                <span class="svc-zl">1 · Validé par Google</span><span class="svc-you">Toi</span>
+                <div class="svc-lsa-row"><i class="svc-pro"></i><i class="svc-pro"></i><i class="svc-pro"></i></div>
+              </div>
+              <div class="svc-zone svc-zone--ads" data-z="ads">
+                <span class="svc-zl">2 · Sponsorisé</span><span class="svc-you">Toi</span>
+                <div class="svc-ad"><b></b><i></i><i class="svc-s"></i></div>
+                <div class="svc-ad"><b></b><i></i><i class="svc-s"></i></div>
+              </div>
+              <div class="svc-zone svc-zone--map" data-z="map">
+                <span class="svc-zl">3 · Fiches Google</span><span class="svc-you">Toi</span>
+                <div class="svc-map"><i class="svc-pin"></i><i class="svc-pin"></i><i class="svc-pin"></i></div>
+                <div class="svc-list"><b></b><b></b></div>
+              </div>
+              <div class="svc-rev">
+                <div class="svc-rev-top"><span class="svc-rev-stars"><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.5L12 17.3 6.1 20.5l1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.5L12 17.3 6.1 20.5l1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.5L12 17.3 6.1 20.5l1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.5L12 17.3 6.1 20.5l1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.5L12 17.3 6.1 20.5l1.3-6.5L2.5 9.4l6.6-.8z"/></svg></span><span class="svc-rev-ex">Exemple</span></div>
+                <p class="svc-rev-q">« Je n'y croyais pas, mais rien qu'avec leur gestion de ma fiche, je reçois beaucoup plus d'appels. »</p>
+                <span class="svc-rev-who">Peintre · avis d'exemple</span>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="results" class="res" aria-labelledby="res-title">
+  <div class="res-glow res-glow--a" aria-hidden="true"></div>
+  <div class="res-glow res-glow--b" aria-hidden="true"></div>
+
+  <div class="res-container">
+    <header class="res-head">
+      <span class="res-badge" data-res-reveal>Résultats</span>
+      <div class="res-text">
+        <h2 id="res-title" class="res-title" data-res-reveal><span class="res-accent">Des résultats</span> qui parlent pour nous</h2>
+        <p class="res-sub" data-res-reveal>Une campagne en ligne vite, des appels qui tombent chaque mois, et aucun frais caché pour démarrer.</p>
+      </div>
+    </header>
+
+    <div class="res-wrapper">
+      <div class="res-list">
+
+        <article class="res-row" data-res-reveal>
+          <div class="res-left">
+            <h3 class="res-label">Pour lancer ta campagne</h3>
+            <p class="res-desc">Annonces Google, LSA et fiche Google montés et en ligne en une semaine. Pas trois mois d'attente.</p>
+          </div>
+          <div class="res-number">
+            <span class="res-num" data-res-count="7"><span class="res-num-ghost" aria-hidden="true">7</span><span class="res-num-val">7</span></span>
+            <span class="res-unit">jours</span>
+          </div>
+        </article>
+
+        <div class="res-divider" aria-hidden="true"></div>
+
+        <article class="res-row" data-res-reveal>
+          <div class="res-left">
+            <h3 class="res-label">Appels par mois, en moyenne</h3>
+            <p class="res-desc">C'est ce que nos clients reçoivent en moyenne chaque mois via Google. Des demandes de chantier, directement sur ton téléphone.</p>
+          </div>
+          <div class="res-number">
+            <span class="res-num" data-res-count="25"><span class="res-num-ghost" aria-hidden="true">25</span><span class="res-num-val">25</span></span>
+            <span class="res-unit">appels</span>
+          </div>
+        </article>
+
+        <div class="res-divider" aria-hidden="true"></div>
+
+        <article class="res-row" data-res-reveal>
+          <div class="res-left">
+            <h3 class="res-label">Fiche Google et LSA offerts</h3>
+            <p class="res-desc">La gestion de ta fiche Google est offerte, et l'inscription LSA aussi (normalement 200&nbsp;€) quand tu prends Google Ads.</p>
+          </div>
+          <div class="res-number">
+            <span class="res-num" data-res-from="200" data-res-count="0"><span class="res-num-ghost" aria-hidden="true">0</span><span class="res-num-val">0</span></span>
+            <span class="res-unit">€</span>
+          </div>
+        </article>
+
+      </div>
+
+      <div class="res-cta" data-res-reveal>
+        <a class="btn btn-dark btn-lg res-btn" href="/contact">
+          <span class="btn-label">Réserver ma place</span>
+          <span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M96 48l96 80-96 80z"/></svg></span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing" class="prc" aria-labelledby="prc-title">
+  <div class="prc-glow prc-glow-a" aria-hidden="true"></div>
+  <div class="prc-glow prc-glow-b" aria-hidden="true"></div>
+  <div class="prc-container">
+
+    <!-- En-tête (réf. Impacta : pastille + h2 avec mot accentué + sous-titre) -->
+    <div class="prc-head">
+      <span class="prc-pill prc-rv">Tarifs</span>
+      <h2 id="prc-title" class="prc-title prc-rv">Des prix clairs, <span class="prc-accent">sans surprise</span></h2>
+      <p class="prc-sub prc-rv">Tu sais ce que tu paies, pour quoi, et à qui. Ton budget pub, lui, part directement chez Google.</p>
+    </div>
+
+    <div class="prc-body">
+      <div class="prc-cards">
+
+        <!-- Carte 1 : LSA seul -->
+        <article class="prc-card prc-rv">
+          <div class="prc-top">
+            <div class="prc-tags">
+              <span class="prc-tag">LSA seul</span>
+              <a class="prc-tag prc-tag-ok" href="#prc-pack">Offert avec le pack</a>
+            </div>
+            <h3 class="prc-tagline"><span>On ne gagne que si</span><span class="prc-accent">ton téléphone sonne</span></h3>
+            <div class="prc-price">
+              <span class="prc-amount">200 €</span>
+              <span class="prc-per">inscription</span>
+            </div>
+            <p class="prc-note">Puis <strong>30 %</strong> de ce qui est dépensé. Aucun abonnement fixe.</p>
+            <p class="prc-mention">Seul : 200 €. Avec le <a href="#prc-pack">pack Google Ads</a> : offert.</p>
+            <a class="btn btn-ghost prc-btn" href="/contact"><span class="btn-label"><span class="prc-roll"><span>Réserver mon appel</span><span aria-hidden="true">Réserver mon appel</span></span></span><span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M96 48l96 80-96 80z"/></svg></span></a>
+          </div>
+          <ul class="prc-points">
+            <li><svg class="prc-check" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.6"/><path d="M5.3 8.2l1.8 1.8 3.6-3.8"/></svg>Inscription et vérification de ton entreprise</li>
+            <li><svg class="prc-check" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.6"/><path d="M5.3 8.2l1.8 1.8 3.6-3.8"/></svg>Présent tout en haut de la page Google</li>
+            <li><svg class="prc-check" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.6"/><path d="M5.3 8.2l1.8 1.8 3.6-3.8"/></svg>Tu paies les appels reçus, pas les clics</li>
+            <li><svg class="prc-check" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.6"/><path d="M5.3 8.2l1.8 1.8 3.6-3.8"/></svg>30 % seulement de ce qui est dépensé</li>
+            <li><svg class="prc-check" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.6"/><path d="M5.3 8.2l1.8 1.8 3.6-3.8"/></svg>Aucun abonnement fixe</li>
+            <li><svg class="prc-check" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.6"/><path d="M5.3 8.2l1.8 1.8 3.6-3.8"/></svg>On ne gagne que si ton téléphone sonne</li>
+          </ul>
+        </article>
+
+        <!-- Carte 2 : Pack complet Google Ads (mise en avant) -->
+        <article class="prc-card prc-card-hl prc-rv" id="prc-pack">
+          <div class="prc-top">
+            <div class="prc-tags">
+              <span class="prc-tag">Pack complet Google Ads</span>
+              <span class="prc-tag prc-tag-ok">Mois 1 et 2 : 0 €</span>
+            </div>
+            <h3 class="prc-tagline"><span>Tes 3 places sur Google</span><span class="prc-accent">en une seule offre</span></h3>
+            <div class="prc-price">
+              <span class="prc-amount">700 €</span>
+              <span class="prc-per">mise en place unique</span>
+            </div>
+            <ol class="prc-steps">
+              <li><span class="prc-step-k">Mois 1 et 2</span><span class="prc-step-v"><strong>0 €</strong> d'honoraires</span></li>
+              <li><span class="prc-step-k">Dès le mois 3</span><span class="prc-step-v"><strong>130 €/mois</strong> + 20 % du budget pub</span></li>
+            </ol>
+            <a class="btn btn-primary btn-glow prc-btn" href="/contact"><span class="btn-label"><span class="prc-roll"><span>Réserver ma place</span><span aria-hidden="true">Réserver ma place</span></span></span><span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M96 48l96 80-96 80z"/></svg></span></a>
+          </div>
+          <ul class="prc-points">
+            <li><svg class="prc-check" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.6"/><path d="M5.3 8.2l1.8 1.8 3.6-3.8"/></svg>Campagne montée par un ancien artisan</li>
+            <li><svg class="prc-check" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.6"/><path d="M5.3 8.2l1.8 1.8 3.6-3.8"/></svg>En ligne en 7 jours</li>
+            <li><svg class="prc-check" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.6"/><path d="M5.3 8.2l1.8 1.8 3.6-3.8"/></svg>Pages d'arrivée dédiées à tes prestations</li>
+            <li><svg class="prc-check" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.6"/><path d="M5.3 8.2l1.8 1.8 3.6-3.8"/></svg>Numéro de suivi des appels</li>
+            <li><svg class="prc-check" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.6"/><path d="M5.3 8.2l1.8 1.8 3.6-3.8"/></svg>Espace client</li>
+            <li><svg class="prc-check" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.6"/><path d="M5.3 8.2l1.8 1.8 3.6-3.8"/></svg>Ajustements continus</li>
+            <li class="prc-bonus"><svg class="prc-check" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.6"/><path d="M5.3 8.2l1.8 1.8 3.6-3.8"/></svg>LSA offert <s class="prc-strike">200 €</s> <em class="prc-gift">offert</em></li>
+            <li class="prc-bonus"><svg class="prc-check" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.6"/><path d="M5.3 8.2l1.8 1.8 3.6-3.8"/></svg>Gestion de la fiche Google <em class="prc-gift">offerte</em></li>
+          </ul>
+        </article>
+
+        <!-- Carte 3 : Sur mesure -->
+        <article class="prc-card prc-rv">
+          <div class="prc-top">
+            <div class="prc-tags">
+              <span class="prc-tag">Sur mesure</span>
+            </div>
+            <h3 class="prc-tagline"><span>Plusieurs agences</span><span class="prc-accent">ou plusieurs zones</span></h3>
+            <div class="prc-price">
+              <span class="prc-amount">Sur devis</span>
+            </div>
+            <p class="prc-note">Selon le nombre d'agences et de zones à couvrir.</p>
+            <a class="btn btn-ghost prc-btn" href="/contact"><span class="btn-label"><span class="prc-roll"><span>Réserver mon appel</span><span aria-hidden="true">Réserver mon appel</span></span></span><span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M96 48l96 80-96 80z"/></svg></span></a>
+          </div>
+          <ul class="prc-points">
+            <li><svg class="prc-check" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.6"/><path d="M5.3 8.2l1.8 1.8 3.6-3.8"/></svg>Une campagne par agence ou par zone</li>
+            <li><svg class="prc-check" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.6"/><path d="M5.3 8.2l1.8 1.8 3.6-3.8"/></svg>Budget réparti selon tes chantiers</li>
+            <li><svg class="prc-check" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.6"/><path d="M5.3 8.2l1.8 1.8 3.6-3.8"/></svg>LSA et fiche Google pour chaque agence</li>
+            <li><svg class="prc-check" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.6"/><path d="M5.3 8.2l1.8 1.8 3.6-3.8"/></svg>Suivi des appels agence par agence</li>
+            <li><svg class="prc-check" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.6"/><path d="M5.3 8.2l1.8 1.8 3.6-3.8"/></svg>Ajustements continus</li>
+            <li><svg class="prc-check" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.6"/><path d="M5.3 8.2l1.8 1.8 3.6-3.8"/></svg>Un seul interlocuteur</li>
+          </ul>
+        </article>
+      </div>
+
+      <!-- Bandeau large (réf. « Custom Plan ») : calculateur d'honoraires -->
+      <div class="prc-wide prc-calc prc-rv">
+        <div class="prc-wide-txt">
+          <h3 class="prc-wide-title">Calcule tes honoraires</h3>
+          <p>Ton budget pub est payé directement à Google, on ne l'encaisse jamais. Nos honoraires : 130 € + 20 % de ce budget.</p>
+        </div>
+        <div class="prc-calc-ctrl">
+          <div class="prc-calc-row">
+            <label for="prc-range" class="prc-calc-label">Ton budget pub par mois</label>
+            <output class="prc-calc-budget" for="prc-range" id="prc-budget-out"><span class="prc-calc-bnum">800</span> €</output>
+          </div>
+          <input type="range" id="prc-range" class="prc-range" min="500" max="3000" step="50" value="800" aria-valuetext="800 € par mois">
+          <div class="prc-calc-scale" aria-hidden="true"><span>500 €</span><span>3 000 €</span></div>
+        </div>
+        <div class="prc-calc-res" aria-live="polite">
+          <span class="prc-calc-k">Nos honoraires dès le mois 3</span>
+          <span class="prc-calc-fee"><span class="prc-calc-fnum">290</span> €<small>/mois</small></span>
+          <span class="prc-calc-free"><span class="prc-dot" aria-hidden="true"></span>Mois 1 et 2 : 0 € d'honoraires</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="reviews" class="rev" aria-labelledby="rev-title">
+  <div class="rev-glow rev-glow-a" aria-hidden="true"></div>
+  <div class="rev-glow rev-glow-b" aria-hidden="true"></div>
+
+  <div class="rev-container">
+    <header class="rev-head">
+      <span class="rev-badge rev-up">Avis clients</span>
+      <h2 id="rev-title" class="rev-title rev-up">Ils sont <span class="rev-accent">déjà devant</span> leurs concurrents</h2>
+      <p class="rev-sub rev-up">Des artisans du bâtiment qui ont pris leur place sur Google. Leurs mots, pas les nôtres.</p>
+    </header>
+
+    <!-- Carte mise en avant (carrousel 3 témoignages, comme Impacta) -->
+    <div class="rev-feature rev-up" data-rev-carousel>
+      <div class="rev-slides">
+        <!-- Slide 1 -->
+        <article class="rev-slide is-active" data-rev-slide aria-roledescription="témoignage">
+          <figure class="rev-photo">
+            <img src="/v2/assets/reviews/temoin2.jpg" width="720" height="900" loading="lazy" alt="Artisan peintre client de Potentieel, sur son chantier">
+            <div class="rev-photo-fade" aria-hidden="true"></div>
+            <div class="rev-ticker" aria-label="Résultats du client">
+              <ul class="rev-ticker-track">
+                <li class="rev-pill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg><span class="todo" data-todo="appels/mois client 1">[à remplir]</span> appels</li>
+                <li class="rev-pill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg><span class="todo" data-todo="devis envoyés client 1">[à remplir]</span> devis</li>
+                <li class="rev-pill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M5 21V10l7-5 7 5v11M10 21v-6h4v6"/></svg><span class="todo" data-todo="chantiers signés client 1">[à remplir]</span> chantiers</li>
+                <li class="rev-pill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"/></svg><span class="todo" data-todo="CA généré client 1">[à remplir]</span> €</li>
+              </ul>
+            </div>
+          </figure>
+          <div class="rev-body">
+            <div class="rev-body-top">
+              <svg class="rev-quote-ico" viewBox="0 0 48 36" aria-hidden="true"><path d="M0 36V21.6C0 9.4 6.2 2.2 18.6 0l2.2 5.4C14 7.2 10.8 11 10.4 16.8H20V36zm27.6 0V21.6C27.6 9.4 33.8 2.2 46.2 0l1.8 5.4c-6.8 1.8-10 5.6-10.4 11.4h9.6V36z"/></svg>
+              <blockquote class="rev-quote" data-rev-words><span class="todo" data-todo="citation exacte du client 1 (2-3 phrases)">[à remplir : citation exacte du client, mot pour mot]</span></blockquote>
+            </div>
+            <div class="rev-body-bottom">
+              <div class="rev-author">
+                <img class="rev-avatar" src="/v2/assets/reviews/temoin2-av.jpg" width="48" height="48" loading="lazy" alt="">
+                <div>
+                  <p class="rev-name"><span class="todo" data-todo="prénom + nom client 1">[à remplir : prénom nom]</span></p>
+                  <p class="rev-role"><span class="todo" data-todo="métier et ville client 1">[à remplir : métier · ville]</span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Slide 2 -->
+        <article class="rev-slide" data-rev-slide aria-roledescription="témoignage" aria-hidden="true">
+          <figure class="rev-photo">
+            <img src="/v2/assets/reviews/temoin6.jpg" width="720" height="900" loading="lazy" alt="Artisan client de Potentieel sur un chantier de carrelage">
+            <div class="rev-photo-fade" aria-hidden="true"></div>
+            <div class="rev-ticker" aria-label="Résultats du client">
+              <ul class="rev-ticker-track">
+                <li class="rev-pill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg><span class="todo" data-todo="appels/mois client 2">[à remplir]</span> appels</li>
+                <li class="rev-pill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg><span class="todo" data-todo="devis envoyés client 2">[à remplir]</span> devis</li>
+                <li class="rev-pill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M5 21V10l7-5 7 5v11M10 21v-6h4v6"/></svg><span class="todo" data-todo="chantiers signés client 2">[à remplir]</span> chantiers</li>
+                <li class="rev-pill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"/></svg><span class="todo" data-todo="CA généré client 2">[à remplir]</span> €</li>
+              </ul>
+            </div>
+          </figure>
+          <div class="rev-body">
+            <div class="rev-body-top">
+              <svg class="rev-quote-ico" viewBox="0 0 48 36" aria-hidden="true"><path d="M0 36V21.6C0 9.4 6.2 2.2 18.6 0l2.2 5.4C14 7.2 10.8 11 10.4 16.8H20V36zm27.6 0V21.6C27.6 9.4 33.8 2.2 46.2 0l1.8 5.4c-6.8 1.8-10 5.6-10.4 11.4h9.6V36z"/></svg>
+              <blockquote class="rev-quote" data-rev-words><span class="todo" data-todo="citation exacte du client 2 (2-3 phrases)">[à remplir : citation exacte du client, mot pour mot]</span></blockquote>
+            </div>
+            <div class="rev-body-bottom">
+              <div class="rev-author">
+                <img class="rev-avatar" src="/v2/assets/reviews/temoin6-av.jpg" width="48" height="48" loading="lazy" alt="">
+                <div>
+                  <p class="rev-name"><span class="todo" data-todo="prénom + nom client 2">[à remplir : prénom nom]</span></p>
+                  <p class="rev-role"><span class="todo" data-todo="métier et ville client 2">[à remplir : métier · ville]</span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Slide 3 -->
+        <article class="rev-slide" data-rev-slide aria-roledescription="témoignage" aria-hidden="true">
+          <figure class="rev-photo">
+            <img src="/v2/assets/reviews/temoin5.jpg" width="720" height="900" loading="lazy" alt="Artisan client de Potentieel devant son utilitaire">
+            <div class="rev-photo-fade" aria-hidden="true"></div>
+            <div class="rev-ticker" aria-label="Résultats du client">
+              <ul class="rev-ticker-track">
+                <li class="rev-pill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg><span class="todo" data-todo="appels/mois client 3">[à remplir]</span> appels</li>
+                <li class="rev-pill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg><span class="todo" data-todo="devis envoyés client 3">[à remplir]</span> devis</li>
+                <li class="rev-pill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M5 21V10l7-5 7 5v11M10 21v-6h4v6"/></svg><span class="todo" data-todo="chantiers signés client 3">[à remplir]</span> chantiers</li>
+                <li class="rev-pill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"/></svg><span class="todo" data-todo="CA généré client 3">[à remplir]</span> €</li>
+              </ul>
+            </div>
+          </figure>
+          <div class="rev-body">
+            <div class="rev-body-top">
+              <svg class="rev-quote-ico" viewBox="0 0 48 36" aria-hidden="true"><path d="M0 36V21.6C0 9.4 6.2 2.2 18.6 0l2.2 5.4C14 7.2 10.8 11 10.4 16.8H20V36zm27.6 0V21.6C27.6 9.4 33.8 2.2 46.2 0l1.8 5.4c-6.8 1.8-10 5.6-10.4 11.4h9.6V36z"/></svg>
+              <blockquote class="rev-quote" data-rev-words><span class="todo" data-todo="citation exacte du client 3 (2-3 phrases)">[à remplir : citation exacte du client, mot pour mot]</span></blockquote>
+            </div>
+            <div class="rev-body-bottom">
+              <div class="rev-author">
+                <img class="rev-avatar" src="/v2/assets/reviews/temoin5-av.jpg" width="48" height="48" loading="lazy" alt="">
+                <div>
+                  <p class="rev-name"><span class="todo" data-todo="prénom + nom client 3">[à remplir : prénom nom]</span></p>
+                  <p class="rev-role"><span class="todo" data-todo="métier et ville client 3">[à remplir : métier · ville]</span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="rev-nav">
+        <button class="rev-arrow" type="button" data-rev-prev aria-label="Témoignage précédent"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <button class="rev-arrow" type="button" data-rev-next aria-label="Témoignage suivant"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Deux rangées de cartes en défilement (ticker Impacta) -->
+  <div class="rev-rows rev-up">
+    <div class="rev-row" data-rev-row>
+      <ul class="rev-row-track">
+        <li class="rev-card"><span class="rev-stars todo" data-todo="note donnée par le client 4">★★★★★</span><p class="rev-card-quote"><span class="todo" data-todo="citation courte client 4">[à remplir : phrase exacte du client]</span></p><div class="rev-card-author"><img src="/v2/assets/reviews/temoin4-av.jpg" width="32" height="32" loading="lazy" alt=""><span><span class="todo" data-todo="prénom client 4">[prénom]</span> <span class="rev-card-job"><span class="todo" data-todo="métier client 4">[métier]</span></span></span></div></li>
+        <li class="rev-card"><span class="rev-stars todo" data-todo="note donnée par le client 5">★★★★★</span><p class="rev-card-quote"><span class="todo" data-todo="citation courte client 5">[à remplir : phrase exacte du client]</span></p><div class="rev-card-author"><img src="/v2/assets/reviews/temoin7-av.jpg" width="32" height="32" loading="lazy" alt=""><span><span class="todo" data-todo="prénom client 5">[prénom]</span> <span class="rev-card-job"><span class="todo" data-todo="métier client 5">[métier]</span></span></span></div></li>
+        <li class="rev-card"><span class="rev-stars todo" data-todo="note donnée par le client 6">★★★★★</span><p class="rev-card-quote"><span class="todo" data-todo="citation courte client 6">[à remplir : phrase exacte du client]</span></p><div class="rev-card-author"><img src="/v2/assets/reviews/temoin8-av.jpg" width="32" height="32" loading="lazy" alt=""><span><span class="todo" data-todo="prénom client 6">[prénom]</span> <span class="rev-card-job"><span class="todo" data-todo="métier client 6">[métier]</span></span></span></div></li>
+      </ul>
+    </div>
+    <div class="rev-row rev-row-reverse" data-rev-row>
+      <ul class="rev-row-track">
+        <li class="rev-card"><span class="rev-stars todo" data-todo="note donnée par le client 1">★★★★★</span><p class="rev-card-quote"><span class="todo" data-todo="citation courte client 1">[à remplir : phrase exacte du client]</span></p><div class="rev-card-author"><img src="/v2/assets/reviews/temoin2-av.jpg" width="32" height="32" loading="lazy" alt=""><span><span class="todo" data-todo="prénom client 1">[prénom]</span> <span class="rev-card-job"><span class="todo" data-todo="métier client 1">[métier]</span></span></span></div></li>
+        <li class="rev-card"><span class="rev-stars todo" data-todo="note donnée par le client 2">★★★★★</span><p class="rev-card-quote"><span class="todo" data-todo="citation courte client 2">[à remplir : phrase exacte du client]</span></p><div class="rev-card-author"><img src="/v2/assets/reviews/temoin6-av.jpg" width="32" height="32" loading="lazy" alt=""><span><span class="todo" data-todo="prénom client 2">[prénom]</span> <span class="rev-card-job"><span class="todo" data-todo="métier client 2">[métier]</span></span></span></div></li>
+        <li class="rev-card"><span class="rev-stars todo" data-todo="note donnée par le client 3">★★★★★</span><p class="rev-card-quote"><span class="todo" data-todo="citation courte client 3">[à remplir : phrase exacte du client]</span></p><div class="rev-card-author"><img src="/v2/assets/reviews/temoin5-av.jpg" width="32" height="32" loading="lazy" alt=""><span><span class="todo" data-todo="prénom client 3">[prénom]</span> <span class="rev-card-job"><span class="todo" data-todo="métier client 3">[métier]</span></span></span></div></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</main>
+<footer id="footer" class="ftr">
+  <div class="ftr-glow ftr-glow-a" aria-hidden="true"></div>
+  <div class="ftr-glow ftr-glow-b" aria-hidden="true"></div>
+
+  <!-- ===== CTA final (calqué sur « Ready To Grow? » d'Impacta) ===== -->
+  <section class="ftr-cta" aria-labelledby="ftr-cta-title">
+    <div class="ftr-container">
+     <div class="ftr-cta-card">
+      <div class="ftr-cta-bg" aria-hidden="true"><span class="ftr-cta-grid"></span><span class="ftr-cta-light ftr-cta-light-a"></span><span class="ftr-cta-light ftr-cta-light-b"></span></div>
+      <div class="ftr-cta-inner">
+      <div class="ftr-cta-text">
+        <span class="ftr-badge ftr-up">Prêt à passer devant ?</span>
+        <h2 id="ftr-cta-title" class="ftr-cta-title ftr-up">Prends ta place sur Google <span class="ftr-accent">avant ton concurrent.</span></h2>
+        <p class="ftr-cta-sub ftr-up">Un appel pour regarder où tu apparais aujourd'hui sur Google, et ce qu'on peut monter pour toi en 7 jours.</p>
+        <div class="ftr-up">
+          <a class="btn btn-dark btn-lg ftr-cta-btn" href="/contact">
+            <span class="btn-label">Réserver mon appel</span>
+            <span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M96 48l96 80-96 80z"/></svg></span>
+          </a>
+        </div>
+        <ul class="ftr-reassure ftr-up">
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>En ligne en 7 jours</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Monté par un ancien artisan</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>LSA et fiche offerts</li>
+        </ul>
+      </div>
+
+      <div class="ftr-cta-visual ftr-up" aria-hidden="true">
+        <div class="ftr-phone-glow"></div>
+        <div class="ftr-phone">
+          <div class="ftr-phone-screen">
+            <img class="ftr-shot is-on" src="/v2/assets/reviews/temoin4.jpg" width="720" height="900" alt="" loading="lazy">
+            <img class="ftr-shot" src="/v2/assets/reviews/temoin7.jpg" width="720" height="900" alt="" loading="lazy">
+            <img class="ftr-shot" src="/v2/assets/reviews/temoin8.jpg" width="720" height="900" alt="" loading="lazy">
+            <div class="ftr-phone-shade"></div>
+            <div class="ftr-island"></div>
+            <div class="ftr-notif">
+              <span class="ftr-notif-ico"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></span>
+              <span class="ftr-notif-txt"><strong>Appel entrant</strong><span class="ftr-notif-src">Nouveau client · via <b data-ftr-src>Google Ads</b></span></span>
+            </div>
+            <div class="ftr-call">
+              <span class="ftr-call-btn ftr-call-no"><svg viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg></span>
+              <span class="ftr-call-btn ftr-call-yes"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+     </div>
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
+  <div class="ftr-container ftr-main">
+    <div class="ftr-cols">
+      <div class="ftr-brand">
+        <a class="ftr-logo" href="/v2/" aria-label="Potentieel, accueil">
+          <span class="ftr-logo-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg></span>
+          <span class="ftr-logo-word">Potentieel</span>
+        </a>
+        <p class="ftr-tagline">Google Ads, LSA et fiche Google pour les entreprises du bâtiment. Montés par un ancien artisan.</p>
+      </div>
+
+      <nav class="ftr-links" aria-label="Pied de page">
+        <div class="ftr-group">
+          <p class="ftr-label">Navigation</p>
+          <ul>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#results">Résultats</a></li>
+            <li><a href="#pricing">Tarifs</a></li>
+            <li><a href="#reviews">Avis</a></li>
+            <li><a href="/contact">Contact</a></li>
+          </ul>
+        </div>
+        <div class="ftr-group">
+          <p class="ftr-label">Légal</p>
+          <ul>
+            <li><a href="/legal/mentions">Mentions légales</a></li>
+            <li><a href="/legal/cgv">CGV</a></li>
+            <li><a href="/legal/confidentialite">Confidentialité</a></li>
+            <li><a href="/legal/cookies">Cookies</a></li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="ftr-card">
+        <p class="ftr-card-title">Une question avant de réserver ?</p>
+        <a class="ftr-card-row" href="tel:+33769387613">
+          <span class="ftr-card-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></span>
+          07 69 38 76 13
+        </a>
+        <a class="ftr-card-row" href="https://wa.me/33769387613" target="_blank" rel="noopener">
+          <span class="ftr-card-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a8.5 8.5 0 0 1-12.6 7.4L3 20l1.2-4.2A8.5 8.5 0 1 1 20 11.5z"/></svg></span>
+          WhatsApp
+        </a>
+        <a class="ftr-card-row" href="mailto:potentieel.web@gmail.com">
+          <span class="ftr-card-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>
+          potentieel.web@gmail.com
+        </a>
+        <a class="btn btn-primary btn-sm ftr-card-btn" href="/contact"><span class="btn-label">Réserver mon appel</span><span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M96 48l96 80-96 80z"/></svg></span></a>
+      </div>
+    </div>
+
+    <div class="ftr-bottom">
+      <p>© 2026 Potentieel</p>
+      <p>Google Ads · LSA · Fiche Google</p>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="/v2/js/hero.js" defer></script>
+<script src="/v2/js/services.js" defer></script>
+<script src="/v2/js/results.js" defer></script>
+<script src="/v2/js/pricing.js" defer></script>
+<script src="/v2/js/reviews.js" defer></script>
+<script src="/v2/js/footer.js" defer></script>
+</body>
+</html>
