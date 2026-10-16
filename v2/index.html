@@ -6,6 +6,7 @@
 <title>Potentieel — Deviens l'artisan n°1 sur Google</title>
 <meta name="description" content="Google Ads, LSA et fiche Google pour les entreprises du bâtiment. Montés par un ancien artisan, en ligne en 7 jours.">
 <meta name="robots" content="noindex">
+<script>try{var t=localStorage.getItem('pt-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);else document.documentElement.setAttribute('data-theme','dark')}catch(e){document.documentElement.setAttribute('data-theme','dark')}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/v2/css/tokens.css">
@@ -37,6 +38,15 @@
       <a class="hero-link" href="#reviews" data-spy="reviews">Avis</a>
     </nav>
 
+    <button class="hero-theme" type="button" data-theme-toggle aria-label="Passer en mode clair">
+      <span class="hero-theme-in">
+        <svg class="hero-theme-ic" viewBox="0 0 24 24" aria-hidden="true">
+          <g class="hero-theme-sun"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.55 1.55M17.15 17.15l1.55 1.55M5.3 18.7l1.55-1.55M17.15 6.85l1.55-1.55"/></g>
+          <path class="hero-theme-moon" d="M20.2 14.6A8.3 8.3 0 0 1 9.4 3.8a8.3 8.3 0 1 0 10.8 10.8z"/>
+        </svg>
+      </span>
+    </button>
+
     <a class="btn btn-primary btn-sm hero-nav-cta" href="/contact">
       <span class="btn-label">Réserver mon appel</span>
       <span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M88 40l112 88-112 88z"/></svg></span>
@@ -52,6 +62,16 @@
     <a href="#results">Résultats</a>
     <a href="#pricing">Tarifs</a>
     <a href="#reviews">Avis</a>
+    <button class="hero-menu-theme" type="button" data-theme-toggle aria-label="Passer en mode clair">
+      <span class="hero-theme hero-theme--sm" aria-hidden="true"><span class="hero-theme-in">
+        <svg class="hero-theme-ic" viewBox="0 0 24 24" aria-hidden="true">
+          <g class="hero-theme-sun"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.55 1.55M17.15 17.15l1.55 1.55M5.3 18.7l1.55-1.55M17.15 6.85l1.55-1.55"/></g>
+          <path class="hero-theme-moon" d="M20.2 14.6A8.3 8.3 0 0 1 9.4 3.8a8.3 8.3 0 1 0 10.8 10.8z"/>
+        </svg>
+      </span></span>
+      <span class="hero-menu-theme-lbl hero-menu-theme-lbl--to-light">Mode clair</span>
+      <span class="hero-menu-theme-lbl hero-menu-theme-lbl--to-dark">Mode sombre</span>
+    </button>
     <a class="btn btn-primary btn-lg" href="/contact">
       <span class="btn-label">Réserver mon appel</span>
       <span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M88 40l112 88-112 88z"/></svg></span>
@@ -172,28 +192,29 @@
         <article class="svc-card" data-zone="lsa">
           <div class="svc-num" aria-hidden="true">01</div>
           <div class="svc-body">
-            <div class="svc-top">
-              <div class="svc-titles">
-                <span class="svc-slot">Emplacement n°1 · tout en haut</span>
-                <h3 class="svc-card-title">Annonces LSA <span class="svc-badge">Offert avec Google Ads</span></h3>
-              </div>
-              <div class="svc-block">
-                <span class="svc-lbl">Description</span>
-                <p class="svc-desc">Les annonces « Validé par Google », la première chose que ton client voit. Seulement si ton activité est éligible. On s'occupe de tout le dossier&nbsp;: vérifications Google, assurances, zone et signalement des mauvais contacts.</p>
-              </div>
+            <div class="svc-titles">
+              <span class="svc-slot">Emplacement n°1 · tout en haut</span>
+              <h3 class="svc-card-title">Annonces LSA <span class="svc-badge">Offert avec Google Ads</span></h3>
             </div>
-            <ul class="svc-tags">
-              <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Vérifications Google</li>
-              <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Assurances</li>
-              <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Zone d'intervention</li>
-              <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Signalement des mauvais contacts</li>
-            </ul>
+            <p class="svc-lead">Tu ne paies que les appels reçus. Un mauvais contact&nbsp;? On le signale à Google pour demander le remboursement.</p>
             <div class="svc-price">
-              <span class="svc-lbl">Prix</span>
-              <p class="svc-price-main">LSA seul&nbsp;: <strong>200&nbsp;€</strong> + <strong>30&nbsp;%</strong> du budget, seulement sur ce qui est dépensé.</p>
-              <p class="svc-price-note">On n'est pas payés tant que tu ne gagnes rien. Avec Google Ads, l'inscription est offerte.</p>
+              <p class="svc-price-big"><span class="svc-price-num">200&nbsp;€</span> <span class="svc-price-unit">d'installation</span></p>
+              <p class="svc-price-sub">+ 30&nbsp;% du budget qui se dépense</p>
+              <p class="svc-price-note">C'est Google qui choisit si le budget se dépense.</p>
             </div>
-            <a href="/contact" class="btn btn-primary btn-sm svc-cta"><span class="btn-label">Réserver mon appel</span><span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M88 40l112 88-112 88z"/></svg></span></a>
+            <div class="svc-more" id="svc-more-lsa" hidden>
+              <p class="svc-desc">Les annonces « Validé par Google », la première chose que ton client voit. Seulement si ton activité est éligible. On s'occupe de tout le dossier, et l'installation est offerte si tu prends Google Ads.</p>
+              <ul class="svc-tags">
+                <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Vérifications Google</li>
+                <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Assurances</li>
+                <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Zone d'intervention</li>
+                <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Signalement des mauvais contacts</li>
+              </ul>
+            </div>
+            <div class="svc-actions">
+              <a href="/contact" class="btn btn-primary btn-sm svc-cta"><span class="btn-label">Réserver mon appel</span><span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M88 40l112 88-112 88z"/></svg></span></a>
+              <button type="button" class="svc-more-btn" aria-expanded="false" aria-controls="svc-more-lsa"><span>En savoir plus</span><i aria-hidden="true"></i></button>
+            </div>
           </div>
           <div class="svc-media" aria-hidden="true">
             <div class="svc-serp" data-active="lsa">
@@ -227,32 +248,29 @@
         <article class="svc-card" data-zone="ads">
           <div class="svc-num" aria-hidden="true">02</div>
           <div class="svc-body">
-            <div class="svc-top">
-              <div class="svc-titles">
-                <span class="svc-slot">Emplacement n°2 · les annonces</span>
-                <h3 class="svc-card-title">Google Ads <span class="svc-badge">Le plus choisi</span></h3>
-              </div>
-              <div class="svc-block">
-                <span class="svc-lbl">Description</span>
-                <p class="svc-desc">Le choix des entreprises qui veulent grossir&nbsp;: le gros investissement qui rapporte gros. Sur le LSA, Google décide s'il dépense ton budget. Ici, on pilote tout&nbsp;: mots-clés, annonces, pages de conversion, suivi des appels.</p>
-              </div>
-              <div class="svc-stat">
-                <span class="svc-stat-pre">En ligne en</span>
-                <span class="svc-stat-num"><span data-svc-count="7">7</span>&nbsp;jours</span>
-              </div>
+            <div class="svc-titles">
+              <span class="svc-slot">Emplacement n°2 · les annonces</span>
+              <h3 class="svc-card-title">Google Ads <span class="svc-badge">Le plus choisi</span></h3>
             </div>
-            <ul class="svc-tags">
-              <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Monté par un ancien artisan</li>
-              <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Pages de conversion dédiées</li>
-              <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Mots-clés de ton métier dans ta ville</li>
-              <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Suivi des appels</li>
-            </ul>
+            <p class="svc-lead">Ton entreprise en haut de Google quand on cherche ton métier dans ta ville. On pilote tout, en ligne en 7&nbsp;jours.</p>
             <div class="svc-price">
-              <span class="svc-lbl">Prix</span>
-              <p class="svc-price-main"><strong>700&nbsp;€</strong> de mise en place, puis <strong>0&nbsp;€</strong> d'honoraires les 2 premiers mois.</p>
-              <p class="svc-price-note">Dès le mois 3&nbsp;: 130&nbsp;€/mois + 20&nbsp;% du budget pub. LSA et fiche Google offerts.</p>
+              <p class="svc-price-big"><span class="svc-price-num">700&nbsp;€</span> <span class="svc-price-unit">de mise en place</span></p>
+              <p class="svc-price-sub">0&nbsp;€ d'honoraires les 2 premiers mois</p>
+              <p class="svc-price-note">Puis 130&nbsp;€/mois + 20&nbsp;% du budget pub. LSA et fiche Google offerts.</p>
             </div>
-            <a href="/contact" class="btn btn-primary btn-sm svc-cta"><span class="btn-label">Réserver mon appel</span><span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M88 40l112 88-112 88z"/></svg></span></a>
+            <div class="svc-more" id="svc-more-ads" hidden>
+              <p class="svc-desc">Le gros investissement qui rapporte gros. Sur le LSA, Google décide s'il dépense ton budget. Ici, on a la main sur tout&nbsp;: mots-clés, annonces, pages de conversion, suivi des appels. Monté par un ancien artisan.</p>
+              <ul class="svc-tags">
+                <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Monté par un ancien artisan</li>
+                <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Pages de conversion dédiées</li>
+                <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Mots-clés de ton métier dans ta ville</li>
+                <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Suivi des appels</li>
+              </ul>
+            </div>
+            <div class="svc-actions">
+              <a href="/contact" class="btn btn-primary btn-sm svc-cta"><span class="btn-label">Réserver mon appel</span><span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M88 40l112 88-112 88z"/></svg></span></a>
+              <button type="button" class="svc-more-btn" aria-expanded="false" aria-controls="svc-more-ads"><span>En savoir plus</span><i aria-hidden="true"></i></button>
+            </div>
           </div>
           <!-- visuel : page Google, zone « Annonces » allumée -->
           <div class="svc-media" aria-hidden="true">
@@ -287,32 +305,29 @@
         <article class="svc-card" data-zone="map">
           <div class="svc-num" aria-hidden="true">03</div>
           <div class="svc-body">
-            <div class="svc-top">
-              <div class="svc-titles">
-                <span class="svc-slot">Emplacement n°3 · la carte</span>
-                <h3 class="svc-card-title">Fiche Google <span class="svc-badge">Tout offert</span></h3>
-              </div>
-              <div class="svc-block">
-                <span class="svc-lbl">Description</span>
-                <p class="svc-desc">Ta fiche sur la carte, tenue à jour pour toi&nbsp;: on répond à tes avis, on publie les photos de chantier que tu nous envoies, on garde tes horaires et tes infos à jour.</p>
-              </div>
-              <div class="svc-stat">
-                <span class="svc-stat-num"><span data-svc-count="0">0</span>&nbsp;€</span>
-                <span class="svc-stat-lbl">la gestion est entièrement offerte</span>
-              </div>
+            <div class="svc-titles">
+              <span class="svc-slot">Emplacement n°3 · la carte</span>
+              <h3 class="svc-card-title">Fiche Google <span class="svc-badge">Tout offert</span></h3>
             </div>
-            <ul class="svc-tags">
-              <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Réponses à tes avis</li>
-              <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Photos de chantier publiées</li>
-              <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Horaires à jour</li>
-              <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Infos à jour</li>
-              <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Présent sur la carte</li>
-            </ul>
+            <p class="svc-lead">On répond à tes avis et on publie tes photos de chantier. Ta fiche reste vivante, Google la met en avant.</p>
             <div class="svc-price">
-              <span class="svc-lbl">Prix</span>
-              <p class="svc-price-main"><strong>Offert</strong> avec Google Ads.</p>
+              <p class="svc-price-big"><span class="svc-price-num">0&nbsp;€</span> <span class="svc-price-unit"></span></p>
+              <p class="svc-price-sub">Offert avec Google Ads</p>
+              
             </div>
-            <a href="/contact" class="btn btn-primary btn-sm svc-cta"><span class="btn-label">Réserver mon appel</span><span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M88 40l112 88-112 88z"/></svg></span></a>
+            <div class="svc-more" id="svc-more-map" hidden>
+              <p class="svc-desc">Ta fiche sur la carte, tenue à jour pour toi&nbsp;: réponses aux avis, photos de chantier que tu nous envoies, horaires et infos à jour.</p>
+              <ul class="svc-tags">
+                <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Réponses à tes avis</li>
+                <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Photos de chantier publiées</li>
+                <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Horaires et infos à jour</li>
+                <li class="svc-tag"><span class="svc-check" aria-hidden="true"></span>Présent sur la carte</li>
+              </ul>
+            </div>
+            <div class="svc-actions">
+              <a href="/contact" class="btn btn-primary btn-sm svc-cta"><span class="btn-label">Réserver mon appel</span><span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M88 40l112 88-112 88z"/></svg></span></a>
+              <button type="button" class="svc-more-btn" aria-expanded="false" aria-controls="svc-more-map"><span>En savoir plus</span><i aria-hidden="true"></i></button>
+            </div>
           </div>
           <div class="svc-media" aria-hidden="true">
             <div class="svc-serp" data-active="map">
@@ -331,10 +346,10 @@
                 <div class="svc-map"><i class="svc-pin"></i><i class="svc-pin"></i><i class="svc-pin"></i></div>
                 <div class="svc-list"><b></b><b></b></div>
               </div>
-              <div class="svc-rev">
-                <div class="svc-rev-top"><span class="svc-rev-stars"><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.5L12 17.3 6.1 20.5l1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.5L12 17.3 6.1 20.5l1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.5L12 17.3 6.1 20.5l1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.5L12 17.3 6.1 20.5l1.3-6.5L2.5 9.4l6.6-.8z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.5L12 17.3 6.1 20.5l1.3-6.5L2.5 9.4l6.6-.8z"/></svg></span><span class="svc-rev-ex">Exemple</span></div>
-                <p class="svc-rev-q">« Je n'y croyais pas, mais rien qu'avec leur gestion de ma fiche, je reçois beaucoup plus d'appels. »</p>
-                <span class="svc-rev-who">Peintre · avis d'exemple</span>
+              <div class="svc-rev svc-rev--real">
+                <div class="svc-rev-top"><span class="svc-rev-msg"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H8l-4 4z"/></svg>Message d'un client</span><span class="svc-rev-real">Vrai retour</span></div>
+                <p class="svc-rev-q">1er appel grâce à sa fiche Google&nbsp;: démonter et remonter un bar entier. Il a hâte de voir la suite.</p>
+                <span class="svc-rev-who">Client fiche Google · retour reçu par message</span>
               </div>
             </div>
           </div>

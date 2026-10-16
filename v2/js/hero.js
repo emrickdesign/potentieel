@@ -6,6 +6,32 @@
   'use strict';
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* ---------- Bascule clair / sombre (data-theme sur <html>, mémorisé dans localStorage['pt-theme']) ---------- */
+  var root = document.documentElement;
+  var toggles = document.querySelectorAll('[data-theme-toggle]');
+  var animTimer = null;
+  var syncToggles = function () {
+    var light = root.getAttribute('data-theme') === 'light';
+    toggles.forEach(function (b) {
+      b.setAttribute('aria-label', light ? 'Passer en mode sombre' : 'Passer en mode clair');
+    });
+  };
+  var setTheme = function (t) {
+    // transition des couleurs uniquement pendant la bascule (rien au premier chargement)
+    root.classList.add('pt-theme-anim');
+    clearTimeout(animTimer);
+    animTimer = setTimeout(function () { root.classList.remove('pt-theme-anim'); }, 520);
+    root.setAttribute('data-theme', t);
+    try { localStorage.setItem('pt-theme', t); } catch (e) {}
+    syncToggles();
+  };
+  toggles.forEach(function (b) {
+    b.addEventListener('click', function () {
+      setTheme(root.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+    });
+  });
+  syncToggles();
+
   /* ---------- Navbar ---------- */
   var nav = document.getElementById('hero-nav');
   if (nav) {
