@@ -363,3 +363,22 @@
 .svc-price-note{font:400 14px/1.45 var(--font-body);color:rgba(255,255,255,.62)}
 .svc-cta{align-self:flex-start}
 @media (max-width:700px){.svc-cta{align-self:stretch;justify-content:center}}
+
+/* --- Version compacte (16/10) : cartes ramenées à leur hauteur d'avant --- */
+.svc-body{gap:16px}
+.svc-top{gap:14px}
+.svc-titles{gap:8px}
+.svc-block{gap:4px}
+.svc-lbl{font-size:11px}
+.svc-desc{font-size:14.5px;line-height:1.5}
+.svc-stat{flex-direction:row;align-items:baseline;gap:10px}
+.svc-stat-num{font-size:28px}
+.svc-stat-lbl{font-size:13px}
+.svc-tags{gap:6px}
+.svc-tag{padding:4px 10px;gap:6px;font-size:12.5px}
+.svc-check{width:13px;height:13px;background-size:9px}
+.svc-price{padding:10px 14px;gap:3px;border-radius:12px}
+.svc-price-main{font-size:14px;line-height:1.4}
+.svc-price-note{font-size:12.5px;line-height:1.4}
+.svc-cta{--btn-h:36px}
+.svc-cta .btn-label{padding:0 16px;font-size:11px}
