@@ -1,61 +1,47 @@
-/* Tarifs (prc-) : toggle chiffre d'affaires, compteurs de prix, révélations au scroll, lueur au survol. */
+/* Tarifs (prc-) : calculateur d'honoraires (130 € + 20 % du budget pub), révélations au scroll, lueur au survol. */
 (function () {
   var root = document.getElementById('pricing');
   if (!root) return;
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var fmt = function (n) { return Math.round(n).toLocaleString('fr-FR').replace(/ | /g, ' '); };
+  var fmt = function (n) { return Math.round(n).toLocaleString('fr-FR').replace(/[  ]/g, ' '); };
 
-  /* ---- Toggle CA : 1 = 300 k€ – 1 M€, 2 = + de 1 M€ ---- */
-  var toggle = root.querySelector('.prc-toggle');
-  var opts = root.querySelectorAll('.prc-toggle-opt');
-  var nums = root.querySelectorAll('.prc-num');
-  var tierTxt = root.querySelectorAll('.prc-tier-txt');
+  /* ---- Calculateur ---- */
+  var BASE = 130, RATE = 0.20;
+  var range = root.querySelector('.prc-range');
+  var bOut = root.querySelector('.prc-calc-bnum');
+  var fOut = root.querySelector('.prc-calc-fnum');
+  var feeBox = root.querySelector('.prc-calc-fee');
+  var shown = 0, target = 0, raf = 0;
 
-  function animateNum(el, to) {
-    var from = parseFloat(el.getAttribute('data-cur') || el.getAttribute('data-p1'));
-    el.setAttribute('data-cur', to);
-    if (reduce || from === to) { el.textContent = fmt(to); return; }
-    var t0 = null, dur = 700;
-    function step(t) {
-      if (t0 === null) t0 = t;
-      var k = Math.min(1, (t - t0) / dur);
-      var e = 1 - Math.pow(1 - k, 3);
-      el.textContent = fmt(from + (to - from) * e);
-      if (k < 1) requestAnimationFrame(step);
-    }
-    requestAnimationFrame(step);
+  function tick() {
+    var d = target - shown;
+    if (Math.abs(d) < 0.5) { shown = target; fOut.textContent = fmt(shown); raf = 0; return; }
+    shown += d * 0.18;
+    fOut.textContent = fmt(shown);
+    raf = requestAnimationFrame(tick);
   }
-
-  function setTier(tier) {
-    if (!toggle || toggle.getAttribute('data-state') === String(tier)) return;
-    toggle.setAttribute('data-state', tier);
-    opts.forEach(function (o) {
-      var on = o.getAttribute('data-tier') === String(tier);
-      o.classList.toggle('is-active', on);
-      o.setAttribute('aria-checked', on ? 'true' : 'false');
-    });
-    nums.forEach(function (n) { animateNum(n, parseFloat(n.getAttribute('data-p' + tier))); });
-    tierTxt.forEach(function (t) {
-      var txt = t.getAttribute('data-p' + tier);
-      if (reduce || !t.animate) { t.textContent = txt; return; }
-      t.animate([{ opacity: 1, transform: 'translateY(0)' }, { opacity: 0, transform: 'translateY(-6px)' }], { duration: 160, easing: 'ease-in' })
-        .onfinish = function () {
-          t.textContent = txt;
-          t.animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 260, easing: 'cubic-bezier(.22,1,.36,1)' });
-        };
-    });
+  function update(animate) {
+    var v = +range.value, min = +range.min, max = +range.max;
+    range.style.setProperty('--p', ((v - min) / (max - min) * 100) + '%');
+    range.setAttribute('aria-valuetext', fmt(v) + ' € par mois de budget pub, soit ' + fmt(BASE + v * RATE) + ' € d\'honoraires par mois dès le mois 3');
+    bOut.textContent = fmt(v);
+    target = BASE + v * RATE;
+    if (!animate || reduce) { shown = target; fOut.textContent = fmt(target); return; }
+    if (!raf) raf = requestAnimationFrame(tick);
   }
-  opts.forEach(function (o) {
-    o.addEventListener('click', function () { setTier(+o.getAttribute('data-tier')); });
-    o.addEventListener('keydown', function (e) {
-      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-        e.preventDefault();
-        var next = o.getAttribute('data-tier') === '1' ? 2 : 1;
-        setTier(next);
-        root.querySelector('.prc-toggle-opt[data-tier="' + next + '"]').focus();
-      }
+  if (range && bOut && fOut) {
+    shown = BASE + (+range.value) * RATE;
+    update(false);
+    range.addEventListener('input', function () { update(true); });
+    range.addEventListener('change', function () {
+      if (reduce || !feeBox) return;
+      feeBox.classList.remove('is-bump'); void feeBox.offsetWidth; feeBox.classList.add('is-bump');
     });
-  });
+    var drag = function (on) { return function () { range.classList.toggle('is-drag', on); }; };
+    range.addEventListener('pointerdown', drag(true));
+    window.addEventListener('pointerup', drag(false));
+    range.addEventListener('blur', drag(false));
+  }
 
   /* ---- Lueur qui suit la souris sur les cartes ---- */
   root.querySelectorAll('.prc-card').forEach(function (c) {
@@ -72,7 +58,7 @@
   root.classList.add('prc-js');
   var cardIdx = 0;
   items.forEach(function (el) {
-    if (el.classList.contains('prc-card')) { el.style.transitionDelay = (cardIdx++ * 0.12) + 's'; }
+    if (el.classList.contains('prc-card')) el.style.transitionDelay = (cardIdx++ * 0.12) + 's';
   });
   var io = new IntersectionObserver(function (entries) {
     entries.forEach(function (en) {
@@ -80,11 +66,9 @@
       var el = en.target;
       el.classList.add('is-in');
       io.unobserve(el);
-      // retire le délai après l'entrée pour ne pas ralentir le survol
       setTimeout(function () { el.style.transitionDelay = ''; }, 1400);
     });
   }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
   items.forEach(function (el) { io.observe(el); });
-  // filet de sécurité : tout afficher si rien n'a été déclenché
   setTimeout(function () { items.forEach(function (el) { if (el.getBoundingClientRect().top < innerHeight) el.classList.add('is-in'); }); }, 3000);
 })();

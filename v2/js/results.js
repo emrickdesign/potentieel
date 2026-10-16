@@ -11,7 +11,7 @@
   var counters = sec.querySelectorAll('[data-res-count]');
   counters.forEach(function(el){
     var v = el.querySelector('.res-num-val');
-    if (v) v.textContent = '0';
+    if (v) v.textContent = el.getAttribute('data-res-from') || '0';
   });
 
   function easeOut(t){ return 1 - Math.pow(1 - t, 3); }
@@ -21,11 +21,12 @@
     el.dataset.resDone = '1';
     var v = el.querySelector('.res-num-val');
     var end = parseFloat(el.getAttribute('data-res-count')) || 0;
+    var start = parseFloat(el.getAttribute('data-res-from')) || 0;
     var dur = 2000, t0 = null;
     function step(ts){
       if (t0 === null) t0 = ts;
       var p = Math.min((ts - t0) / dur, 1);
-      v.textContent = String(Math.round(end * easeOut(p)));
+      v.textContent = String(Math.round(start + (end - start) * easeOut(p)));
       if (p < 1) requestAnimationFrame(step);
       else v.textContent = String(end);
     }

@@ -1,5 +1,5 @@
 /* HERO — agent hero. Navbar (masquage au défilement, menu mobile, lien actif),
-   compteur « Ton CA », anneau 3D des appels visio (glisser + pause hors écran).
+   anneau 3D des appels visio (glisser + pause hors écran).
    Tout le contenu reste visible si ce script échoue : les animations
    d'apparition et la rotation de l'anneau sont en CSS. */
 (function () {
@@ -58,28 +58,6 @@
       }, { rootMargin: '-45% 0px -50% 0px' });
       Object.keys(map).forEach(function (k) { io.observe(map[k].s); });
     }
-  }
-
-  /* ---------- Compteur « Ton CA » (illustration en boucle, calée sur la courbe CSS de 4 s) ---------- */
-  var counter = document.querySelector('[data-hero-counter]');
-  var line = document.querySelector('.hero-ca-line');
-  if (counter && line && !reduce) {
-    var fmt = function (n) { return '+' + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' €'; };
-    var t0 = performance.now(), CYCLE = 4000, TOP = 24000;
-    var restart = function () { t0 = performance.now(); };
-    line.addEventListener('animationstart', restart);
-    line.addEventListener('animationiteration', restart);
-    var ease = function (p) { return p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2; };
-    var last = -1;
-    var tick = function (now) {
-      var p = Math.min(((now - t0) % CYCLE) / (CYCLE * 0.62), 1);
-      var v = Math.round(ease(p) * TOP / 10) * 10;
-      if (v !== last) { counter.textContent = fmt(v); last = v; }
-      requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  } else if (counter) {
-    counter.textContent = '↗';
   }
 
   /* ---------- Anneau 3D : glisser pour tourner (0,2°/px, comme Ring3D.tsx) + pause hors écran ---------- */
