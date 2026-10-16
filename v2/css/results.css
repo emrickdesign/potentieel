@@ -172,3 +172,6 @@
 :root[data-theme="light"] .res{
   box-shadow:0 -26px 70px -38px rgba(230,118,8,.55),0 34px 80px -44px rgba(230,118,8,.5);
 }
+
+/* « /mois » collé au chiffre des appels */
+.res-unit-per{display:inline-block;margin-left:.08em;font-size:.62em;opacity:.8}
