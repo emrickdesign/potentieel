@@ -8,9 +8,9 @@
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var hasIO = 'IntersectionObserver' in window;
 
-  /* Le footer partagé a des liens d'ancre de l'accueil (#services…) : on les renvoie vers /v2#… */
+  /* Le footer partagé a des liens d'ancre de l'accueil (#services…) : on les renvoie vers /#… */
   document.querySelectorAll('#footer a[href^="#"]').forEach(function (a) {
-    a.setAttribute('href', '/v2' + a.getAttribute('href'));
+    a.setAttribute('href', '/' + a.getAttribute('href'));
   });
 
   if (!hasIO || reduce) {

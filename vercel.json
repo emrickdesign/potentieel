@@ -1,6 +1,9 @@
 {
   "cleanUrls": true,
   "redirects": [
-    { "source": "/", "has": [{ "type": "host", "value": "v2.potentieel.fr" }], "destination": "/v2", "permanent": false }
+    { "source": "/v2", "destination": "/", "permanent": true },
+    { "source": "/v2/", "destination": "/", "permanent": true },
+    { "source": "/v2/index", "destination": "/", "permanent": true },
+    { "source": "/v2/site-internet", "destination": "/site-internet", "permanent": true }
   ]
 }
