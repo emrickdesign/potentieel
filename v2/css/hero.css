@@ -433,3 +433,29 @@
 /* anneau visio : liseré sombre léger + ombre chaude douce */
 :root[data-theme="light"] .hero-call{background:#e9e1d4;box-shadow:0 22px 40px -26px rgba(90,52,14,.5)}
 :root[data-theme="light"] .hero-call::after{box-shadow:inset 0 0 0 1px rgba(15,15,15,.1)}
+
+/* --- Visios encadrées (17/10) : chaque capture posée dans un petit cadre
+   qui la décolle du fond (liseré, reflet en haut, ombre portée). --- */
+.hero-call{
+  padding:7px;border-radius:16px;overflow:visible;
+  background:linear-gradient(160deg,#262626 0%,#141414 55%,#0d0d0d 100%);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.14) inset,
+    0 0 0 1px rgba(255,255,255,.09),
+    0 22px 38px -14px rgba(0,0,0,.85),
+    0 8px 30px -10px rgba(255,153,28,.22);
+}
+.hero-call img{inset:7px;width:calc(100% - 14px);height:calc(100% - 14px);border-radius:10px}
+.hero-call::after{inset:7px;border-radius:10px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.hero-call:is(:root[data-theme="light"] *){
+  background:linear-gradient(160deg,#ffffff 0%,#f7f2ea 100%);
+  box-shadow:
+    0 1px 0 #fff inset,
+    0 0 0 1px rgba(60,40,20,.10),
+    0 22px 36px -16px rgba(90,50,10,.38),
+    0 8px 26px -12px rgba(255,153,28,.30);
+}
+@media (max-width:767px){
+  .hero-call{padding:5px;border-radius:12px}
+  .hero-call img,.hero-call::after{inset:5px;width:calc(100% - 10px);height:calc(100% - 10px);border-radius:8px}
+}

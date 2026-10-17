@@ -521,3 +521,63 @@
 .svc-rev-msg{display:inline-flex;align-items:center;gap:6px;font:600 11px/1 var(--font-body);color:#202124}
 .svc-rev-msg svg{width:14px;height:14px;fill:var(--orange)}
 .svc-rev-real{font:600 10px/1 var(--font-body);color:#166534;background:#e8f7ee;border:1px solid #86d3a4;padding:3px 7px;border-radius:999px}
+
+.svc-price-unit s{text-decoration-color:var(--orange);text-decoration-thickness:2px;opacity:.75}
+
+/* --- Vraies captures Google avec l'emplacement entouré (17/10) --- */
+.svc-media{display:flex;flex-direction:column;justify-content:center;gap:14px;padding:22px;min-height:0}
+.svc-shot{position:relative;margin:0;border-radius:12px;overflow:hidden;
+  box-shadow:0 0 0 1px rgba(255,255,255,.12),0 18px 34px -16px rgba(60,20,0,.7)}
+.svc-shot img{display:block;width:100%;height:auto}
+.svc-spot{
+  position:absolute;left:var(--l);top:var(--t);width:var(--w);height:var(--h);
+  border:3px solid var(--orange);border-radius:12px;pointer-events:none;
+  box-shadow:0 0 0 9999px rgba(8,8,8,.52),0 0 22px rgba(255,153,28,.75),inset 0 0 18px rgba(255,153,28,.25);
+  animation:svc-spot 2.8s ease-in-out infinite;
+}
+@keyframes svc-spot{
+  0%,100%{box-shadow:0 0 0 9999px rgba(8,8,8,.52),0 0 14px rgba(255,153,28,.5),inset 0 0 12px rgba(255,153,28,.15)}
+  50%{box-shadow:0 0 0 9999px rgba(8,8,8,.52),0 0 30px rgba(255,153,28,.95),inset 0 0 22px rgba(255,153,28,.35)}
+}
+.svc-spot-tag{
+  position:absolute;top:-1px;right:-1px;transform:translateY(-50%);
+  padding:6px 11px;border-radius:999px;background:var(--orange);color:#0a0a0a;
+  font:700 12px/1 var(--font-body);white-space:nowrap;box-shadow:0 6px 16px -6px rgba(0,0,0,.6);
+}
+.svc-spot[style*="--t:2"] .svc-spot-tag{transform:translateY(10px);right:10px}
+.svc-media .svc-rev{margin-top:0}
+
+/* 4e emplacement : les sites internet, ceux qui ne paient pas */
+.svc-below{
+  max-width:900px;margin:72px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center;
+  padding:22px;border-radius:20px;border:1px dashed rgba(255,255,255,.18);background:rgba(255,255,255,.02);
+}
+.svc-below-shot{margin:0;border-radius:12px;overflow:hidden;position:relative;filter:grayscale(.85) brightness(.75)}
+.svc-below-shot::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(10,10,10,.85))}
+.svc-below-shot img{display:block;width:100%;height:auto}
+.svc-slot--off{color:var(--muted);border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.04)}
+.svc-slot--off::before{background:var(--muted);box-shadow:none}
+.svc-below-txt{display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+.svc-below-title{font:600 clamp(20px,2vw,24px)/1.2 var(--font-display);letter-spacing:-.02em;color:#fff;margin:0}
+.svc-below-title sup{font-size:.6em}
+.svc-below-p{font:400 15px/1.55 var(--font-body);color:rgba(255,255,255,.7);margin:0}
+@media (max-width:760px){
+  .svc-below{grid-template-columns:1fr;gap:18px;margin-top:48px;padding:16px}
+  .svc-media{padding:14px}
+  .svc-spot-tag{font-size:11px;padding:5px 9px}
+}
+[data-theme="light"] .svc-shot{box-shadow:0 0 0 1px rgba(60,40,20,.12),0 18px 34px -18px rgba(90,50,10,.45)}
+[data-theme="light"] .svc-below{border-color:rgba(60,40,20,.2);background:rgba(255,255,255,.55)}
+[data-theme="light"] .svc-below-title{color:#0f0f0f}
+[data-theme="light"] .svc-below-p{color:#5a5047}
+[data-theme="light"] .svc-slot--off{color:#7a6f63;border-color:rgba(60,40,20,.2);background:rgba(60,40,20,.04)}
+@media (prefers-reduced-motion:reduce){.svc-spot{animation:none}}
+
+/* captures sans cadre orange : étiquette au-dessus, image aérée */
+.svc-shot{overflow:visible;box-shadow:none;display:flex;flex-direction:column;gap:10px}
+.svc-shot img{border-radius:12px;box-shadow:0 0 0 1px rgba(255,255,255,.12),0 18px 34px -16px rgba(60,20,0,.7)}
+.svc-shot-tag{align-self:flex-start;padding:6px 12px;border-radius:999px;background:#0a0a0a;color:#fff;
+  font:700 12px/1 var(--font-body);display:inline-flex;align-items:center;gap:7px}
+.svc-shot-tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--orange);box-shadow:0 0 8px var(--orange)}
+[data-theme="light"] .svc-shot{box-shadow:none}
+[data-theme="light"] .svc-shot img{box-shadow:0 0 0 1px rgba(60,40,20,.12),0 18px 34px -18px rgba(90,50,10,.45)}
