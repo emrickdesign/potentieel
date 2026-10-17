@@ -483,3 +483,19 @@
 .site-name-dim{margin-top:12px;opacity:.35;font-size:13px;color:#bdc1c6;line-height:1.5}
 @media (max-width:860px){.site-name{grid-template-columns:1fr}}
 [data-theme="light"] .site-name-p{color:#5a5047}
+
+/* --- Vrais sites clients dans le navigateur du hero (défilent toutes les 3 s, cliquables) --- */
+.site-demos{position:relative;padding:0!important;aspect-ratio:16/10;overflow:hidden;background:#111}
+.site-demo{position:absolute;inset:0;display:block;opacity:0;transform:scale(1.04);visibility:hidden;
+  transition:opacity .9s var(--ease),transform 3.2s var(--ease),visibility 0s .9s}
+.site-demo.is-on{opacity:1;transform:none;visibility:visible;transition:opacity .9s var(--ease),transform 3.2s var(--ease),visibility 0s}
+.site-demo img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+.site-demo-cta{position:absolute;right:12px;bottom:12px;display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;
+  background:rgba(10,10,10,.82);color:#fff;font:600 12.5px/1 var(--font-body);border:1px solid rgba(255,255,255,.18);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:background .3s,color .3s,transform .3s var(--ease)}
+.site-demo-cta svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+.site-demo:hover .site-demo-cta{background:var(--orange);color:#0a0a0a;transform:translateY(-2px)}
+.site-demo-dots{position:absolute;left:12px;bottom:16px;display:flex;gap:6px;z-index:2}
+.site-demo-dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.45);transition:width .4s var(--ease),background .4s}
+.site-demo-dots i.is-on{width:20px;border-radius:99px;background:var(--orange)}
+@media (prefers-reduced-motion:reduce){.site-demo{transition:none;transform:none}}

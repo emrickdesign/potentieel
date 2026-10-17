@@ -83,3 +83,20 @@
     });
   }
 })();
+
+/* Navigateur du hero : vrais sites clients qui défilent (pause au survol) */
+(function(){
+  var box=document.querySelector('.site-demos'); if(!box) return;
+  var demos=box.querySelectorAll('.site-demo'), dots=box.querySelectorAll('.site-demo-dots i');
+  var url=document.querySelector('.site-browser-url'), i=0, hold=false;
+  function show(n){
+    demos.forEach(function(d,k){ d.classList.toggle('is-on',k===n); d.setAttribute('tabindex',k===n?'0':'-1'); });
+    dots.forEach(function(d,k){ d.classList.toggle('is-on',k===n); });
+    if(url) url.textContent=demos[n].getAttribute('data-url');
+  }
+  show(0);
+  if(demos.length<2) return;
+  box.addEventListener('mouseenter',function(){hold=true;});
+  box.addEventListener('mouseleave',function(){hold=false;});
+  setInterval(function(){ if(hold||document.hidden) return; i=(i+1)%demos.length; show(i); },3000);
+})();
