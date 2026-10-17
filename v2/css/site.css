@@ -464,3 +464,9 @@
 .site-shot-rank{left:-14px;top:14px}
 .site-shot-tag{top:18px;right:16px}
 @media (max-width:600px){.site-shot-rank{left:-10px;top:10px}.site-shot-tag{top:12px;right:10px}}
+/* blocs rapprochés : chaque capture a ~3,7 % de marge de fond Google en haut et en bas,
+   on en fait chevaucher une partie pour retrouver l'espacement réel de Google */
+.site-serp-paid .site-shot + .site-shot,.site-shot--site{margin-top:-4.2%}
+.site-shot + .site-shot,.site-shot--site{z-index:0}
+.site-shot::after{inset:3.4% 4px}
+.site-shot--site{margin-top:0}
