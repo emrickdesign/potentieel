@@ -464,9 +464,22 @@
 .site-shot-rank{left:-14px;top:14px}
 .site-shot-tag{top:18px;right:16px}
 @media (max-width:600px){.site-shot-rank{left:-10px;top:10px}.site-shot-tag{top:12px;right:10px}}
-/* blocs rapprochés : chaque capture a ~3,7 % de marge de fond Google en haut et en bas,
-   on en fait chevaucher une partie pour retrouver l'espacement réel de Google */
-.site-serp-paid .site-shot + .site-shot,.site-shot--site{margin-top:-4.2%}
-.site-shot + .site-shot,.site-shot--site{z-index:0}
-.site-shot::after{inset:3.4% 4px}
-.site-shot--site{margin-top:0}
+
+/* --- « Et si on tape ton nom ? » : là, le site sort en premier --- */
+.site-name{margin:clamp(40px,5vw,64px) auto 0;max-width:880px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:clamp(24px,4vw,48px);align-items:center}
+.site-name-txt{display:flex;flex-direction:column;gap:12px}
+.site-name-title{margin:0;font:600 clamp(22px,2.4vw,30px)/1.15 var(--font-display);letter-spacing:-.03em}
+.site-name-title em{font-style:normal;color:var(--orange)}
+.site-name-p{margin:0;font-size:16px;line-height:1.55;color:rgba(255,255,255,.72)}
+.site-name-mock{padding:16px;border-radius:22px;background:#23242a;border:1px solid rgba(255,255,255,.1);box-shadow:0 40px 80px -40px rgba(0,0,0,.8)}
+.site-name-bar{display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:999px;background:#2f3036;color:#e8e8e8;font-size:14px;margin-bottom:14px}
+.site-name-bar svg{width:18px;height:18px;flex:none}
+.site-name-res{position:relative;padding:14px 16px;border-radius:14px;border:2px solid rgba(var(--orange-rgb),.85);box-shadow:0 0 0 4px rgba(var(--orange-rgb),.12),0 0 40px -8px rgba(var(--orange-rgb),.6)}
+.site-name-url{display:flex;align-items:center;gap:10px;font-size:12.5px;color:#bdc1c6}
+.site-name-fav{width:26px;height:26px;border-radius:50%;background:var(--orange);display:grid;place-items:center;color:#0a0a0a;font-weight:800;font-size:12px}
+.site-name-h{margin:8px 0 4px;font-size:18px;color:#8ab4f8;line-height:1.3}
+.site-name-d{font-size:13px;line-height:1.5;color:#bdc1c6}
+.site-name-tag{position:absolute;top:-12px;right:12px;padding:5px 11px;border-radius:999px;background:var(--orange);color:#0a0a0a;font:700 12px/1 var(--font-body)}
+.site-name-dim{margin-top:12px;opacity:.35;font-size:13px;color:#bdc1c6;line-height:1.5}
+@media (max-width:860px){.site-name{grid-template-columns:1fr}}
+[data-theme="light"] .site-name-p{color:#5a5047}
