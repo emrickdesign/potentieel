@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Site internet pour artisan — Potentieel</title>
+<meta name="description" content="Ton site ne fait pas sonner ton téléphone : sur Google, il arrive après le LSA, les annonces et la carte. Son vrai travail, c'est de faire signer ceux qui te connaissent déjà.">
+<meta name="robots" content="noindex">
+<script>try{var t=localStorage.getItem('pt-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);else document.documentElement.setAttribute('data-theme','dark')}catch(e){document.documentElement.setAttribute('data-theme','dark')}</script>
+<script>/* révélations au scroll : masquées seulement si JS tourne ; filet de sécurité si site.js ne démarre pas */(function(r){if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;r.classList.add('site-js');setTimeout(function(){if(!window.__siteReady)r.classList.remove('site-js')},3000)})(document.documentElement)</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/v2/css/tokens.css">
+<link rel="stylesheet" href="/v2/css/base.css">
+<link rel="stylesheet" href="/v2/css/hero.css">
+<link rel="stylesheet" href="/v2/css/site.css">
+<link rel="stylesheet" href="/v2/css/footer.css">
+</head>
+<body class="site-page">
+<!-- ===== NAVBAR de la page « Site internet » : copie du header de sections/hero.html (mêmes classes hero-*, même JS hero.js), liens vers l'accueil ===== -->
+<style>/* 5e lien (« Site internet ») : entre 900 et 1279 px les liens centrés en absolu chevauchaient le logo / le bouton thème → liens dans le flux, plus serrés, libellé court */
+@media (min-width:900px) and (max-width:1279px){.hero-links{position:static;transform:none;margin:0 auto;padding:6px}.hero-link{height:36px;padding:0 12px;font-size:11px}.hero-nav-inner > .hero-theme{margin-left:0}.hero-link-x{display:none}}
+@media (min-width:900px) and (max-width:1023px){.hero-link{padding:0 8px}}</style>
+<header class="hero-nav" id="hero-nav">
+  <div class="hero-nav-inner">
+    <a class="hero-logo" href="/v2/" aria-label="Potentieel, accueil">
+      <span class="hero-logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32"><path d="M9 23.5V8.5h8.2c3.6 0 5.8 2 5.8 5.1 0 3.2-2.3 5.2-5.8 5.2H13" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="23.5" r="2.2" fill="currentColor"/></svg>
+      </span>
+      <span class="hero-logo-word">Potentieel</span>
+    </a>
+
+    <nav class="hero-links" aria-label="Navigation principale">
+      <a class="hero-link" href="/v2#services">Services</a>
+      <a class="hero-link" href="/v2#results">Résultats</a>
+      <a class="hero-link" href="/v2#pricing">Tarifs</a>
+      <a class="hero-link" href="/v2#reviews">Avis</a>
+      <a class="hero-link is-active" href="/v2/site-internet" aria-current="page">Site<span class="hero-link-x">&nbsp;internet</span></a>
+    </nav>
+
+    <button class="hero-theme" type="button" data-theme-toggle aria-label="Passer en mode clair">
+      <span class="hero-theme-in">
+        <svg class="hero-theme-ic" viewBox="0 0 24 24" aria-hidden="true">
+          <g class="hero-theme-sun"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.55 1.55M17.15 17.15l1.55 1.55M5.3 18.7l1.55-1.55M17.15 6.85l1.55-1.55"/></g>
+          <path class="hero-theme-moon" d="M20.2 14.6A8.3 8.3 0 0 1 9.4 3.8a8.3 8.3 0 1 0 10.8 10.8z"/>
+        </svg>
+      </span>
+    </button>
+
+    <a class="btn btn-primary btn-sm hero-nav-cta" href="/contact">
+      <span class="btn-label">Réserver mon appel</span>
+      <span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M88 40l112 88-112 88z"/></svg></span>
+    </a>
+
+    <button class="hero-burger" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="hero-menu">
+      <span></span><span></span>
+    </button>
+  </div>
+
+  <div class="hero-menu" id="hero-menu" hidden>
+    <a href="/v2#services">Services</a>
+    <a href="/v2#results">Résultats</a>
+    <a href="/v2#pricing">Tarifs</a>
+    <a href="/v2#reviews">Avis</a>
+    <a href="/v2/site-internet" aria-current="page" class="site-nav-current">Site internet</a>
+    <button class="hero-menu-theme" type="button" data-theme-toggle aria-label="Passer en mode clair">
+      <span class="hero-theme hero-theme--sm" aria-hidden="true"><span class="hero-theme-in">
+        <svg class="hero-theme-ic" viewBox="0 0 24 24" aria-hidden="true">
+          <g class="hero-theme-sun"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.55 1.55M17.15 17.15l1.55 1.55M5.3 18.7l1.55-1.55M17.15 6.85l1.55-1.55"/></g>
+          <path class="hero-theme-moon" d="M20.2 14.6A8.3 8.3 0 0 1 9.4 3.8a8.3 8.3 0 1 0 10.8 10.8z"/>
+        </svg>
+      </span></span>
+      <span class="hero-menu-theme-lbl hero-menu-theme-lbl--to-light">Mode clair</span>
+      <span class="hero-menu-theme-lbl hero-menu-theme-lbl--to-dark">Mode sombre</span>
+    </button>
+    <a class="btn btn-primary btn-lg" href="/contact">
+      <span class="btn-label">Réserver mon appel</span>
+      <span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M88 40l112 88-112 88z"/></svg></span>
+    </a>
+  </div>
+</header>
+
+<main>
+<!-- ===== SITE INTERNET — hero de page ===== -->
+<section id="site-hero" class="site-hero" aria-labelledby="site-hero-title">
+  <div class="site-hero-bg" aria-hidden="true">
+    <span class="site-hero-grid"></span>
+    <span class="site-glow site-glow--a"></span>
+    <span class="site-glow site-glow--b"></span>
+  </div>
+
+  <div class="site-container site-hero-inner">
+    <div class="site-hero-text">
+      <h1 id="site-hero-title" class="site-hero-title">
+        <span class="site-hero-line">Ton site ne fait pas sonner ton téléphone.</span>
+        <span class="site-hero-line">Il fait <span class="site-hl"><span class="site-hl-txt">signer tes devis</span></span>.</span>
+      </h1>
+      <p class="site-hero-sub">Sur Google, les clients appellent ceux qui sont tout en haut. Ton site arrive après. Son vrai travail&nbsp;: rassurer ceux qui te connaissent déjà, pour que ce soit toi qu'ils choisissent.</p>
+      <div class="site-hero-actions">
+        <a class="btn btn-primary btn-lg btn-glow" href="/contact">
+          <span class="btn-label">Réserver mon appel</span>
+          <span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M88 40l112 88-112 88z"/></svg></span>
+        </a>
+        <a class="site-hero-link" href="#site-serp">Où est ton site sur Google&nbsp;?<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a>
+      </div>
+    </div>
+
+    <!-- visuel : d'où viennent les gens qui visitent ton site → ton site → demande de devis -->
+    <div class="site-hero-visual" aria-hidden="true">
+      <ul class="site-src">
+        <li class="site-src-chip" style="--d:0"><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.1-7-11.5A7 7 0 0 1 19 9.5C19 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Ta fiche Google</li>
+        <li class="site-src-chip" style="--d:1"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg>Le bouche-à-oreille</li>
+        <li class="site-src-chip" style="--d:2"><svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg>Ton camion</li>
+        <li class="site-src-chip" style="--d:3"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/></svg>Ton devis</li>
+      </ul>
+
+      <div class="site-browser">
+        <div class="site-browser-bar"><i></i><i></i><i></i><span class="site-browser-url">ton-entreprise.fr</span></div>
+        <div class="site-browser-body">
+          <div class="site-mock-top"><span class="site-mock-logo"></span><span class="site-mock-nav"><b></b><b></b><b></b></span><span class="site-mock-call">Appeler</span></div>
+          <div class="site-mock-hero">
+            <span class="site-mock-h"></span><span class="site-mock-h site-mock-h--short"></span>
+            <span class="site-mock-stars"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></span>
+            <span class="site-mock-btns"><span class="site-mock-btn">Demander un devis</span><span class="site-mock-btn site-mock-btn--ghost">WhatsApp</span></span>
+          </div>
+          <div class="site-mock-gallery"><span></span><span></span><span></span></div>
+        </div>
+        <div class="site-toast">
+          <span class="site-toast-ico"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+          <span class="site-toast-txt"><strong>Demande de devis reçue</strong><span>via ton site</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SITE INTERNET — Où est ton site sur Google ? (vraies captures, dans l'ordre réel de la page) ===== -->
+<section id="site-serp" class="site-serp" aria-labelledby="site-serp-title">
+  <span class="site-glow site-glow--c" aria-hidden="true"></span>
+  <div class="site-container">
+    <header class="site-head" data-site-reveal>
+      <h2 id="site-serp-title" class="site-title">Sur Google, ton site arrive <span class="site-accent">en 4<sup>e</sup> position.</span></h2>
+      <p class="site-sub">Tape «&nbsp;rénovation toiture annecy&nbsp;»&nbsp;: avant le premier site, ton client voit trois blocs. C'est là qu'il appelle. Un artisan qui n'a qu'un site reçoit très peu d'appels de Google.</p>
+    </header>
+
+    <div class="site-serp-grid">
+      <!-- légende (sticky sur ordinateur) : s'allume avec la capture visible -->
+      <ol class="site-serp-legend" data-site-reveal>
+        <li class="site-leg" data-leg="1"><span class="site-leg-num">1</span><span class="site-leg-txt"><strong>Le LSA</strong><span>Tout en haut. Les annonces «&nbsp;Validé par Google&nbsp;», payées à l'appel.</span></span></li>
+        <li class="site-leg" data-leg="2"><span class="site-leg-num">2</span><span class="site-leg-txt"><strong>Les annonces Google Ads</strong><span>Ton métier, dans ta ville, juste en dessous.</span></span></li>
+        <li class="site-leg" data-leg="3"><span class="site-leg-num">3</span><span class="site-leg-txt"><strong>La carte et les fiches</strong><span>Les entreprises du coin, avec leurs avis et leurs photos.</span></span></li>
+        <li class="site-leg site-leg--site" data-leg="4"><span class="site-leg-num">4</span><span class="site-leg-txt"><strong>Les sites</strong><span>Seulement ici. Ton client a souvent déjà appelé quelqu'un au-dessus.</span></span></li>
+        <li class="site-serp-take">
+          <p>Pour <strong>attirer</strong> des clients, ce sont les 3 places du dessus. On te met sur les trois.</p>
+          <a class="btn btn-primary btn-sm" href="/v2#pricing"><span class="btn-label">Voir les offres</span><span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M88 40l112 88-112 88z"/></svg></span></a>
+        </li>
+      </ol>
+
+      <!-- la page Google, de haut en bas -->
+      <div class="site-serp-page" data-site-reveal>
+        <div class="site-serp-search">
+          <svg class="site-serp-g" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+          <span class="site-serp-q">rénovation toiture annecy</span>
+          <svg class="site-serp-lens" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
+        </div>
+
+        <div class="site-serp-paid">
+          <span class="site-serp-brace" aria-hidden="true"></span>
+          <span class="site-serp-brace-tag">Là où les clients appellent</span>
+          <figure class="site-shot" data-shot="1">
+            <span class="site-shot-rank">1</span>
+            <figcaption class="site-shot-tag">Le LSA</figcaption>
+            <img src="/v2/assets/services/serp-lsa.webp" alt="Vraie recherche Google « rénovation toiture annecy » : le bloc LSA tout en haut" width="1000" height="552" loading="lazy" decoding="async">
+          </figure>
+          <figure class="site-shot" data-shot="2">
+            <span class="site-shot-rank">2</span>
+            <figcaption class="site-shot-tag">Google Ads</figcaption>
+            <img src="/v2/assets/services/serp-ads.webp" alt="Même recherche : les annonces Google Ads sous le LSA" width="1000" height="438" loading="lazy" decoding="async">
+          </figure>
+          <figure class="site-shot" data-shot="3">
+            <span class="site-shot-rank">3</span>
+            <figcaption class="site-shot-tag">La carte et les fiches</figcaption>
+            <img src="/v2/assets/services/serp-fiche.webp" alt="Même recherche : la carte et les fiches Google des entreprises" width="1000" height="792" loading="lazy" decoding="async">
+          </figure>
+        </div>
+
+        <figure class="site-shot site-shot--site" data-shot="4">
+          <span class="site-shot-rank">4</span>
+          <figcaption class="site-shot-tag">Les sites, seulement ici</figcaption>
+          <img src="/v2/assets/services/serp-sites.webp" alt="Même recherche : les premiers sites internet n'arrivent qu'après le LSA, les annonces et la carte" width="1000" height="688" loading="lazy" decoding="async">
+        </figure>
+        <p class="site-serp-note">Captures d'une vraie recherche Google, dans l'ordre de la page.</p>
+      </div>
+      <div class="site-serp-take site-serp-take--m">
+        <p>Pour <strong>attirer</strong> des clients, ce sont les 3 places du dessus. On te met sur les trois.</p>
+        <a class="btn btn-primary btn-sm" href="/v2#pricing"><span class="btn-label">Voir les offres</span><span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M88 40l112 88-112 88z"/></svg></span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SITE INTERNET — À quoi sert vraiment ton site ===== -->
+<section id="site-role" class="site-role" aria-labelledby="site-role-title">
+  <span class="site-glow site-glow--d" aria-hidden="true"></span>
+  <div class="site-container">
+    <header class="site-head" data-site-reveal>
+      <h2 id="site-role-title" class="site-title">Son vrai travail&nbsp;: faire signer <span class="site-accent">ceux qui te connaissent déjà.</span></h2>
+      <p class="site-sub">Un voisin t'a recommandé, il a vu ton camion, ta fiche ou ton annonce. Avant d'appeler, il tape ton nom. Ce qu'il trouve décide s'il t'appelle, toi.</p>
+    </header>
+
+    <!-- parcours du futur client -->
+    <ol class="site-path" data-site-reveal>
+      <li class="site-step"><span class="site-step-dot"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H8l-4 4z"/></svg></span><strong>Il entend parler de toi</strong><span>Bouche-à-oreille, camion, fiche, annonce.</span></li>
+      <li class="site-step"><span class="site-step-dot"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg></span><strong>Il tape ton nom</strong><span>Pour vérifier qui tu es avant d'appeler.</span></li>
+      <li class="site-step"><span class="site-step-dot"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 9h18"/></svg></span><strong>Il tombe sur ton site</strong><span>Tes chantiers, tes avis, ce que tu fais.</span></li>
+      <li class="site-step site-step--win"><span class="site-step-dot"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></span><strong>Il t'appelle</strong><span>Ou il signe le devis que tu lui as envoyé.</span></li>
+    </ol>
+
+    <!-- ce que le site doit faire -->
+    <div class="site-roles">
+      <article class="site-rc" data-site-reveal style="--i:0">
+        <div class="site-rc-vis site-vis-trust" aria-hidden="true">
+          <span><i></i>SIRET</span><span><i></i>Assurance décennale</span><span><i></i>Adresse et téléphone</span>
+        </div>
+        <h3>Inspirer confiance</h3>
+        <p>Un nom, une adresse, un SIRET, tes assurances. Il voit tout de suite que tu es une vraie entreprise, sérieuse.</p>
+      </article>
+      <article class="site-rc" data-site-reveal style="--i:1">
+        <div class="site-rc-vis site-vis-chips" aria-hidden="true">
+          <span>Toiture</span><span>Zinguerie</span><span>Charpente</span><span>Isolation</span>
+        </div>
+        <h3>Montrer ce que tu fais</h3>
+        <p>Tes prestations, une par une. Il sait si tu fais ce qu'il cherche sans avoir à te poser la question.</p>
+      </article>
+      <article class="site-rc" data-site-reveal style="--i:2">
+        <div class="site-rc-vis site-vis-ba" aria-hidden="true">
+          <span class="site-ba-before">Avant</span><span class="site-ba-after">Après</span><i class="site-ba-handle"></i>
+        </div>
+        <h3>Prouver avec tes chantiers</h3>
+        <p>Ton expérience et tes photos avant/après. Rien ne rassure plus qu'un chantier terminé.</p>
+      </article>
+      <article class="site-rc" data-site-reveal style="--i:3">
+        <div class="site-rc-vis site-vis-stars" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+        </div>
+        <h3>Afficher tes avis</h3>
+        <p>Ce que tes clients disent de toi, visible d'un coup d'œil. C'est souvent ce qui fait la différence.</p>
+      </article>
+      <article class="site-rc" data-site-reveal style="--i:4">
+        <div class="site-rc-vis site-vis-contact" aria-hidden="true">
+          <span class="site-vc site-vc--call"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>Appeler</span>
+          <span class="site-vc"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/></svg>Devis</span>
+          <span class="site-vc"><svg viewBox="0 0 24 24"><path d="M20 11.5a8.5 8.5 0 0 1-12.6 7.4L3 20l1.2-4.2A8.5 8.5 0 1 1 20 11.5z"/></svg>WhatsApp</span>
+        </div>
+        <h3>Être joignable en un geste</h3>
+        <p>Appel, formulaire ou WhatsApp, en un clic depuis son téléphone. Pas de numéro à chercher.</p>
+      </article>
+      <article class="site-rc site-rc--fiche" data-site-reveal style="--i:5">
+        <div class="site-rc-vis site-vis-fiche" aria-hidden="true">
+          <span class="site-vf-card"><b></b><em></em><span class="site-vf-link"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg>Site web</span></span>
+          <span class="site-vf-wire"></span>
+          <span class="site-vf-site"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 9h18"/></svg></span>
+        </div>
+        <h3>Nourrir ta fiche Google</h3>
+        <p>Le lien de ton site sur ta fiche, les mêmes infos partout, une page par prestation. Google comprend mieux ce que tu fais.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SITE INTERNET — Ce qu'on met dedans ===== -->
+<section id="site-inside" class="site-inside" aria-labelledby="site-inside-title">
+  <span class="site-glow site-glow--e" aria-hidden="true"></span>
+  <div class="site-container">
+    <header class="site-head" data-site-reveal>
+      <h2 id="site-inside-title" class="site-title">Ce qu'on met <span class="site-accent">dans ton site.</span></h2>
+      <p class="site-sub">Tout ce qu'il faut à un artisan du bâtiment, rien de décoratif. <span class="site-count"><b data-site-count="10">10</b> briques, déjà prévues.</span></p>
+    </header>
+
+    <ul class="site-feats">
+      <li class="site-feat" data-site-reveal style="--i:0"><span class="site-feat-ico"><svg viewBox="0 0 24 24"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg></span><h3>Une page par prestation</h3><p>Chaque métier a sa page. Ton client trouve tout de suite ce qu'il cherche, et Google aussi.</p></li>
+      <li class="site-feat" data-site-reveal style="--i:1"><span class="site-feat-ico"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 8"/></svg></span><h3>Galerie de chantiers</h3><p>Tes photos avant/après, rangées par type de travaux.</p></li>
+      <li class="site-feat" data-site-reveal style="--i:2"><span class="site-feat-ico"><svg viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8L3.5 9.7l5.9-.9z"/></svg></span><h3>Tes avis clients</h3><p>Tes vrais avis Google mis en avant, là où ils rassurent.</p></li>
+      <li class="site-feat" data-site-reveal style="--i:3"><span class="site-feat-ico"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/></svg></span><h3>Formulaire de demande de devis</h3><p>Court et clair. La demande arrive chez toi avec ce qu'il te faut pour rappeler.</p></li>
+      <li class="site-feat" data-site-reveal style="--i:4"><span class="site-feat-ico"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></span><h3>Bouton d'appel et WhatsApp</h3><p>Toujours visibles sur téléphone. Un doigt, et il t'appelle.</p></li>
+      <li class="site-feat" data-site-reveal style="--i:5"><span class="site-feat-ico"><svg viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg></span><h3>Rapide et parfait sur mobile</h3><p>Pensé d'abord pour le téléphone, là où tes clients te cherchent.</p></li>
+      <li class="site-feat" data-site-reveal style="--i:6"><span class="site-feat-ico"><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.1-7-11.5A7 7 0 0 1 19 9.5C19 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span><h3>Référencement local</h3><p>Tes villes et ta zone d'intervention écrites noir sur blanc, pour que Google te situe.</p></li>
+      <li class="site-feat" data-site-reveal style="--i:7"><span class="site-feat-ico"><svg viewBox="0 0 24 24"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/></svg></span><h3>Lien avec ta fiche Google</h3><p>Même nom, même adresse, même téléphone partout. Ta fiche et ton site se renforcent.</p></li>
+      <li class="site-feat" data-site-reveal style="--i:8"><span class="site-feat-ico"><svg viewBox="0 0 24 24"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.2-7.5 9.5-4.3-1.3-7.5-4.9-7.5-9.5V6z"/><path d="M8.8 12.2l2.2 2.2 4.3-4.4"/></svg></span><h3>Mentions légales</h3><p>Mentions obligatoires et page de confidentialité. Tu es en règle.</p></li>
+      <li class="site-feat" data-site-reveal style="--i:9"><span class="site-feat-ico"><svg viewBox="0 0 24 24"><rect x="3.5" y="4" width="17" height="6.5" rx="1.8"/><rect x="3.5" y="13.5" width="17" height="6.5" rx="1.8"/><path d="M7.5 7.2h.01M7.5 16.7h.01"/></svg></span><h3>Hébergement et nom de domaine</h3><p>Ton nom de domaine, le site en ligne et sécurisé. Tu n'as rien à gérer.</p></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== SITE INTERNET — CTA de fin de page (avant le CTA du footer) ===== -->
+<section id="site-cta" class="site-cta" aria-labelledby="site-cta-title">
+  <div class="site-container">
+    <div class="site-cta-box" data-site-reveal>
+      <span class="site-cta-ring" aria-hidden="true"></span>
+      <h2 id="site-cta-title" class="site-title">Le site rassure. <span class="site-accent">Les 3 places font sonner.</span></h2>
+      <p class="site-sub">Ensemble, ils remplissent ton carnet. En un appel, on regarde où tu en es sur Google et ce qu'il manque à ton site.</p>
+      <div class="site-cta-actions">
+        <a class="btn btn-primary btn-lg btn-glow" href="/contact">
+          <span class="btn-label">Réserver mon appel</span>
+          <span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M88 40l112 88-112 88z"/></svg></span>
+        </a>
+        <a class="btn btn-ghost btn-lg" href="/v2#services">
+          <span class="btn-label">Voir les 3 places</span>
+          <span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M88 40l112 88-112 88z"/></svg></span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+<footer id="footer" class="ftr">
+  <div class="ftr-glow ftr-glow-a" aria-hidden="true"></div>
+  <div class="ftr-glow ftr-glow-b" aria-hidden="true"></div>
+
+  <!-- ===== CTA final (calqué sur « Ready To Grow? » d'Impacta) ===== -->
+  <section class="ftr-cta" aria-labelledby="ftr-cta-title">
+    <div class="ftr-container">
+     <div class="ftr-cta-card">
+      <div class="ftr-cta-bg" aria-hidden="true"><span class="ftr-cta-grid"></span><span class="ftr-cta-light ftr-cta-light-a"></span><span class="ftr-cta-light ftr-cta-light-b"></span></div>
+      <div class="ftr-cta-inner">
+      <div class="ftr-cta-text">
+        <h2 id="ftr-cta-title" class="ftr-cta-title ftr-up">Prends ta place sur Google <span class="ftr-accent">avant ton concurrent.</span></h2>
+        <p class="ftr-cta-sub ftr-up">Un appel pour regarder où tu apparais aujourd'hui sur Google, et ce qu'on peut monter pour toi en 7 jours.</p>
+        <div class="ftr-up">
+          <a class="btn btn-dark btn-lg ftr-cta-btn" href="/contact">
+            <span class="btn-label">Réserver mon appel</span>
+            <span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M96 48l96 80-96 80z"/></svg></span>
+          </a>
+        </div>
+        <ul class="ftr-reassure ftr-up">
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>En ligne en 7 jours</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Monté par un ancien artisan</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>LSA et fiche offerts</li>
+        </ul>
+      </div>
+
+      <div class="ftr-cta-visual ftr-up" aria-hidden="true">
+        <div class="ftr-phone-glow"></div>
+        <div class="ftr-phone">
+          <div class="ftr-phone-screen">
+            <img class="ftr-shot is-on" src="/v2/assets/reviews/temoin4.jpg" width="720" height="900" alt="" loading="lazy">
+            <img class="ftr-shot" src="/v2/assets/reviews/temoin7.jpg" width="720" height="900" alt="" loading="lazy">
+            <img class="ftr-shot" src="/v2/assets/reviews/temoin8.jpg" width="720" height="900" alt="" loading="lazy">
+            <div class="ftr-phone-shade"></div>
+            <div class="ftr-island"></div>
+            <div class="ftr-notif">
+              <span class="ftr-notif-ico"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></span>
+              <span class="ftr-notif-txt"><strong>Appel entrant</strong><span class="ftr-notif-src">Nouveau client · via <b data-ftr-src>Google Ads</b></span></span>
+            </div>
+            <div class="ftr-call">
+              <span class="ftr-call-btn ftr-call-no"><svg viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg></span>
+              <span class="ftr-call-btn ftr-call-yes"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+     </div>
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
+  <div class="ftr-container ftr-main">
+    <div class="ftr-cols">
+      <div class="ftr-brand">
+        <a class="ftr-logo" href="/v2/" aria-label="Potentieel, accueil">
+          <span class="ftr-logo-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg></span>
+          <span class="ftr-logo-word">Potentieel</span>
+        </a>
+        <p class="ftr-tagline">Google Ads, LSA et fiche Google pour les entreprises du bâtiment. Montés par un ancien artisan.</p>
+      </div>
+
+      <nav class="ftr-links" aria-label="Pied de page">
+        <div class="ftr-group">
+          <p class="ftr-label">Navigation</p>
+          <ul>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#results">Résultats</a></li>
+            <li><a href="#pricing">Tarifs</a></li>
+            <li><a href="#reviews">Avis</a></li>
+            <li><a href="/contact">Contact</a></li>
+          </ul>
+        </div>
+        <div class="ftr-group">
+          <p class="ftr-label">Légal</p>
+          <ul>
+            <li><a href="/legal/mentions">Mentions légales</a></li>
+            <li><a href="/legal/cgv">CGV</a></li>
+            <li><a href="/legal/confidentialite">Confidentialité</a></li>
+            <li><a href="/legal/cookies">Cookies</a></li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="ftr-card">
+        <p class="ftr-card-title">Une question avant de réserver ?</p>
+        <a class="ftr-card-row" href="tel:+33769387613">
+          <span class="ftr-card-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></span>
+          07 69 38 76 13
+        </a>
+        <a class="ftr-card-row" href="https://wa.me/33769387613" target="_blank" rel="noopener">
+          <span class="ftr-card-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a8.5 8.5 0 0 1-12.6 7.4L3 20l1.2-4.2A8.5 8.5 0 1 1 20 11.5z"/></svg></span>
+          WhatsApp
+        </a>
+        <a class="ftr-card-row" href="mailto:potentieel.web@gmail.com">
+          <span class="ftr-card-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>
+          potentieel.web@gmail.com
+        </a>
+        <a class="btn btn-primary btn-sm ftr-card-btn" href="/contact"><span class="btn-label">Réserver mon appel</span><span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M96 48l96 80-96 80z"/></svg></span></a>
+      </div>
+    </div>
+
+    <div class="ftr-bottom">
+      <p>© 2026 Potentieel</p>
+      <p>Google Ads · LSA · Fiche Google</p>
+    </div>
+  </div>
+</footer>
+
+<script src="/v2/js/hero.js" defer></script>
+<script src="/v2/js/site.js" defer></script>
+<script src="/v2/js/footer.js" defer></script>
+</body>
+</html>

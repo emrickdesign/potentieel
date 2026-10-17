@@ -22,6 +22,9 @@
 <!-- ===================== HERO (agent hero) =====================
      Header + navbar : reproduction du header d'agencee.framer.website
      Bande d'appels visio : transposition de l'anneau 3D (Ring3D.tsx) du hero 2RP Rénov -->
+<style>/* 5e lien (« Site internet ») : entre 900 et 1279 px les liens centrés en absolu chevauchaient le logo / le bouton thème → liens dans le flux, plus serrés, libellé court */
+@media (min-width:900px) and (max-width:1279px){.hero-links{position:static;transform:none;margin:0 auto;padding:6px}.hero-link{height:36px;padding:0 12px;font-size:11px}.hero-nav-inner > .hero-theme{margin-left:0}.hero-link-x{display:none}}
+@media (min-width:900px) and (max-width:1023px){.hero-link{padding:0 8px}}</style>
 <header class="hero-nav" id="hero-nav">
   <div class="hero-nav-inner">
     <a class="hero-logo" href="/v2/" aria-label="Potentieel, accueil">
@@ -36,6 +39,7 @@
       <a class="hero-link" href="#results" data-spy="results">Résultats</a>
       <a class="hero-link" href="#pricing" data-spy="pricing">Tarifs</a>
       <a class="hero-link" href="#reviews" data-spy="reviews">Avis</a>
+      <a class="hero-link" href="/v2/site-internet">Site<span class="hero-link-x">&nbsp;internet</span></a>
     </nav>
 
     <button class="hero-theme" type="button" data-theme-toggle aria-label="Passer en mode clair">
@@ -62,6 +66,7 @@
     <a href="#results">Résultats</a>
     <a href="#pricing">Tarifs</a>
     <a href="#reviews">Avis</a>
+    <a href="/v2/site-internet">Site internet</a>
     <button class="hero-menu-theme" type="button" data-theme-toggle aria-label="Passer en mode clair">
       <span class="hero-theme hero-theme--sm" aria-hidden="true"><span class="hero-theme-in">
         <svg class="hero-theme-ic" viewBox="0 0 24 24" aria-hidden="true">
@@ -178,7 +183,6 @@
 
   <div class="svc-container">
     <header class="svc-head">
-      <span class="svc-pill" data-svc-reveal>Services</span>
       <div class="svc-head-txt">
         <h2 id="svc-title" class="svc-title" data-svc-reveal>Sur Google,<br> il y a 3&nbsp;emplacements.<br> On te met sur <span class="svc-hl">les trois</span>.</h2>
         <p class="svc-sub" data-svc-reveal>Sur une même recherche, ton client peut te voir trois fois&nbsp;: tout en haut avec le LSA, dans les annonces, puis sur la carte. Visible trois fois, c'est toi qu'il appelle.</p>
@@ -320,14 +324,6 @@
 
     </div>
 
-    <div class="svc-below" data-svc-reveal>
-      <figure class="svc-below-shot"><img src="/v2/assets/services/serp-sites.webp" alt="Vraie recherche Google : les sites internet classiques, sous la carte" width="1000" height="689" loading="lazy" decoding="async"></figure>
-      <div class="svc-below-txt">
-        <span class="svc-slot svc-slot--off">Tout en dessous · les sites internet</span>
-        <h3 class="svc-below-title">Et en 4<sup>e</sup>&nbsp;? Ceux qui ne paient pas.</h3>
-        <p class="svc-below-p">Les sites classiques arrivent après le LSA, les annonces et la carte. Ton client a presque toujours appelé quelqu'un avant d'arriver là&nbsp;: ces artisans reçoivent très peu d'appels.</p>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -337,7 +333,6 @@
 
   <div class="res-container">
     <header class="res-head">
-      <span class="res-badge" data-res-reveal>Résultats</span>
       <div class="res-text">
         <h2 id="res-title" class="res-title" data-res-reveal><span class="res-accent">Des résultats</span> qui parlent pour nous</h2>
         <p class="res-sub" data-res-reveal>Une campagne en ligne vite, des appels qui tombent chaque mois, et aucun frais caché pour démarrer.</p>
@@ -402,7 +397,6 @@
   <div class="prc-container prc-container--wide">
 
     <div class="prc-head">
-      <span class="prc-pill prc-rv">Tarifs</span>
       <h2 id="prc-title" class="prc-title prc-rv">Une seule offre.<br> <span class="prc-accent">Les 3 places</span> de Google.</h2>
       <p class="prc-sub prc-rv">Tu paies la création de ta campagne Google Ads. Tout le reste, on te l'offre.</p>
     </div>
@@ -412,21 +406,14 @@
       <article class="prc-offer prc-rv" aria-label="L'offre Potentieel">
         <div class="prc-offer-in">
           <ol class="prc-stack">
-            <li class="prc-row prc-row-paid is-on">
+            <li class="prc-row prc-row-paid prc-row-main is-on">
               <span class="prc-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M4.6 8.3l2.2 2.2 4.6-4.9"/></svg></span>
               <div class="prc-row-txt">
                 <h3 class="prc-row-t">Création de ta campagne Google Ads</h3>
                 <p class="prc-row-d">Montée par un ancien artisan, en ligne en 7 jours.</p>
+                <p class="prc-row-bonus"><span class="prc-bonus-tag">+ 2 mois d'honoraires offerts</span> <s class="prc-was-inline"><span class="prc-sr">au lieu de </span><span class="prc-fee-2">580</span>&nbsp;€</s></p>
               </div>
               <span class="prc-val prc-val-paid">700 €</span>
-            </li>
-            <li class="prc-row prc-row-gift is-on">
-              <span class="prc-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M4.6 8.3l2.2 2.2 4.6-4.9"/></svg></span>
-              <div class="prc-row-txt">
-                <h3 class="prc-row-t">Tes 2 premiers mois d'honoraires Google Ads</h3>
-                <p class="prc-row-d">2 × <span class="prc-fee-m">290</span>&nbsp;€, calculé avec ton budget à droite.</p>
-              </div>
-              <span class="prc-val"><s class="prc-was"><span class="prc-sr">au lieu de </span><span class="prc-fee-2">580</span>&nbsp;€</s><span class="prc-free">Offert</span></span>
             </li>
             <li class="prc-row prc-row-gift is-on">
               <span class="prc-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M4.6 8.3l2.2 2.2 4.6-4.9"/></svg></span>
@@ -456,8 +443,8 @@
               <label for="prc-range" class="prc-calc-label">Ton budget Google Ads par mois</label>
               <output class="prc-calc-budget" for="prc-range" id="prc-budget-out"><span class="prc-calc-bnum">800</span> €</output>
             </div>
-            <input type="range" id="prc-range" class="prc-range" min="500" max="3000" step="50" value="800" aria-valuetext="800 € par mois">
-            <div class="prc-calc-scale" aria-hidden="true"><span>500 €</span><span>3 000 €</span></div>
+            <input type="range" id="prc-range" class="prc-range" min="800" max="3000" step="50" value="800" aria-valuetext="800 € par mois">
+            <div class="prc-calc-scale" aria-hidden="true"><span>800 €</span><span>3 000 €</span></div>
           </div>
           <div class="prc-calc-res" aria-live="polite">
             <span class="prc-calc-k">Nos honoraires dès le mois 3</span>
@@ -468,9 +455,7 @@
         <div class="prc-total">
           <div class="prc-total-txt">
             <span class="prc-total-was">Au lieu de <s><span class="prc-total-old">1&nbsp;480</span>&nbsp;€</s></span>
-            <span class="prc-total-k">Tu paies</span>
             <span class="prc-total-amt"><span class="prc-total-num" data-to="700">700</span>&nbsp;€</span>
-            <span class="prc-total-n">Une seule fois, à la signature. Le budget pub est payé directement à Google.</span>
           </div>
           <a class="btn btn-primary btn-glow btn-lg prc-btn" href="/contact"><span class="btn-label"><span class="prc-roll"><span>Réserver mon appel</span><span aria-hidden="true">Réserver mon appel</span></span></span><span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M96 48l96 80-96 80z"/></svg></span></a>
         </div>
@@ -486,7 +471,6 @@
 
   <div class="rev-container">
     <header class="rev-head">
-      <span class="rev-badge rev-up">Avis clients</span>
       <h2 id="rev-title" class="rev-title rev-up">Ils sont <span class="rev-accent">déjà devant</span> leurs concurrents</h2>
       <p class="rev-sub rev-up">Des artisans du bâtiment qui ont pris leur place sur Google. Leurs mots, pas les nôtres.</p>
     </header>
@@ -626,7 +610,6 @@
       <div class="ftr-cta-bg" aria-hidden="true"><span class="ftr-cta-grid"></span><span class="ftr-cta-light ftr-cta-light-a"></span><span class="ftr-cta-light ftr-cta-light-b"></span></div>
       <div class="ftr-cta-inner">
       <div class="ftr-cta-text">
-        <span class="ftr-badge ftr-up">Prêt à passer devant ?</span>
         <h2 id="ftr-cta-title" class="ftr-cta-title ftr-up">Prends ta place sur Google <span class="ftr-accent">avant ton concurrent.</span></h2>
         <p class="ftr-cta-sub ftr-up">Un appel pour regarder où tu apparais aujourd'hui sur Google, et ce qu'on peut monter pour toi en 7 jours.</p>
         <div class="ftr-up">

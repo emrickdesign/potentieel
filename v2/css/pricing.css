@@ -312,3 +312,19 @@
   .prc-side .prc-total{padding:16px 20px;gap:12px}
   .prc-side .prc-total-amt{font-size:clamp(48px,5vw,64px)}
 }
+
+/* ligne Google Ads mise en avant, honoraires offerts dedans */
+.prc--split .prc-row-main{padding:18px 0 20px}
+.prc--split .prc-row-main .prc-row-t{font-size:20px;font-family:var(--font-display);font-weight:700;letter-spacing:-.02em}
+.prc--split .prc-row-main .prc-val-paid{font-size:34px}
+.prc-row-bonus{margin-top:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.prc-bonus-tag{display:inline-flex;align-items:center;padding:7px 11px;border-radius:9px;font-size:13.5px;font-weight:700;line-height:1;
+  color:#0a0a0a;background:var(--orange);box-shadow:0 6px 18px -6px rgba(255,134,13,.7)}
+.prc-was-inline{font-family:var(--font-display);font-size:15px;font-weight:600;color:rgba(255,255,255,.78);
+  text-decoration:line-through;text-decoration-color:var(--orange);text-decoration-thickness:1.5px}
+[data-theme="light"] .prc-was-inline{color:#6b6257}
+@media (max-width:600px){
+  .prc--split .prc-row-main .prc-row-t{font-size:16.5px}
+  .prc--split .prc-row-main .prc-val-paid{font-size:26px}
+  .prc-bonus-tag{font-size:12px;padding:6px 9px;white-space:nowrap}
+}

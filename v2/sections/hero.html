@@ -1,6 +1,9 @@
 <!-- ===================== HERO (agent hero) =====================
      Header + navbar : reproduction du header d'agencee.framer.website
      Bande d'appels visio : transposition de l'anneau 3D (Ring3D.tsx) du hero 2RP Rénov -->
+<style>/* 5e lien (« Site internet ») : entre 900 et 1279 px les liens centrés en absolu chevauchaient le logo / le bouton thème → liens dans le flux, plus serrés, libellé court */
+@media (min-width:900px) and (max-width:1279px){.hero-links{position:static;transform:none;margin:0 auto;padding:6px}.hero-link{height:36px;padding:0 12px;font-size:11px}.hero-nav-inner > .hero-theme{margin-left:0}.hero-link-x{display:none}}
+@media (min-width:900px) and (max-width:1023px){.hero-link{padding:0 8px}}</style>
 <header class="hero-nav" id="hero-nav">
   <div class="hero-nav-inner">
     <a class="hero-logo" href="/v2/" aria-label="Potentieel, accueil">
@@ -15,6 +18,7 @@
       <a class="hero-link" href="#results" data-spy="results">Résultats</a>
       <a class="hero-link" href="#pricing" data-spy="pricing">Tarifs</a>
       <a class="hero-link" href="#reviews" data-spy="reviews">Avis</a>
+      <a class="hero-link" href="/v2/site-internet">Site<span class="hero-link-x">&nbsp;internet</span></a>
     </nav>
 
     <button class="hero-theme" type="button" data-theme-toggle aria-label="Passer en mode clair">
@@ -41,6 +45,7 @@
     <a href="#results">Résultats</a>
     <a href="#pricing">Tarifs</a>
     <a href="#reviews">Avis</a>
+    <a href="/v2/site-internet">Site internet</a>
     <button class="hero-menu-theme" type="button" data-theme-toggle aria-label="Passer en mode clair">
       <span class="hero-theme hero-theme--sm" aria-hidden="true"><span class="hero-theme-in">
         <svg class="hero-theme-ic" viewBox="0 0 24 24" aria-hidden="true">

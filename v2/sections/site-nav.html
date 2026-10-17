@@ -1,0 +1,62 @@
+<!-- ===== NAVBAR de la page « Site internet » : copie du header de sections/hero.html (mêmes classes hero-*, même JS hero.js), liens vers l'accueil ===== -->
+<style>/* 5e lien (« Site internet ») : entre 900 et 1279 px les liens centrés en absolu chevauchaient le logo / le bouton thème → liens dans le flux, plus serrés, libellé court */
+@media (min-width:900px) and (max-width:1279px){.hero-links{position:static;transform:none;margin:0 auto;padding:6px}.hero-link{height:36px;padding:0 12px;font-size:11px}.hero-nav-inner > .hero-theme{margin-left:0}.hero-link-x{display:none}}
+@media (min-width:900px) and (max-width:1023px){.hero-link{padding:0 8px}}</style>
+<header class="hero-nav" id="hero-nav">
+  <div class="hero-nav-inner">
+    <a class="hero-logo" href="/v2/" aria-label="Potentieel, accueil">
+      <span class="hero-logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32"><path d="M9 23.5V8.5h8.2c3.6 0 5.8 2 5.8 5.1 0 3.2-2.3 5.2-5.8 5.2H13" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="23.5" r="2.2" fill="currentColor"/></svg>
+      </span>
+      <span class="hero-logo-word">Potentieel</span>
+    </a>
+
+    <nav class="hero-links" aria-label="Navigation principale">
+      <a class="hero-link" href="/v2#services">Services</a>
+      <a class="hero-link" href="/v2#results">Résultats</a>
+      <a class="hero-link" href="/v2#pricing">Tarifs</a>
+      <a class="hero-link" href="/v2#reviews">Avis</a>
+      <a class="hero-link is-active" href="/v2/site-internet" aria-current="page">Site<span class="hero-link-x">&nbsp;internet</span></a>
+    </nav>
+
+    <button class="hero-theme" type="button" data-theme-toggle aria-label="Passer en mode clair">
+      <span class="hero-theme-in">
+        <svg class="hero-theme-ic" viewBox="0 0 24 24" aria-hidden="true">
+          <g class="hero-theme-sun"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.55 1.55M17.15 17.15l1.55 1.55M5.3 18.7l1.55-1.55M17.15 6.85l1.55-1.55"/></g>
+          <path class="hero-theme-moon" d="M20.2 14.6A8.3 8.3 0 0 1 9.4 3.8a8.3 8.3 0 1 0 10.8 10.8z"/>
+        </svg>
+      </span>
+    </button>
+
+    <a class="btn btn-primary btn-sm hero-nav-cta" href="/contact">
+      <span class="btn-label">Réserver mon appel</span>
+      <span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M88 40l112 88-112 88z"/></svg></span>
+    </a>
+
+    <button class="hero-burger" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="hero-menu">
+      <span></span><span></span>
+    </button>
+  </div>
+
+  <div class="hero-menu" id="hero-menu" hidden>
+    <a href="/v2#services">Services</a>
+    <a href="/v2#results">Résultats</a>
+    <a href="/v2#pricing">Tarifs</a>
+    <a href="/v2#reviews">Avis</a>
+    <a href="/v2/site-internet" aria-current="page" class="site-nav-current">Site internet</a>
+    <button class="hero-menu-theme" type="button" data-theme-toggle aria-label="Passer en mode clair">
+      <span class="hero-theme hero-theme--sm" aria-hidden="true"><span class="hero-theme-in">
+        <svg class="hero-theme-ic" viewBox="0 0 24 24" aria-hidden="true">
+          <g class="hero-theme-sun"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.55 1.55M17.15 17.15l1.55 1.55M5.3 18.7l1.55-1.55M17.15 6.85l1.55-1.55"/></g>
+          <path class="hero-theme-moon" d="M20.2 14.6A8.3 8.3 0 0 1 9.4 3.8a8.3 8.3 0 1 0 10.8 10.8z"/>
+        </svg>
+      </span></span>
+      <span class="hero-menu-theme-lbl hero-menu-theme-lbl--to-light">Mode clair</span>
+      <span class="hero-menu-theme-lbl hero-menu-theme-lbl--to-dark">Mode sombre</span>
+    </button>
+    <a class="btn btn-primary btn-lg" href="/contact">
+      <span class="btn-label">Réserver mon appel</span>
+      <span class="btn-arrow" aria-hidden="true"><svg viewBox="0 0 256 256"><path d="M88 40l112 88-112 88z"/></svg></span>
+    </a>
+  </div>
+</header>
