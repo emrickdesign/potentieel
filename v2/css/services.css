@@ -521,3 +521,5 @@
 .svc-rev-msg{display:inline-flex;align-items:center;gap:6px;font:600 11px/1 var(--font-body);color:#202124}
 .svc-rev-msg svg{width:14px;height:14px;fill:var(--orange)}
 .svc-rev-real{font:600 10px/1 var(--font-body);color:#166534;background:#e8f7ee;border:1px solid #86d3a4;padding:3px 7px;border-radius:999px}
+
+.svc-price-unit s{text-decoration-color:var(--orange);text-decoration-thickness:2px;opacity:.75}
