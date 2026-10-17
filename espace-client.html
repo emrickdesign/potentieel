@@ -43,7 +43,7 @@
     .ec-rail button svg { width: 18px; height: 18px; flex: 0 0 auto; }
     .ec-rail button:hover { background: var(--bg-card); color: var(--gray-light); }
     .ec-rail button.active { background: var(--orange); color: #fff; }
-    .ec-rail .rail-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--gray-dark); padding: 6px 14px 4px; }
+    .ec-rail .rail-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--gray); padding: 6px 14px 4px; }
 
     .ec-main { flex: 1 1 auto; min-width: 0; }
     .ec-wrap { padding: 22px 20px calc(env(safe-area-inset-bottom) + 40px); max-width: 760px; }
@@ -87,6 +87,31 @@
     .ec-call:hover { opacity:.9; }
     .ec-tel { display:inline-flex; align-items:center; gap:6px; border:1px solid var(--border-card);
       color: var(--gray-light); text-decoration:none; font-weight:600; font-size:13.5px; padding: 9px 13px; border-radius:10px; }
+    .ec-msg { display:inline-flex; align-items:center; gap:6px; border:1px solid var(--border-card);
+      color: var(--gray-light); text-decoration:none; font-weight:600; font-size:13.5px; padding: 9px 13px; border-radius:10px; background: var(--bg-card-2); }
+    .ec-msg:hover { background: var(--bg-card-3); }
+    .ec-catrow { margin-top: 12px; display:flex; align-items:center; gap:8px; }
+    .ec-catrow label { font-size: 12px; color: var(--gray); font-weight:600; }
+    .ec-cat-select { background: var(--bg-card-2); border:1px solid var(--border-card); color: var(--gray-light);
+      border-radius:9px; padding:7px 10px; font-size:13px; font-weight:600; font-family:inherit; cursor:pointer; }
+
+    /* ---- Catégories (onglets) + filtre de période ---- */
+    .ec-tabs { display:flex; gap:6px; flex-wrap:wrap; margin: 6px 0 14px; }
+    .ec-tab { background: var(--bg-card); border:1px solid var(--border-card); color: var(--gray);
+      font-size:13px; font-weight:700; padding:8px 14px; border-radius:999px; cursor:pointer; white-space:nowrap; }
+    .ec-tab:hover { background: var(--bg-card-2); }
+    .ec-tab.active { background: var(--orange); border-color: var(--orange); color:#fff; }
+    .ec-tab b { font-weight:800; margin-left:5px; opacity:.85; }
+    .ec-datefilter { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin: 0 0 18px; font-size:13px; color: var(--gray); }
+    .ec-datefilter input[type=date] { background: var(--bg-card); border:1px solid var(--border-card); color: var(--gray-light);
+      border-radius:8px; padding:7px 9px; font-size:13px; font-family:inherit; min-width:0; flex:1 1 128px; }
+    .ec-datefilter button { background:none; border:none; color: var(--orange); font-weight:700; font-size:13px; cursor:pointer; padding:4px; }
+    /* Sous 360 px, deux dates natives côte à côte dépassent l'écran : la
+       période passe sur sa propre ligne, pleine largeur. */
+    @media (max-width: 360px) {
+      .ec-datefilter { width:100%; }
+      .ec-datefilter input[type=date] { flex-basis: 100%; }
+    }
 
     /* ---- Conseils ---- */
     .ec-conseils { background: var(--bg-card); border:1px solid var(--border-card); border-radius: 16px;
@@ -123,6 +148,14 @@
     .ec-gate p { color: var(--gray); font-size:14px; line-height:1.55; margin:0 0 18px; }
     .ec-gate a { color: var(--orange); font-weight:600; text-decoration:none; }
     .hidden { display:none !important; }
+
+    /* L'email en entier à côté du nom de marque et du bouton de déconnexion
+       ne tient pas sous 360 px (pré-existant) : on le masque, Déconnexion
+       suffit à l'action et le nom du client est déjà affiché plus bas. */
+    @media (max-width: 360px) {
+      #whoName { display:none; }
+      .ec-top { gap: 8px; }
+    }
 
     /* ---- Mobile : rail en barre du bas ---- */
     @media (max-width: 720px) {
@@ -200,6 +233,18 @@
       <div class="ec-sechead">
         <h2>Vos demandes</h2>
         <button class="ec-refresh" onclick="load()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><polyline points="21 3 21 9 15 9"/></svg> Actualiser</button>
+      </div>
+
+      <!-- Catégories : rangement personnel du client. Déplacer une demande ne la
+           cache ni ne la modifie ailleurs — ça ne fait que choisir où elle
+           s'affiche ici. Rien ne peut être supprimé depuis cet espace. -->
+      <div class="ec-tabs" id="catTabs"></div>
+      <div class="ec-datefilter">
+        <span>Période</span>
+        <input type="date" id="dateDebut" onchange="setDateDebut(this.value)" aria-label="Depuis le">
+        <span>→</span>
+        <input type="date" id="dateFin" onchange="setDateFin(this.value)" aria-label="Jusqu'au">
+        <button type="button" onclick="clearDates()">Réinitialiser</button>
       </div>
 
       <div id="list"></div>
@@ -332,6 +377,23 @@ function renderConseils(){
   box.innerHTML = '<div class="ec-conseils">'+esc(c)+'</div>';
 }
 
+/* ---- Catégories : rangement propre au client, jamais une suppression ----
+   `suivi` vient de la colonne `suivi_client` (ads_calls / form_submissions).
+   C'est un champ à part de `qualification` : celui-là reste la décision de
+   l'agence sur ce qui est montré au client ; celui-ci est l'organisation du
+   client sur ce qu'il voit déjà. Changer de catégorie ne cache, ne modifie
+   et ne supprime jamais rien d'autre sur la demande — basculer en « Perdu »
+   laisse l'enregistrement, les notes et tout le reste strictement intacts. */
+const CATS = [
+  { key:'nouveau',    label:'Nouvelles demandes' },
+  { key:'client',     label:'Client' },
+  { key:'en_attente', label:'En attente' },
+  { key:'perdu',      label:'Perdu' },
+];
+let ITEMS = [];
+let CATEGORIE = 'nouveau';
+let DATE_DEBUT = '', DATE_FIN = '';
+
 async function load(){
   if (!CLIENT) return;
   const [callsRes, formsRes] = await Promise.all([
@@ -343,44 +405,109 @@ async function load(){
   const calls = (callsRes.data||[])
     .filter(c => c.qualification==='qualifie' || c.status==='manque' || c.status==='repondeur')
     .map(c => ({
-      kind:'call', at: c.created_at,
+      kind:'call', id: c.id, at: c.created_at,
       missed: (c.status==='manque' || c.status==='repondeur'),
       name: c.from_number || 'Appel', tel: c.from_number, status: c.status,
       dur: c.duration_sec, rec: c.recording_url, theme: c.theme, notes: c.notes, summary: c.summary,
+      suivi: c.suivi_client || 'nouveau',
     }));
   const forms = (formsRes.data||[])
     .filter(f => f.qualification==='qualifie')
     .map(f => ({
-      kind:'form', at: f.submitted_at, missed:false,
+      kind:'form', id: f.id, at: f.submitted_at, missed:false,
       name: f.prenom || f.entreprise || 'Nouveau contact', tel: f.telephone,
       meta: [f.ville, f.domaine, f.details].filter(Boolean).join(' · '), theme: f.theme,
+      suivi: f.suivi_client || 'nouveau',
     }));
 
-  const items = [...calls, ...forms].sort((a,b)=> new Date(b.at) - new Date(a.at));
+  ITEMS = [...calls, ...forms].sort((a,b)=> new Date(b.at) - new Date(a.at));
 
-  document.getElementById('stTotal').textContent = items.length;
-  document.getElementById('stMissed').textContent = items.filter(i=>i.missed).length;
-  document.getElementById('stWeek').textContent = items.filter(i=>isThisWeek(i.at)).length;
+  // Les compteurs du haut restent globaux : ils ne dépendent pas de l'onglet
+  // ouvert, seule la liste en dessous change avec la catégorie et la période.
+  document.getElementById('stTotal').textContent = ITEMS.length;
+  document.getElementById('stMissed').textContent = ITEMS.filter(i=>i.missed).length;
+  document.getElementById('stWeek').textContent = ITEMS.filter(i=>isThisWeek(i.at)).length;
   const answered = calls.filter(i=>!i.missed), durs = answered.map(i=>+i.dur||0).filter(Boolean);
   document.getElementById('stRate').textContent = calls.length ? Math.round(answered.length/calls.length*100)+'%' : '—';
   document.getElementById('stAvg').textContent = durs.length ? fmtDur(Math.round(durs.reduce((a,b)=>a+b,0)/durs.length)) : '—';
   document.getElementById('stForms').textContent = forms.length;
 
-  const list = document.getElementById('list');
+  renderTabs();
+  applyFilters();
+}
+
+function renderTabs(){
+  document.getElementById('catTabs').innerHTML = CATS.map(c => {
+    const n = ITEMS.filter(i=>i.suivi===c.key).length;
+    return `<button class="ec-tab ${CATEGORIE===c.key?'active':''}" onclick="setCategorie('${c.key}')">${esc(c.label)} <b>${n}</b></button>`;
+  }).join('');
+}
+function setCategorie(key){ CATEGORIE = key; renderTabs(); applyFilters(); }
+function setDateDebut(v){ DATE_DEBUT = v; applyFilters(); }
+function setDateFin(v){ DATE_FIN = v; applyFilters(); }
+function clearDates(){
+  DATE_DEBUT = ''; DATE_FIN = '';
+  document.getElementById('dateDebut').value = '';
+  document.getElementById('dateFin').value = '';
+  applyFilters();
+}
+
+function applyFilters(){
+  // Toujours trié du plus récent au plus ancien (hérité de ITEMS).
+  let list = ITEMS.filter(i => i.suivi === CATEGORIE);
+  if (DATE_DEBUT) { const d0 = new Date(DATE_DEBUT+'T00:00:00'); list = list.filter(i => new Date(i.at) >= d0); }
+  if (DATE_FIN)   { const d1 = new Date(DATE_FIN+'T23:59:59');   list = list.filter(i => new Date(i.at) <= d1); }
+
+  const list_el = document.getElementById('list');
   const empty = document.getElementById('empty');
-  if (!items.length){ list.innerHTML=''; empty.classList.remove('hidden'); return; }
+  if (!list.length){
+    list_el.innerHTML = '';
+    empty.classList.remove('hidden');
+    empty.querySelector('h3').textContent = ITEMS.length ? 'Rien dans cette catégorie' : 'Aucune demande pour le moment';
+    return;
+  }
   empty.classList.add('hidden');
-  list.innerHTML = items.map(render).join('');
+  list_el.innerHTML = list.map(render).join('');
+}
+
+// Ne touche QUE suivi_client, côté base : un verrou (trigger) refuse toute
+// autre modification venant d'un compte client, même en cas de requête
+// trafiquée. Aucune suppression n'est jamais possible depuis cet espace.
+async function changerCategorie(kind, id, val){
+  const tbl = kind === 'call' ? 'ads_calls' : 'form_submissions';
+  const { error } = await sb.from(tbl).update({ suivi_client: val }).eq('id', id);
+  if (error) { alert("Impossible de changer la catégorie : " + error.message); return; }
+  const it = ITEMS.find(i => i.kind===kind && i.id===id);
+  if (it) it.suivi = val;
+  renderTabs();
+  applyFilters();
 }
 
 function themeBadge(t){ return t ? `<span class="ec-badge b-theme">${esc(t)}</span>` : ''; }
+function catSelect(i){
+  return `<div class="ec-catrow"><label>Catégorie</label>
+    <select class="ec-cat-select" onchange="changerCategorie('${i.kind}','${i.id}',this.value)">
+      ${CATS.map(c=>`<option value="${c.key}" ${i.suivi===c.key?'selected':''}>${esc(c.label)}</option>`).join('')}
+    </select></div>`;
+}
 
 function render(i){
   const phone = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.09 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>';
+  const bulle = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
+  // Le bouton d'appel et le bouton message sont toujours présents dès qu'un
+  // numéro existe — quelle que soit la catégorie, quel que soit le client,
+  // et même si la personne a déjà été eue au téléphone : « rappeler » n'est
+  // jamais retiré après un premier contact.
+  const actions = i.tel ? `<div class="ec-actions">
+      <a class="ec-call" href="tel:${telHref(i.tel)}">${phone} Rappeler</a>
+      <a class="ec-msg" href="sms:${telHref(i.tel)}">${bulle} Message</a>
+    </div>` : '';
   if (i.kind === 'call'){
     const badge = i.missed ? '<span class="ec-badge b-missed">Appel manqué</span>' : '<span class="ec-badge b-ok">Appel reçu</span>';
     const meta = [fmtDate(i.at), !i.missed && fmtDur(i.dur)].filter(Boolean)
       .map((m,idx)=> idx? '<span class="dot">·</span>'+m : m).join(' ');
+    // L'enregistrement reste écoutable quelle que soit la catégorie choisie,
+    // y compris « Perdu » : changer de catégorie ne touche jamais à l'audio.
     const audio = i.rec ? `<audio controls preload="none" src="${esc(i.rec)}"></audio>` : '';
     return `<div class="ec-card ${i.missed?'missed':''}">
       <div class="ec-ic">${phone}</div>
@@ -390,7 +517,8 @@ function render(i){
         ${audio}
         ${i.summary?`<div class="ec-meta" style="margin-top:8px"><b>Résumé :</b>&nbsp;${esc(i.summary)}</div>`:''}
         ${i.notes?`<div class="ec-meta" style="margin-top:8px;white-space:pre-wrap"><b>Note de l'équipe :</b>&nbsp;${esc(i.notes)}</div>`:''}
-        ${i.tel ? `<div class="ec-actions"><a class="ec-call" href="tel:${telHref(i.tel)}">${phone} Rappeler</a></div>`:''}
+        ${actions}
+        ${catSelect(i)}
       </div>
     </div>`;
   }
@@ -399,10 +527,8 @@ function render(i){
     <div class="ec-body">
       <div class="ec-row1"><span class="ec-name">${esc(i.name)}</span>${themeBadge(i.theme)}<span class="ec-badge b-form">Formulaire</span></div>
       <div class="ec-meta">${fmtDate(i.at)}${i.meta?`<span class="dot">·</span>${esc(i.meta)}`:''}</div>
-      <div class="ec-actions">
-        ${i.tel?`<a class="ec-call" href="tel:${telHref(i.tel)}">${phone} Rappeler</a>`:''}
-        ${i.tel?`<a class="ec-tel" href="tel:${telHref(i.tel)}">${esc(i.tel)}</a>`:''}
-      </div>
+      ${actions}
+      ${catSelect(i)}
     </div>
   </div>`;
 }

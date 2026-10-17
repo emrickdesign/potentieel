@@ -74,6 +74,15 @@
         ],
         "createdAt": "2026-10-14T14:41:57.638637Z",
         "reason": "Client: a demande que le logo Google Ads soit mis en avant. Roboto n'est utilise que sur le verrou 'Google Ads' du header, ou c'est la police de Google - c'est ce qui rend le logo juste. Le reste de la page est en Spectral et Libre Franklin."
+      },
+      {
+        "rule": "dark-glow",
+        "value": "*",
+        "files": [
+          "espace-client.html"
+        ],
+        "createdAt": "2026-10-17T00:00:00.000Z",
+        "reason": "Claude: le halo vient de styles.css (rgba(193,83,30,...) sur .btn-primary/.process-badge etc., lignes ~1059-1073), partage par des dizaines de pages du site et deja en production avant cette session. espace-client.html est en theme CLAIR (--bg:#ffffff) : la remarque 'sur fond sombre' ne s'applique pas ici. Changer ce halo reviendrait a retoucher le systeme de boutons de tout le site, hors perimetre de la demande en cours (categories de suivi client)."
       }
     ]
   }
