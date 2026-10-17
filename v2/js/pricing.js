@@ -27,6 +27,8 @@
     range.setAttribute('aria-valuetext', fmt(v) + ' € par mois de budget Google Ads, soit ' + fmt(BASE + v * RATE) + ' € d\'honoraires par mois dès le mois 3');
     bOut.textContent = fmt(v);
     target = BASE + v * RATE;
+    var put = function (sel, val) { root.querySelectorAll(sel).forEach(function (el) { el.textContent = fmt(val); }); };
+    put('.prc-fee-m', target); put('.prc-fee-b', v); put('.prc-fee-2', 2 * target); put('.prc-total-old', 700 + 200 + 2 * target);
     if (!animate || reduce) { shown = target; fOut.textContent = fmt(target); return; }
     if (!raf) raf = requestAnimationFrame(tick);
   }

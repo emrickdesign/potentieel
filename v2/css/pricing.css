@@ -253,3 +253,13 @@
 [data-theme="light"] .prc-dot{background:#16a34a}
 [data-theme="light"] .prc-more{color:var(--prc-mute)}
 [data-theme="light"] .prc-more a{color:var(--prc-oink)}
+
+/* --- Honoraires offerts chiffrés + « au lieu de » dans le total --- */
+.prc-total-break{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--muted);margin-bottom:4px}
+.prc-total-break s,.prc-total-was s{text-decoration-color:var(--orange);text-decoration-thickness:2px}
+.prc-total-was{font-family:var(--font-display);font-size:18px;font-weight:600;letter-spacing:-.02em;color:rgba(255,255,255,.6)}
+.prc-total-was s{color:rgba(255,255,255,.75)}
+[data-theme="light"] .prc-total-was{color:var(--prc-mute,#6b6257)}
+[data-theme="light"] .prc-total-was s{color:var(--prc-ink-2,#3a332c)}
+[data-theme="light"] .prc-total-break{color:var(--prc-mute,#6b6257)}
+@media (max-width:700px){.prc-total-break{justify-content:center}}
