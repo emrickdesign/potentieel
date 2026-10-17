@@ -446,3 +446,21 @@
 /* page courante dans le menu mobile */
 .hero-menu > a.site-nav-current{color:var(--orange)}
 [data-theme="light"] .hero-menu > a.site-nav-current{color:#b54f08}
+
+/* --- Recherche Google d'un seul tenant (17/10) : les 4 captures se suivent
+   sans coupure, sur le même fond que Google ; l'emplacement actif s'encadre. --- */
+.site-serp-page{background:#23242a}
+.site-serp-paid{gap:0}
+.site-shot{border:0;border-radius:0;background:transparent;box-shadow:none}
+.site-shot img{border-radius:0;display:block}
+.site-shot::after{content:"";position:absolute;inset:6px 4px;border-radius:14px;pointer-events:none;
+  border:2px solid transparent;transition:border-color .5s var(--ease),box-shadow .5s var(--ease)}
+.site-shot.is-lit{border:0;box-shadow:none}
+.site-shot.is-lit::after{border-color:rgba(var(--orange-rgb),.85);box-shadow:0 0 0 4px rgba(var(--orange-rgb),.12),0 0 40px -8px rgba(var(--orange-rgb),.6)}
+.site-shot--site{margin-top:0}
+.site-shot--site::before{display:none}
+.site-shot--site.is-lit::after{border-color:rgba(255,255,255,.25);box-shadow:none}
+.site-js .site-shot{transform:none}
+.site-shot-rank{left:-14px;top:14px}
+.site-shot-tag{top:18px;right:16px}
+@media (max-width:600px){.site-shot-rank{left:-10px;top:10px}.site-shot-tag{top:12px;right:10px}}
